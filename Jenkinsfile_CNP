@@ -6,6 +6,6 @@
 
 def type = "java"
 def product = "rpt"
-def component = "demo"
+def component = "api"
 
 withPipeline(type, product, component) {}
