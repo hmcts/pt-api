@@ -36,7 +36,7 @@ onMaster() {
   setAatEnvVars()
 //  afterSuccess('smoketest:aat') {
 //    runE2eTests(env.ENVIRONMENT)
-  }
+//  }
 }
 
 def setPreviewEnvVars() {
