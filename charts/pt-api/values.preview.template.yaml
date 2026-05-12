@@ -15,10 +15,10 @@ java:
     enabled: true
 
 ccd:
-  enabled: false
+  enabled: true
   ccd:
     adminWeb:
-      enabled: false
+      enabled: true
     definitionImporter:
       enabled: false
     userProfile:
@@ -28,7 +28,7 @@ ccd:
     s2s:
       enabled: false
     apiGatewayWeb:
-      enabled: false
+      enabled: true
     ras:
       enabled: false
     elastic:
