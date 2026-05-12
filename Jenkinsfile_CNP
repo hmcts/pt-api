@@ -10,7 +10,7 @@ def component = "api"
 
 
 def secrets = [
-  'pt-${env}': [
+  'pt-kv-${env}': [
     secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET')
   ]
 ]
