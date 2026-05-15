@@ -27,7 +27,7 @@ java:
     enabled: true
 
 ccd:
-  enabled: false
+  enabled: true
   ccd:
     adminWeb:
       enabled: true
