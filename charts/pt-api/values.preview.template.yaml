@@ -161,7 +161,7 @@ ccd:
     logstashJavaOpts: "-Xmx1g -Xms512M"
 
 xui-webapp:
-  enabled: false
+  enabled: true
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
