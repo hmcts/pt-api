@@ -8,9 +8,9 @@ java:
   postgresql:
     enabled: true
   environment:
-    PCS_DB_NAME: "javadatabase"
+    PT_DB_NAME: "javadatabase"
   secrets:
-    PCS_DB_PASSWORD:
+    PT_DB_PASSWORD:
       key: password
 ccd:
   ccd-definition-store-api:
