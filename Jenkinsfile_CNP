@@ -3,6 +3,7 @@
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.AppPipelineDsl
+import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
 def product = "pt"
@@ -25,20 +26,25 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-
+  def githubApi = new GithubAPI(this)
   env.IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   loadVaultSecrets(secrets)
   onPR() {
     setPreviewEnvVars()
+    if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
+      env.CCD_ENABLED = "true"
 //    afterSuccess('smoketest:preview') {
 //      runE2eTests(env.ENVIRONMENT)
 //    }
-  }
-  onMaster() {
-    setAatEnvVars()
+    } else {
+      env.CCD_ENABLED = "false"
+    }
+    onMaster() {
+      setAatEnvVars()
 //  afterSuccess('smoketest:aat') {
 //    runE2eTests(env.ENVIRONMENT)
 //  }
+    }
   }
 }
 def setPreviewEnvVars() {
