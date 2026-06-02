@@ -57,7 +57,7 @@ ccd:
     ras:
       enabled: false
     elastic:
-      enabled: false
+      enabled: true
   ccd-definition-store-api:
     java:
       devmemoryRequests: '1024Mi'
