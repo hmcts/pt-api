@@ -22,7 +22,6 @@ java:
     CHANGE_ID: ${CHANGE_ID}
     PT_DB_HOST: "{{ .Release.Name }}-postgresql"
     PT_DB_USER_NAME: "{{ .Values.postgresql.auth.username}}"
-#    PT_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     PT_DB_NAME: "{{ .Values.postgresql.auth.database}}"
   secrets:
     PT_DB_PASSWORD:
