@@ -32,21 +32,47 @@ spring:
     password: ${PT_DB_PASSWORD}
     properties:
       charSet: UTF-8
-    hikari:
-      minimumIdle: 2
-      maximumPoolSize: 10
-      idleTimeout: 10000
-      poolName: PtHikariCP
-      maxLifetime: 7200000
-      connectionTimeout: 30000
+#    hikari:
+#      minimumIdle: 2
+#      maximumPoolSize: 10
+#      idleTimeout: 10000
+#      poolName: PtHikariCP
+#      maxLifetime: 7200000
+#      connectionTimeout: 30000
   jpa:
     properties:
-      hibernate:
-        jdbc:
-         lob:
-            # silence the 'wall-of-text' - unnecessary exception throw about blob types
-            non_contextual_creation: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#        show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          prd-admin:
+#            provider: idam
+#            client-id: ${IDAM_CLIENT_ID:pcs-api}
+#            client-secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+#            client-authentication-method: client_secret_post
+#            authorization-grant-type: password
+#            scope: openid,profile,roles
+#          system-user:
+#            provider: idam
+#            client-id: ${IDAM_CLIENT_ID:pcs-api}
+#            client-secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+#            client-authentication-method: client_secret_post
+#            authorization-grant-type: password
+#            scope: openid,profile,roles
+#        provider:
+#          idam:
+#            token-uri: ${IDAM_API_URL:http://localhost:5062}/o/token
   azure:
     application-insights:
       instrumentation-key: ${pt.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
- 
+
+
+core_case_data:
+  api:
+    url: ${CCD_DATA_STORE_URL:localhost:4452}
