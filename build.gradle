@@ -28,7 +28,7 @@ plugins {
 }
 
 application {
-  mainClass = 'uk.gov.hmcts.reform.demo.Application'
+  mainClass = 'uk.gov.hmcts.reform.pt.Application'
   group = 'uk.gov.hmcts.reform'
   version = '0.0.1'
 }
