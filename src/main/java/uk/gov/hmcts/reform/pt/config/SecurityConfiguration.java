@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +25,13 @@ public class SecurityConfiguration {
 
     @Getter
     private final List<String> anonymousPaths = new ArrayList<>();
-//    private final AuthTokenGenerator authTokenGenerator;
+    private final ServiceAuthFilter serviceAuthFilter;
     private final IdamAuthenticationFilter idamAuthFilter;
 
     @Autowired
-    public SecurityConfiguration(IdamAuthenticationFilter idamAuthFilter) {
+    public SecurityConfiguration(ServiceAuthFilter serviceAuthFilter, IdamAuthenticationFilter idamAuthFilter) {
         super();
-//        this.authTokenGenerator = authTokenGenerator;
+        this.serviceAuthFilter = serviceAuthFilter;
         this.idamAuthFilter = idamAuthFilter;
     }
 
@@ -46,7 +45,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-//            .addFilterBefore(authTokenGenerator, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterBefore(idamAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
             .httpBasic(AbstractHttpConfigurer::disable)

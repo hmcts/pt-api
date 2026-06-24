@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -18,6 +19,9 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
     private static final String CASE_TYPE_ID = "PT";
 
+    @Value("${caseApi.url}")
+    private String caseApiUrl;
+
     public static String getCaseType() {
         return withSuffix(CASE_TYPE_ID, "-");
     }
@@ -30,7 +34,7 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
     @Override
     public void configure(final ConfigBuilder<PTCase, State, UserRole> builder) {
-        builder.setCallbackHost("http://localhost:3206");
+        builder.setCallbackHost(caseApiUrl);
 
         builder.caseType("PT", "Civil Possessions", "Possessions");
         builder.jurisdiction("CIVIL", "Civil Possessions", "The new one");
@@ -50,6 +54,5 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
         builder.tab("Example", "Example Tab")
             .field(PTCase::getApplicantForename);
-//            .field(PTCase::getPartyA);
     }
 }

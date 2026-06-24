@@ -178,6 +178,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
@@ -210,11 +211,11 @@ dependencies {
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.1'
 
-//    // Allow fast reloading during dev; recompile a class to trigger fast reload + definition reimport.
-//  cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-//
-//  // cftlib does not pull oauth2-client transitively from `implementation`; needed by OAuth2ClientConfig
-//  cftlibImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+  // Allow fast reloading during dev; recompile a class to trigger fast reload + definition reimport.
+  cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
+
+  // cftlib does not pull oauth2-client transitively from `implementation`; needed by OAuth2ClientConfig
+  cftlibImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 flyway {
@@ -262,10 +263,15 @@ tasks.withType(CftlibExec).configureEach {
   environment 'XUI_JURISDICTIONS', 'PT'
   environment 'XUI_DOCUMENTS_API_V2', 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
   //  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,pcs_frontend,pcs_api'
-  //  environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_data,ccd_gw,pcs_frontend,pcs_api'
-  //  environment 'CCD_S2S-AUTHORISED_SERVICES_CASE_USER_ROLES', 'aac_manage_case_assignment,pcs_api'
+  environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_data,ccd_gw,pt_frontend,pt_api'
+  environment 'CCD_S2S-AUTHORISED_SERVICES_CASE_USER_ROLES', 'aac_manage_case_assignment,pt_api'
 }
 
+tasks.register('highLevelDataSetup', JavaExec) {
+  mainClass.set("uk.gov.hmcts.reform.pt.ccd.config.HighLevelDataSetupApp")
+  classpath += sourceSets.main.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
 
 bootJar {
   archiveFileName = "pt-api.jar"
