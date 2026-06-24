@@ -18,7 +18,12 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
         IdamApi.class, // not used by pcs-api code; required so ccd-sdk's IdamClient can wire.
     }
 )
-@SpringBootApplication
+@SpringBootApplication(
+    scanBasePackages = {
+        "uk.gov.hmcts.reform.pt",
+        "uk.gov.hmcts.ccd.sdk",
+        "uk.gov.hmcts.reform.ccd.client"
+    })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
 

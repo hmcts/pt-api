@@ -6,6 +6,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
+import uk.gov.hmcts.reform.pt.ccd.CaseType;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
@@ -52,17 +53,17 @@ public class CftlibConfig implements CFTLibConfigurer {
         // Create users and roles including in idam simulator
         for (var entry : users.entrySet()) {
             lib.createIdamUser(entry.getKey(), entry.getValue().toArray(new String[0]));
-            lib.createProfile(entry.getKey(), "CIVIL", "PT", State.CASE_ISSUED.name());
+            lib.createProfile(entry.getKey(), "CIVIL", "PT", State.AWAITING_SUBMISSION_TO_HMCTS.name());
         }
 
         createAccessProfiles(lib);
         createRoleAssignments(lib);
 
         // Generate CCD definitions
-        //configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
+        configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
 
         // Import CCD definitions
-        //lib.importJsonDefinition(new File("build/definitions/" + CaseType.getCaseType()));
+        lib.importJsonDefinition(new File("build/definitions/" + CaseType.getCaseType()));
     }
 
     private void createAccessProfiles(CFTLib lib) {
