@@ -33,7 +33,6 @@ public enum AccessProfile implements HasRole {
     GS_PROFILE("GS_profile", Set.of(R)),
     SYSTEM_USER("pt-system-update", CRU);
 
-
     @JsonValue
     private final String role;
     private final Set<Permission> caseTypePermissions;
