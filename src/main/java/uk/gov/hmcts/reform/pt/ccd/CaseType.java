@@ -18,12 +18,21 @@ import static java.util.Optional.ofNullable;
 public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
     private static final String CASE_TYPE_ID = "PT";
+    private static final String CASE_TYPE_NAME = "Possession";
+    private static final String CASE_TYPE_DESCRIPTION = "Possession Case Type";
+    private static final String JURISDICTION_ID = "PT";
+    private static final String JURISDICTION_NAME = "Civil Possession";
+    private static final String JURISDICTION_DESCRIPTION = "Civil Possession Jurisdiction";
 
     @Value("${caseApi.url}")
     private String caseApiUrl;
 
     public static String getCaseType() {
         return withSuffix(CASE_TYPE_ID, "-");
+    }
+
+    public static String getCaseTypeName() {
+        return withSuffix(CASE_TYPE_NAME, " ");
     }
 
     private static String withSuffix(String base, String separator) {
@@ -36,8 +45,8 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
     public void configure(final ConfigBuilder<PTCase, State, UserRole> builder) {
         builder.setCallbackHost(caseApiUrl);
 
-        builder.caseType("PT", "Civil Possessions", "Possessions");
-        builder.jurisdiction("CIVIL", "Civil Possessions", "The new one");
+        builder.caseType(getCaseType(), getCaseTypeName(), CASE_TYPE_DESCRIPTION);
+        builder.jurisdiction(JURISDICTION_ID, JURISDICTION_NAME, JURISDICTION_DESCRIPTION);
 
         var label = "Applicant Forename";
         builder.searchInputFields()
