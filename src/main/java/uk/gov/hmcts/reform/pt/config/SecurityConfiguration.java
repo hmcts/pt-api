@@ -50,8 +50,7 @@ public class SecurityConfiguration {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
-            .logout(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable);
+            .logout(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
