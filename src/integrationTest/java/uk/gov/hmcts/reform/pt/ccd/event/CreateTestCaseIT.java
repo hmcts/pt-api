@@ -29,7 +29,10 @@ public class CreateTestCaseIT extends AbstractPostgresContainerIT {
         underTest = new CreateTestCase();
 
         PTCase ptCase = PTCase.builder().build();
-        caseDetails = CaseDetails.<PTCase, State>builder().data(ptCase).state(State.AWAITING_SUBMISSION_TO_HMCTS).build();
+        caseDetails = CaseDetails.<PTCase, State>builder()
+            .data(ptCase)
+            .state(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .build();
     }
 
     @Test
