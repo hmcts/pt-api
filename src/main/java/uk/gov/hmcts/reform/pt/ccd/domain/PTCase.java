@@ -9,7 +9,4 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 public class PTCase {
     @CCD(label = "Applicant's first name")
     private String applicantForename;
-
-//    @CCD(label = "Party A")
-//    private Party partyA;
 }
