@@ -98,6 +98,14 @@ tasks.register('integration', Test) {
   failFast = true
 }
 
+def runtimeIndexingEnabled = System.getenv('CCD_ENABLED') != 'false'
+
+ccd {
+  configDir = file('build/definitions')
+  decentralised = true
+  runtimeIndexing = runtimeIndexingEnabled
+}
+
 tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   group = "Verification"
