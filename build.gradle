@@ -286,6 +286,14 @@ rootProject.tasks.named("processSmokeTestResources") {
   duplicatesStrategy = 'include'
 }
 
+tasks.named("processIntegrationTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+tasks.named("processFunctionalTestResources") {
+  duplicatesStrategy = 'include'
+}
+
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
