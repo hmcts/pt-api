@@ -108,9 +108,13 @@ ccd {
 
 tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.smokeTest.output.classesDirs
-  classpath = sourceSets.smokeTest.runtimeClasspath
+  group = "verification"
+  dependsOn assemble, testClasses
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = configurations.functionalTestRuntimeClasspath + sourceSets.functionalTest.output
+  useJUnitPlatform {
+    includeTags System.getProperty("tags", "Smoke")
+  }
 }
 
 jacocoTestReport {
