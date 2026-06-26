@@ -10,6 +10,7 @@ global:
   postgresHostname: "pt-preview.postgres.database.azure.com"
   postgresUsername: "hmcts"
   databaseNamePrefix: "pr-${CHANGE_ID}-"
+
 java:
   CASE_TYPE_SUFFIX: ${CHANGE_ID}
   PT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}pt"
