@@ -13,6 +13,12 @@ java:
            alias: PT_DB_PASSWORD
          - name: pt-api-s2s-secret
            alias: PT_API_S2S_SECRET
+         - name: pt-api-idam-secret
+           alias: IDAM_CLIENT_SECRET
+         - name: idam-system-user-name
+           alias: PT_IDAM_SYSTEM_USERNAME
+         - name: idam-system-user-password
+           alias: PT_IDAM_SYSTEM_PASSWORD
   environment:
     PT_DB_PORT: "5432"
     PT_DB_USER_NAME: pgadmin
@@ -22,6 +28,7 @@ java:
     PT_DB_PASSWORD:
       secretRef: "{{ .Values.global.postgresSecret }}"
       key: password
+    IDAM_API_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     CCD_DATA_STORE_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
 ccd:
