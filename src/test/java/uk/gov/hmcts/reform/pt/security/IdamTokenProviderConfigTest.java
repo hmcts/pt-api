@@ -41,18 +41,6 @@ class IdamTokenProviderConfigTest {
         assertThat((String) request.getAttribute(OAuth2ParameterNames.PASSWORD)).isEqualTo("system-secret");
     }
 
-    @Test
-    void prdAdminTokenProviderShouldAuthorizeWithPrdAdminRegistrationAndCredentials() {
-        IdamTokenProvider provider = underTest.prdAdminTokenProvider(
-            authorizedClientManager, "prd-admin@test.com", "prd-secret");
-
-        OAuth2AuthorizeRequest request = captureAuthorizeRequestFrom(provider);
-
-        assertThat(request.getClientRegistrationId()).isEqualTo("prd-admin");
-        assertThat((String) request.getAttribute(OAuth2ParameterNames.USERNAME)).isEqualTo("prd-admin@test.com");
-        assertThat((String) request.getAttribute(OAuth2ParameterNames.PASSWORD)).isEqualTo("prd-secret");
-    }
-
     private OAuth2AuthorizeRequest captureAuthorizeRequestFrom(IdamTokenProvider provider) {
         OAuth2AuthorizedClient authorizedClient = mock(OAuth2AuthorizedClient.class);
         OAuth2AccessToken accessToken = mock(OAuth2AccessToken.class);

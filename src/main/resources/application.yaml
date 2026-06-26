@@ -92,16 +92,13 @@ idam:
     url: ${IDAM_API_URL:http://localhost:5062}
   s2s-auth:
     url: ${IDAM_S2S_AUTH_URL:http://localhost:4502}
-    totp_secret: ${PCS_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
+    totp_secret: ${PT_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:pt_api}
   s2s-authorised:
     services: ${S2S_NAMES_WHITELIST:pt_api,pt_frontend,ccd_data}
   system-user:
-    username: ${PCS_IDAM_SYSTEM_USERNAME:pcs-system-user@localhost}
-    password: ${PCS_IDAM_SYSTEM_PASSWORD:password}
-  prd-admin:
-    username: ${PCS_PRD_ADMIN_USERNAME:prd-admin-user@localhost}
-    password: ${PCS_PRD_ADMIN_PASSWORD:password}
+    username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
+    password: ${PT_IDAM_SYSTEM_PASSWORD:password}
   throttle:
     # How long (seconds) to tell callers to wait when IDAM throttles us, and which OAuth2
     # error codes count as throttling. Consumed by UpstreamThrottling.

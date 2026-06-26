@@ -20,12 +20,4 @@ public class IdamTokenProviderConfig {
         @Value("${idam.system-user.password}") String password) {
         return new IdamTokenProvider(authorizedClientManager, "system-user", username, password);
     }
-
-    @Bean
-    public IdamTokenProvider prdAdminTokenProvider(
-        OAuth2AuthorizedClientManager authorizedClientManager,
-        @Value("${idam.prd-admin.username}") String username,
-        @Value("${idam.prd-admin.password}") String password) {
-        return new IdamTokenProvider(authorizedClientManager, "prd-admin", username, password);
-    }
 }
