@@ -75,5 +75,13 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-lang3@.*$</packageUrl>
     <cve>CVE-2025-48924</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: elasticsearch-rest-client-8.18.8.jar
+   ]]></notes>
+    <cve>CVE-2025-37731</cve>
+    <cve>CVE-2025-68384</cve>
+    <cve>CVE-2025-68390</cve>
+  </suppress>
 
 </suppressions>
