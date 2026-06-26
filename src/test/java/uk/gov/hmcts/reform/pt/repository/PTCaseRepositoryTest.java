@@ -13,6 +13,7 @@ class PTCaseRepositoryTest extends AbstractRepositoryTest<PTCaseRepository> {
     protected PTCaseRepositoryTest(PTCaseRepository repository) {
         super(repository);
     }
+
     @Test
     void findByCaseReference_returnsEntity_whenExists() {
         PTCaseEntity entity = new PTCaseEntity();
