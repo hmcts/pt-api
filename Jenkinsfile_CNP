@@ -39,6 +39,12 @@ withPipeline(type, product, component) {
     } else {
       env.CCD_ENABLED = "false"
     }
+
+    def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
+    if (waPRLabels.contains("pr-values:wa-ft-tests")) {
+      env.WA_FUNCTIONAL_TESTS_ENABLED = "true"
+    }
+    
     onMaster() {
       setAatEnvVars()
 //  afterSuccess('smoketest:aat') {
