@@ -6,7 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RAS_VALIDATOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.RAS_VALIDATOR;
 
 public class RasValidationAccess implements HasAccessControl {
 

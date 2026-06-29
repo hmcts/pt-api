@@ -6,8 +6,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT_SOLICITOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.DEFENDANT;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.DEFENDANT_SOLICITOR;
 
 
 public class DefendantAccess implements HasAccessControl {

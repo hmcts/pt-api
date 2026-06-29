@@ -8,13 +8,13 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CTSC_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.WLU_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.CIRCUIT_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.CTSC_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.LEADERSHIP_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.WLU_ADMIN;
 
 class InternalCaseFlagAccessTest {
 

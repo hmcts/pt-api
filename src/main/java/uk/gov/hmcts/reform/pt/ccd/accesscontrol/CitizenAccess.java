@@ -6,7 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.CITIZEN;
 
 
 public class CitizenAccess implements HasAccessControl {
