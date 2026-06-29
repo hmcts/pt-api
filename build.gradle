@@ -283,7 +283,6 @@ tasks.withType(CftlibExec).configureEach {
 tasks.register('highLevelDataSetup', JavaExec) {
   mainClass.set("uk.gov.hmcts.reform.pt.ccd.config.HighLevelDataSetupApp")
   classpath += configurations.functionalTestRuntimeClasspath
-    + sourceSets.functionalTest.output
     + sourceSets.main.runtimeClasspath
 
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
