@@ -28,6 +28,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
   def githubApi = new GithubAPI(this)
   env.IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   loadVaultSecrets(secrets)
   enableDbMigration('pt')
 
@@ -47,6 +48,25 @@ withPipeline(type, product, component) {
 //    runE2eTests(env.ENVIRONMENT)
 //  }
     }
+  }
+
+  before('smoketest:preview') {
+    if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
+      sh "./bin/trigger-global-search-index.sh"
+    }
+  }
+
+  before('smoketest:aat') {
+    env.CASE_TYPE_SUFFIX="staging"
+    env.CCD_ENABLED = "true"
+  }
+
+  afterAlways('smoketest:preview') {
+    archiveSmokeTestReports()
+  }
+
+  afterAlways('smoketest:aat') {
+    archiveSmokeTestReports()
   }
 }
 def setPreviewEnvVars() {
