@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CaseworkerReadAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.ClaimantAccess;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.DefendantAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.GlobalSearchAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.InternalCaseFlagAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.RasValidationAccess;
