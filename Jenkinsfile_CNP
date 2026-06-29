@@ -27,6 +27,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
+GradleBuilder builder = new GradleBuilder(this, product)
+
 withPipeline(type, product, component) {
   def githubApi = new GithubAPI(this)
   env.IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -47,11 +49,12 @@ withPipeline(type, product, component) {
       enableHighLevelDataSetup("", true)
     }
   }
+
   before('highleveldatasetup') {
     onPR{
-      env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-pcs-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.CASE_API_URL = "https://pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.DATA_STORE_URL_BASE="https://ccd-data-store-api-pcs-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.DATA_STORE_URL_BASE="https://ccd-data-store-api-pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     }
     onMaster{
       env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
