@@ -5,7 +5,6 @@ import uk.gov.hmcts.rse.CftlibExec
 buildscript {
   ext {
     flywayVersion = '11.20.3'
-    serenityBddVersion = '5.2.2'
   }
   dependencies {
     classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion")
@@ -20,7 +19,6 @@ plugins {
   id 'org.flywaydb.flyway' version "$flywayVersion"
   id 'com.github.ben-manes.versions' version '0.54.0'
   id 'org.sonarqube' version '7.3.1.8318'
-  id 'net.serenity-bdd.serenity-gradle-plugin' version "$serenityBddVersion"
   id 'hmcts.ccd.sdk' version '6.7.2'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2061'
   id 'io.freefair.lombok' version '9.2.0'
@@ -110,34 +108,10 @@ ccd {
 
 tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
-  group = "verification"
-  dependsOn assemble, testClasses
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  classpath = configurations.functionalTestRuntimeClasspath + sourceSets.functionalTest.output
-  useJUnitPlatform {
-    includeTags System.getProperty("tags", "Smoke")
-  }
-
-  doFirst {
-    delete "${rootDir}/target/site/serenity"
-    delete "${rootDir}/report-for-smoke-tests"
-    logger.quiet("Smoke test results directory cleaned before running smoke tests")
-  }
-
-  finalizedBy {
-    aggregate {
-      doLast {
-        new File("${rootDir}/report-for-smoke-tests").mkdirs()
-        file("${rootDir}/target/site/serenity").renameTo(file("${rootDir}/report-for-smoke-tests"))
-        logger.quiet("Smoke test report moved to ---> file://${rootDir}/report-for-smoke-tests/index.html")
-      }
-    }
-  }
-  testLogging {
-    events "PASSED", "SKIPPED", "FAILED"
-  }
+  group = "Verification"
+  testClassesDirs = sourceSets.smokeTest.output.classesDirs
+  classpath = sourceSets.smokeTest.runtimeClasspath
 }
-smoke.finalizedBy(aggregate)
 
 jacocoTestReport {
   executionData(test, integration)
@@ -247,12 +221,6 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
     exclude group: 'com.launchdarkly', module: 'launchdarkly-java-server-sdk'
   }
-
-  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: serenityBddVersion
-  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: serenityBddVersion
-  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit5', version: serenityBddVersion
-  functionalTestImplementation sourceSets.main.runtimeClasspath
-  functionalTestImplementation sourceSets.test.runtimeClasspath
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.1'
 
