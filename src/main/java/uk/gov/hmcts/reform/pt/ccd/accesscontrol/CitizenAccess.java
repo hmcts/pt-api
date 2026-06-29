@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
 
-
 public class CitizenAccess implements HasAccessControl {
 
     @Override

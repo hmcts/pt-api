@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.InternalCaseFlagAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.RasValidationAccess;
 
 /**
- * All possible PCS case states.
+ * All possible PT case states.
  * Converted into CCD states.
  */
 @RequiredArgsConstructor

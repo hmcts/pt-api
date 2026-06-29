@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.WLU_ADMIN;
 
-
 public class InternalCaseFlagAccess implements HasAccessControl {
 
     @Override

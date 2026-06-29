@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 @EnableFeignClients(
     clients = {
         IdamUserInfoApi.class,
-        IdamApi.class, // not used by pcs-api code; required so ccd-sdk's IdamClient can wire.
+        IdamApi.class, // not used by pt-api code; required so ccd-sdk's IdamClient can wire.
     }
 )
 @SpringBootApplication(
