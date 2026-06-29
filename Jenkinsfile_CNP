@@ -12,7 +12,9 @@ def component = "api"
 
 def secrets = [
   'pt-kv-${env}': [
-    secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET')
+    secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET'),
+    secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
   ]
 ]
 
