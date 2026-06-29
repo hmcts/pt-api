@@ -49,25 +49,6 @@ withPipeline(type, product, component) {
 //  }
     }
   }
-
-  before('smoketest:preview') {
-    if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
-      sh "./bin/trigger-global-search-index.sh"
-    }
-  }
-
-  before('smoketest:aat') {
-    env.CASE_TYPE_SUFFIX="staging"
-    env.CCD_ENABLED = "true"
-  }
-
-  afterAlways('smoketest:preview') {
-    archiveSmokeTestReports()
-  }
-
-  afterAlways('smoketest:aat') {
-    archiveSmokeTestReports()
-  }
 }
 def setPreviewEnvVars() {
   // TODO: Update URL to include XUI when available
