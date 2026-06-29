@@ -40,8 +40,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${PT_DB_HOST:localhost}:${DB_PORT:5432}/${PT_DB_NAME:pt}${PT_DB_OPTIONS:}
-    username: ${PT_DB_USER_NAME}
-    password: ${PT_DB_PASSWORD}
+    username: ${PT_DB_USER_NAME:postgres}
+    password: ${PT_DB_PASSWORD:}
     properties:
       charSet: UTF-8
 #    hikari:
