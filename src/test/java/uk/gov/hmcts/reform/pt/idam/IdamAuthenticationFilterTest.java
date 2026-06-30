@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.config;
+package uk.gov.hmcts.reform.pt.idam;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticationFilter;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
-import uk.gov.hmcts.reform.pt.idam.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
