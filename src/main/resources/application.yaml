@@ -2,6 +2,15 @@ server:
   port: 4550
   shutdown: "graceful"
 
+security:
+  anonymousPaths:
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/swagger-ui.html"
+    - "/swagger-ui/**"
+    - "/v3/api-docs/**"
+
 # If you use a database then uncomment the `group:, readiness: and include: "db"` lines in the health probes and uncomment the datasource section
 management:
   endpoint:
@@ -15,9 +24,12 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
+  health:
+    elasticsearch:
+      enabled: false
 
 springdoc:
-  packagesToScan: uk.gov.hmcts.reform.demo.controllers
+  packagesToScan: uk.gov.hmcts.reform.pt
   writer-with-order-by-keys: true
 
 spring:
@@ -28,25 +40,77 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${PT_DB_HOST:localhost}:${DB_PORT:5432}/${PT_DB_NAME:pt}${PT_DB_OPTIONS:}
-    username: ${PT_DB_USER_NAME}
-    password: ${PT_DB_PASSWORD}
+    username: ${PT_DB_USER_NAME:postgres}
+    password: ${PT_DB_PASSWORD:}
     properties:
       charSet: UTF-8
-    hikari:
-      minimumIdle: 2
-      maximumPoolSize: 10
-      idleTimeout: 10000
-      poolName: PtHikariCP
-      maxLifetime: 7200000
-      connectionTimeout: 30000
+#    hikari:
+#      minimumIdle: 2
+#      maximumPoolSize: 10
+#      idleTimeout: 10000
+#      poolName: PtHikariCP
+#      maxLifetime: 7200000
+#      connectionTimeout: 30000
   jpa:
     properties:
-      hibernate:
-        jdbc:
-         lob:
-            # silence the 'wall-of-text' - unnecessary exception throw about blob types
-            non_contextual_creation: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#        show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      client:
+        registration:
+          prd-admin:
+            provider: idam
+            client-id: ${IDAM_CLIENT_ID:pt-api}
+            client-secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: password
+            scope: openid,profile,roles
+          system-user:
+            provider: idam
+            client-id: ${IDAM_CLIENT_ID:pt-api}
+            client-secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: password
+            scope: openid,profile,roles
+        provider:
+          idam:
+            token-uri: ${IDAM_API_URL:http://localhost:5062}/o/token
   azure:
     application-insights:
       instrumentation-key: ${pt.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
- 
+flyway:
+  noop:
+    strategy: ${FLYWAY_NOOP_STRATEGY:false}
+
+idam:
+  api:
+    url: ${IDAM_API_URL:http://localhost:5062}
+  s2s-auth:
+    url: ${IDAM_S2S_AUTH_URL:http://localhost:4502}
+    totp_secret: ${PT_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
+    microservice: ${S2S_SERVICE_NAME:pt_api}
+  s2s-authorised:
+    services: ${S2S_NAMES_WHITELIST:pt_api,pt_frontend,ccd_data}
+  system-user:
+    username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
+    password: ${PT_IDAM_SYSTEM_PASSWORD:password}
+  throttle:
+    # How long (seconds) to tell callers to wait when IDAM throttles us, and which OAuth2
+    # error codes count as throttling. Consumed by UpstreamThrottling.
+    retry-after-seconds: ${IDAM_THROTTLE_RETRY_AFTER_SECONDS:30}
+    oauth2-error-codes: ${IDAM_THROTTLE_OAUTH2_ERROR_CODES:invalid_token_response,temporarily_unavailable}
+
+core_case_data:
+  api:
+    url: ${CCD_DATA_STORE_URL:localhost:4452}
+
+caseApi:
+  url: ${CASE_API_URL:http://localhost:3206}
