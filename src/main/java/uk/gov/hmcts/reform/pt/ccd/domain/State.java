@@ -6,13 +6,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CaseworkerReadAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.ClaimantAccess;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.DefendantAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.GlobalSearchAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.InternalCaseFlagAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.RasValidationAccess;
 
 /**
- * All possible PCS case states.
+ * All possible PT case states.
  * Converted into CCD states.
  */
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public enum State {
 
     @CCD(
         label = "Case Issued",
-        access = {CaseworkerReadAccess.class, ClaimantAccess.class, DefendantAccess.class, RasValidationAccess.class,
+        access = {CaseworkerReadAccess.class, ClaimantAccess.class, RasValidationAccess.class,
             GlobalSearchAccess.class},
         hint = "${caseTitleMarkdown}"
     )

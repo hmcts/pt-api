@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT_SOLICITOR;
 
-
 public class DefendantAccess implements HasAccessControl {
 
     @Override

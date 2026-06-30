@@ -26,7 +26,7 @@ plugins {
     Applies analysis tools including checkstyle and OWASP Dependency checker.
     See https://github.com/hmcts/gradle-java-plugin
  */
-  id 'uk.gov.hmcts.java' version '0.12.70'
+  id 'uk.gov.hmcts.java' version '0.12.68'
 }
 
 application {
@@ -157,7 +157,7 @@ repositories {
 
 ext {
   log4JVersion = "2.26.0"
-  logbackVersion = "1.5.35"
+  logbackVersion = "1.5.37"
   springFrameworkBootVersion = "3.5.15"
   springSecurityVersion = "7.0.4"
   lombokVersion = "1.18.44"
@@ -178,7 +178,6 @@ dependencies {
 
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: flywayVersion
   implementation group: 'org.flywaydb', name: 'flyway-core', version: flywayVersion
-
 
   implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
@@ -223,6 +222,9 @@ dependencies {
   }
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.1'
+
+  functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation sourceSets.test.runtimeClasspath
 
   // Allow fast reloading during dev; recompile a class to trigger fast reload + definition reimport.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -275,7 +277,7 @@ tasks.withType(CftlibExec).configureEach {
   environment 'SPRING_PROFILES_ACTIVE', 'dev'
   environment 'XUI_JURISDICTIONS', 'PT'
   environment 'XUI_DOCUMENTS_API_V2', 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
-  //  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,pcs_frontend,pcs_api'
+  //  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,pt_frontend,pt_api'
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_data,ccd_gw,pt_frontend,pt_api'
   environment 'CCD_S2S-AUTHORISED_SERVICES_CASE_USER_ROLES', 'aac_manage_case_assignment,pt_api'
 }
@@ -283,6 +285,7 @@ tasks.withType(CftlibExec).configureEach {
 tasks.register('highLevelDataSetup', JavaExec) {
   mainClass.set("uk.gov.hmcts.reform.pt.ccd.config.HighLevelDataSetupApp")
   classpath += sourceSets.main.runtimeClasspath
+
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 

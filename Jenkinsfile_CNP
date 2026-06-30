@@ -4,6 +4,7 @@
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
+import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
 def product = "pt"
@@ -12,7 +13,9 @@ def component = "api"
 
 def secrets = [
   'pt-kv-${env}': [
-    secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET')
+    secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET'),
+    secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
   ]
 ]
 
@@ -25,9 +28,12 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
+GradleBuilder builder = new GradleBuilder(this, product)
+
 withPipeline(type, product, component) {
   def githubApi = new GithubAPI(this)
   env.IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   loadVaultSecrets(secrets)
   enableDbMigration('pt')
 
@@ -35,18 +41,32 @@ withPipeline(type, product, component) {
     setPreviewEnvVars()
     if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
       env.CCD_ENABLED = "true"
-//    afterSuccess('smoketest:preview') {
-//      runE2eTests(env.ENVIRONMENT)
-//    }
+      enableHighLevelDataSetup("pt-kv")
     } else {
       env.CCD_ENABLED = "false"
     }
     onMaster() {
       setAatEnvVars()
-//  afterSuccess('smoketest:aat') {
-//    runE2eTests(env.ENVIRONMENT)
-//  }
+      enableHighLevelDataSetup("", true)
     }
+  }
+
+  before('highleveldatasetup') {
+    onPR{
+      env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.CASE_API_URL = "https://pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.DATA_STORE_URL_BASE="https://ccd-data-store-api-pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    }
+    onMaster{
+      env.DEFINITION_STORE_URL_BASE = "http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
+      env.DATA_STORE_URL_BASE="http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+      env.CASE_API_URL = "https://pt-api-staging.aat.platform.hmcts.net"
+      env.CASE_TYPE_SUFFIX="staging"
+      generateDefinitions(builder)
+      env.CASE_API_URL = "http://pt-api-aat.service.core-compute-aat.internal"
+      env.CASE_TYPE_SUFFIX=""
+    }
+    generateDefinitions(builder)
   }
 }
 def setPreviewEnvVars() {
@@ -59,6 +79,13 @@ def setAatEnvVars() {
   env.TEST_E2E_URL_WEB = "https://manage-case.aat.platform.hmcts.net/"
   env.ENVIRONMENT= "aat"
 }
+
+def generateDefinitions(builder) {
+  builder.gradle('--rerun-tasks generateCCDConfig')
+  sh "./bin/create-xlsx.sh ${env.ENVIRONMENT}"
+  steps.archiveArtifacts artifacts: "build/definitions/*.xlsx"
+}
+
 
 def runE2eTests(String context) {
   try {

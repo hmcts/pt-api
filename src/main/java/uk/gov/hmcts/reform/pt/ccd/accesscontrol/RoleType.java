@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.accesscontrol;
 
-enum RoleType {
+public enum RoleType {
 
     IDAM("idam:"),
     RAS("");

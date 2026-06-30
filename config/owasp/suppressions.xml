@@ -75,5 +75,4 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-lang3@.*$</packageUrl>
     <cve>CVE-2025-48924</cve>
   </suppress>
-
 </suppressions>
