@@ -39,13 +39,13 @@ public class CftlibConfig implements CFTLibConfigurer {
     public void configure(CFTLib lib) throws Exception {
 
         var users = Map.of(
-            "caseworker@pcs.com", List.of("caseworker", "caseworker-pt"),
-            "pcs-solicitor1@test.com", List.of("caseworker", "caseworker-pt-solicitor"),
-            "pcs-defendant-solicitor@test.com", List.of("pui-case-manager", "caseworker", "caseworker-pt-solicitor"),
-            "citizen@pcs.com", List.of("citizen"),
+            "caseworker@pt.com", List.of("caseworker", "caseworker-pt"),
+            "pt-solicitor1@test.com", List.of("caseworker", "caseworker-pt-solicitor"),
+            "pt-defendant-solicitor@test.com", List.of("pui-case-manager", "caseworker", "caseworker-pt-solicitor"),
+            "citizen@pt.com", List.of("citizen"),
             "data.store.idam.system.user@gmail.com", List.of(),
-            "ccd.import@pcs.com", List.of("ccd-import"),
-            "pcs-system-user@localhost", List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update"),
+            "ccd.import@pt.com", List.of("ccd-import"),
+            "pt-system-user@localhost", List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update"),
             "prd-admin-user@localhost", List.of(),
             "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt")
         );
