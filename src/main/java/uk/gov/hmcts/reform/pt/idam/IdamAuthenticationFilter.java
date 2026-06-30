@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.config;
+package uk.gov.hmcts.reform.pt.idam;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,8 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
-import uk.gov.hmcts.reform.pt.idam.User;
 
 import java.io.IOException;
 import java.util.Collections;

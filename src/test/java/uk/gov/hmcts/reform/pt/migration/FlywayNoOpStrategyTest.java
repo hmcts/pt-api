@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
-import uk.gov.hmcts.reform.pt.data.migration.FlywayNoOpStrategy;
+import uk.gov.hmcts.reform.pt.config.FlywayNoOpStrategy;
 import uk.gov.hmcts.reform.pt.exception.PendingMigrationScriptException;
 
 import static org.assertj.core.api.Assertions.assertThat;
