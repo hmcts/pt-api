@@ -45,10 +45,11 @@ withPipeline(type, product, component) {
     } else {
       env.CCD_ENABLED = "false"
     }
-    onMaster() {
-      setAatEnvVars()
-      enableHighLevelDataSetup("", true)
-    }
+  }
+
+  onMaster() {
+    enableHighLevelDataSetup("pt-kv", true)
+    setAatEnvVars()
   }
 
   before('highleveldatasetup') {
@@ -76,7 +77,6 @@ def setPreviewEnvVars() {
 }
 
 def setAatEnvVars() {
-  env.TEST_E2E_URL_WEB = "https://manage-case.aat.platform.hmcts.net/"
   env.ENVIRONMENT= "aat"
 }
 
