@@ -52,6 +52,21 @@ withPipeline(type, product, component) {
     setAatEnvVars()
   }
 
+  onDemo {
+    setDemoEnvVars()
+    enableHighLevelDataSetup()
+  }
+
+  onIthc {
+    setIthcEnvVars()
+    enableHighLevelDataSetup()
+  }
+
+  onPerftest {
+    setPerftestEnvVars()
+    enableHighLevelDataSetup()
+  }
+
   before('highleveldatasetup') {
     onPR{
       env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -78,6 +93,18 @@ def setPreviewEnvVars() {
 
 def setAatEnvVars() {
   env.ENVIRONMENT= "aat"
+}
+
+def setDemoEnvVars() {
+  env.ENVIRONMENT= "demo"
+}
+
+def setIthcEnvVars() {
+  env.ENVIRONMENT= "ithc"
+}
+
+def setPerftestEnvVars() {
+  env.ENVIRONMENT= "perftest"
 }
 
 def generateDefinitions(builder) {
