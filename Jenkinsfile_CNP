@@ -54,17 +54,17 @@ withPipeline(type, product, component) {
 
   onDemo {
     setDemoEnvVars()
-    enableHighLevelDataSetup()
+    enableHighLevelDataSetup("pt-kv")
   }
 
   onIthc {
     setIthcEnvVars()
-    enableHighLevelDataSetup()
+    enableHighLevelDataSetup("pt-kv")
   }
 
   onPerftest {
     setPerftestEnvVars()
-    enableHighLevelDataSetup()
+    enableHighLevelDataSetup("pt-kv")
   }
 
   before('highleveldatasetup') {
