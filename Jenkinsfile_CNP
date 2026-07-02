@@ -35,7 +35,7 @@ withPipeline(type, product, component) {
   env.IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   loadVaultSecrets(secrets)
-  enableDbMigration('pt')
+  enableDbMigration('pt-kv')
 
   onPR() {
     setPreviewEnvVars()
@@ -45,10 +45,33 @@ withPipeline(type, product, component) {
     } else {
       env.CCD_ENABLED = "false"
     }
+  }
+
     onMaster() {
       setAatEnvVars()
-      enableHighLevelDataSetup("", true)
-    }
+//  afterSuccess('smoketest:aat') {
+//    runE2eTests(env.ENVIRONMENT)
+//  }
+  }
+
+  onMaster() {
+    enableHighLevelDataSetup("pt-kv", true)
+    setAatEnvVars()
+  }
+
+  onDemo {
+    setDemoEnvVars()
+    enableHighLevelDataSetup("pt-kv")
+  }
+
+  onIthc {
+    setIthcEnvVars()
+    enableHighLevelDataSetup("pt-kv")
+  }
+
+  onPerftest {
+    setPerftestEnvVars()
+    enableHighLevelDataSetup("pt-kv")
   }
 
   before('highleveldatasetup') {
@@ -76,8 +99,19 @@ def setPreviewEnvVars() {
 }
 
 def setAatEnvVars() {
-  env.TEST_E2E_URL_WEB = "https://manage-case.aat.platform.hmcts.net/"
   env.ENVIRONMENT= "aat"
+}
+
+def setDemoEnvVars() {
+  env.ENVIRONMENT= "demo"
+}
+
+def setIthcEnvVars() {
+  env.ENVIRONMENT= "ithc"
+}
+
+def setPerftestEnvVars() {
+  env.ENVIRONMENT= "perftest"
 }
 
 def generateDefinitions(builder) {

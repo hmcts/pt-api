@@ -24,7 +24,6 @@ java:
   environment:
     PT_DB_PORT: "5432"
     PT_DB_USER_NAME: pgadmin
-
     PT_DB_NAME: pt
     PT_DB_HOST: "pt-{{ .Values.global.environment }}.postgres.database.azure.com"
     IDAM_API_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
