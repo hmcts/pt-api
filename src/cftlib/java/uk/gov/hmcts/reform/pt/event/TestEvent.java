@@ -26,7 +26,7 @@ public class TestEvent implements CCDConfig<PTCase, State, UserRole> {
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         Event.EventBuilder<PTCase, UserRole, State> eventBuilder = configBuilder
-            .decentralisedEvent(EventId.placeholder.name(), this::submit, this::start)
+            .decentralisedEvent(EventId.createTestCase.name(), this::submit, this::start)
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(EVENT_NAME)
