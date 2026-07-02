@@ -34,7 +34,7 @@ springdoc:
 
 spring:
   config:
-    import: "optional:configtree:/mnt/secrets/pt/"
+    import: "optional:configtree:/mnt/secrets/pt-kv/"
   application:
     name: pt api
   datasource:
