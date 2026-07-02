@@ -29,11 +29,9 @@ public class KeyVaultSecretsCheckPostProcessor implements EnvironmentPostProcess
             .collect(Collectors.toList());
 
         if (!missing.isEmpty()) {
-            // Use System.err / stdout here — logging framework may not be
-            // initialised yet this early in the lifecycle
             log.error("=========================================");
             log.error("KEYVAULT SECRETS CHECK: MISSING SECRETS:");
-            missing.forEach(name -> System.err.println("  - " + name));
+            missing.forEach(name -> log.error("  - " + name));
             log.error("=========================================");
         } else {
             log.info("KeyVault secrets check: all expected secrets present.");
