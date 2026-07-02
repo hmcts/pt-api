@@ -6,7 +6,6 @@ import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class KeyVaultSecretsCheckPostProcessor implements EnvironmentPostProcessor {
@@ -26,7 +25,7 @@ public class KeyVaultSecretsCheckPostProcessor implements EnvironmentPostProcess
                 String value = environment.getProperty(name);
                 return value == null || value.isBlank();
             })
-            .collect(Collectors.toList());
+            .toList();
 
         if (!missing.isEmpty()) {
             log.error("=========================================");

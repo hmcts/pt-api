@@ -129,6 +129,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "Reform :: pt-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:pt-api"
+    property "sonar.coverage.exclusions", "**/config/KeyVaultSecretsCheckPostProcessor.java"
   }
 }
 
