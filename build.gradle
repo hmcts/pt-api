@@ -161,7 +161,7 @@ ext {
   springFrameworkBootVersion = "3.5.15"
   springSecurityVersion = "7.0.4"
   lombokVersion = "1.18.46"
-  testcontainersVersion = "2.0.4"
+  testcontainersVersion = "2.0.5"
   testcontainersAdditionsVersion = "1.21.4"
 }
 
