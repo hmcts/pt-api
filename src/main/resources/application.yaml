@@ -1,5 +1,5 @@
 server:
-  port: 3206
+  port: 4550
   shutdown: "graceful"
 
 security:
@@ -113,4 +113,4 @@ core_case_data:
     url: ${CCD_DATA_STORE_URL:localhost:4452}
 
 caseApi:
-  url: ${CASE_API_URL:http://localhost:3206}
+  url: ${CASE_API_URL:http://localhost:4550}
