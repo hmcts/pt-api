@@ -6,12 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class ApiSteps {
 
-    private String baseUrl;
-
-    @Step("Set up base URL: {0}")
-    public void setupBaseUrl(String url) {
-        this.baseUrl = url;
-    }
+    private static final String baseUrl = System.getenv("TEST_URL");
 
     @Step("Check Health")
     public void getHealth() {
