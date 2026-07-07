@@ -78,4 +78,12 @@ public class CreateTestCaseIT extends AbstractPostgresContainerIT {
 
         assertThat(response.getWarnings()).isNullOrEmpty();
     }
+
+    @Test
+    @DisplayName("Should set applicant forename on start")
+    void shouldSetApplicantForenameOnStart() {
+        AboutToStartOrSubmitResponse<PTCase, State> response = underTest.start(caseDetails);
+
+        assertThat(response.getData().getApplicantForename()).isEqualTo("Preset value");
+    }
 }

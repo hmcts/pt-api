@@ -27,7 +27,7 @@ public class CreatePTCase implements CCDConfig<PTCase, State, UserRole> {
             .done();
     }
 
-    private AboutToStartOrSubmitResponse<PTCase, State> start(CaseDetails<PTCase, State> caseDetails) {
+    public AboutToStartOrSubmitResponse<PTCase, State> start(CaseDetails<PTCase, State> caseDetails) {
         PTCase data = caseDetails.getData();
         data.setApplicantForename("Preset value");
 
