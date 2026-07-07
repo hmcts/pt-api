@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 @Component
 @RequiredArgsConstructor
-public class TestEvent implements CCDConfig<PTCase, State, UserRole> {
+public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
 
-    private static final String EVENT_NAME = "Test Event";
+    private static final String EVENT_NAME = "Create Test Case";
 
     private final PTCaseService ptCaseService;
 
@@ -31,7 +31,7 @@ public class TestEvent implements CCDConfig<PTCase, State, UserRole> {
             .showSummary()
             .name(EVENT_NAME)
             .grant(Permission.CRUD, UserRole.CASE_WORKER);
-        TestPageBuilder.createTestEvent(eventBuilder);
+        TestPageBuilder.createTestCase(eventBuilder);
     }
 
     private PTCase start(EventPayload<PTCase, State> eventPayload) {

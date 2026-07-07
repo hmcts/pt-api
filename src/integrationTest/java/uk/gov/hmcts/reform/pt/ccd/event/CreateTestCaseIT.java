@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("CreateTestCase Integration Tests")
 public class CreateTestCaseIT extends AbstractPostgresContainerIT {
 
-    private CreateTestCase underTest;
+    private CreatePTCase underTest;
 
     private CaseDetails<PTCase, State> caseDetails;
 
     @BeforeEach
     void setUp() {
-        underTest = new CreateTestCase();
+        underTest = new CreatePTCase();
 
         PTCase ptCase = PTCase.builder().build();
         caseDetails = CaseDetails.<PTCase, State>builder()

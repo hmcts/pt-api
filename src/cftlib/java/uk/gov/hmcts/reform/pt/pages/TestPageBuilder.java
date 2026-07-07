@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 
 public class TestPageBuilder {
-    public static void createTestEvent(Event.EventBuilder<PTCase, UserRole, State> eventBuilder) {
+    public static void createTestCase(Event.EventBuilder<PTCase, UserRole, State> eventBuilder) {
         eventBuilder
             .fields()
             .page("id")
