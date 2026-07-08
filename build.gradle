@@ -164,7 +164,7 @@ tasks.register('runAndPublishConsumerPactTests', Test){
 project.ext {
   pactVersion = getCheckedOutGitCommitHash()
   pacticipantVersion = getCheckedOutGitCommitHash()
-  pacticipant = 'pcs_api'
+  pacticipant = 'pt_api'
 }
 
 pact {
