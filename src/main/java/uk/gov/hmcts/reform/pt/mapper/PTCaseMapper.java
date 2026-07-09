@@ -12,7 +12,7 @@ public class PTCaseMapper {
             .applicantLastName(entity.getApplicantLastName())
             .email(entity.getEmail())
             .postcode(entity.getPostcode())
-            .idamUserId(entity.getIdamUserId())
+            .applicantIdamUserId(entity.getApplicantIdamUserId())
             .applicationType(entity.getApplicationType())
             .build();
     }

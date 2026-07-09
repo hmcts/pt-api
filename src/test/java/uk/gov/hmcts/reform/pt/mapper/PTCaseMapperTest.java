@@ -15,7 +15,7 @@ public class PTCaseMapperTest {
     public void shouldMapToDtoFromEntity() {
         PTCaseEntity entity = PTCaseEntity.builder()
             .id(UUID.randomUUID())
-            .idamUserId(UUID.randomUUID())
+            .applicantIdamUserId(UUID.randomUUID())
             .caseReference(1234567890123456L)
             .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .applicantFirstName("FirstName")
@@ -27,7 +27,7 @@ public class PTCaseMapperTest {
         CaseDto result = PTCaseMapper.toDto(entity);
 
         assertThat(result.getId()).isEqualTo(entity.getId());
-        assertThat(result.getIdamUserId()).isEqualTo(entity.getIdamUserId());
+        assertThat(result.getApplicantIdamUserId()).isEqualTo(entity.getApplicantIdamUserId());
         assertThat(result.getCaseReference()).isEqualTo(entity.getCaseReference());
         assertThat(result.getApplicationType()).isEqualTo(entity.getApplicationType());
         assertThat(result.getApplicantFirstName()).isEqualTo(entity.getApplicantFirstName());

@@ -11,7 +11,7 @@ public interface PTCaseRepository extends JpaRepository<PTCaseEntity, UUID> {
 
     Optional<PTCaseEntity> findByCaseReference(long caseReference);
 
-    Optional<PTCaseEntity> findByCaseReferenceAndIdamUserId(long caseReference, UUID idamUserId);
+    Optional<PTCaseEntity> findByCaseReferenceAndApplicantIdamUserId(long caseReference, UUID applicantIdamUserId);
 
-    List<PTCaseEntity> findAllByIdamUserId(UUID idamUserId);
+    List<PTCaseEntity> findAllByApplicantIdamUserId(UUID applicantIdamUserId);
 }

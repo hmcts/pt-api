@@ -42,5 +42,5 @@ public class PTCaseEntity {
     private String applicantLastName;
     private String email;
     private String postcode;
-    private UUID idamUserId;
+    private UUID applicantIdamUserId;
 }

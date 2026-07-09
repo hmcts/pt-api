@@ -34,12 +34,12 @@ class PTCaseRepositoryTest extends AbstractRepositoryTest<PTCaseRepository> {
         UUID idamUserId = UUID.randomUUID();
 
         PTCaseEntity entity = new PTCaseEntity();
-        entity.setIdamUserId(idamUserId);
+        entity.setApplicantIdamUserId(idamUserId);
         repository.save(entity);
 
-        List<PTCaseEntity> result = repository.findAllByIdamUserId(idamUserId);
+        List<PTCaseEntity> result = repository.findAllByApplicantIdamUserId(idamUserId);
 
         assertThat(result).isNotEmpty();
-        assertThat(result.getFirst().getIdamUserId()).isEqualTo(idamUserId);
+        assertThat(result.getFirst().getApplicantIdamUserId()).isEqualTo(idamUserId);
     }
 }

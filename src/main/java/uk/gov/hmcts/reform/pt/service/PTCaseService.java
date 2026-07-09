@@ -34,7 +34,7 @@ public class PTCaseService {
 
     @Transactional
     public List<CaseDto> getCasesForUser(UUID userId) {
-        return ptCaseRepository.findAllByIdamUserId(userId).stream()
+        return ptCaseRepository.findAllByApplicantIdamUserId(userId).stream()
             .map(PTCaseMapper::toDto)
             .toList();
     }
@@ -45,7 +45,7 @@ public class PTCaseService {
             throw new InvalidCaseReferenceException(caseReference);
         }
 
-        return ptCaseRepository.findByCaseReferenceAndIdamUserId(caseReference, userId)
+        return ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(caseReference, userId)
             .map(PTCaseMapper::toDto)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
     }

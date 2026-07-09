@@ -15,6 +15,6 @@ public class CaseDto {
     private String applicantLastName;
     private String email;
     private String postcode;
-    private UUID idamUserId;
+    private UUID applicantIdamUserId;
     private ApplicationType applicationType;
 }

@@ -64,15 +64,15 @@ class PTCaseServiceTest {
         PTCaseEntity entity = createPtCase();
         CaseDto dto = createApplicationDto(entity);
 
-        when(ptCaseRepository.findAllByIdamUserId(entity.getIdamUserId()))
+        when(ptCaseRepository.findAllByApplicantIdamUserId(entity.getApplicantIdamUserId()))
             .thenReturn(List.of(entity));
 
-        List<CaseDto> result = ptCaseService.getCasesForUser(entity.getIdamUserId());
+        List<CaseDto> result = ptCaseService.getCasesForUser(entity.getApplicantIdamUserId());
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getId()).isEqualTo(dto.getId());
 
-        verify(ptCaseRepository).findAllByIdamUserId(entity.getIdamUserId());
+        verify(ptCaseRepository).findAllByApplicantIdamUserId(entity.getApplicantIdamUserId());
         verifyNoMoreInteractions(ptCaseRepository);
     }
 
@@ -81,16 +81,16 @@ class PTCaseServiceTest {
     void getApplicationByCaseReference() {
         PTCaseEntity entity = createPtCase();
         CaseDto dto = createApplicationDto(entity);
-        UUID idamUserId = entity.getIdamUserId();
+        UUID idamUserId = entity.getApplicantIdamUserId();
 
-        when(ptCaseRepository.findByCaseReferenceAndIdamUserId(CASE_REFERENCE, idamUserId))
+        when(ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(CASE_REFERENCE, idamUserId))
             .thenReturn(Optional.of(entity));
 
         CaseDto result = ptCaseService.getCaseByCaseReference(CASE_REFERENCE, idamUserId);
 
         assertThat(result.getId()).isEqualTo(dto.getId());
 
-        verify(ptCaseRepository).findByCaseReferenceAndIdamUserId(CASE_REFERENCE, idamUserId);
+        verify(ptCaseRepository).findByCaseReferenceAndApplicantIdamUserId(CASE_REFERENCE, idamUserId);
         verifyNoMoreInteractions(ptCaseRepository);
     }
 
@@ -107,14 +107,14 @@ class PTCaseServiceTest {
     @Test
     @DisplayName("Should throw CaseNotFoundException when case reference does not exist")
     void getApplicationByCaseReferenceCaseNotFound() {
-        when(ptCaseRepository.findByCaseReferenceAndIdamUserId(eq(CASE_REFERENCE), any()))
+        when(ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(eq(CASE_REFERENCE), any()))
             .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> ptCaseService.getCaseByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
             .isInstanceOf(CaseNotFoundException.class)
             .hasMessage("No case found with reference " + CASE_REFERENCE);
 
-        verify(ptCaseRepository).findByCaseReferenceAndIdamUserId(eq(CASE_REFERENCE), any());
+        verify(ptCaseRepository).findByCaseReferenceAndApplicantIdamUserId(eq(CASE_REFERENCE), any());
         verifyNoMoreInteractions(ptCaseRepository);
     }
 
@@ -122,7 +122,7 @@ class PTCaseServiceTest {
         return PTCaseEntity.builder()
             .id(UUID.randomUUID())
             .caseReference(CASE_REFERENCE)
-            .idamUserId(UUID.randomUUID())
+            .applicantIdamUserId(UUID.randomUUID())
             .build();
     }
 
