@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.pt.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
+import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
@@ -31,18 +35,39 @@ class PTCaseServiceTest {
     @Mock
     private PTCaseRepository ptCaseRepository;
 
+    @Captor
+    private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
+
     @InjectMocks
-    private PTCaseService underTest;
+    private PTCaseService ptCaseService;
 
     @Test
-    void shouldGetApplicationsForUser() {
+    @DisplayName("Should save a case entity built from the case reference and PTCase")
+    void createCase() {
+        long caseReference = 1234567890123456L;
+        PTCase ptCase = PTCase.builder()
+            .applicantForename("John")
+            .build();
+
+        ptCaseService.createCase(caseReference, ptCase);
+
+        verify(ptCaseRepository).save(ptCaseEntityCaptor.capture());
+        PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
+
+        assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
+        assertThat(savedEntity.getApplicantFirstName()).isEqualTo("John");
+    }
+
+    @Test
+    @DisplayName("Should get applications for a user")
+    void getApplicationsForUser() {
         PTCaseEntity entity = createPtCase();
         CaseDto dto = createApplicationDto(entity);
 
         when(ptCaseRepository.findAllByIdamUserId(entity.getIdamUserId()))
             .thenReturn(List.of(entity));
 
-        List<CaseDto> result = underTest.getApplicationsForUser(entity.getIdamUserId());
+        List<CaseDto> result = ptCaseService.getApplicationsForUser(entity.getIdamUserId());
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getId()).isEqualTo(dto.getId());
@@ -52,7 +77,8 @@ class PTCaseServiceTest {
     }
 
     @Test
-    void shouldGetApplicationByCaseReference() {
+    @DisplayName("Should get application by case reference")
+    void getApplicationByCaseReference() {
         PTCaseEntity entity = createPtCase();
         CaseDto dto = createApplicationDto(entity);
         UUID idamUserId = entity.getIdamUserId();
@@ -60,7 +86,7 @@ class PTCaseServiceTest {
         when(ptCaseRepository.findByCaseReferenceAndIdamUserId(CASE_REFERENCE, idamUserId))
             .thenReturn(Optional.of(entity));
 
-        CaseDto result = underTest.getApplicationByCaseReference(CASE_REFERENCE, idamUserId);
+        CaseDto result = ptCaseService.getApplicationByCaseReference(CASE_REFERENCE, idamUserId);
 
         assertThat(result.getId()).isEqualTo(dto.getId());
 
@@ -69,8 +95,9 @@ class PTCaseServiceTest {
     }
 
     @Test
-    void shouldThrowInvalidCaseReferenceWhenCaseReferenceIsZero() {
-        assertThatThrownBy(() -> underTest.getApplicationByCaseReference(0L, UUID.randomUUID()))
+    @DisplayName("Should throw InvalidCaseReferenceException when case reference is zero")
+    void getApplicationByCaseReferenceInvalidCaseReference() {
+        assertThatThrownBy(() -> ptCaseService.getApplicationByCaseReference(0L, UUID.randomUUID()))
             .isInstanceOf(InvalidCaseReferenceException.class)
             .hasMessage("Invalid case reference: 0");
 
@@ -78,12 +105,12 @@ class PTCaseServiceTest {
     }
 
     @Test
-    void shouldThrowCaseNotFoundWhenCaseReferenceDoesNotExist() {
-
+    @DisplayName("Should throw CaseNotFoundException when case reference does not exist")
+    void getApplicationByCaseReferenceCaseNotFound() {
         when(ptCaseRepository.findByCaseReferenceAndIdamUserId(eq(CASE_REFERENCE), any()))
             .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> underTest.getApplicationByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
+        assertThatThrownBy(() -> ptCaseService.getApplicationByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
             .isInstanceOf(CaseNotFoundException.class)
             .hasMessage("No case found with reference " + CASE_REFERENCE);
 
