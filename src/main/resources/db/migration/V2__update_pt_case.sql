@@ -6,3 +6,6 @@ ALTER TABLE pt_case
   ADD COLUMN postcode VARCHAR(20);
 
 ALTER TABLE pt_case RENAME COLUMN applicant_forename TO applicant_first_name;
+
+CREATE INDEX pt_case_applicant_idam_user_id_idx
+  ON pt_case(applicant_idam_user_id);
