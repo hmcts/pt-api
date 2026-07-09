@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.controllers;
+package uk.gov.hmcts.reform.pt.controllers.advice;
 
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.web.client.HttpClientErrorException;
-import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.IdamException;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
-import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 
 import java.util.Set;
@@ -23,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RestExceptionHandlerTest {
+public class GlobalExceptionHandlerTest {
 
-    private RestExceptionHandler underTest;
+    private GlobalExceptionHandler underTest;
 
     @BeforeEach
     void setUp() {
@@ -34,35 +32,7 @@ public class RestExceptionHandlerTest {
             Set.of("invalid_token_response", "temporarily_unavailable")
         );
 
-        underTest = new RestExceptionHandler(upstreamThrottling);
-    }
-
-    @Test
-    void shouldHandleCaseNotFoundException() {
-        long caseReference = 12345L;
-        CaseNotFoundException caseNotFoundException = new CaseNotFoundException(caseReference);
-        String expectedErrorMessage = "No case found with reference " + caseReference;
-
-        ResponseEntity<RestExceptionHandler.Error> responseEntity =
-            underTest.handleCaseNotFoundException(caseNotFoundException);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().message()).isEqualTo(expectedErrorMessage);
-    }
-
-    @Test
-    void shouldHandleInvalidCaseReferenceException() {
-        long caseReference = 1234567890L;
-        String expectedErrorMessage = "Invalid case reference: " + caseReference;
-        InvalidCaseReferenceException exception = new InvalidCaseReferenceException(caseReference);
-
-        ResponseEntity<RestExceptionHandler.Error> response =
-            underTest.handleInvalidCaseReferenceException(exception);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().message()).isEqualTo(expectedErrorMessage);
+        underTest = new GlobalExceptionHandler(upstreamThrottling);
     }
 
     @Test
@@ -70,7 +40,7 @@ public class RestExceptionHandlerTest {
         String expectedErrorMessage = "Invalid authentication token";
         InvalidAuthTokenException exception = new InvalidAuthTokenException(expectedErrorMessage);
 
-        ResponseEntity<RestExceptionHandler.Error> responseEntity = underTest.handleInvalidAuth(exception);
+        ResponseEntity<ErrorResponse> responseEntity = underTest.handleInvalidAuth(exception);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(responseEntity.getBody()).isNotNull();
@@ -83,7 +53,7 @@ public class RestExceptionHandlerTest {
         Exception cause = new RuntimeException("Root cause");
         InvalidAuthTokenException exception = new InvalidAuthTokenException(expectedErrorMessage, cause);
 
-        ResponseEntity<RestExceptionHandler.Error> responseEntity = underTest.handleInvalidAuth(exception);
+        ResponseEntity<ErrorResponse> responseEntity = underTest.handleInvalidAuth(exception);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(responseEntity.getBody()).isNotNull();
@@ -101,7 +71,7 @@ public class RestExceptionHandlerTest {
         OAuth2AuthorizationException oauthEx = new OAuth2AuthorizationException(oauthError, tooMany);
         IdamException ex = new IdamException("Unable to get access token response", oauthEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isEqualTo("30");
@@ -118,7 +88,7 @@ public class RestExceptionHandlerTest {
             HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", HttpHeaders.EMPTY, new byte[0], null);
         IdamException ex = new IdamException("Unable to get access token response", tooMany);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isEqualTo("30");
@@ -133,7 +103,7 @@ public class RestExceptionHandlerTest {
         OAuth2AuthorizationException oauthEx = new OAuth2AuthorizationException(oauthError);
         IdamException ex = new IdamException("Unable to get access token response", oauthEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isEqualTo("30");
@@ -150,7 +120,7 @@ public class RestExceptionHandlerTest {
         OAuth2AuthorizationException oauthEx = new OAuth2AuthorizationException(oauthError);
         IdamException ex = new IdamException("Unable to get access token response", oauthEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isNull();
@@ -166,7 +136,7 @@ public class RestExceptionHandlerTest {
         OAuth2AuthorizationException oauthEx = new OAuth2AuthorizationException(oauthError, internal);
         IdamException ex = new IdamException("Unable to get access token response", oauthEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isNull();
@@ -183,7 +153,7 @@ public class RestExceptionHandlerTest {
         when(feignEx.status()).thenReturn(status);
         IdamException ex = new IdamException("Unable to validate authorization token", feignEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isEqualTo("30");
@@ -199,7 +169,7 @@ public class RestExceptionHandlerTest {
         when(feignEx.status()).thenReturn(status);
         IdamException ex = new IdamException("Unable to validate authorization token", feignEx);
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isNull();
@@ -209,7 +179,7 @@ public class RestExceptionHandlerTest {
     void shouldMapIdamExceptionWithNoCauseToInternalServerError() {
         IdamException ex = new IdamException("Unable to get access token response");
 
-        ResponseEntity<RestExceptionHandler.Error> response = underTest.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = underTest.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isNotNull();
@@ -219,13 +189,13 @@ public class RestExceptionHandlerTest {
     @Test
     void shouldUseConfiguredRetryAfterValueInThrottleResponse() {
         // The Retry-After value is read from idam.throttle.retry-after-seconds, not hardcoded.
-        RestExceptionHandler handler = new RestExceptionHandler(
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(
             new UpstreamThrottling("90", Set.of("invalid_token_response")));
         OAuth2Error oauthError = new OAuth2Error("invalid_token_response", "throttled", null);
         IdamException ex = new IdamException(
             "Unable to get access token response", new OAuth2AuthorizationException(oauthError));
 
-        ResponseEntity<RestExceptionHandler.Error> response = handler.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = handler.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER)).isEqualTo("90");
@@ -234,14 +204,14 @@ public class RestExceptionHandlerTest {
     @Test
     void shouldHonourConfiguredOAuth2ThrottleErrorCodes() {
         // A code that is NOT in the configured set must not be treated as throttling.
-        RestExceptionHandler handler = new RestExceptionHandler(
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(
             new UpstreamThrottling("30", Set.of("temporarily_unavailable")));
         OAuth2Error oauthError = new OAuth2Error(
             "invalid_token_response", "not a configured throttle code", null);
         IdamException ex = new IdamException(
             "Unable to get access token response", new OAuth2AuthorizationException(oauthError));
 
-        ResponseEntity<RestExceptionHandler.Error> response = handler.handleIdamException(ex);
+        ResponseEntity<ErrorResponse> response = handler.handleIdamException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -250,8 +220,7 @@ public class RestExceptionHandlerTest {
     void errorRecordShouldHaveMessage() {
         String message = "Test error message";
 
-        RestExceptionHandler.Error error =
-            new RestExceptionHandler.Error(message);
+        ErrorResponse error = new ErrorResponse(message);
 
         assertThat(error.message()).isEqualTo(message);
     }
