@@ -39,10 +39,10 @@ public class ApplicationController {
             @SecurityRequirement(name = "ServiceAuthorization")
         }
     )
-    @ApiResponse(responseCode = "200", description = "Applications retrieved successfully")
+    @ApiResponse(responseCode = "200", description = "Cases retrieved successfully")
     @ApiResponse(responseCode = "401", description = "Invalid access token")
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
-    public ResponseEntity<List<CaseDto>> getApplicationsForUser(
+    public ResponseEntity<List<CaseDto>> getCasesForUser(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
@@ -50,7 +50,7 @@ public class ApplicationController {
     ) {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
-        return ResponseEntity.ok(ptCaseService.getApplicationsForUser(UUID.fromString(user.getUid())));
+        return ResponseEntity.ok(ptCaseService.getCasesForUser(UUID.fromString(user.getUid())));
     }
 
     @GetMapping(value = "/{caseReference}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,10 +62,10 @@ public class ApplicationController {
             @SecurityRequirement(name = "ServiceAuthorization")
         }
     )
-    @ApiResponse(responseCode = "200", description = "CaseDto retrieved successfully")
+    @ApiResponse(responseCode = "200", description = "Case retrieved successfully")
     @ApiResponse(responseCode = "401", description = "Invalid access token")
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
-    public ResponseEntity<CaseDto> getApplicationByCaseReference(
+    public ResponseEntity<CaseDto> getCaseByCaseReference(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
@@ -75,6 +75,6 @@ public class ApplicationController {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
         return ResponseEntity.ok(
-            ptCaseService.getApplicationByCaseReference(caseReference, UUID.fromString(user.getUid())));
+            ptCaseService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
     }
 }

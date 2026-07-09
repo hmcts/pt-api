@@ -64,7 +64,7 @@ public class ApplicationControllerTest {
             .build();
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.getApplicationsForUser(userId))
+        when(ptCaseService.getCasesForUser(userId))
             .thenReturn(List.of(application));
 
         mockMvc.perform(get("/applications")
@@ -76,7 +76,7 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).getApplicationsForUser(userId);
+        verify(ptCaseService).getCasesForUser(userId);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ApplicationControllerTest {
         User user = new User(AUTH, userInfo);
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.getApplicationByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
+        when(ptCaseService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
             .thenReturn(application);
 
         mockMvc.perform(get("/applications/{caseReference}", CASE_REFERENCE)
@@ -104,6 +104,6 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).getApplicationByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
+        verify(ptCaseService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
     }
 }

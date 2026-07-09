@@ -33,14 +33,14 @@ public class PTCaseService {
     }
 
     @Transactional
-    public List<CaseDto> getApplicationsForUser(UUID userId) {
+    public List<CaseDto> getCasesForUser(UUID userId) {
         return ptCaseRepository.findAllByIdamUserId(userId).stream()
             .map(PTCaseMapper::toDto)
             .toList();
     }
 
     @Transactional
-    public CaseDto getApplicationByCaseReference(long caseReference, UUID userId) {
+    public CaseDto getCaseByCaseReference(long caseReference, UUID userId) {
         if (!CaseReferenceUtils.isValidCaseReference(caseReference)) {
             throw new InvalidCaseReferenceException(caseReference);
         }

@@ -67,7 +67,7 @@ class PTCaseServiceTest {
         when(ptCaseRepository.findAllByIdamUserId(entity.getIdamUserId()))
             .thenReturn(List.of(entity));
 
-        List<CaseDto> result = ptCaseService.getApplicationsForUser(entity.getIdamUserId());
+        List<CaseDto> result = ptCaseService.getCasesForUser(entity.getIdamUserId());
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getId()).isEqualTo(dto.getId());
@@ -86,7 +86,7 @@ class PTCaseServiceTest {
         when(ptCaseRepository.findByCaseReferenceAndIdamUserId(CASE_REFERENCE, idamUserId))
             .thenReturn(Optional.of(entity));
 
-        CaseDto result = ptCaseService.getApplicationByCaseReference(CASE_REFERENCE, idamUserId);
+        CaseDto result = ptCaseService.getCaseByCaseReference(CASE_REFERENCE, idamUserId);
 
         assertThat(result.getId()).isEqualTo(dto.getId());
 
@@ -97,7 +97,7 @@ class PTCaseServiceTest {
     @Test
     @DisplayName("Should throw InvalidCaseReferenceException when case reference is zero")
     void getApplicationByCaseReferenceInvalidCaseReference() {
-        assertThatThrownBy(() -> ptCaseService.getApplicationByCaseReference(0L, UUID.randomUUID()))
+        assertThatThrownBy(() -> ptCaseService.getCaseByCaseReference(0L, UUID.randomUUID()))
             .isInstanceOf(InvalidCaseReferenceException.class)
             .hasMessage("Invalid case reference: 0");
 
@@ -110,7 +110,7 @@ class PTCaseServiceTest {
         when(ptCaseRepository.findByCaseReferenceAndIdamUserId(eq(CASE_REFERENCE), any()))
             .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> ptCaseService.getApplicationByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
+        assertThatThrownBy(() -> ptCaseService.getCaseByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
             .isInstanceOf(CaseNotFoundException.class)
             .hasMessage("No case found with reference " + CASE_REFERENCE);
 
