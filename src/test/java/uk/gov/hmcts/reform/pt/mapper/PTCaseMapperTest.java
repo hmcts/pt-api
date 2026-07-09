@@ -17,7 +17,7 @@ public class PTCaseMapperTest {
             .id(UUID.randomUUID())
             .idamUserId(UUID.randomUUID())
             .caseReference(1234567890123456L)
-            .applicationType(ApplicationType.APPLICATION)
+            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .applicantFirstName("FirstName")
             .applicantLastName("LastName")
             .email("test@test.com")
