@@ -34,7 +34,9 @@ public class CcdApiClient {
                 eventId.name()
             );
         } catch (FeignException e) {
-            throw new CcdException(String.format("Failed to start %s event in CCD: %s", eventId.name(), e.getMessage()));
+            throw new CcdException(
+                String.format("Failed to start %s event in CCD: %s", eventId.name(), e.getMessage())
+            );
         }
         return startEventResponse;
     }
@@ -56,7 +58,9 @@ public class CcdApiClient {
                 caseDateContent
             );
         } catch (FeignException e) {
-            throw new CcdException(String.format("Failed to submit case creation for event %s: %s", eventToken, e.getMessage()));
+            throw new CcdException(
+                String.format("Failed to submit case creation for event %s: %s", eventToken, e.getMessage())
+            );
         }
         return caseDetails;
     }

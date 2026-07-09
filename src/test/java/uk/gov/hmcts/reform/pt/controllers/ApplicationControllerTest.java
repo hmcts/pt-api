@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
@@ -50,11 +49,12 @@ class ApplicationControllerTest {
             .applicationType("myself")
             .build();
 
-        when(idamAuthenticator.validateAuthToken(authorization)).thenReturn(getTestUser());
+        when(idamAuthenticator.validateAuthToken(authorization)).thenReturn(getTestUser(userId));
         CreateApplicationResponse expectedResponse = getTestCreateApplicationResponse();
         when(ptCaseService.createCase(request, userId)).thenReturn(expectedResponse);
 
-        ResponseEntity<CreateApplicationResponse> response = applicationController.createApplication(authorization, s2sToken, request);
+        ResponseEntity<CreateApplicationResponse> response =
+            applicationController.createApplication(authorization, s2sToken, request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(expectedResponse);
@@ -62,8 +62,8 @@ class ApplicationControllerTest {
         verify(ptCaseService).createCase(eq(request), eq(userId));
     }
 
-    private User getTestUser() {
-        UserInfo userInfo = UserInfo.builder().uid("foo").build();
+    private User getTestUser(UUID userId) {
+        UserInfo userInfo = UserInfo.builder().uid(userId.toString()).build();
         return new User("foo", userInfo);
     }
 

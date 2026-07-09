@@ -39,7 +39,8 @@ public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
-        ptCaseService.createCase(eventPayload.caseReference(), null, eventPayload.caseData()); // TODO do we need to pass a userId here?
+        // TODO do we need to pass a userId here?
+        ptCaseService.createCase(eventPayload.caseReference(), null, eventPayload.caseData());
         return SubmitResponse.<State>builder().state(State.CASE_ISSUED).build();
     }
 }

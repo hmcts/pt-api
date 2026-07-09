@@ -81,7 +81,8 @@ class PTCaseServiceTest {
             .build();
 
         when(ccdApi.startEvent(EventId.createNewApplication)).thenReturn(getTestStartEventResponse());
-        when(ccdApi.submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq("token"))).thenReturn(getTestCaseDetails());
+        when(ccdApi.submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq("token")))
+            .thenReturn(getTestCaseDetails());
 
         CreateApplicationResponse response = ptCaseService.createCase(request, userId);
 

@@ -46,7 +46,11 @@ public class PTCaseService {
             .applicationType(request.getApplicationType())
             .build();
         StartEventResponse startEventResponse = ccdApi.startEvent(EventId.createNewApplication);
-        CaseDetails caseDetails = ccdApi.submitCaseCreation(ptCase, EventId.createNewApplication, startEventResponse.getToken());
+        CaseDetails caseDetails = ccdApi.submitCaseCreation(
+            ptCase,
+            EventId.createNewApplication,
+            startEventResponse.getToken()
+        );
 
         Long caseReference = caseDetails.getId();
         createCase(caseReference, userId, ptCase);

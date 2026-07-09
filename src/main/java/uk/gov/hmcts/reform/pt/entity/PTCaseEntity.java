@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -28,8 +29,11 @@ public class PTCaseEntity {
     @Version
     private Integer version;
     private Long caseReference;
+    @Column(name = "applicant_idam_user_id")
     private UUID userId;
+    @Column(name = "applicant_first_name")
     private String firstName;
+    @Column(name = "applicant_last_name")
     private String lastName;
     private String email;
     private String postcode;
