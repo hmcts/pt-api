@@ -2,15 +2,14 @@ package uk.gov.hmcts.reform.pt.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.UUID;
 
-@NotBlank
 @Getter
+@Builder
 public class CreateApplicationRequest {
-    @NotBlank
-    private UUID userId;
     @NotBlank
     private String firstName;
     @NotBlank

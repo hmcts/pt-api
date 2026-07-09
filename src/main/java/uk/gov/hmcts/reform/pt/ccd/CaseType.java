@@ -48,20 +48,20 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
         builder.caseType(getCaseType(), getCaseTypeName(), CASE_TYPE_DESCRIPTION);
         builder.jurisdiction(JURISDICTION_ID, JURISDICTION_NAME, JURISDICTION_DESCRIPTION);
 
-        var label = "Applicant Forename";
+        var label = "Applicant First Name";
         builder.searchInputFields()
-            .field(PTCase::getApplicantForename, label);
+            .field(PTCase::getFirstName, label);
         builder.searchCasesFields()
-            .field(PTCase::getApplicantForename, label);
+            .field(PTCase::getFirstName, label);
 
         builder.searchResultFields()
-            .field(PTCase::getApplicantForename, label);
+            .field(PTCase::getFirstName, label);
         builder.workBasketInputFields()
-            .field(PTCase::getApplicantForename, label);
+            .field(PTCase::getFirstName, label);
         builder.workBasketResultFields()
-            .field(PTCase::getApplicantForename, label);
+            .field(PTCase::getFirstName, label);
 
         builder.tab("Example", "Example Tab")
-            .field(PTCase::getApplicantForename);
+            .field(PTCase::getFirstName);
     }
 }
