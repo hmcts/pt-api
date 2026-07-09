@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.pt.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
 import java.util.UUID;
 
 @NotBlank
+@Getter
 public class CreateApplicationRequest {
     @NotBlank
     private UUID userId;

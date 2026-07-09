@@ -28,5 +28,10 @@ public class PTCaseEntity {
     @Version
     private Integer version;
     private Long caseReference;
-    private String applicantForename;
+    private UUID userId;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String postcode;
+    private String applicationType;
 }
