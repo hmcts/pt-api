@@ -59,7 +59,6 @@ public class ApplicationControllerTest {
         User user = new User(AUTH, userInfo);
 
         CaseDto application = CaseDto.builder()
-            .id(UUID.randomUUID())
             .caseReference(CASE_REFERENCE)
             .build();
 
@@ -72,7 +71,6 @@ public class ApplicationControllerTest {
                             .header("ServiceAuthorization", S2S)
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(application.getId().toString()))
             .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
@@ -82,7 +80,6 @@ public class ApplicationControllerTest {
     @Test
     void shouldGetApplicationByCaseReference() throws Exception {
         CaseDto application = CaseDto.builder()
-            .id(UUID.randomUUID())
             .caseReference(CASE_REFERENCE)
             .build();
 
@@ -100,7 +97,6 @@ public class ApplicationControllerTest {
                             .header("ServiceAuthorization", S2S)
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(application.getId().toString()))
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);

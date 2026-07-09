@@ -9,7 +9,6 @@ import java.util.UUID;
 @Data
 @Builder
 public class CaseDto {
-    private UUID id;
     private long caseReference;
     private String applicantFirstName;
     private String applicantLastName;

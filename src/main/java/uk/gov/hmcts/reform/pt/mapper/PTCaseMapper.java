@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 public class PTCaseMapper {
     public static CaseDto toDto(PTCaseEntity entity) {
         return CaseDto.builder()
-            .id(entity.getId())
             .caseReference(entity.getCaseReference())
             .applicantFirstName(entity.getApplicantFirstName())
             .applicantLastName(entity.getApplicantLastName())

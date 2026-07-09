@@ -70,7 +70,7 @@ class PTCaseServiceTest {
         List<CaseDto> result = ptCaseService.getCasesForUser(entity.getApplicantIdamUserId());
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getId()).isEqualTo(dto.getId());
+        assertThat(result.getFirst().getCaseReference()).isEqualTo(dto.getCaseReference());
 
         verify(ptCaseRepository).findAllByApplicantIdamUserId(entity.getApplicantIdamUserId());
         verifyNoMoreInteractions(ptCaseRepository);
@@ -88,7 +88,7 @@ class PTCaseServiceTest {
 
         CaseDto result = ptCaseService.getCaseByCaseReference(CASE_REFERENCE, idamUserId);
 
-        assertThat(result.getId()).isEqualTo(dto.getId());
+        assertThat(result.getCaseReference()).isEqualTo(dto.getCaseReference());
 
         verify(ptCaseRepository).findByCaseReferenceAndApplicantIdamUserId(CASE_REFERENCE, idamUserId);
         verifyNoMoreInteractions(ptCaseRepository);
@@ -128,7 +128,6 @@ class PTCaseServiceTest {
 
     private static CaseDto createApplicationDto(PTCaseEntity entity) {
         return CaseDto.builder()
-            .id(entity.getId())
             .caseReference(entity.getCaseReference())
             .build();
     }
