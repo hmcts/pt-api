@@ -42,7 +42,8 @@ public class ApplicationController {
     @ApiResponse(responseCode = "200", description = "Cases retrieved successfully")
     @ApiResponse(responseCode = "401", description = "Invalid access token")
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
-    public ResponseEntity<List<CaseDto>> getCasesForUser(
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "503", description = "Service temporarily unavailable")    public ResponseEntity<List<CaseDto>> getCasesForUser(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
@@ -65,7 +66,8 @@ public class ApplicationController {
     @ApiResponse(responseCode = "200", description = "Case retrieved successfully")
     @ApiResponse(responseCode = "401", description = "Invalid access token")
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
-    public ResponseEntity<CaseDto> getCaseByCaseReference(
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @ApiResponse(responseCode = "503", description = "Service temporarily unavailable")    public ResponseEntity<CaseDto> getCaseByCaseReference(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
