@@ -26,13 +26,6 @@ public class PTCaseMapperTest {
 
         CaseDto result = PTCaseMapper.toDto(entity);
 
-        assertThat(result.getId()).isEqualTo(entity.getId());
-        assertThat(result.getApplicantIdamUserId()).isEqualTo(entity.getApplicantIdamUserId());
-        assertThat(result.getCaseReference()).isEqualTo(entity.getCaseReference());
-        assertThat(result.getApplicationType()).isEqualTo(entity.getApplicationType());
-        assertThat(result.getApplicantFirstName()).isEqualTo(entity.getApplicantFirstName());
-        assertThat(result.getApplicantLastName()).isEqualTo(entity.getApplicantLastName());
-        assertThat(result.getEmail()).isEqualTo(entity.getEmail());
-        assertThat(result.getPostcode()).isEqualTo(entity.getPostcode());
+        assertThat(result).usingRecursiveComparison().isEqualTo(entity);
     }
 }
