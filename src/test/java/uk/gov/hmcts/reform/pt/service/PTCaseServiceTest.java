@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
-import uk.gov.hmcts.reform.pt.mapper.PTCaseMapper;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
