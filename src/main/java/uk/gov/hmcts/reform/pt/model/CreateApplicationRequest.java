@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,6 @@ public class CreateApplicationRequest {
         message = "Invalid UK postcode format"
     )
     private String postcode;
-    @NotBlank
+    @NotNull
     private ApplicationType applicationType;
 }
