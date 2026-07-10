@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.pt.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,5 +27,19 @@ class PTCaseRepositoryTest extends AbstractRepositoryTest<PTCaseRepository> {
 
         assertThat(result).isPresent();
         assertThat(result.get().getCaseReference()).isEqualTo(12345L);
+    }
+
+    @Test
+    void findAllByIdamUserIdReturnsList() {
+        UUID idamUserId = UUID.randomUUID();
+
+        PTCaseEntity entity = new PTCaseEntity();
+        entity.setApplicantIdamUserId(idamUserId);
+        repository.save(entity);
+
+        List<PTCaseEntity> result = repository.findAllByApplicantIdamUserId(idamUserId);
+
+        assertThat(result).isNotEmpty();
+        assertThat(result.getFirst().getApplicantIdamUserId()).isEqualTo(idamUserId);
     }
 }

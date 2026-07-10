@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 
 @Getter
 @Builder
@@ -21,5 +22,5 @@ public class CreateApplicationRequest {
     )
     private String postcode;
     @NotBlank
-    private String applicationType;
+    private ApplicationType applicationType;
 }

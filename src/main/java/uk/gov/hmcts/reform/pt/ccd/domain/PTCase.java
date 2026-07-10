@@ -16,5 +16,5 @@ public class PTCase {
     @CCD(label = "Applicant's postcode")
     private String postcode;
     @CCD(label = "Applicant applying for themselves or on behalf of someone else")
-    private String applicationType;
+    private ApplicationType applicationType;
 }

@@ -8,32 +8,32 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.pt.ccd.api.CcdApiClient;
+import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
+import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PTCaseServiceTest {
 
-    @Mock
-    private PTCaseRepository ptCaseRepository;
+    private static final long CASE_REFERENCE = 1234567890123456L;
 
     @Mock
-    private CcdApiClient ccdApi;
+    private PTCaseRepository ptCaseRepository;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -42,17 +42,13 @@ class PTCaseServiceTest {
     private PTCaseService ptCaseService;
 
     @Test
-    @DisplayName("Should save a case entity built from the case reference, user id and PTCase")
-    void createCaseFromPTCase() {
+    @DisplayName("Should save a case entity built from the case reference and PTCase")
+    void createCase() {
         long caseReference = 1234567890123456L;
-        UUID userId = UUID.randomUUID();
         PTCase ptCase = PTCase.builder()
             .firstName("John")
-            .lastName("Smith")
-            .email("john.smith@example.com")
-            .postcode("SW1A 1AA")
-            .applicationType("myself")
             .build();
+        UUID userId = UUID.randomUUID();
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
@@ -60,56 +56,80 @@ class PTCaseServiceTest {
         PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        assertThat(savedEntity.getUserId()).isEqualTo(userId);
-        assertThat(savedEntity.getFirstName()).isEqualTo("John");
-        assertThat(savedEntity.getLastName()).isEqualTo("Smith");
-        assertThat(savedEntity.getEmail()).isEqualTo("john.smith@example.com");
-        assertThat(savedEntity.getPostcode()).isEqualTo("SW1A 1AA");
-        assertThat(savedEntity.getApplicationType()).isEqualTo("myself");
+        assertThat(savedEntity.getApplicantFirstName()).isEqualTo("John");
     }
 
     @Test
-    @DisplayName("Should start and submit a CCD event, persist the case and return the case reference")
-    void createCaseFromRequest() {
-        UUID userId = UUID.randomUUID();
-        CreateApplicationRequest request = CreateApplicationRequest.builder()
-            .firstName("Jane")
-            .lastName("Doe")
-            .email("jane.doe@example.com")
-            .postcode("SW1A 1AA")
-            .applicationType("myself")
-            .build();
+    @DisplayName("Should get applications for a user")
+    void getApplicationsForUser() {
+        PTCaseEntity entity = createPtCase();
+        CaseDto dto = createApplicationDto(entity);
 
-        when(ccdApi.startEvent(EventId.createNewApplication)).thenReturn(getTestStartEventResponse());
-        when(ccdApi.submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq("token")))
-            .thenReturn(getTestCaseDetails());
+        when(ptCaseRepository.findAllByApplicantIdamUserId(entity.getApplicantIdamUserId()))
+            .thenReturn(List.of(entity));
 
-        CreateApplicationResponse response = ptCaseService.createCase(request, userId);
+        List<CaseDto> result = ptCaseService.getCasesForUser(entity.getApplicantIdamUserId());
 
-        assertThat((Long) response.getCaseReference()).isEqualTo(1234567890123456L);
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getCaseReference()).isEqualTo(dto.getCaseReference());
 
-        verify(ptCaseRepository).save(ptCaseEntityCaptor.capture());
-        PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
-        assertThat(savedEntity.getCaseReference()).isEqualTo(1234567890123456L);
-        assertThat(savedEntity.getUserId()).isEqualTo(userId);
-        assertThat(savedEntity.getFirstName()).isEqualTo("Jane");
-        assertThat(savedEntity.getLastName()).isEqualTo("Doe");
-        assertThat(savedEntity.getEmail()).isEqualTo("jane.doe@example.com");
-        assertThat(savedEntity.getPostcode()).isEqualTo("SW1A 1AA");
-        assertThat(savedEntity.getApplicationType()).isEqualTo("myself");
+        verify(ptCaseRepository).findAllByApplicantIdamUserId(entity.getApplicantIdamUserId());
+        verifyNoMoreInteractions(ptCaseRepository);
     }
 
-    private StartEventResponse getTestStartEventResponse() {
-        return StartEventResponse.builder()
-            .eventId("foo")
-            .caseDetails(null)
-            .token("token")
+    @Test
+    @DisplayName("Should get application by case reference")
+    void getApplicationByCaseReference() {
+        PTCaseEntity entity = createPtCase();
+        CaseDto dto = createApplicationDto(entity);
+        UUID idamUserId = entity.getApplicantIdamUserId();
+
+        when(ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(CASE_REFERENCE, idamUserId))
+            .thenReturn(Optional.of(entity));
+
+        CaseDto result = ptCaseService.getCaseByCaseReference(CASE_REFERENCE, idamUserId);
+
+        assertThat(result.getCaseReference()).isEqualTo(dto.getCaseReference());
+
+        verify(ptCaseRepository).findByCaseReferenceAndApplicantIdamUserId(CASE_REFERENCE, idamUserId);
+        verifyNoMoreInteractions(ptCaseRepository);
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidCaseReferenceException when case reference is zero")
+    void getApplicationByCaseReferenceInvalidCaseReference() {
+        assertThatThrownBy(() -> ptCaseService.getCaseByCaseReference(0L, UUID.randomUUID()))
+            .isInstanceOf(InvalidCaseReferenceException.class)
+            .hasMessage("Invalid case reference: 0");
+
+        verifyNoMoreInteractions(ptCaseRepository);
+    }
+
+    @Test
+    @DisplayName("Should throw CaseNotFoundException when case reference does not exist")
+    void getApplicationByCaseReferenceCaseNotFound() {
+        when(ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(eq(CASE_REFERENCE), any()))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ptCaseService.getCaseByCaseReference(CASE_REFERENCE, UUID.randomUUID()))
+            .isInstanceOf(CaseNotFoundException.class)
+            .hasMessage("No case found with reference " + CASE_REFERENCE);
+
+        verify(ptCaseRepository).findByCaseReferenceAndApplicantIdamUserId(eq(CASE_REFERENCE), any());
+        verifyNoMoreInteractions(ptCaseRepository);
+    }
+
+    private static PTCaseEntity createPtCase() {
+        return PTCaseEntity.builder()
+            .id(UUID.randomUUID())
+            .caseReference(CASE_REFERENCE)
+            .applicantIdamUserId(UUID.randomUUID())
             .build();
     }
 
-    private CaseDetails getTestCaseDetails() {
-        return CaseDetails.builder()
-            .id(1234567890123456L)
+    private static CaseDto createApplicationDto(PTCaseEntity entity) {
+        return CaseDto.builder()
+            .caseReference(entity.getCaseReference())
             .build();
     }
 }
