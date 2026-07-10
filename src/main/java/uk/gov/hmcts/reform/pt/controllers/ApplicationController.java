@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.List;
@@ -50,16 +50,16 @@ public class ApplicationController {
         }
     )
     @ApiResponse(responseCode = "201", description = "Successfully created application", content = @Content())
-    @ApiResponse(responseCode = "400", description = "Invalid access code for this case", content = @Content())
+    @ApiResponse(responseCode = "400", description = "Invalid access code or request body", content = @Content())
     @ApiResponse(responseCode = "401", description = "Invalid access token", content = @Content())
     @ApiResponse(responseCode = "403", description = "Invalid service authorization", content = @Content())
     @ApiResponse(responseCode = "500", description = "Unexpected server error", content = @Content())
-    public ResponseEntity<CreateApplicationResponse> createApplication(
+    public ResponseEntity<CreateApplicationResponseDto> createApplication(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
         @RequestHeader("ServiceAuthorization") String s2sToken,
-        @Valid @RequestBody CreateApplicationRequest request
+        @Valid @RequestBody CreateApplicationRequestDto request
     ) {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
         UUID userId = UUID.fromString(user.getUid());

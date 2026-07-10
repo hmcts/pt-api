@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.List;
@@ -62,20 +62,20 @@ public class ApplicationControllerTest {
             .build();
         User user = new User(AUTH, userInfo);
 
-        CreateApplicationRequest request = CreateApplicationRequest.builder()
-            .firstName("John")
-            .lastName("Smith")
+        CreateApplicationRequestDto request = CreateApplicationRequestDto.builder()
+            .applicantFirstName("John")
+            .applicantLastName("Smith")
             .email("john.smith@example.com")
             .postcode("SW1A 1AA")
             .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .build();
 
-        CreateApplicationResponse response = CreateApplicationResponse.builder()
+        CreateApplicationResponseDto response = CreateApplicationResponseDto.builder()
             .caseReference(CASE_REFERENCE)
             .build();
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.createCase(any(CreateApplicationRequest.class), eq(userId)))
+        when(ptCaseService.createCase(any(CreateApplicationRequestDto.class), eq(userId)))
             .thenReturn(response);
 
         mockMvc.perform(post("/applications")
@@ -87,7 +87,7 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).createCase(any(CreateApplicationRequest.class), eq(userId));
+        verify(ptCaseService).createCase(any(CreateApplicationRequestDto.class), eq(userId));
     }
 
     @Test

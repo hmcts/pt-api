@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.model;
+package uk.gov.hmcts.reform.pt.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateApplicationResponse {
+public class CreateApplicationResponseDto {
     private long caseReference;
 }

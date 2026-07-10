@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.pt.mapper.PTCaseMapper;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.util.CaseReferenceUtils;
 
@@ -45,10 +45,10 @@ public class PTCaseService {
         ptCaseRepository.save(ptCaseEntity);
     }
 
-    public CreateApplicationResponse createCase(CreateApplicationRequest request, UUID userId) {
+    public CreateApplicationResponseDto createCase(CreateApplicationRequestDto request, UUID userId) {
         PTCase ptCase = PTCase.builder()
-            .firstName(request.getFirstName())
-            .lastName(request.getLastName())
+            .firstName(request.getApplicantFirstName())
+            .lastName(request.getApplicantLastName())
             .email(request.getEmail())
             .postcode(request.getPostcode())
             .applicationType(request.getApplicationType())
@@ -63,7 +63,7 @@ public class PTCaseService {
         Long caseReference = caseDetails.getId();
         createCase(caseReference, userId, ptCase);
 
-        return CreateApplicationResponse.builder()
+        return CreateApplicationResponseDto.builder()
             .caseReference(caseReference)
             .build();
     }

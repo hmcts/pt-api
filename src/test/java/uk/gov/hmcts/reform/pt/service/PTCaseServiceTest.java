@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
-import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
+import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
@@ -72,9 +72,9 @@ class PTCaseServiceTest {
     @Test
     @DisplayName("Should start and submit a CCD event then save a case entity when creating an application")
     void createCaseFromRequest() {
-        CreateApplicationRequest request = CreateApplicationRequest.builder()
-            .firstName("John")
-            .lastName("Smith")
+        CreateApplicationRequestDto request = CreateApplicationRequestDto.builder()
+            .applicantFirstName("John")
+            .applicantLastName("Smith")
             .email("john.smith@example.com")
             .postcode("SW1A 1AA")
             .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
@@ -93,7 +93,7 @@ class PTCaseServiceTest {
         when(ccdApiClient.submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq(eventToken)))
             .thenReturn(caseDetails);
 
-        CreateApplicationResponse response = ptCaseService.createCase(request, userId);
+        CreateApplicationResponseDto response = ptCaseService.createCase(request, userId);
 
         assertThat(response.getCaseReference()).isEqualTo(CASE_REFERENCE);
 

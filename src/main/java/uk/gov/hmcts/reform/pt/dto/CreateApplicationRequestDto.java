@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.model;
+package uk.gov.hmcts.reform.pt.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 
 @Getter
 @Builder
-public class CreateApplicationRequest {
+public class CreateApplicationRequestDto {
     @NotBlank
-    private String firstName;
+    private String applicantFirstName;
     @NotBlank
-    private String lastName;
+    private String applicantLastName;
     @NotBlank
     private String email;
     @NotBlank
