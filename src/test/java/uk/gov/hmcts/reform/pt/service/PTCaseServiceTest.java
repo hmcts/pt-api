@@ -8,11 +8,18 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.pt.ccd.api.CcdApiClient;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
+import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
+import uk.gov.hmcts.reform.pt.model.CreateApplicationRequest;
+import uk.gov.hmcts.reform.pt.model.CreateApplicationResponse;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
@@ -34,6 +41,9 @@ class PTCaseServiceTest {
 
     @Mock
     private PTCaseRepository ptCaseRepository;
+
+    @Mock
+    private CcdApiClient ccdApiClient;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -57,6 +67,49 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         assertThat(savedEntity.getApplicantFirstName()).isEqualTo("John");
+    }
+
+    @Test
+    @DisplayName("Should start and submit a CCD event then save a case entity when creating an application")
+    void createCaseFromRequest() {
+        CreateApplicationRequest request = CreateApplicationRequest.builder()
+            .firstName("John")
+            .lastName("Smith")
+            .email("john.smith@example.com")
+            .postcode("SW1A 1AA")
+            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
+            .build();
+        UUID userId = UUID.randomUUID();
+        String eventToken = "event-token";
+
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .token(eventToken)
+            .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_REFERENCE)
+            .build();
+
+        when(ccdApiClient.startEvent(EventId.createNewApplication)).thenReturn(startEventResponse);
+        when(ccdApiClient.submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq(eventToken)))
+            .thenReturn(caseDetails);
+
+        CreateApplicationResponse response = ptCaseService.createCase(request, userId);
+
+        assertThat(response.getCaseReference()).isEqualTo(CASE_REFERENCE);
+
+        verify(ccdApiClient).startEvent(EventId.createNewApplication);
+        verify(ccdApiClient).submitCaseCreation(any(PTCase.class), eq(EventId.createNewApplication), eq(eventToken));
+        verify(ptCaseRepository).save(ptCaseEntityCaptor.capture());
+        verifyNoMoreInteractions(ccdApiClient, ptCaseRepository);
+
+        PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
+        assertThat(savedEntity.getCaseReference()).isEqualTo(CASE_REFERENCE);
+        assertThat(savedEntity.getApplicantIdamUserId()).isEqualTo(userId);
+        assertThat(savedEntity.getApplicantFirstName()).isEqualTo("John");
+        assertThat(savedEntity.getApplicantLastName()).isEqualTo("Smith");
+        assertThat(savedEntity.getEmail()).isEqualTo("john.smith@example.com");
+        assertThat(savedEntity.getPostcode()).isEqualTo("SW1A 1AA");
+        assertThat(savedEntity.getApplicationType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
     }
 
     @Test
