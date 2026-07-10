@@ -50,18 +50,18 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
         var label = "Applicant First Name";
         builder.searchInputFields()
-            .field(PTCase::getFirstName, label);
+            .field(PTCase::getApplicantFirstName, label);
         builder.searchCasesFields()
-            .field(PTCase::getFirstName, label);
+            .field(PTCase::getApplicantFirstName, label);
 
         builder.searchResultFields()
-            .field(PTCase::getFirstName, label);
+            .field(PTCase::getApplicantFirstName, label);
         builder.workBasketInputFields()
-            .field(PTCase::getFirstName, label);
+            .field(PTCase::getApplicantFirstName, label);
         builder.workBasketResultFields()
-            .field(PTCase::getFirstName, label);
+            .field(PTCase::getApplicantFirstName, label);
 
         builder.tab("Example", "Example Tab")
-            .field(PTCase::getFirstName);
+            .field(PTCase::getApplicantFirstName);
     }
 }

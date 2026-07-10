@@ -56,7 +56,7 @@ class PTCaseServiceTest {
     void createCase() {
         long caseReference = 1234567890123456L;
         PTCase ptCase = PTCase.builder()
-            .firstName("John")
+            .applicantFirstName("John")
             .build();
         UUID userId = UUID.randomUUID();
 

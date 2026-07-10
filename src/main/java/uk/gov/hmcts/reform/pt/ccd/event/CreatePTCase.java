@@ -23,13 +23,13 @@ public class CreatePTCase implements CCDConfig<PTCase, State, UserRole> {
             .grant(Permission.CRUD, UserRole.CASE_WORKER)
             .fields()
             .page("Create PT case")
-            .mandatory(PTCase::getFirstName)
+            .mandatory(PTCase::getApplicantFirstName)
             .done();
     }
 
     public AboutToStartOrSubmitResponse<PTCase, State> start(CaseDetails<PTCase, State> caseDetails) {
         PTCase data = caseDetails.getData();
-        data.setFirstName("Preset value");
+        data.setApplicantFirstName("Preset value");
 
         return AboutToStartOrSubmitResponse.<PTCase, State>builder()
             .data(caseDetails.getData())

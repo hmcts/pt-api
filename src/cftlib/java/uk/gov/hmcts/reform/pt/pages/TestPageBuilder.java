@@ -11,6 +11,6 @@ public class TestPageBuilder {
             .fields()
             .page("id")
             .pageLabel("testPage")
-            .mandatory(PTCase::getFirstName);
+            .mandatory(PTCase::getApplicantFirstName);
     }
 }

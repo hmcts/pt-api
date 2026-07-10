@@ -36,8 +36,8 @@ public class PTCaseService {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
             .applicantIdamUserId(userId)
-            .applicantFirstName(ptCase.getFirstName())
-            .applicantLastName(ptCase.getLastName())
+            .applicantFirstName(ptCase.getApplicantFirstName())
+            .applicantLastName(ptCase.getApplicantLastName())
             .email(ptCase.getEmail())
             .postcode(ptCase.getPostcode())
             .applicationType(ptCase.getApplicationType())
@@ -47,8 +47,8 @@ public class PTCaseService {
 
     public CreateApplicationResponseDto createCase(CreateApplicationRequestDto request, UUID userId) {
         PTCase ptCase = PTCase.builder()
-            .firstName(request.getApplicantFirstName())
-            .lastName(request.getApplicantLastName())
+            .applicantFirstName(request.getApplicantFirstName())
+            .applicantLastName(request.getApplicantLastName())
             .email(request.getEmail())
             .postcode(request.getPostcode())
             .applicationType(request.getApplicationType())

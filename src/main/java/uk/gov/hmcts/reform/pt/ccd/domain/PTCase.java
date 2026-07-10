@@ -8,9 +8,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 @Data
 public class PTCase {
     @CCD(label = "Applicant's first name")
-    private String firstName;
+    private String applicantFirstName;
     @CCD(label = "Applicant's last name")
-    private String lastName;
+    private String applicantLastName;
     @CCD(label = "Applicant's email address")
     private String email;
     @CCD(label = "Applicant's postcode")

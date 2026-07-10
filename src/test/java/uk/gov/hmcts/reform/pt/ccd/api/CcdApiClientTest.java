@@ -86,7 +86,7 @@ class CcdApiClientTest {
     void shouldSubmitCaseCreation() {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer idam-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
-        PTCase ptCase = PTCase.builder().firstName("Jane").build();
+        PTCase ptCase = PTCase.builder().applicantFirstName("Jane").build();
         CaseDetails expectedCaseDetails = CaseDetails.builder().id(1234567890123456L).build();
         when(ccdApi.submitCaseCreation(
             eq("Bearer idam-token"),
@@ -115,7 +115,7 @@ class CcdApiClientTest {
     void shouldThrowCcdExceptionWhenSubmitCaseCreationFails() {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer idam-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
-        PTCase ptCase = PTCase.builder().firstName("Jane").build();
+        PTCase ptCase = PTCase.builder().applicantFirstName("Jane").build();
         FeignException feignException = mock(FeignException.class);
         when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.submitCaseCreation(any(), any(), any(), any())).thenThrow(feignException);
