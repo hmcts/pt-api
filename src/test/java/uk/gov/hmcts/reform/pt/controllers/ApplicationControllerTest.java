@@ -57,7 +57,7 @@ public class ApplicationControllerTest {
     @Test
     void shouldCreateApplication() throws Exception {
         UUID userId = UUID.randomUUID();
-        CreateApplicationRequestDto request = getCreateApplicationRequestDto();
+        CreateApplicationRequestDto request = getCreateApplicationRequestDto("SW1A 1AA");
         UserInfo userInfo = UserInfo.builder()
             .uid(userId.toString())
             .build();
@@ -85,7 +85,7 @@ public class ApplicationControllerTest {
 
     @Test
     void shouldRejectApplicationWithInvalidPostcode() throws Exception {
-        CreateApplicationRequestDto request = getCreateApplicationRequestDto();
+        CreateApplicationRequestDto request = getCreateApplicationRequestDto("invalid");
 
         mockMvc.perform(post("/applications")
                             .header("Authorization", AUTH)
@@ -151,12 +151,12 @@ public class ApplicationControllerTest {
         verify(ptCaseService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
     }
 
-    private CreateApplicationRequestDto getCreateApplicationRequestDto() {
+    private CreateApplicationRequestDto getCreateApplicationRequestDto(String postcode) {
         return CreateApplicationRequestDto.builder()
             .applicantFirstName("John")
             .applicantLastName("Smith")
             .email("john.smith@example.com")
-            .postcode("SW1A 1AA")
+            .postcode(postcode)
             .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .build();
     }
