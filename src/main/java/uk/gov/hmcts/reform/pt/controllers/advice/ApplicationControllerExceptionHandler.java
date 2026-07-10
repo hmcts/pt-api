@@ -30,8 +30,8 @@ public class ApplicationControllerExceptionHandler {
     }
 
     @ExceptionHandler(CcdException.class)
-    public ResponseEntity<ErrorResponse> handleCcdException(InvalidCaseReferenceException ex) {
-        log.error("Invalid case reference", ex);
+    public ResponseEntity<ErrorResponse> handleCcdException(CcdException ex) {
+        log.error("CCD request failed", ex);
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ErrorResponse(ex.getMessage()));

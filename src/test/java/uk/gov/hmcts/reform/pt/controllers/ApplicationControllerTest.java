@@ -24,6 +24,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,19 +57,11 @@ public class ApplicationControllerTest {
     @Test
     void shouldCreateApplication() throws Exception {
         UUID userId = UUID.randomUUID();
-
+        CreateApplicationRequestDto request = getCreateApplicationRequestDto();
         UserInfo userInfo = UserInfo.builder()
             .uid(userId.toString())
             .build();
         User user = new User(AUTH, userInfo);
-
-        CreateApplicationRequestDto request = CreateApplicationRequestDto.builder()
-            .applicantFirstName("John")
-            .applicantLastName("Smith")
-            .email("john.smith@example.com")
-            .postcode("SW1A 1AA")
-            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
-            .build();
 
         CreateApplicationResponseDto response = CreateApplicationResponseDto.builder()
             .caseReference(CASE_REFERENCE)
@@ -88,6 +81,20 @@ public class ApplicationControllerTest {
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
         verify(ptCaseService).createCase(any(CreateApplicationRequestDto.class), eq(userId));
+    }
+
+    @Test
+    void shouldRejectApplicationWithInvalidPostcode() throws Exception {
+        CreateApplicationRequestDto request = getCreateApplicationRequestDto();
+
+        mockMvc.perform(post("/applications")
+                            .header("Authorization", AUTH)
+                            .header("ServiceAuthorization", S2S)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(idamAuthenticator, ptCaseService);
     }
 
     @Test
@@ -142,5 +149,15 @@ public class ApplicationControllerTest {
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
         verify(ptCaseService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
+    }
+
+    private CreateApplicationRequestDto getCreateApplicationRequestDto() {
+        return CreateApplicationRequestDto.builder()
+            .applicantFirstName("John")
+            .applicantLastName("Smith")
+            .email("john.smith@example.com")
+            .postcode("SW1A 1AA")
+            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
+            .build();
     }
 }
