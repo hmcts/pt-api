@@ -52,17 +52,17 @@ class CcdApiClientTest {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer idam-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
         StartEventResponse expectedResponse = StartEventResponse.builder()
-            .eventId(EventId.createNewApplication.name())
+            .eventId(EventId.citizenCreateApplication.name())
             .token("event-token")
             .build();
         when(ccdApi.startCase(
             "Bearer idam-token",
             "s2s-token",
             CaseType.getCaseType(),
-            EventId.createNewApplication.name()
+            EventId.citizenCreateApplication.name()
         )).thenReturn(expectedResponse);
 
-        StartEventResponse response = ccdApiClient.startEvent(EventId.createNewApplication);
+        StartEventResponse response = ccdApiClient.startEvent(EventId.citizenCreateApplication);
 
         assertThat(response).isEqualTo(expectedResponse);
     }
@@ -76,9 +76,9 @@ class CcdApiClientTest {
         when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.startCase(any(), any(), any(), any())).thenThrow(feignException);
 
-        assertThatThrownBy(() -> ccdApiClient.startEvent(EventId.createNewApplication))
+        assertThatThrownBy(() -> ccdApiClient.startEvent(EventId.citizenCreateApplication))
             .isInstanceOf(CcdException.class)
-            .hasMessage("Failed to start createNewApplication event in CCD: boom");
+            .hasMessage("Failed to start citizenCreateApplication event in CCD: boom");
     }
 
     @Test
@@ -95,7 +95,8 @@ class CcdApiClientTest {
             any(CaseDataContent.class)
         )).thenReturn(expectedCaseDetails);
 
-        CaseDetails caseDetails = ccdApiClient.submitCaseCreation(ptCase, EventId.createNewApplication, "event-token");
+        CaseDetails caseDetails =
+            ccdApiClient.submitCaseCreation(ptCase, EventId.citizenCreateApplication, "event-token");
 
         assertThat(caseDetails).isEqualTo(expectedCaseDetails);
         verify(ccdApi).submitCaseCreation(
@@ -107,7 +108,7 @@ class CcdApiClientTest {
         CaseDataContent submittedContent = caseDataContentCaptor.getValue();
         assertThat(submittedContent.getData()).isEqualTo(ptCase);
         assertThat(submittedContent.getEventToken()).isEqualTo("event-token");
-        assertThat(submittedContent.getEvent().getId()).isEqualTo(EventId.createNewApplication.name());
+        assertThat(submittedContent.getEvent().getId()).isEqualTo(EventId.citizenCreateApplication.name());
     }
 
     @Test
@@ -120,7 +121,8 @@ class CcdApiClientTest {
         when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.submitCaseCreation(any(), any(), any(), any())).thenThrow(feignException);
 
-        assertThatThrownBy(() -> ccdApiClient.submitCaseCreation(ptCase, EventId.createNewApplication, "event-token"))
+        assertThatThrownBy(() ->
+            ccdApiClient.submitCaseCreation(ptCase, EventId.citizenCreateApplication, "event-token"))
             .isInstanceOf(CcdException.class)
             .hasMessage("Failed to submit case creation for event event-token: boom");
     }

@@ -13,8 +13,9 @@ class UserRoleTest {
 
     @Test
     void shouldHaveSingleRole() {
-        assertEquals(1, UserRole.values().length);
+        assertEquals(2, UserRole.values().length);
         assertEquals(UserRole.CASE_WORKER, UserRole.values()[0]);
+        assertEquals(UserRole.CITIZEN, UserRole.values()[1]);
     }
 
     @Test
@@ -26,13 +27,13 @@ class UserRoleTest {
     void shouldHaveCorrectCaseTypePermissions() {
         assertEquals(
             Permission.toString(Permission.CRU),
-            UserRole.CASE_WORKER.getCaseTypePermissionsString()
+            UserRole.CASE_WORKER.getCaseTypePermissions()
         );
     }
 
     @Test
     void shouldExposePermissionsAsString() {
-        String permissions = UserRole.CASE_WORKER.getCaseTypePermissionsString();
+        String permissions = UserRole.CASE_WORKER.getCaseTypePermissions();
 
         assertNotNull(permissions);
         assertFalse(permissions.isBlank());
