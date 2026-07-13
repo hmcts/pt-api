@@ -8,14 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
-import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.List;
@@ -53,49 +50,6 @@ public class ApplicationControllerTest {
 
     @MockitoBean
     private PTCaseService ptCaseService;
-
-    @Test
-    void shouldCreateApplication() throws Exception {
-        UUID userId = UUID.randomUUID();
-        CreateApplicationRequestDto request = getCreateApplicationRequestDto("SW1A 1AA");
-        UserInfo userInfo = UserInfo.builder()
-            .uid(userId.toString())
-            .build();
-        User user = new User(AUTH, userInfo);
-
-        CreateApplicationResponseDto response = CreateApplicationResponseDto.builder()
-            .caseReference(CASE_REFERENCE)
-            .build();
-
-        when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.createCase(any(CreateApplicationRequestDto.class), eq(userId)))
-            .thenReturn(response);
-
-        mockMvc.perform(post("/applications")
-                            .header("Authorization", AUTH)
-                            .header("ServiceAuthorization", S2S)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
-
-        verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).createCase(any(CreateApplicationRequestDto.class), eq(userId));
-    }
-
-    @Test
-    void shouldRejectApplicationWithInvalidPostcode() throws Exception {
-        CreateApplicationRequestDto request = getCreateApplicationRequestDto("invalid");
-
-        mockMvc.perform(post("/applications")
-                            .header("Authorization", AUTH)
-                            .header("ServiceAuthorization", S2S)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(idamAuthenticator, ptCaseService);
-    }
 
     @Test
     void shouldGetApplicationsForUser() throws Exception {
@@ -149,15 +103,5 @@ public class ApplicationControllerTest {
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
         verify(ptCaseService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
-    }
-
-    private CreateApplicationRequestDto getCreateApplicationRequestDto(String postcode) {
-        return CreateApplicationRequestDto.builder()
-            .applicantFirstName("John")
-            .applicantLastName("Smith")
-            .email("john.smith@example.com")
-            .postcode(postcode)
-            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
-            .build();
     }
 }

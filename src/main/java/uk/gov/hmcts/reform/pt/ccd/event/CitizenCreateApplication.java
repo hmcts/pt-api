@@ -29,7 +29,7 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(EVENT_NAME)
-            .grant(CITIZEN_USER_ROLE.getCaseTypePermissions(), CITIZEN_USER_ROLE);
+            .grant(CITIZEN_USER_ROLE.getCaseTypePermissionsEnum(), CITIZEN_USER_ROLE);
     }
 
     private PTCase start(EventPayload<PTCase, State> eventPayload) {

@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.pt.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.pt.ccd.api.CcdApiClient;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
@@ -11,10 +9,7 @@ import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 import uk.gov.hmcts.reform.pt.mapper.PTCaseMapper;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.dto.CreateApplicationRequestDto;
-import uk.gov.hmcts.reform.pt.dto.CreateApplicationResponseDto;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.util.CaseReferenceUtils;
 
@@ -43,29 +38,6 @@ public class PTCaseService {
             .applicationType(ptCase.getApplicationType())
             .build();
         ptCaseRepository.save(ptCaseEntity);
-    }
-
-    public CreateApplicationResponseDto createCase(CreateApplicationRequestDto request, UUID userId) {
-        PTCase ptCase = PTCase.builder()
-            .applicantFirstName(request.getApplicantFirstName())
-            .applicantLastName(request.getApplicantLastName())
-            .email(request.getEmail())
-            .postcode(request.getPostcode())
-            .applicationType(request.getApplicationType())
-            .build();
-        StartEventResponse startEventResponse = ccdApi.startEvent(EventId.createNewApplication);
-        CaseDetails caseDetails = ccdApi.submitCaseCreation(
-            ptCase,
-            EventId.createNewApplication,
-            startEventResponse.getToken()
-        );
-
-        Long caseReference = caseDetails.getId();
-        createCase(caseReference, userId, ptCase);
-
-        return CreateApplicationResponseDto.builder()
-            .caseReference(caseReference)
-            .build();
     }
 
     @Transactional
