@@ -26,13 +26,13 @@ class UserRoleTest {
     void shouldHaveCorrectCaseTypePermissions() {
         assertEquals(
             Permission.toString(Permission.CRU),
-            UserRole.CASE_WORKER.getCaseTypePermissions()
+            UserRole.CASE_WORKER.getCaseTypePermissionsString()
         );
     }
 
     @Test
     void shouldExposePermissionsAsString() {
-        String permissions = UserRole.CASE_WORKER.getCaseTypePermissions();
+        String permissions = UserRole.CASE_WORKER.getCaseTypePermissionsString();
 
         assertNotNull(permissions);
         assertFalse(permissions.isBlank());
