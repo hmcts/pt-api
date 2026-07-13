@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.event;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -12,8 +13,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.event.EventId;
+import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.pages.TestPageBuilder;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -39,8 +43,9 @@ public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
-        // TODO do we need to pass a userId here?
-        ptCaseService.createCase(eventPayload.caseReference(), null, eventPayload.caseData());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UUID userId = UUID.fromString(user.getUserDetails().getUid());
+        ptCaseService.createCase(eventPayload.caseReference(), userId, eventPayload.caseData());
         return SubmitResponse.<State>builder().state(State.CASE_ISSUED).build();
     }
 }
