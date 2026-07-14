@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.event;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DecentralisedConfigBuilder;
@@ -10,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
-import uk.gov.hmcts.reform.pt.idam.User;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.UUID;
@@ -23,6 +22,7 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
     private static final UserRole CITIZEN_USER_ROLE = UserRole.CITIZEN;
 
     private final PTCaseService ptCaseService;
+    private final SecurityContextService securityContextService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
@@ -39,8 +39,7 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UUID userId = UUID.fromString(user.getUserDetails().getUid());
+        UUID userId = UUID.fromString(securityContextService.getCurrentUserDetails().getUid());
         ptCaseService.createCase(eventPayload.caseReference(), userId, eventPayload.caseData());
         return SubmitResponse.<State>builder().build();
     }
