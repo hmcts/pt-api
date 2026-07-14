@@ -31,8 +31,4 @@ public enum UserRole implements HasRole {
     public String getCaseTypePermissions() {
         return Permission.toString(caseTypePermissions);
     }
-
-    public Set<Permission> getCaseTypePermissionsEnum() {
-        return caseTypePermissions;
-    }
 }

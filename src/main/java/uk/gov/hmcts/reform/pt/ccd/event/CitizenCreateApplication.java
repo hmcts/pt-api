@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.UUID;
 
+import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CITIZEN;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
 
@@ -31,7 +32,7 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(CITIZEN_CREATE_APPLICATION.getName())
-            .grant(CITIZEN.getCaseTypePermissionsEnum(), CITIZEN);
+            .grant(CRU, CITIZEN);
     }
 
     private PTCase start(EventPayload<PTCase, State> eventPayload) {
