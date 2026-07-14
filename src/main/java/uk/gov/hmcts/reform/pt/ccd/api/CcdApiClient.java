@@ -31,11 +31,11 @@ public class CcdApiClient {
                 idamToken,
                 s2sToken,
                 CaseType.getCaseType(),
-                eventId.name()
+                eventId.getId()
             );
         } catch (FeignException e) {
             throw new CcdException(
-                String.format("Failed to start %s event in CCD: %s", eventId.name(), e.getMessage())
+                String.format("Failed to start %s event in CCD: %s", eventId.getId(), e.getMessage())
             );
         }
         return startEventResponse;
@@ -46,7 +46,7 @@ public class CcdApiClient {
         String s2sToken = authTokenGenerator.generate();
         CaseDataContent caseDateContent = CaseDataContent.builder()
             .data(ptCase)
-            .event(Event.builder().id(eventId.name()).build())
+            .event(Event.builder().id(eventId.getId()).build())
             .eventToken(eventToken)
             .build();
         CaseDetails caseDetails;

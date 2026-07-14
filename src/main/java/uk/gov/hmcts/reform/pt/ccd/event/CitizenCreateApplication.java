@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
+
 @Component
 @RequiredArgsConstructor
 public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRole> {
-
-    private static final String EVENT_NAME = "Citizen Create Application";
-    private static final UserRole CITIZEN_USER_ROLE = UserRole.CITIZEN;
 
     private final PTCaseService ptCaseService;
     private final SecurityContextService securityContextService;
@@ -27,11 +27,11 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
-            .decentralisedEvent(EventId.citizenCreateApplication.name(), this::submit, this::start)
+            .decentralisedEvent(CITIZEN_CREATE_APPLICATION.getId(), this::submit, this::start)
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
-            .name(EVENT_NAME)
-            .grant(CITIZEN_USER_ROLE.getCaseTypePermissionsEnum(), CITIZEN_USER_ROLE);
+            .name(CITIZEN_CREATE_APPLICATION.getName())
+            .grant(CITIZEN.getCaseTypePermissionsEnum(), CITIZEN);
     }
 
     private PTCase start(EventPayload<PTCase, State> eventPayload) {

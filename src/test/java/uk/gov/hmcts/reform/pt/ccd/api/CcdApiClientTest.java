@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.pt.ccd.CaseType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.exception.CcdException;
 import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 
@@ -27,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
 
 @ExtendWith(MockitoExtension.class)
 class CcdApiClientTest {
@@ -52,17 +52,17 @@ class CcdApiClientTest {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer idam-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
         StartEventResponse expectedResponse = StartEventResponse.builder()
-            .eventId(EventId.citizenCreateApplication.name())
+            .eventId(CITIZEN_CREATE_APPLICATION.getId())
             .token("event-token")
             .build();
         when(ccdApi.startCase(
             "Bearer idam-token",
             "s2s-token",
             CaseType.getCaseType(),
-            EventId.citizenCreateApplication.name()
+            CITIZEN_CREATE_APPLICATION.getId()
         )).thenReturn(expectedResponse);
 
-        StartEventResponse response = ccdApiClient.startEvent(EventId.citizenCreateApplication);
+        StartEventResponse response = ccdApiClient.startEvent(CITIZEN_CREATE_APPLICATION);
 
         assertThat(response).isEqualTo(expectedResponse);
     }
@@ -76,9 +76,9 @@ class CcdApiClientTest {
         when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.startCase(any(), any(), any(), any())).thenThrow(feignException);
 
-        assertThatThrownBy(() -> ccdApiClient.startEvent(EventId.citizenCreateApplication))
+        assertThatThrownBy(() -> ccdApiClient.startEvent(CITIZEN_CREATE_APPLICATION))
             .isInstanceOf(CcdException.class)
-            .hasMessage("Failed to start citizenCreateApplication event in CCD: boom");
+            .hasMessage("Failed to start citizen-create-application event in CCD: boom");
     }
 
     @Test
@@ -96,7 +96,7 @@ class CcdApiClientTest {
         )).thenReturn(expectedCaseDetails);
 
         CaseDetails caseDetails =
-            ccdApiClient.submitCaseCreation(ptCase, EventId.citizenCreateApplication, "event-token");
+            ccdApiClient.submitCaseCreation(ptCase, CITIZEN_CREATE_APPLICATION, "event-token");
 
         assertThat(caseDetails).isEqualTo(expectedCaseDetails);
         verify(ccdApi).submitCaseCreation(
@@ -108,7 +108,7 @@ class CcdApiClientTest {
         CaseDataContent submittedContent = caseDataContentCaptor.getValue();
         assertThat(submittedContent.getData()).isEqualTo(ptCase);
         assertThat(submittedContent.getEventToken()).isEqualTo("event-token");
-        assertThat(submittedContent.getEvent().getId()).isEqualTo(EventId.citizenCreateApplication.name());
+        assertThat(submittedContent.getEvent().getId()).isEqualTo(CITIZEN_CREATE_APPLICATION.getId());
     }
 
     @Test
@@ -122,7 +122,7 @@ class CcdApiClientTest {
         when(ccdApi.submitCaseCreation(any(), any(), any(), any())).thenThrow(feignException);
 
         assertThatThrownBy(() ->
-            ccdApiClient.submitCaseCreation(ptCase, EventId.citizenCreateApplication, "event-token"))
+            ccdApiClient.submitCaseCreation(ptCase, CITIZEN_CREATE_APPLICATION, "event-token"))
             .isInstanceOf(CcdException.class)
             .hasMessage("Failed to submit case creation for event event-token: boom");
     }
