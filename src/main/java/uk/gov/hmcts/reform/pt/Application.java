@@ -7,9 +7,11 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 
+@EnableScheduling
 @ImportAutoConfiguration({FeignAutoConfiguration.class, FeignClientsConfiguration.class,
     HttpMessageConvertersAutoConfiguration.class})
 @EnableFeignClients(

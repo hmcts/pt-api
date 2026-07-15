@@ -11,23 +11,23 @@ import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 
 @Component
-public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
+public class CreatePTCase implements CCDConfig<PTCase, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .event("createTestApplication")
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
-            .name("Create test case")
+            .name("Create PT case")
             .aboutToStartCallback(this::start)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(Permission.CRUD, UserRole.CASE_WORKER)
             .fields()
-            .page("Create test case")
+            .page("Create PT case")
             .mandatory(PTCase::getApplicantForename)
             .done();
     }
 
-    private AboutToStartOrSubmitResponse<PTCase, State> start(CaseDetails<PTCase, State> caseDetails) {
+    public AboutToStartOrSubmitResponse<PTCase, State> start(CaseDetails<PTCase, State> caseDetails) {
         PTCase data = caseDetails.getData();
         data.setApplicantForename("Preset value");
 

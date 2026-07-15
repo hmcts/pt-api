@@ -47,6 +47,13 @@ withPipeline(type, product, component) {
     }
   }
 
+    onMaster() {
+      setAatEnvVars()
+//  afterSuccess('smoketest:aat') {
+//    runE2eTests(env.ENVIRONMENT)
+//  }
+  }
+
   onMaster() {
     enableHighLevelDataSetup("pt-kv", true)
     setAatEnvVars()
