@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS pt_case;
 DROP INDEX IF EXISTS pt_case_applicant_idam_user_id_idx;
 
 -- Create new db
+CREATE TYPE YES_NO AS ENUM ('YES', 'NO');
+
 CREATE TABLE application_event (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   case_application_id BIGINT,
@@ -41,7 +43,7 @@ CREATE TABLE application_statement_of_truth (
   case_application_id BIGINT,
   completed_date TIMESTAMP,
   completed_by VARCHAR(100),
-  accepted BOOLEAN,
+  accepted YES_NO,
   full_name VARCHAR(100),
   firm_name VARCHAR(100),
   position_held VARCHAR(100),
@@ -242,7 +244,7 @@ CREATE TABLE case_party_contact_preference (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   case_party_id BIGINT,
   preference_type VARCHAR(100),
-  enabled BOOLEAN,
+  enabled YES_NO,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -272,8 +274,8 @@ CREATE TABLE case_party_representative (
   case_party_id BIGINT,
   start_date TIMESTAMP,
   end_date TIMESTAMP,
-  is_primary BOOLEAN,
-  active BOOLEAN,
+  is_primary YES_NO,
+  active YES_NO,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -413,7 +415,7 @@ CREATE TABLE hardship_consideration (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   hardship_details VARCHAR(100),
   hardship_description VARCHAR(100),
-  evidence_document_uploaded BOOLEAN,
+  evidence_document_uploaded YES_NO,
   claim_id BIGINT,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -478,11 +480,11 @@ CREATE TABLE non_rent_case (
 CREATE TABLE notice_of_rent_change (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   document_id BIGINT,
-  document_uploaded BOOLEAN,
+  document_uploaded YES_NO,
   reason_document_not_uploaded VARCHAR(100),
-  has_notice_of_increase_validity_challenge BOOLEAN,
+  has_notice_of_increase_validity_challenge YES_NO,
   notice_of_increase_validity_challenge_document_id BIGINT,
-  notice_of_increase_validity_challenge_document_uploaded BOOLEAN,
+  notice_of_increase_validity_challenge_document_uploaded YES_NO,
   reason_notice_of_increase_validity_document_not_uploaded VARCHAR(100),
   pt_case_id BIGINT,
 
@@ -541,7 +543,7 @@ CREATE TABLE tenancy_details (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   pt_case_id BIGINT,
   document_id BIGINT,
-  document_uploaded BOOLEAN,
+  document_uploaded YES_NO,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

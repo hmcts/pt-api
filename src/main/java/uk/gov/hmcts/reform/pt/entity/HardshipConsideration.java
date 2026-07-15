@@ -5,6 +5,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
 import java.time.LocalDateTime;
 
@@ -42,7 +47,9 @@ public class HardshipConsideration {
     @Column(length = 100)
     private String hardshipDescription;
 
-    private Boolean evidenceDocumentUploaded;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo evidenceDocumentUploaded;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
