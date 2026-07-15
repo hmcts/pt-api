@@ -32,7 +32,7 @@ public class CaseType {
     private Long id;
 
     @Column(length = 100)
-    private String typeName;
+    private String applicationTypeName;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

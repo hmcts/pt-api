@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.service.ApplicationService;
+import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +28,7 @@ import java.util.UUID;
 public class ApplicationController {
 
     private final IdamAuthenticator idamAuthenticator;
-    private final ApplicationService applicationService;
+    private final CaseApplicationService caseApplicationService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -52,7 +52,7 @@ public class ApplicationController {
     ) {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
-        return ResponseEntity.ok(applicationService.getCasesForUser(UUID.fromString(user.getUid())));
+        return ResponseEntity.ok(caseApplicationService.getCasesForUser(UUID.fromString(user.getUid())));
     }
 
     @GetMapping(value = "/{caseReference}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,6 +79,6 @@ public class ApplicationController {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
         return ResponseEntity.ok(
-            applicationService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
+            caseApplicationService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
     }
 }

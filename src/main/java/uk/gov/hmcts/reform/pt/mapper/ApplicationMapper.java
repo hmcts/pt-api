@@ -26,7 +26,7 @@ public class ApplicationMapper {
                     : "")
             .applicationType(
                 entity.getCaseType() != null
-                    ? entity.getCaseType().getTypeName()
+                    ? entity.getCaseType().getApplicationTypeName()
                     : "")
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
