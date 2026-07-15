@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.service.ApplicationService;
+import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +47,7 @@ public class ApplicationControllerTest {
     private UpstreamThrottling upstreamThrottling;
 
     @MockitoBean
-    private ApplicationService applicationService;
+    private CaseApplicationService caseApplicationService;
 
     @Test
     void shouldGetApplicationsForUser() throws Exception {
@@ -63,7 +63,7 @@ public class ApplicationControllerTest {
             .build();
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(applicationService.getCasesForUser(userId))
+        when(caseApplicationService.getCasesForUser(userId))
             .thenReturn(List.of(application));
 
         mockMvc.perform(get("/applications")
@@ -74,7 +74,7 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(applicationService).getCasesForUser(userId);
+        verify(caseApplicationService).getCasesForUser(userId);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ApplicationControllerTest {
         User user = new User(AUTH, userInfo);
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(applicationService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
+        when(caseApplicationService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
             .thenReturn(application);
 
         mockMvc.perform(get("/applications/{caseReference}", CASE_REFERENCE)
@@ -100,6 +100,6 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(applicationService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
+        verify(caseApplicationService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
     }
 }

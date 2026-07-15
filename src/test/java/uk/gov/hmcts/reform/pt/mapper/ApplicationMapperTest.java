@@ -121,7 +121,7 @@ public class ApplicationMapperTest {
     private static CaseApplication entityWithCaseType(CaseParty caseParty, String typeName) {
         return CaseApplication.builder()
             .caseParty(caseParty)
-            .caseType(typeName != null ? CaseType.builder().typeName(typeName).build() : null)
+            .caseType(typeName != null ? CaseType.builder().applicationTypeName(typeName).build() : null)
             .build();
     }
 

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
@@ -64,7 +63,7 @@ class CitizenCreateApplicationTest extends BaseEventTest {
             .applicantLastName("Doe")
             .email("jane.doe@example.com")
             .postcode("AB1 2CD")
-            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
+            .applicationType("CHALLENGE_RENT_INCREASE")
             .build();
     }
 }

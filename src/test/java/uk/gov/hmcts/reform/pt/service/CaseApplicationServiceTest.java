@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ApplicationServiceTest {
+class CaseApplicationServiceTest {
 
     private static final long CASE_REFERENCE = 1234567890123456L;
 
@@ -38,7 +38,7 @@ class ApplicationServiceTest {
     private CaseApplicationRepository applicationRepository;
 
     @InjectMocks
-    private ApplicationService applicationService;
+    private CaseApplicationService applicationService;
 
     @Test
     @DisplayName("Should get applications for a user")
@@ -122,7 +122,7 @@ class ApplicationServiceTest {
 
         return CaseApplication.builder()
             .caseParty(caseParty)
-            .caseType(CaseType.builder().typeName("CHALLENGE_RENT_INCREASE").build())
+            .caseType(CaseType.builder().applicationTypeName("CHALLENGE_RENT_INCREASE").build())
             .build();
     }
 }

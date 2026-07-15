@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationService {
+public class CaseApplicationService {
 
     private final CaseApplicationRepository applicationRepository;
 
