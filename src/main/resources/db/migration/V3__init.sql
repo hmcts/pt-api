@@ -554,221 +554,386 @@ ALTER TABLE application_event
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX application_event_case_application_id_idx
+  ON application_event (case_application_id);
+
 ALTER TABLE application_fee
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
+
+CREATE INDEX application_fee_case_application_id_idx
+  ON application_fee (case_application_id);
 
 ALTER TABLE application_retention
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX application_retention_case_application_id_idx
+  ON application_retention (case_application_id);
+
 ALTER TABLE application_statement_of_truth
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX application_statement_of_truth_case_application_id_idx
+  ON application_statement_of_truth (case_application_id);
+
 ALTER TABLE application_statement_of_truth
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX application_statement_of_truth_pt_case_id_idx
+  ON application_statement_of_truth (pt_case_id);
 
 ALTER TABLE application_status
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX application_status_case_applcation_id_idx
+  ON application_status (case_application_id);
+
 ALTER TABLE case_application
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
+CREATE INDEX case_application_case_party_id_idx
+  ON case_application (case_party_id);
+
 ALTER TABLE case_application
   ADD FOREIGN KEY (case_type_id)
   REFERENCES case_type (id);
+
+CREATE INDEX case_application_case_type_id_idx
+  ON case_application (case_type_id);
 
 ALTER TABLE case_event
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_event_pt_case_id_idx
+  ON case_event (pt_case_id);
+
 ALTER TABLE case_evidence
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX case_evidence_case_application_id_idx
+  ON case_evidence (case_application_id);
+
 ALTER TABLE case_evidence
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_evidence_pt_case_id_idx
+  ON case_evidence (pt_case_id);
 
 ALTER TABLE case_flag
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_flag_pt_case_id_idx
+  ON case_flag (pt_case_id);
+
 ALTER TABLE case_hearing
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
+
+CREATE INDEX case_hearing_case_application_id_idx
+  ON case_hearing (case_application_id);
 
 ALTER TABLE case_hearing
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_hearing_pt_case_id_idx
+  ON case_hearing (pt_case_id);
+
 ALTER TABLE case_mediation
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX case_mediation_case_application_id_idx
+  ON case_mediation (case_application_id);
+
 ALTER TABLE case_mediation
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_mediation_pt_case_id_idx
+  ON case_mediation (pt_case_id);
 
 ALTER TABLE case_note
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_note_pt_case_id_idx
+  ON case_note (pt_case_id);
+
 ALTER TABLE case_notification
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_notification_pt_case_id_idx
+  ON case_notification (pt_case_id);
 
 ALTER TABLE case_order
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX case_order_case_application_id_idx
+  ON case_order (case_application_id);
+
 ALTER TABLE case_order
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_order_pt_case_id_idx
+  ON case_order (pt_case_id);
 
 ALTER TABLE case_party
   ADD FOREIGN KEY (case_party_role_id)
   REFERENCES case_party_role (id);
 
+CREATE INDEX case_party_case_party_role_id_idx
+  ON case_party (case_party_role_id);
+
 ALTER TABLE case_party
   ADD FOREIGN KEY (case_party_type_id)
   REFERENCES case_party_type (id);
 
+CREATE INDEX case_party_case_party_type_id_idx
+  ON case_party (case_party_type_id);
+
 ALTER TABLE case_party
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_party_pt_case_id_idx
+  ON case_party (pt_case_id);
 
 ALTER TABLE case_party_access
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
+CREATE INDEX case_party_access_case_party_id_idx
+  ON case_party_access (case_party_id);
+
 ALTER TABLE case_party_address
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
+
+CREATE INDEX case_party_address_case_party_id_idx
+  ON case_party_address (case_party_id);
 
 ALTER TABLE case_party_attribute_assertion
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
+CREATE INDEX case_party_attribute_assertion_case_party_id_idx
+  ON case_party_attribute_assertion (case_party_id);
+
 ALTER TABLE case_party_contact_preference
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
+
+CREATE INDEX case_party_contact_preference_case_party_id_idx
+  ON case_party_contact_preference (case_party_id);
 
 ALTER TABLE case_party_event
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
+CREATE INDEX case_party_event_case_party_id_idx
+  ON case_party_event (case_party_id);
+
 ALTER TABLE case_party_flag
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
+
+CREATE INDEX case_party_flag_case_party_id_idx
+  ON case_party_flag (case_party_id);
 
 ALTER TABLE case_party_representative
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
+CREATE INDEX case_party_representative_case_party_id_idx
+  ON case_party_representative (case_party_id);
+
 ALTER TABLE case_property
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX case_property_pt_case_id_idx
+  ON case_property (pt_case_id);
 
 ALTER TABLE case_state
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_state_pt_case_id_idx
+  ON case_state (pt_case_id);
+
 ALTER TABLE case_task
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX case_task_pt_case_id_idx
+  ON case_task (pt_case_id);
+
 ALTER TABLE claim
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX claim_pt_case_id_idx
+  ON claim (pt_case_id);
 
 ALTER TABLE claim
   ADD FOREIGN KEY (claim_type_id)
   REFERENCES claim_type (id);
 
+CREATE INDEX claim_claim_type_id_idx
+  ON claim (claim_type_id);
+
 ALTER TABLE decision_appeal
   ADD FOREIGN KEY (hearing_decision_id)
   REFERENCES hearing_decision (id);
+
+CREATE INDEX decision_appeal_hearing_decision_id_idx
+  ON decision_appeal (hearing_decision_id);
 
 ALTER TABLE document
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
 
+CREATE INDEX document_case_application_id_idx
+  ON document (case_application_id);
+
 ALTER TABLE document
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX document_pt_case_id_idx
+  ON document (pt_case_id);
 
 ALTER TABLE fee_help_with_fees
   ADD FOREIGN KEY (application_fee_id)
   REFERENCES application_fee (id);
 
+CREATE INDEX fee_help_with_fees_application_fee_id_idx
+  ON fee_help_with_fees (application_fee_id);
+
 ALTER TABLE flag_ref_data
   ADD FOREIGN KEY (case_flag_id)
   REFERENCES case_flag (id);
+
+CREATE INDEX flag_ref_data_case_flag_id_idx
+  ON flag_ref_data (case_flag_id);
 
 ALTER TABLE hardship_consideration
   ADD FOREIGN KEY (claim_id)
   REFERENCES claim (id);
 
+CREATE INDEX hardship_consideration_claim_id_idx
+  ON hardship_consideration (claim_id);
+
 ALTER TABLE hearing_decision
   ADD FOREIGN KEY (case_hearing_id)
   REFERENCES case_hearing (id);
+
+CREATE INDEX hearing_decision_case_hearing_id_idx
+  ON hearing_decision (case_hearing_id);
 
 ALTER TABLE hearing_inspection
   ADD FOREIGN KEY (case_hearing_id)
   REFERENCES case_hearing (id);
 
+CREATE INDEX hearing_inspection_case_hearing_id_idx
+  ON hearing_inspection (case_hearing_id);
+
 ALTER TABLE market_rent_case
   ADD FOREIGN KEY (case_application_id)
   REFERENCES case_application (id);
+
+CREATE INDEX market_rent_case_case_application_id_idx
+  ON market_rent_case (case_application_id);
 
 ALTER TABLE market_rent_case
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
+CREATE INDEX market_rent_case_pt_case_id_idx
+  ON market_rent_case (pt_case_id);
+
 ALTER TABLE non_rent_case
   ADD FOREIGN KEY (case_application_id)
-  REFERENCES case_application (id);
+    REFERENCES case_application (id);
+
+CREATE INDEX non_rent_case_case_application_id_idx
+  ON non_rent_case (case_application_id);
 
 ALTER TABLE non_rent_case
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX non_rent_case_pt_case_id_idx
+  ON non_rent_case (pt_case_id);
 
 ALTER TABLE notice_of_rent_change
   ADD FOREIGN KEY (document_id)
   REFERENCES document (id);
+
+CREATE INDEX notice_of_rent_change_document_id_idx
+  ON notice_of_rent_change (document_id);
 
 ALTER TABLE notice_of_rent_change
   ADD FOREIGN KEY (notice_of_increase_validity_challenge_document_id)
   REFERENCES document (id);
 
+CREATE INDEX notice_of_rent_change_validity_challenge_doc_id_idx
+  ON notice_of_rent_change (notice_of_increase_validity_challenge_document_id);
+
 ALTER TABLE notice_of_rent_change
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX notice_of_rent_change_pt_case_id_idx
+  ON notice_of_rent_change (pt_case_id);
 
 ALTER TABLE pt_case
   ADD FOREIGN KEY (case_type_id)
   REFERENCES case_type (id);
 
+CREATE INDEX pt_case_case_type_id_idx
+  ON pt_case (case_type_id);
+
 ALTER TABLE representative
   ADD FOREIGN KEY (case_party_representative_id)
   REFERENCES case_party_representative (id);
+
+CREATE INDEX representative_case_party_representative_id_idx
+  ON representative (case_party_representative_id);
 
 ALTER TABLE representative
   ADD FOREIGN KEY (representative_type_id)
   REFERENCES representative_type (id);
 
+CREATE INDEX representative_representative_type_id_idx
+  ON representative (representative_type_id);
+
 ALTER TABLE tenancy_details
   ADD FOREIGN KEY (document_id)
   REFERENCES document (id);
 
+CREATE INDEX tenancy_details_document_id_idx
+  ON tenancy_details (document_id);
+
 ALTER TABLE tenancy_details
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
+
+CREATE INDEX tenancy_details_pt_case_id_idx
+  ON tenancy_details (pt_case_id);
 
 CREATE INDEX case_party_access_idam_id_idx
   ON case_party_access(idam_id);
