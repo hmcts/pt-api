@@ -6,11 +6,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
-import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
 
-@ExtendWith(SerenityJUnit5Extension.class)
 @Tag("Functional")
-class SampleFunctionalTest extends BaseApi {
+@ExtendWith(SerenityJUnit5Extension.class)
+class SampleFunctionalTest {
 
     @Steps
     ApiSteps apiSteps;
