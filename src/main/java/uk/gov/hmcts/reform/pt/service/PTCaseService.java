@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.pt.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.pt.ccd.api.CcdApiClient;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -21,7 +20,6 @@ import java.util.UUID;
 public class PTCaseService {
 
     private final PTCaseRepository ptCaseRepository;
-    private final CcdApiClient ccdApi;
 
     public void createCase(
         long caseReference,
@@ -56,5 +54,20 @@ public class PTCaseService {
         return ptCaseRepository.findByCaseReferenceAndApplicantIdamUserId(caseReference, userId)
             .map(PTCaseMapper::toDto)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
+    }
+
+    @Transactional
+    public void updateCase(long caseReference, PTCase ptCase) {
+        int updated = ptCaseRepository.updateByCaseReference(
+            caseReference,
+            ptCase.getApplicantFirstName(),
+            ptCase.getApplicantLastName(),
+            ptCase.getEmail(), ptCase.getPostcode(),
+            ptCase.getApplicationType()
+        );
+
+        if (updated == 0) {
+            throw new CaseNotFoundException(caseReference);
+        }
     }
 }

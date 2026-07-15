@@ -8,7 +8,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.pt.ccd.api.CcdApiClient;
 import uk.gov.hmcts.reform.pt.dto.CaseDto;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -35,9 +34,6 @@ class PTCaseServiceTest {
 
     @Mock
     private PTCaseRepository ptCaseRepository;
-
-    @Mock
-    private CcdApiClient ccdApiClient;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
