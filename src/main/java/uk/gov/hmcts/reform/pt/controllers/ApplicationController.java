@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.pt.dto.CaseDto;
+import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.service.PTCaseService;
+import uk.gov.hmcts.reform.pt.service.ApplicationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +28,7 @@ import java.util.UUID;
 public class ApplicationController {
 
     private final IdamAuthenticator idamAuthenticator;
-    private final PTCaseService ptCaseService;
+    private final ApplicationService applicationService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -44,7 +44,7 @@ public class ApplicationController {
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     @ApiResponse(responseCode = "503", description = "Service temporarily unavailable")
-    public ResponseEntity<List<CaseDto>> getCasesForUser(
+    public ResponseEntity<List<ApplicationDto>> getCasesForUser(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
@@ -52,7 +52,7 @@ public class ApplicationController {
     ) {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
-        return ResponseEntity.ok(ptCaseService.getCasesForUser(UUID.fromString(user.getUid())));
+        return ResponseEntity.ok(applicationService.getCasesForUser(UUID.fromString(user.getUid())));
     }
 
     @GetMapping(value = "/{caseReference}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public class ApplicationController {
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     @ApiResponse(responseCode = "503", description = "Service temporarily unavailable")
-    public ResponseEntity<CaseDto> getCaseByCaseReference(
+    public ResponseEntity<ApplicationDto> getCaseByCaseReference(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
@@ -79,6 +79,6 @@ public class ApplicationController {
         UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
 
         return ResponseEntity.ok(
-            ptCaseService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
+            applicationService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
     }
 }
