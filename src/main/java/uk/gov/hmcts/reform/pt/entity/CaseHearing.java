@@ -69,11 +69,6 @@ public class CaseHearing {
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<HardshipDecision> hardshipDecisions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<HearingDecision> hearingDecisions = new ArrayList<>();
 
     @OneToMany(mappedBy = "caseHearing", cascade = CascadeType.ALL)

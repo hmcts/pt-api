@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +59,8 @@ public class CaseParty {
     @Column(length = 100)
     private String emailAddress;
 
-    @Column(length = 100)
-    private LocalDateTime dateOfBirth;
+    @Column
+    private LocalDate dateOfBirth;
 
     private Integer referenceNumber;
 

@@ -99,7 +99,6 @@ CREATE TABLE case_evidence (
 CREATE TABLE case_flag (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   pt_case_id BIGINT,
-  -- todo case_flag_id_id BIGINT,
   flag_code INTEGER,
   sub_type_key INTEGER,
   sub_type_value VARCHAR(100),
@@ -385,7 +384,7 @@ CREATE TABLE document (
   last_modified_by VARCHAR(100)
 );
 
-CREATE TABLE help_with_fees (
+CREATE TABLE fee_help_with_fees (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   application_fee_id BIGINT,
   reference_number INTEGER,
@@ -412,8 +411,8 @@ CREATE TABLE flag_ref_data (
 
 CREATE TABLE hardship_consideration (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  details VARCHAR(100),
-  description VARCHAR(100),
+  hardship_details VARCHAR(100),
+  hardship_description VARCHAR(100),
   evidence_document_uploaded BOOLEAN,
   claim_id BIGINT,
 
@@ -701,7 +700,7 @@ ALTER TABLE document
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
 
-ALTER TABLE help_with_fees
+ALTER TABLE fee_help_with_fees
   ADD FOREIGN KEY (application_fee_id)
   REFERENCES application_fee (id);
 

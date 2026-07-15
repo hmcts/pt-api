@@ -22,7 +22,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -54,7 +53,7 @@ public class Document {
 
     private Integer size;
 
-    private UUID categoryId;
+    private Integer categoryId;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

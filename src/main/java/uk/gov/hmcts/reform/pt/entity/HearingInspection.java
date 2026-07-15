@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,7 +31,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "hardship_inspection")
+@Table(name = "hearing_inspection")
 public class HearingInspection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class HearingInspection {
     @Column(length = 100)
     private String description;
 
-    private LocalDateTime inspectionDate;
+    private LocalDate inspectionDate;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

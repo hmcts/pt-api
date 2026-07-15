@@ -56,7 +56,7 @@ public class Claim {
     private PTCaseEntity ptCase;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "case_type_id")
+    @JoinColumn(name = "claim_type_id")
     @JsonBackReference
     private ClaimType claimType;
 }

@@ -40,19 +40,19 @@ public class CaseFlag {
     private Integer flagCode;
 
     @Column(length = 100)
-    private Integer subKeyType;
+    private Integer subTypeKey;
 
     @Column(length = 100)
-    private String subKeyValue;
+    private String subTypeValue;
 
     @Column(length = 100)
-    private String subKeyValueCy;
+    private String subTypeValueCy;
 
     @Column(length = 100)
-    private String subKeyDescription;
+    private String otherDescription;
 
     @Column(length = 100)
-    private String subKeyDescriptionCy;
+    private String otherDescriptionCy;
 
     @Column(length = 100)
     private String flagComment;

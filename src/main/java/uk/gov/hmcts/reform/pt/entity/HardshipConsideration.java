@@ -37,10 +37,10 @@ public class HardshipConsideration {
     private Long id;
 
     @Column(length = 100)
-    private String details;
+    private String hardshipDetails;
 
     @Column(length = 100)
-    private String description;
+    private String hardshipDescription;
 
     private Boolean evidenceDocumentUploaded;
 

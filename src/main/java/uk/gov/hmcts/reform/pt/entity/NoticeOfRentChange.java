@@ -46,7 +46,7 @@ public class NoticeOfRentChange {
     private Boolean noticeOfIncreaseValidityChallengeDocumentUploaded;
 
     @Column(length = 100)
-    private String reasonNoticeOfIncreaseValidityChallengeDocumentNotUploaded;
+    private String reasonNoticeOfIncreaseValidityDocumentNotUploaded;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

@@ -30,8 +30,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "help_with_fees")
-public class HelpWithFees {
+@Table(name = "fee_help_with_fees")
+public class FeeHelpWithFees {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
