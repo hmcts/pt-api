@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.pt.exception.CcdException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +43,18 @@ public class ApplicationControllerExceptionHandlerTest {
             underTest.handleInvalidCaseReferenceException(exception);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().message()).isEqualTo(expectedErrorMessage);
+    }
+
+    @Test
+    void shouldHandleCcdException() {
+        String expectedErrorMessage = "Failed to submit case creation for event token: error";
+        CcdException exception = new CcdException(expectedErrorMessage);
+
+        ResponseEntity<ErrorResponse> response = underTest.handleCcdException(exception);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().message()).isEqualTo(expectedErrorMessage);
     }

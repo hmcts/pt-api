@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.pt.controllers.ApplicationController;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.pt.exception.CcdException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 
 @Slf4j
@@ -25,6 +26,14 @@ public class ApplicationControllerExceptionHandler {
         log.error("Invalid case reference", ex);
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CcdException.class)
+    public ResponseEntity<ErrorResponse> handleCcdException(CcdException ex) {
+        log.error("CCD request failed", ex);
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ErrorResponse(ex.getMessage()));
     }
 }
