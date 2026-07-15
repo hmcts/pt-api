@@ -110,17 +110,15 @@ public class CaseParty {
     @Builder.Default
     private List<CasePartyRepresentative> representatives = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_role_id")
-    @JsonBackReference
     private CasePartyRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_type_id")
-    @JsonBackReference
     private CasePartyType type;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;

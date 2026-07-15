@@ -62,7 +62,7 @@ public class HearingDecision {
     @Builder.Default
     private List<DecisionAppeal> decisionAppeals = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")
     @JsonBackReference
     private CaseHearing caseHearing;

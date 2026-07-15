@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
@@ -36,10 +35,8 @@ public class CaseFlag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
     private Integer flagCode;
 
-    @Column(length = 100)
     private Integer subTypeKey;
 
     @Column(length = 100)
@@ -83,7 +80,7 @@ public class CaseFlag {
     @Column(length = 100)
     private String lastModifiedBy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;

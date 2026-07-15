@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.pt.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
@@ -62,8 +60,7 @@ public class HardshipConsideration {
     @Column(length = 100)
     private String lastModifiedBy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "claim_id")
-    @JsonBackReference
     private Claim claim;
 }

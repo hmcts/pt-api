@@ -56,12 +56,12 @@ public class CaseHearing {
     @Column(length = 100)
     private String lastModifiedBy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")
     @JsonBackReference
     private CaseApplication caseApplication;

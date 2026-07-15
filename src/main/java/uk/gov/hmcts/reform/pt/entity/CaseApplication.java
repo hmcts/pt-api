@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -63,14 +62,12 @@ public class CaseApplication {
     @Column(length = 100)
     private String lastModifiedBy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")
-    @JsonBackReference
     private CaseType caseType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_id")
-    @JsonBackReference
     private CaseParty caseParty;
 
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)

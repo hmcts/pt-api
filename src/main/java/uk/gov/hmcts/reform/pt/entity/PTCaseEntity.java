@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -150,8 +149,7 @@ public class PTCaseEntity {
     @Builder.Default
     private List<CaseParty> parties = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")
-    @JsonBackReference
     private CaseType caseType;
 }
