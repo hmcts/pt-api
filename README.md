@@ -170,6 +170,37 @@ docker image rm <image-id>
 
 There is no need to remove postgres and java or similar core images.
 
+### Running the tests
+
+The Functional tests use [Rest Assured](https://rest-assured.io) and [Serenity](https://serenity-bdd.github.io) for reporting, and are located in the `/src/functionalTest` directory.
+
+The following environment variables are needed to run the tests:
+- PT_API_S2S_SECRET
+- TEST_URL
+- IDAM_S2S_AUTH_URL
+- IDAM_API_URL
+- IDAM_SYSTEM_USERNAME
+- IDAM_SYSTEM_USER_PASSWORD
+- PT_API_IDAM_SECRET
+
+To run the tests, use:
+```bash
+./gradlew functional
+````
+
+To run tests based on tags, use the following command (replace `tagName` with the desired tag):
+```bash
+./gradlew functional -Dtags="tagName"
+````
+
+Additionally, you can configure the tags to run in the pipeline by editing the functional task in the `build.gradle`, line:
+
+`includeTags System.getProperty("tags", "Functional")`
+
+After the tests run, the report will be available under the /[report-for-functional-tests](report-for-functional-tests) folder, in a file named `index.html`.
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
