@@ -495,7 +495,7 @@ CREATE TABLE notice_of_rent_change (
 
 CREATE TABLE pt_case (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  case_reference BIGINT NOT NULL,
+  case_reference BIGINT UNIQUE NOT NULL,
   legislative_country VARCHAR(100),
   status VARCHAR(100),
   landlord_type VARCHAR(100),

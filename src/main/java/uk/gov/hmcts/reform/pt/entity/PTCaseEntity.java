@@ -37,6 +37,7 @@ public class PTCaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private Long caseReference;
 
     @Column(length = 100)
