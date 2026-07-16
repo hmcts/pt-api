@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseTypeRepository;
 
@@ -29,40 +30,44 @@ class CaseTypeServiceTest {
     @Test
     @DisplayName("Should return existing CaseTypeEntity if it exists")
     void getCaseTypeOrCreateIfNotExistsWhenExists() {
-        String typeName = "Possession";
-        CaseTypeEntity existingCaseType = CaseTypeEntity.builder().applicationTypeName(typeName).build();
-        when(caseTypeRepository.findFirstByApplicationTypeName(typeName)).thenReturn(Optional.of(existingCaseType));
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+        CaseTypeEntity existingCaseType = CaseTypeEntity.builder().applicationTypeName(applicationType).build();
+        when(caseTypeRepository.findFirstByApplicationTypeName(applicationType))
+            .thenReturn(Optional.of(existingCaseType));
 
-        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
+        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType);
 
         assertThat(result).isEqualTo(existingCaseType);
-        verify(caseTypeRepository).findFirstByApplicationTypeName(typeName);
+        verify(caseTypeRepository).findFirstByApplicationTypeName(applicationType);
         verify(caseTypeRepository, never()).save(any());
     }
 
     @Test
     @DisplayName("Should create new CaseTypeEntity if it does not exist")
     void getCaseTypeOrCreateIfNotExistsWhenNotExists() {
-        String typeName = "Possession";
-        when(caseTypeRepository.findFirstByApplicationTypeName(typeName)).thenReturn(Optional.empty());
-        when(caseTypeRepository.save(any(CaseTypeEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+        when(caseTypeRepository.findFirstByApplicationTypeName(applicationType))
+            .thenReturn(Optional.empty());
+        when(caseTypeRepository.save(any(CaseTypeEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
+        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType);
 
-        assertThat(result.getApplicationTypeName()).isEqualTo(typeName);
-        verify(caseTypeRepository).findFirstByApplicationTypeName(typeName);
+        assertThat(result.getApplicationTypeName()).isEqualTo(applicationType);
+        verify(caseTypeRepository).findFirstByApplicationTypeName(applicationType);
         verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 
     @Test
     @DisplayName("Should create CaseTypeEntity")
     void createCaseType() {
-        String typeName = "Possession";
-        when(caseTypeRepository.save(any(CaseTypeEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+        when(caseTypeRepository.save(any(CaseTypeEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
-        CaseTypeEntity result = caseTypeService.createCaseType(typeName);
+        CaseTypeEntity result = caseTypeService.createCaseType(applicationType);
 
-        assertThat(result.getApplicationTypeName()).isEqualTo(typeName);
+        assertThat(result.getApplicationTypeName()).isEqualTo(applicationType);
         verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 }

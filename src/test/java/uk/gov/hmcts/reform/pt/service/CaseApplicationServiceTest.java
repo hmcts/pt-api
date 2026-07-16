@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
@@ -122,7 +123,7 @@ class CaseApplicationServiceTest {
 
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(CaseTypeEntity.builder().applicationTypeName("CHALLENGE_RENT_INCREASE").build())
+            .caseType(CaseTypeEntity.builder().applicationTypeName(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .build();
     }
 }

@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.pt.entity;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,11 +17,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 
 import java.time.LocalDateTime;
 
 @Entity
-
 @Setter
 @Getter
 @Builder
@@ -31,8 +33,8 @@ public class CaseTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
-    private String applicationTypeName;
+    @Enumerated(EnumType.STRING)
+    private ApplicationType applicationTypeName;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

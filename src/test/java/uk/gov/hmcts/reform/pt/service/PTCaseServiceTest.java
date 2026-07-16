@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -48,7 +49,7 @@ class PTCaseServiceTest {
     @Test
     @DisplayName("Should save a case entity built from the case reference when party does not exist")
     void createCasePartyDoesNotExist() {
-        String applicationType = "Possession";
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
         UUID userId = UUID.randomUUID();
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
@@ -75,7 +76,7 @@ class PTCaseServiceTest {
     @DisplayName("Should save a case entity built from the case reference when party exists")
     void createCasePartyExists() {
         long caseReference = 1234567890123456L;
-        String applicationType = "Possession";
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)

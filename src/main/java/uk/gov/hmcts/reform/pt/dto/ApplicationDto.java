@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pt.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 
 import java.util.UUID;
 
@@ -14,5 +15,5 @@ public class ApplicationDto {
     private String email;
     private String postcode;
     private UUID applicantIdamUserId;
-    private String applicationType;
+    private ApplicationType applicationType;
 }

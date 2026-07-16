@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
@@ -21,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ApplicationMapperTest {
 
     private static final long CASE_REFERENCE = 1234567890123456L;
+    private static final ApplicationType APPLICATION_TYPE = ApplicationType.CHALLENGE_RENT_INCREASE;
     private static final String POSTCODE = "AB12 3CD";
-    private static final String APPLICATION_TYPE = "CHALLENGE_RENT_INCREASE";
     private static final String FIRST_NAME = "FirstName";
     private static final String LAST_NAME = "LastName";
     private static final String EMAIL = "test@test.com";
@@ -78,13 +79,13 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldDefaultApplicationTypeToEmptyStringWhenCaseTypeIsNull() {
+    public void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
         CasePartyEntity caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
-        assertThat(result.getApplicationType()).isEqualTo("");
+        assertThat(result.getApplicationType()).isNull();
     }
 
     @Test
@@ -118,10 +119,16 @@ public class ApplicationMapperTest {
             .build();
     }
 
-    private static CaseApplicationEntity entityWithCaseType(CasePartyEntity caseParty, String typeName) {
+    private static CaseApplicationEntity entityWithCaseType(
+        CasePartyEntity caseParty,
+        ApplicationType applicationType
+    ) {
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(typeName != null ? CaseTypeEntity.builder().applicationTypeName(typeName).build() : null)
+            .caseType(
+                applicationType != null
+                    ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
+                    : null)
             .build();
     }
 
