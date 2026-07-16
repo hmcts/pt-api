@@ -8,12 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.pt.dto.CaseDto;
+import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.service.PTCaseService;
+import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +47,7 @@ public class ApplicationControllerTest {
     private UpstreamThrottling upstreamThrottling;
 
     @MockitoBean
-    private PTCaseService ptCaseService;
+    private CaseApplicationService caseApplicationService;
 
     @Test
     void shouldGetApplicationsForUser() throws Exception {
@@ -58,12 +58,12 @@ public class ApplicationControllerTest {
             .build();
         User user = new User(AUTH, userInfo);
 
-        CaseDto application = CaseDto.builder()
+        ApplicationDto application = ApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
             .build();
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.getCasesForUser(userId))
+        when(caseApplicationService.getCasesForUser(userId))
             .thenReturn(List.of(application));
 
         mockMvc.perform(get("/applications")
@@ -74,12 +74,12 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).getCasesForUser(userId);
+        verify(caseApplicationService).getCasesForUser(userId);
     }
 
     @Test
     void shouldGetApplicationByCaseReference() throws Exception {
-        CaseDto application = CaseDto.builder()
+        ApplicationDto application = ApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
             .build();
 
@@ -89,7 +89,7 @@ public class ApplicationControllerTest {
         User user = new User(AUTH, userInfo);
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
-        when(ptCaseService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
+        when(caseApplicationService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
             .thenReturn(application);
 
         mockMvc.perform(get("/applications/{caseReference}", CASE_REFERENCE)
@@ -100,6 +100,6 @@ public class ApplicationControllerTest {
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
-        verify(ptCaseService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
+        verify(caseApplicationService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
     }
 }
