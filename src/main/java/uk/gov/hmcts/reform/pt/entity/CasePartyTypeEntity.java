@@ -32,7 +32,7 @@ public class CasePartyTypeEntity {
     private Long id;
 
     @Column(length = 100)
-    private String typeName;
+    private String applicationTypeName;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
