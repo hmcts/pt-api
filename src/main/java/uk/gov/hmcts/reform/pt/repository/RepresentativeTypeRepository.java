@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uk.gov.hmcts.reform.pt.entity.RepresentativeType;
+import uk.gov.hmcts.reform.pt.entity.RepresentativeTypeEntity;
 
-public interface RepresentativeTypeRepository extends JpaRepository<RepresentativeType, Long> {
+public interface RepresentativeTypeRepository extends JpaRepository<RepresentativeTypeEntity, Long> {
 }

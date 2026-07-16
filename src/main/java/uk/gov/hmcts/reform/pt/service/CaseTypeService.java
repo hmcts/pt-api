@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseTypeRepository;
 
 @Service
@@ -13,14 +13,14 @@ public class CaseTypeService {
     private final CaseTypeRepository caseTypeRepository;
 
     @Transactional
-    public CaseType getCaseTypeOrCreateIfNotExists(String typeName) {
+    public CaseTypeEntity getCaseTypeOrCreateIfNotExists(String typeName) {
         return caseTypeRepository.findFirstByApplicationTypeName(typeName)
             .orElseGet(() -> createCaseType(typeName));
     }
 
     @Transactional
-    public CaseType createCaseType(String typeName) {
-        CaseType caseType = CaseType.builder()
+    public CaseTypeEntity createCaseType(String typeName) {
+        CaseTypeEntity caseType = CaseTypeEntity.builder()
             .applicationTypeName(typeName)
             .build();
         return caseTypeRepository.save(caseType);

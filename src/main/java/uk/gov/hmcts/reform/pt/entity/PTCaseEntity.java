@@ -62,94 +62,94 @@ public class PTCaseEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseTask> tasks = new ArrayList<>();
+    private List<CaseTaskEntity> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseNote> notes = new ArrayList<>();
+    private List<CaseNoteEntity> notes = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseProperty> properties = new ArrayList<>();
+    private List<CasePropertyEntity> properties = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseEvent> events = new ArrayList<>();
+    private List<CaseEventEntity> events = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseState> states = new ArrayList<>();
+    private List<CaseStateEntity> states = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseFlag> flags = new ArrayList<>();
+    private List<CaseFlagEntity> flags = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<ApplicationStatementOfTruth> statementsOfTruth = new ArrayList<>();
+    private List<ApplicationStatementOfTruthEntity> statementsOfTruth = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseEvidence> evidence = new ArrayList<>();
+    private List<CaseEvidenceEntity> evidence = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseHearing> hearings = new ArrayList<>();
+    private List<CaseHearingEntity> hearings = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseMediation> mediations = new ArrayList<>();
+    private List<CaseMediationEntity> mediations = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseNotification> notifications = new ArrayList<>();
+    private List<CaseNotificationEntity> notifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseOrder> orders = new ArrayList<>();
+    private List<CaseOrderEntity> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<Document> documents = new ArrayList<>();
+    private List<DocumentEntity> documents = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<MarketRentCase> marketRentCases = new ArrayList<>();
+    private List<MarketRentCaseEntity> marketRentCases = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<NonRentCase> nonRentCases = new ArrayList<>();
+    private List<NonRentCaseEntity> nonRentCases = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<NoticeOfRentChange> noticeOfRentChanges = new ArrayList<>();
+    private List<NoticeOfRentChangeEntity> noticeOfRentChanges = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<TenancyDetails> tenancyDetails = new ArrayList<>();
+    private List<TenancyDetailsEntity> tenancyDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseParty> parties = new ArrayList<>();
+    private List<CasePartyEntity> parties = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")
-    private CaseType caseType;
+    private CaseTypeEntity caseType;
 }

@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
-import uk.gov.hmcts.reform.pt.entity.CaseApplication;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
+import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
 public class ApplicationMapper {
-    public static ApplicationDto toDto(CaseApplication entity) {
-        CaseParty caseParty = entity.getCaseParty();
+    public static ApplicationDto toDto(CaseApplicationEntity entity) {
+        CasePartyEntity caseParty = entity.getCaseParty();
         if (caseParty == null) {
             throw new CasePartyNotFoundException("Case party not found for application: " + entity.getId());
         }

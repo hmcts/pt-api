@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.pt.mapper;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
-import uk.gov.hmcts.reform.pt.entity.CaseApplication;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccess;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
-import uk.gov.hmcts.reform.pt.entity.CaseProperty;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyEntity;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
@@ -30,7 +30,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapToDtoFromEntity() {
         UUID userId = UUID.randomUUID();
-        CaseApplication entity = fullEntity(userId);
+        CaseApplicationEntity entity = fullEntity(userId);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
@@ -45,7 +45,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldThrowCasePartyNotFoundExceptionWhenCasePartyIsNull() {
-        CaseApplication entity = CaseApplication.builder()
+        CaseApplicationEntity entity = CaseApplicationEntity.builder()
             .caseParty(null)
             .build();
 
@@ -56,8 +56,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldThrowCaseNotFoundExceptionWhenPtCaseIsNull() {
-        CaseParty caseParty = caseParty(null, Collections.emptyList());
-        CaseApplication entity = CaseApplication.builder()
+        CasePartyEntity caseParty = caseParty(null, Collections.emptyList());
+        CaseApplicationEntity entity = CaseApplicationEntity.builder()
             .caseParty(caseParty)
             .build();
 
@@ -69,8 +69,8 @@ public class ApplicationMapperTest {
     @Test
     public void shouldDefaultPostcodeToEmptyStringWhenNoProperties() {
         PTCaseEntity ptCase = ptCase(Collections.emptyList());
-        CaseParty caseParty = caseParty(ptCase, Collections.emptyList());
-        CaseApplication entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CasePartyEntity caseParty = caseParty(ptCase, Collections.emptyList());
+        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
@@ -79,8 +79,8 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicationTypeToEmptyStringWhenCaseTypeIsNull() {
-        CaseParty caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
-        CaseApplication entity = entityWithCaseType(caseParty, null);
+        CasePartyEntity caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
+        CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
@@ -89,27 +89,27 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
-        CaseParty caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
-        CaseApplication entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CasePartyEntity caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
+        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
     }
 
-    private static List<CaseProperty> properties(String postcode) {
-        return List.of(CaseProperty.builder().postcode(postcode).build());
+    private static List<CasePropertyEntity> properties(String postcode) {
+        return List.of(CasePropertyEntity.builder().postcode(postcode).build());
     }
 
-    private static PTCaseEntity ptCase(List<CaseProperty> properties) {
+    private static PTCaseEntity ptCase(List<CasePropertyEntity> properties) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .properties(properties)
             .build();
     }
 
-    private static CaseParty caseParty(PTCaseEntity ptCase, List<CasePartyAccess> access) {
-        return CaseParty.builder()
+    private static CasePartyEntity caseParty(PTCaseEntity ptCase, List<CasePartyAccessEntity> access) {
+        return CasePartyEntity.builder()
             .firstName(FIRST_NAME)
             .lastName(LAST_NAME)
             .emailAddress(EMAIL)
@@ -118,19 +118,19 @@ public class ApplicationMapperTest {
             .build();
     }
 
-    private static CaseApplication entityWithCaseType(CaseParty caseParty, String typeName) {
-        return CaseApplication.builder()
+    private static CaseApplicationEntity entityWithCaseType(CasePartyEntity caseParty, String typeName) {
+        return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(typeName != null ? CaseType.builder().applicationTypeName(typeName).build() : null)
+            .caseType(typeName != null ? CaseTypeEntity.builder().applicationTypeName(typeName).build() : null)
             .build();
     }
 
-    private static CaseApplication fullEntity(UUID userId) {
+    private static CaseApplicationEntity fullEntity(UUID userId) {
         PTCaseEntity ptCase = ptCase(properties(POSTCODE));
-        List<CasePartyAccess> access = List.of(
-            CasePartyAccess.builder().idamId(userId).build()
+        List<CasePartyAccessEntity> access = List.of(
+            CasePartyAccessEntity.builder().idamId(userId).build()
         );
-        CaseParty caseParty = caseParty(ptCase, access);
+        CasePartyEntity caseParty = caseParty(ptCase, access);
         return entityWithCaseType(caseParty, APPLICATION_TYPE);
     }
 }

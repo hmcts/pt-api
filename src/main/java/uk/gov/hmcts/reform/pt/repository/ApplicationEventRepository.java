@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uk.gov.hmcts.reform.pt.entity.ApplicationEvent;
+import uk.gov.hmcts.reform.pt.entity.ApplicationEventEntity;
 
-public interface ApplicationEventRepository extends JpaRepository<ApplicationEvent, Long> {
+public interface ApplicationEventRepository extends JpaRepository<ApplicationEventEntity, Long> {
 }

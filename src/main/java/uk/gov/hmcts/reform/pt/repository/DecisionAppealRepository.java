@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uk.gov.hmcts.reform.pt.entity.DecisionAppeal;
+import uk.gov.hmcts.reform.pt.entity.DecisionAppealEntity;
 
-public interface DecisionAppealRepository extends JpaRepository<DecisionAppeal, Long> {
+public interface DecisionAppealRepository extends JpaRepository<DecisionAppealEntity, Long> {
 }

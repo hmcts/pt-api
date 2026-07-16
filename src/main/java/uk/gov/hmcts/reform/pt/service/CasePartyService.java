@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccess;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -21,25 +21,25 @@ public class CasePartyService {
     private final CasePartyAccessRepository casePartyAccessRepository;
     private final CasePartyAddressRepository casePartyAddressRepository;
 
-    public Optional<CaseParty> getCasePartyByIdamId(UUID idamId) {
+    public Optional<CasePartyEntity> getCasePartyByIdamId(UUID idamId) {
         return casePartyRepository.findFirstByAccessIdamId(idamId);
     }
 
-    public CaseParty createCaseParty(PTCase ptCase, UUID idamId) {
-        CaseParty caseParty = CaseParty.builder()
+    public CasePartyEntity createCaseParty(PTCase ptCase, UUID idamId) {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())
             .lastName(ptCase.getApplicantLastName())
             .emailAddress(ptCase.getEmail())
             .build();
         casePartyRepository.save(caseParty);
 
-        CasePartyAddress address = CasePartyAddress.builder()
+        CasePartyAddressEntity address = CasePartyAddressEntity.builder()
             .postcode(ptCase.getPostcode())
             .party(caseParty)
             .build();
         casePartyAddressRepository.save(address);
 
-        CasePartyAccess access = CasePartyAccess.builder()
+        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
             .idamId(idamId)
             .party(caseParty)
             .build();

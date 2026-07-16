@@ -7,9 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccess;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -38,13 +38,13 @@ class CasePartyServiceTest {
     private CasePartyService casePartyService;
 
     @Test
-    @DisplayName("Should return CaseParty if it exists by idam id")
+    @DisplayName("Should return CasePartyEntity if it exists by idam id")
     void getCasePartyByIdamId() {
         UUID idamId = UUID.randomUUID();
-        CaseParty caseParty = CaseParty.builder().firstName("John").build();
+        CasePartyEntity caseParty = CasePartyEntity.builder().firstName("John").build();
         when(casePartyRepository.findFirstByAccessIdamId(idamId)).thenReturn(Optional.of(caseParty));
 
-        Optional<CaseParty> result = casePartyService.getCasePartyByIdamId(idamId);
+        Optional<CasePartyEntity> result = casePartyService.getCasePartyByIdamId(idamId);
 
         assertThat(result).isPresent();
         assertThat(result.get().getFirstName()).isEqualTo("John");
@@ -52,7 +52,7 @@ class CasePartyServiceTest {
     }
 
     @Test
-    @DisplayName("Should create CaseParty and related entities")
+    @DisplayName("Should create CasePartyEntity and related entities")
     void createCaseParty() {
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
@@ -62,14 +62,14 @@ class CasePartyServiceTest {
             .build();
         UUID idamId = UUID.randomUUID();
 
-        CaseParty result = casePartyService.createCaseParty(ptCase, idamId);
+        CasePartyEntity result = casePartyService.createCaseParty(ptCase, idamId);
 
         assertThat(result.getFirstName()).isEqualTo("John");
         assertThat(result.getLastName()).isEqualTo("Doe");
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
 
-        verify(casePartyRepository).save(any(CaseParty.class));
-        verify(casePartyAddressRepository).save(any(CasePartyAddress.class));
-        verify(casePartyAccessRepository).save(any(CasePartyAccess.class));
+        verify(casePartyRepository).save(any(CasePartyEntity.class));
+        verify(casePartyAddressRepository).save(any(CasePartyAddressEntity.class));
+        verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
     }
 }

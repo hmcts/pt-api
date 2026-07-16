@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseTypeRepository;
 
 import java.util.Optional;
@@ -27,13 +27,13 @@ class CaseTypeServiceTest {
     private CaseTypeService caseTypeService;
 
     @Test
-    @DisplayName("Should return existing CaseType if it exists")
+    @DisplayName("Should return existing CaseTypeEntity if it exists")
     void getCaseTypeOrCreateIfNotExistsWhenExists() {
         String typeName = "Possession";
-        CaseType existingCaseType = CaseType.builder().applicationTypeName(typeName).build();
+        CaseTypeEntity existingCaseType = CaseTypeEntity.builder().applicationTypeName(typeName).build();
         when(caseTypeRepository.findFirstByApplicationTypeName(typeName)).thenReturn(Optional.of(existingCaseType));
 
-        CaseType result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
+        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
 
         assertThat(result).isEqualTo(existingCaseType);
         verify(caseTypeRepository).findFirstByApplicationTypeName(typeName);
@@ -41,28 +41,28 @@ class CaseTypeServiceTest {
     }
 
     @Test
-    @DisplayName("Should create new CaseType if it does not exist")
+    @DisplayName("Should create new CaseTypeEntity if it does not exist")
     void getCaseTypeOrCreateIfNotExistsWhenNotExists() {
         String typeName = "Possession";
         when(caseTypeRepository.findFirstByApplicationTypeName(typeName)).thenReturn(Optional.empty());
-        when(caseTypeRepository.save(any(CaseType.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(caseTypeRepository.save(any(CaseTypeEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CaseType result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
+        CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(typeName);
 
         assertThat(result.getApplicationTypeName()).isEqualTo(typeName);
         verify(caseTypeRepository).findFirstByApplicationTypeName(typeName);
-        verify(caseTypeRepository).save(any(CaseType.class));
+        verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 
     @Test
-    @DisplayName("Should create CaseType")
+    @DisplayName("Should create CaseTypeEntity")
     void createCaseType() {
         String typeName = "Possession";
-        when(caseTypeRepository.save(any(CaseType.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(caseTypeRepository.save(any(CaseTypeEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CaseType result = caseTypeService.createCaseType(typeName);
+        CaseTypeEntity result = caseTypeService.createCaseType(typeName);
 
         assertThat(result.getApplicationTypeName()).isEqualTo(typeName);
-        verify(caseTypeRepository).save(any(CaseType.class));
+        verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 }

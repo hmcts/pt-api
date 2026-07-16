@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uk.gov.hmcts.reform.pt.entity.ApplicationFee;
+import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
 
-public interface ApplicationFeeRepository extends JpaRepository<ApplicationFee, Long> {
+public interface ApplicationFeeRepository extends JpaRepository<ApplicationFeeEntity, Long> {
 }

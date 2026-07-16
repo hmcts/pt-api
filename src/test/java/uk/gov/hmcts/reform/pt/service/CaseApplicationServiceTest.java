@@ -7,11 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
-import uk.gov.hmcts.reform.pt.entity.CaseApplication;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccess;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
-import uk.gov.hmcts.reform.pt.entity.CaseProperty;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyEntity;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
@@ -44,7 +44,7 @@ class CaseApplicationServiceTest {
     @DisplayName("Should get applications for a user")
     void getApplicationsForUser() {
         UUID userId = UUID.randomUUID();
-        CaseApplication entity = createCaseApplication(CASE_REFERENCE, userId);
+        CaseApplicationEntity entity = createCaseApplication(CASE_REFERENCE, userId);
 
         when(applicationRepository.findAllByCasePartyAccessIdamId(userId))
             .thenReturn(List.of(entity));
@@ -62,7 +62,7 @@ class CaseApplicationServiceTest {
     @DisplayName("Should get application by case reference")
     void getApplicationByCaseReference() {
         UUID userId = UUID.randomUUID();
-        CaseApplication entity = createCaseApplication(CASE_REFERENCE, userId);
+        CaseApplicationEntity entity = createCaseApplication(CASE_REFERENCE, userId);
 
         when(applicationRepository.findByPartyIdamIdAndCaseReference(CASE_REFERENCE, userId))
             .thenReturn(Optional.of(entity));
@@ -100,29 +100,29 @@ class CaseApplicationServiceTest {
         verifyNoMoreInteractions(applicationRepository);
     }
 
-    private CaseApplication createCaseApplication(long caseReference, UUID userId) {
+    private CaseApplicationEntity createCaseApplication(long caseReference, UUID userId) {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .properties(List.of(CaseProperty.builder().postcode("AB12 3CD").build()))
+            .properties(List.of(CasePropertyEntity.builder().postcode("AB12 3CD").build()))
             .build();
 
-        CaseParty caseParty = CaseParty.builder()
+        CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName("FirstName")
             .lastName("LastName")
             .emailAddress("test@test.com")
             .ptCase(ptCase)
             .build();
 
-        CasePartyAccess access = CasePartyAccess.builder()
+        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
             .idamId(userId)
             .party(caseParty)
             .build();
 
         caseParty.setAccess(List.of(access));
 
-        return CaseApplication.builder()
+        return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(CaseType.builder().applicationTypeName("CHALLENGE_RENT_INCREASE").build())
+            .caseType(CaseTypeEntity.builder().applicationTypeName("CHALLENGE_RENT_INCREASE").build())
             .build();
     }
 }

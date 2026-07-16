@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.pt.repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 
 import java.util.Optional;
 
@@ -20,12 +20,12 @@ class CaseTypeRepositoryTest extends AbstractRepositoryTest<CaseTypeRepository> 
     @DisplayName("Should return case type for application type name")
     void findFirstByApplicationTypeNameReturnsCaseType() {
         String typeName = "Possession";
-        CaseType caseType = CaseType.builder()
+        CaseTypeEntity caseType = CaseTypeEntity.builder()
             .applicationTypeName(typeName)
             .build();
         repository.save(caseType);
 
-        Optional<CaseType> result = repository.findFirstByApplicationTypeName(typeName);
+        Optional<CaseTypeEntity> result = repository.findFirstByApplicationTypeName(typeName);
 
         assertThat(result).isPresent();
         assertThat(result.get().getApplicationTypeName()).isEqualTo(typeName);

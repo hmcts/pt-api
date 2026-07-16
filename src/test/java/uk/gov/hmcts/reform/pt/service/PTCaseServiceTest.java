@@ -9,8 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.entity.CaseParty;
-import uk.gov.hmcts.reform.pt.entity.CaseType;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
@@ -52,8 +52,9 @@ class PTCaseServiceTest {
         UUID userId = UUID.randomUUID();
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
-        when(casePartyService.createCaseParty(any(), any())).thenReturn(CaseParty.builder().build());
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType)).thenReturn(CaseType.builder().build());
+        when(casePartyService.createCaseParty(any(), any())).thenReturn(CasePartyEntity.builder().build());
+        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
+            .thenReturn(CaseTypeEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
@@ -80,10 +81,11 @@ class PTCaseServiceTest {
             .applicationType(applicationType)
             .build();
         UUID userId = UUID.randomUUID();
-        CaseParty existingParty = CaseParty.builder().firstName("John").build();
+        CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.of(existingParty));
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType)).thenReturn(CaseType.builder().build());
+        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
+            .thenReturn(CaseTypeEntity.builder().build());
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
