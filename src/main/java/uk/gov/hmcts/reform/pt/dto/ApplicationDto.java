@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class CaseDto {
+public class ApplicationDto {
     private long caseReference;
     private String applicantFirstName;
     private String applicantLastName;
