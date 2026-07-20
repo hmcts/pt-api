@@ -27,6 +27,7 @@ public class PTCaseService {
     private final CasePartyRepository casePartyRepository;
     private final CasePartyAddressRepository casePartyAddressRepository;
 
+    @Transactional
     public void createCase(
         long caseReference,
         UUID userId,

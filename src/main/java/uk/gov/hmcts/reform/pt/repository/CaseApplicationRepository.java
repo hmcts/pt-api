@@ -13,8 +13,6 @@ public interface CaseApplicationRepository extends JpaRepository<CaseApplication
 
     List<CaseApplicationEntity> findAllByCasePartyAccessIdamId(UUID idamId);
 
-    Optional<CaseApplicationEntity> findFirstByCasePartyId(Long casePartyId);
-
     @Query("""
         SELECT ca FROM CaseApplicationEntity ca
         JOIN ca.caseParty cp

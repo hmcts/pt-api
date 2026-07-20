@@ -58,21 +58,6 @@ public class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseAp
         assertThat(result.get().getCaseParty().getPtCase().getCaseReference()).isEqualTo(caseReference);
     }
 
-    @Test
-    void findFirstByCasePartyId_returnsEntity_whenExists() {
-        UUID idamId = UUID.randomUUID();
-        CaseApplicationEntity entity = createCaseApplication(1234567890123456L, idamId);
-        ptCaseRepository.save(entity.getCaseParty().getPtCase());
-        casePartyRepository.save(entity.getCaseParty());
-        repository.save(entity);
-
-        Optional<CaseApplicationEntity> result =
-            repository.findFirstByCasePartyId(entity.getCaseParty().getId());
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getCaseParty().getId()).isEqualTo(entity.getCaseParty().getId());
-    }
-
     private CaseApplicationEntity createCaseApplication(long caseReference, UUID userId) {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
