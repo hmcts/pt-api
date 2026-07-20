@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long> {
     Optional<CasePartyEntity> findFirstByAccessIdamId(UUID idamId);
+
+    Optional<CasePartyEntity> findFirstByPtCaseCaseReference(long caseReference);
 }
