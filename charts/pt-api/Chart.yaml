@@ -4,7 +4,6 @@ description: A Helm chart for pt-api App
 name: pt-api
 home: https://github.com/hmcts/pt-api
 version: 0.0.41
-maintainers:
   - name: HMCTS pt team
 dependencies:
   - name: java

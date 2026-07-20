@@ -34,7 +34,7 @@ springdoc:
 
 spring:
   config:
-    import: "optional:configtree:/mnt/secrets/pt/"
+    import: "optional:configtree:/mnt/secrets/pt-kv/"
   application:
     name: pt api
   datasource:
@@ -113,4 +113,4 @@ core_case_data:
     url: ${CCD_DATA_STORE_URL:localhost:4452}
 
 caseApi:
-  url: ${CASE_API_URL:http://localhost:3206}
+  url: ${CASE_API_URL:http://localhost:4550}
