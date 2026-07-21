@@ -13,21 +13,21 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CITIZEN;
-import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_UPDATE_APPLICATION;
+import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_SUBMIT_APPLICATION;
 
 @Component
 @RequiredArgsConstructor
-public class CitizenUpdateApplication implements CCDConfig<PTCase, State, UserRole> {
+public class CitizenSubmitApplication implements CCDConfig<PTCase, State, UserRole> {
 
     private final PTCaseService ptCaseService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
-            .decentralisedEvent(CITIZEN_UPDATE_APPLICATION.getId(), this::submit, this::start)
-            .initialState(State.PENDING_CASE_ISSUED)
+            .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit, this::start)
+            .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
-            .name(CITIZEN_UPDATE_APPLICATION.getName())
+            .name(CITIZEN_SUBMIT_APPLICATION.getName())
             .grant(CRU, CITIZEN);
     }
 
