@@ -91,6 +91,14 @@ withPipeline(type, product, component) {
     }
     generateDefinitions(builder)
   }
+
+  afterAlways('functionalTest:preview') {
+    archiveFunctionalTestReports()
+  }
+
+  afterAlways('functionalTest:aat') {
+    archiveFunctionalTestReports()
+  }
 }
 def setPreviewEnvVars() {
   // TODO: Update URL to include XUI when available
@@ -120,6 +128,18 @@ def generateDefinitions(builder) {
   steps.archiveArtifacts artifacts: "build/definitions/*.xlsx"
 }
 
+def archiveFunctionalTestReports() {
+  publishHTML([
+    allowMissing: true,
+    alwaysLinkToLastBuild: true,
+    keepAll: true,
+    reportDir: "report-for-functional-tests",
+    reportFiles: 'index.html',
+    reportName: 'API Functional Test Report'
+  ])
+
+  archiveArtifacts allowEmptyArchive: true, artifacts: '**/report-for-functional-tests/*'
+}
 
 def runE2eTests(String context) {
   try {
