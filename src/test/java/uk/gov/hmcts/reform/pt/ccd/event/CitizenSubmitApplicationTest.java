@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class CitizenSubmitApplicationTest extends BaseEventTest {
@@ -25,16 +24,6 @@ class CitizenSubmitApplicationTest extends BaseEventTest {
     void setUp() {
         CitizenSubmitApplication underTest = new CitizenSubmitApplication(ptCaseService);
         configureEvent(underTest);
-    }
-
-    @Test
-    void startShouldReturnCaseDataUnchanged() {
-        PTCase caseData = getTestPTCase();
-
-        PTCase result = callStartHandler(caseData);
-
-        assertThat(result).isSameAs(caseData);
-        verifyNoInteractions(ptCaseService);
     }
 
     @Test

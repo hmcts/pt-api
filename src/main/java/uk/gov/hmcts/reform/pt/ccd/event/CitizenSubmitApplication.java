@@ -24,15 +24,11 @@ public class CitizenSubmitApplication implements CCDConfig<PTCase, State, UserRo
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
-            .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit, this::start)
-            .initialState(State.PENDING_CASE_ISSUED)
+            .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit)
+            .forStateTransition(State.AWAITING_SUBMISSION_TO_HMCTS, State.PENDING_CASE_ISSUED)
             .showSummary()
             .name(CITIZEN_SUBMIT_APPLICATION.getName())
             .grant(CRU, CITIZEN);
-    }
-
-    private PTCase start(EventPayload<PTCase, State> eventPayload) {
-        return eventPayload.caseData();
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
