@@ -25,7 +25,7 @@ public class CitizenUpdateApplication implements CCDConfig<PTCase, State, UserRo
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(CITIZEN_UPDATE_APPLICATION.getId(), this::submit, this::start)
-            .initialState(State.PENDING_CASE_ISSUED)
+            .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(CITIZEN_UPDATE_APPLICATION.getName())
             .grant(CRU, CITIZEN);
