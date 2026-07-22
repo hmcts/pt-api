@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("CreateTestCase Integration Tests")
 public class CreateTestCaseIT extends AbstractPostgresContainerIT {
 
-    private CreateTestCase underTest;
+    private CreatePTCase underTest;
 
     private CaseDetails<PTCase, State> caseDetails;
 
     @BeforeEach
     void setUp() {
-        underTest = new CreateTestCase();
+        underTest = new CreatePTCase();
 
         PTCase ptCase = PTCase.builder().build();
         caseDetails = CaseDetails.<PTCase, State>builder()
@@ -77,5 +77,13 @@ public class CreateTestCaseIT extends AbstractPostgresContainerIT {
             underTest.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getWarnings()).isNullOrEmpty();
+    }
+
+    @Test
+    @DisplayName("Should set applicant forename on start")
+    void shouldSetApplicantForenameOnStart() {
+        AboutToStartOrSubmitResponse<PTCase, State> response = underTest.start(caseDetails);
+
+        assertThat(response.getData().getApplicantForename()).isEqualTo("Preset value");
     }
 }
