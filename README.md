@@ -6,7 +6,7 @@ The purpose of this template is to speed up the creation of new Spring applicati
 and help keep the same standards across multiple teams. If you need to create a new app, you can
 simply use this one as a starting point and build on top of it.
 
-## What's inside
+## What's inside.
 
 The template is a working application with a minimal setup. It contains:
  * application skeleton
@@ -169,6 +169,37 @@ docker image rm <image-id>
 ```
 
 There is no need to remove postgres and java or similar core images.
+
+### Running the tests
+
+The Functional tests use [Rest Assured](https://rest-assured.io) and [Serenity](https://serenity-bdd.github.io) for reporting, and are located in the `/src/functionalTest` directory.
+
+The following environment variables are needed to run the tests:
+- PT_API_S2S_SECRET
+- TEST_URL
+- IDAM_S2S_AUTH_URL
+- IDAM_API_URL
+- IDAM_SYSTEM_USERNAME
+- IDAM_SYSTEM_USER_PASSWORD
+- PT_API_IDAM_SECRET
+
+To run the tests, use:
+```bash
+./gradlew functional
+````
+
+To run tests based on tags, use the following command (replace `tagName` with the desired tag):
+```bash
+./gradlew functional -Dtags="tagName"
+````
+
+Additionally, you can configure the tags to run in the pipeline by editing the functional task in the `build.gradle`, line:
+
+`includeTags System.getProperty("tags", "Functional")`
+
+After the tests run, the report will be available under the /[report-for-functional-tests](report-for-functional-tests) folder, in a file named `index.html`.
+
+---
 
 ## License
 

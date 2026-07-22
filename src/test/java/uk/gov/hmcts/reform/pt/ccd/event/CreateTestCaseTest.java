@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CreateTestCaseTest {
 
-    private CreateTestCase underTest;
+    private CreatePTCase underTest;
 
     @Mock
     private CaseDetails<PTCase, State> caseDetails;
@@ -26,7 +26,7 @@ class CreateTestCaseTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new CreateTestCase();
+        underTest = new CreatePTCase();
     }
 
     @Test
