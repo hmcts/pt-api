@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -25,7 +26,7 @@ public class CasePartyService {
         return casePartyRepository.findFirstByAccessIdamId(idamId);
     }
 
-    public CasePartyEntity createCaseParty(PTCase ptCase, UUID idamId) {
+    public CasePartyEntity createCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())
             .lastName(ptCase.getApplicantLastName())
@@ -33,9 +34,10 @@ public class CasePartyService {
             .build();
         casePartyRepository.save(caseParty);
 
-        CasePartyAddressEntity address = CasePartyAddressEntity.builder()
+        AddressEntity address = AddressEntity.builder()
             .postcode(ptCase.getPostcode())
             .party(caseParty)
+            .ptCase(ptCaseEntity)
             .build();
         casePartyAddressRepository.save(address);
 

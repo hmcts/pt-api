@@ -20,8 +20,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "case_property")
-public class CasePropertyEntity extends AuditableEntity {
+@Table(name = "address")
+public class AddressEntity extends AuditableEntity {
     @Column(name = "address_line_1", length = 100)
     private String addressLine1;
 
@@ -32,16 +32,24 @@ public class CasePropertyEntity extends AuditableEntity {
     private String addressLine3;
 
     @Column(length = 100)
+    private String postTown;
+
+    @Column(length = 100)
     private String county;
 
-    @Column(length = 10)
+    @Column(name = "post_code", length = 10)
     private String postcode;
 
     @Column(length = 100)
     private String country;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @JoinColumn(name = "case_party_id", nullable = false)
+    @JsonBackReference
+    private CasePartyEntity party;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pt_case_id", nullable = false)
     @JsonBackReference
     private PTCaseEntity ptCase;
 }

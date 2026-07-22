@@ -101,8 +101,8 @@ CREATE TABLE case_evidence (
 CREATE TABLE case_flag (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   pt_case_id BIGINT,
-  flag_code INTEGER,
-  sub_type_key INTEGER,
+  flag_code VARCHAR(100),
+  sub_type_key VARCHAR(100),
   sub_type_value VARCHAR(100),
   sub_type_value_cy VARCHAR(100),
   other_description VARCHAR(100),
@@ -187,7 +187,7 @@ CREATE TABLE case_party (
   phone_number VARCHAR(20),
   mobile_phone_number VARCHAR(20),
   email_address VARCHAR(100),
-  date_of_birth DATE,
+  date_of_birth TIMESTAMP,
   reference_number INTEGER,
   case_party_role_id BIGINT,
   case_party_type_id BIGINT,
@@ -199,7 +199,7 @@ CREATE TABLE case_party (
 
 CREATE TABLE case_party_access (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  case_party_id BIGINT,
+  case_party_id BIGINT NOT NULL,
   idam_id UUID,
   access_role VARCHAR(100),
   access_code INTEGER,
@@ -209,15 +209,16 @@ CREATE TABLE case_party_access (
   last_modified_by VARCHAR(100)
 );
 
-CREATE TABLE case_party_address (
+CREATE TABLE address (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  case_party_id BIGINT,
+  case_party_id BIGINT NOT NULL,
+  pt_case_id INTEGER NOT NULL,
   address_line_1 VARCHAR(100),
   address_line_2 VARCHAR(100),
   address_line_3 VARCHAR(100),
   post_town VARCHAR(100),
   county VARCHAR(100),
-  postcode VARCHAR(10),
+  post_code VARCHAR(10),
   country VARCHAR(100),
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -300,22 +301,6 @@ CREATE TABLE case_party_type (
   last_modified_by VARCHAR(100)
 );
 
-CREATE TABLE case_property (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  pt_case_id BIGINT,
-  address_line_1 VARCHAR(100),
-  address_line_2 VARCHAR(100),
-  address_line_3 VARCHAR(100),
-  -- post_town VARCHAR(100),
-  county VARCHAR(100),
-  postcode VARCHAR(10),
-  country VARCHAR(100),
-
-  created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_by VARCHAR(100)
-);
-
 CREATE TABLE case_state (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   pt_case_id BIGINT,
@@ -340,17 +325,6 @@ CREATE TABLE case_task (
 CREATE TABLE case_type (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   application_type_name VARCHAR(100),
-
-  created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_by VARCHAR(100)
-);
-
-CREATE TABLE claim (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  claim_type_id BIGINT,
-  claim_reason VARCHAR(100),
-  pt_case_id BIGINT,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -400,8 +374,8 @@ CREATE TABLE flag_ref_data (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   case_flag_id BIGINT,
   flag_code INTEGER,
-  flag_name VARCHAR(100),
-  flag_name_cy VARCHAR(100),
+  name VARCHAR(100),
+  name_cy VARCHAR(100),
   available_externally VARCHAR(10),
   visibility VARCHAR(10),
   hearing_relevant VARCHAR(100),
@@ -414,9 +388,8 @@ CREATE TABLE flag_ref_data (
 CREATE TABLE hardship_consideration (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   hardship_details VARCHAR(100),
-  hardship_description VARCHAR(100),
+  hardship_description VARCHAR(500),
   evidence_document_uploaded YES_NO,
-  claim_id BIGINT,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -426,7 +399,7 @@ CREATE TABLE hardship_consideration (
 CREATE TABLE hearing_decision (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   description VARCHAR(100),
-  decision_date DATE,
+  decision_date TIMESTAMP,
   case_hearing_id BIGINT,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -437,7 +410,7 @@ CREATE TABLE hearing_decision (
 CREATE TABLE hearing_inspection (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   description VARCHAR(100),
-  inspection_date DATE,
+  inspection_date TIMESTAMP,
   case_hearing_id BIGINT,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -500,15 +473,6 @@ CREATE TABLE pt_case (
   status VARCHAR(100),
   landlord_type VARCHAR(100),
   case_type_id BIGINT,
-
-  created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_by VARCHAR(100)
-);
-
-CREATE TABLE claim_type (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  claim_type VARCHAR(100),
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -718,12 +682,12 @@ ALTER TABLE case_party_access
 CREATE INDEX case_party_access_case_party_id_idx
   ON case_party_access (case_party_id);
 
-ALTER TABLE case_party_address
+ALTER TABLE address
   ADD FOREIGN KEY (case_party_id)
   REFERENCES case_party (id);
 
-CREATE INDEX case_party_address_case_party_id_idx
-  ON case_party_address (case_party_id);
+CREATE INDEX address_case_party_id_idx
+  ON address (case_party_id);
 
 ALTER TABLE case_party_attribute_assertion
   ADD FOREIGN KEY (case_party_id)
@@ -760,13 +724,6 @@ ALTER TABLE case_party_representative
 CREATE INDEX case_party_representative_case_party_id_idx
   ON case_party_representative (case_party_id);
 
-ALTER TABLE case_property
-  ADD FOREIGN KEY (pt_case_id)
-  REFERENCES pt_case (id);
-
-CREATE INDEX case_property_pt_case_id_idx
-  ON case_property (pt_case_id);
-
 ALTER TABLE case_state
   ADD FOREIGN KEY (pt_case_id)
   REFERENCES pt_case (id);
@@ -780,20 +737,6 @@ ALTER TABLE case_task
 
 CREATE INDEX case_task_pt_case_id_idx
   ON case_task (pt_case_id);
-
-ALTER TABLE claim
-  ADD FOREIGN KEY (pt_case_id)
-  REFERENCES pt_case (id);
-
-CREATE INDEX claim_pt_case_id_idx
-  ON claim (pt_case_id);
-
-ALTER TABLE claim
-  ADD FOREIGN KEY (claim_type_id)
-  REFERENCES claim_type (id);
-
-CREATE INDEX claim_claim_type_id_idx
-  ON claim (claim_type_id);
 
 ALTER TABLE decision_appeal
   ADD FOREIGN KEY (hearing_decision_id)
@@ -829,13 +772,6 @@ ALTER TABLE flag_ref_data
 
 CREATE INDEX flag_ref_data_case_flag_id_idx
   ON flag_ref_data (case_flag_id);
-
-ALTER TABLE hardship_consideration
-  ADD FOREIGN KEY (claim_id)
-  REFERENCES claim (id);
-
-CREATE INDEX hardship_consideration_claim_id_idx
-  ON hardship_consideration (claim_id);
 
 ALTER TABLE hearing_decision
   ADD FOREIGN KEY (case_hearing_id)

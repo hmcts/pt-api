@@ -32,7 +32,7 @@ public class CasePartyAccessEntity extends AuditableEntity {
     private Integer accessCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_party_id")
+    @JoinColumn(name = "case_party_id", nullable = false)
     @JsonBackReference
     private CasePartyEntity party;
 }

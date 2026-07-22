@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -104,7 +104,7 @@ class CaseApplicationServiceTest {
     private CaseApplicationEntity createCaseApplication(long caseReference, UUID userId) {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .properties(List.of(CasePropertyEntity.builder().postcode("AB12 3CD").build()))
+            .addresses(List.of(AddressEntity.builder().postcode("AB12 3CD").build()))
             .build();
 
         CasePartyEntity caseParty = CasePartyEntity.builder()

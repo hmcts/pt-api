@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class HearingDecisionEntity extends AuditableEntity {
     @Column(length = 100)
     private String description;
 
-    private LocalDate decisionDate;
+    private LocalDateTime decisionDate;
 
     @OneToMany(mappedBy = "hearingDecision", cascade = CascadeType.ALL)
     @JsonManagedReference

@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.pt.mapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -80,7 +80,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
-        CasePartyEntity caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(ptCase(addresses(POSTCODE)), Collections.emptyList());
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
@@ -90,7 +90,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
-        CasePartyEntity caseParty = caseParty(ptCase(properties(POSTCODE)), Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(ptCase(addresses(POSTCODE)), Collections.emptyList());
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
@@ -98,14 +98,14 @@ public class ApplicationMapperTest {
         assertThat(result.getApplicantIdamUserId()).isNull();
     }
 
-    private static List<CasePropertyEntity> properties(String postcode) {
-        return List.of(CasePropertyEntity.builder().postcode(postcode).build());
+    private static List<AddressEntity> addresses(String postcode) {
+        return List.of(AddressEntity.builder().postcode(postcode).build());
     }
 
-    private static PTCaseEntity ptCase(List<CasePropertyEntity> properties) {
+    private static PTCaseEntity ptCase(List<AddressEntity> addresses) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .properties(properties)
+            .addresses(addresses)
             .build();
     }
 
@@ -133,7 +133,7 @@ public class ApplicationMapperTest {
     }
 
     private static CaseApplicationEntity fullEntity(UUID userId) {
-        PTCaseEntity ptCase = ptCase(properties(POSTCODE));
+        PTCaseEntity ptCase = ptCase(addresses(POSTCODE));
         List<CasePartyAccessEntity> access = List.of(
             CasePartyAccessEntity.builder().idamId(userId).build()
         );

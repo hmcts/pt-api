@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -27,7 +27,7 @@ public class HearingInspectionEntity extends AuditableEntity {
     @Column(length = 100)
     private String description;
 
-    private LocalDate inspectionDate;
+    private LocalDateTime inspectionDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_hearing_id")

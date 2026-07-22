@@ -21,8 +21,8 @@ public class ApplicationMapper {
         return ApplicationDto.builder()
             .caseReference(ptCase.getCaseReference())
             .postcode(
-                !ptCase.getProperties().isEmpty()
-                    ? ptCase.getProperties().getFirst().getPostcode()
+                !ptCase.getAddresses().isEmpty()
+                    ? ptCase.getAddresses().getFirst().getPostcode()
                     : "")
             .applicationType(
                 entity.getCaseType() != null

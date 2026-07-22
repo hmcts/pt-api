@@ -53,7 +53,7 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CasePropertyEntity> properties = new ArrayList<>();
+    private List<AddressEntity> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

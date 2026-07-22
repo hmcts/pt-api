@@ -21,10 +21,10 @@ public class FlagReferenceDataEntity extends AuditableEntity {
     private Integer flagCode;
 
     @Column(length = 100)
-    private String flagName;
+    private String name;
 
     @Column(length = 100)
-    private String flagNameCy;
+    private String nameCy;
 
     @Column(length = 10)
     private String availableExternally;

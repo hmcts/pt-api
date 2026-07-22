@@ -22,9 +22,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "case_flag")
 public class CaseFlagEntity extends AuditableEntity {
-    private Integer flagCode;
+    @Column(length = 100)
+    private String flagCode;
 
-    private Integer subTypeKey;
+    @Column(length = 100)
+    private String subTypeKey;
 
     @Column(length = 100)
     private String subTypeValue;

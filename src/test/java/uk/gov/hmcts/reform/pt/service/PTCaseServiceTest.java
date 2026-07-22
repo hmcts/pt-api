@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,7 +54,7 @@ class PTCaseServiceTest {
         UUID userId = UUID.randomUUID();
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
-        when(casePartyService.createCaseParty(any(), any())).thenReturn(CasePartyEntity.builder().build());
+        when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
 
@@ -69,7 +70,8 @@ class PTCaseServiceTest {
         PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        verify(casePartyService).createCaseParty(ptCase, userId);
+        verify(casePartyService).createCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
+        verify(caseApplicationRepository).save(any());
     }
 
     @Test
@@ -94,6 +96,7 @@ class PTCaseServiceTest {
         PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        verify(casePartyService, never()).createCaseParty(any(), any());
+        verify(casePartyService, never()).createCaseParty(any(), any(), any());
+        verify(caseApplicationRepository).save(any());
     }
 }

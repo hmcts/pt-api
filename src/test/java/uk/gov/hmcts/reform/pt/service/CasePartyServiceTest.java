@@ -9,7 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -61,15 +62,16 @@ class CasePartyServiceTest {
             .postcode("AB12 3CD")
             .build();
         UUID idamId = UUID.randomUUID();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(1234L).build();
 
-        CasePartyEntity result = casePartyService.createCaseParty(ptCase, idamId);
+        CasePartyEntity result = casePartyService.createCaseParty(ptCaseEntity, ptCase, idamId);
 
         assertThat(result.getFirstName()).isEqualTo("John");
         assertThat(result.getLastName()).isEqualTo("Doe");
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
-        verify(casePartyAddressRepository).save(any(CasePartyAddressEntity.class));
+        verify(casePartyAddressRepository).save(any(AddressEntity.class));
         verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
     }
 }

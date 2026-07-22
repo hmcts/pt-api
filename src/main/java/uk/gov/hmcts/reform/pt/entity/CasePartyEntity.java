@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class CasePartyEntity extends AuditableEntity {
     private String emailAddress;
 
     @Column
-    private LocalDate dateOfBirth;
+    private LocalDateTime dateOfBirth;
 
     private Integer referenceNumber;
 
@@ -61,7 +61,7 @@ public class CasePartyEntity extends AuditableEntity {
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CasePartyAddressEntity> addresses = new ArrayList<>();
+    private List<AddressEntity> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference

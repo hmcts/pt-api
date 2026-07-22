@@ -4,9 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -29,14 +26,10 @@ public class HardshipConsiderationEntity extends AuditableEntity {
     @Column(length = 100)
     private String hardshipDetails;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String hardshipDescription;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo evidenceDocumentUploaded;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "claim_id")
-    private ClaimEntity claim;
 }

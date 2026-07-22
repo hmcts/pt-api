@@ -26,15 +26,15 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
-        CasePartyEntity caseParty = casePartyService.getCasePartyByIdamId(userId)
-            .orElseGet(() -> casePartyService.createCaseParty(ptCase, userId));
-
-        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
-
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
             .build();
         ptCaseRepository.save(ptCaseEntity);
+
+        CasePartyEntity caseParty = casePartyService.getCasePartyByIdamId(userId)
+            .orElseGet(() -> casePartyService.createCaseParty(ptCaseEntity, ptCase, userId));
+
+        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
 
         CaseApplicationEntity application = CaseApplicationEntity.builder()
             .caseParty(caseParty)
