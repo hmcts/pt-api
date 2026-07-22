@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
-import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
+import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ class CasePartyServiceTest {
     private CasePartyAccessRepository casePartyAccessRepository;
 
     @Mock
-    private CasePartyAddressRepository casePartyAddressRepository;
+    private AddressRepository addressRepository;
 
     @InjectMocks
     private CasePartyService casePartyService;
@@ -71,7 +71,7 @@ class CasePartyServiceTest {
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
-        verify(casePartyAddressRepository).save(any(AddressEntity.class));
+        verify(addressRepository).save(any(AddressEntity.class));
         verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
     }
 }

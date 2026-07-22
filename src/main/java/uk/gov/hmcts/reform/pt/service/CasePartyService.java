@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
-import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
+import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
 import java.util.Optional;
@@ -20,7 +20,7 @@ public class CasePartyService {
 
     private final CasePartyRepository casePartyRepository;
     private final CasePartyAccessRepository casePartyAccessRepository;
-    private final CasePartyAddressRepository casePartyAddressRepository;
+    private final AddressRepository addressRepository;
 
     public Optional<CasePartyEntity> getCasePartyByIdamId(UUID idamId) {
         return casePartyRepository.findFirstByAccessIdamId(idamId);
@@ -39,7 +39,7 @@ public class CasePartyService {
             .party(caseParty)
             .ptCase(ptCaseEntity)
             .build();
-        casePartyAddressRepository.save(address);
+        addressRepository.save(address);
 
         CasePartyAccessEntity access = CasePartyAccessEntity.builder()
             .idamId(idamId)

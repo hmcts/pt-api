@@ -10,16 +10,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
+import uk.gov.hmcts.reform.pt.repository.AddressRepository;
+import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -40,6 +46,12 @@ class PTCaseServiceTest {
 
     @Mock
     private CaseApplicationRepository caseApplicationRepository;
+
+    @Mock
+    private CasePartyRepository casePartyRepository;
+
+    @Mock
+    private AddressRepository addressRepository;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -98,5 +110,49 @@ class PTCaseServiceTest {
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService, never()).createCaseParty(any(), any(), any());
         verify(caseApplicationRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("Should update the case party and application when the case exists")
+    void updateCaseUpdatesPartyAndApplication() {
+        long caseReference = 1234567890123456L;
+        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+
+        AddressEntity address = AddressEntity.builder().build();
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .id(1L)
+            .addresses(List.of(address))
+            .build();
+
+        when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.of(caseParty));
+
+        PTCase ptCase = PTCase.builder()
+            .applicantFirstName("Jane")
+            .applicantLastName("Doe")
+            .email("jane@example.com")
+            .postcode("AB1 2CD")
+            .applicationType(applicationType)
+            .build();
+
+        ptCaseService.updateCase(caseReference, ptCase);
+
+        assertThat(caseParty.getFirstName()).isEqualTo("Jane");
+        assertThat(caseParty.getLastName()).isEqualTo("Doe");
+        assertThat(caseParty.getEmailAddress()).isEqualTo("jane@example.com");
+        assertThat(address.getPostcode()).isEqualTo("AB1 2CD");
+        verify(casePartyRepository).save(caseParty);
+        verify(addressRepository).save(address);
+    }
+
+    @Test
+    @DisplayName("Should throw CaseNotFoundException when no case party is found for the case reference")
+    void updateCaseThrowsWhenCasePartyNotFound() {
+        long caseReference = 1234567890123456L;
+        PTCase ptCase = PTCase.builder().build();
+
+        when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ptCaseService.updateCase(caseReference, ptCase))
+            .isInstanceOf(CaseNotFoundException.class);
     }
 }
