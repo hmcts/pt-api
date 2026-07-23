@@ -20,7 +20,7 @@ class CaseTypeRepositoryTest extends AbstractRepositoryTest<CaseTypeRepository> 
     @Test
     @DisplayName("Should return case type for application type name")
     void findFirstByApplicationTypeNameReturnsCaseType() {
-        ApplicationType applicationType = ApplicationType.CHALLENGE_EXCESSIVE_RENT;
+        ApplicationType applicationType = ApplicationType.CHALLENGE_NOTICE_LEGAL_VALIDITY;
         CaseTypeEntity caseType = CaseTypeEntity.builder()
             .applicationTypeName(applicationType)
             .build();
