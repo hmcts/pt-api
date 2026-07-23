@@ -373,12 +373,12 @@ CREATE TABLE fee_help_with_fees (
 CREATE TABLE flag_ref_data (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   case_flag_id BIGINT,
-  flag_code INTEGER,
+  flag_code VARCHAR(100),
   name VARCHAR(100),
   name_cy VARCHAR(100),
-  available_externally VARCHAR(10),
+  available_externally YES_NO,
   visibility VARCHAR(10),
-  hearing_relevant VARCHAR(100),
+  hearing_relevant YES_NO,
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
