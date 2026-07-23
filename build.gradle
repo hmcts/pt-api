@@ -164,12 +164,16 @@ tasks.register('runAndPublishConsumerPactTests', Test){
 
 project.ext {
   pactVersion = getCheckedOutGitCommitHash()
+  pacticipantVersion = getCheckedOutGitCommitHash()
+  pacticipant = 'pt_api'
 }
 
 pact {
+  broker {
+    pactBrokerUrl = System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
+  }
   publish {
     pactDirectory = 'pacts'
-    pactBrokerUrl = System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
     tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
     version = project.pactVersion
   }
