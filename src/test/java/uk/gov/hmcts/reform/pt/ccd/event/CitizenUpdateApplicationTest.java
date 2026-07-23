@@ -9,41 +9,30 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.idam.UserInfo;
-import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CitizenCreateApplicationTest extends BaseEventTest {
+class CitizenUpdateApplicationTest extends BaseEventTest {
 
     @Mock
     private PTCaseService ptCaseService;
 
-    @Mock
-    private SecurityContextService securityContextService;
-
     @BeforeEach
     void setUp() {
-        CitizenCreateApplication underTest = new CitizenCreateApplication(ptCaseService, securityContextService);
+        CitizenUpdateApplication underTest = new CitizenUpdateApplication(ptCaseService);
         configureEvent(underTest);
     }
 
     @Test
-    void submitShouldCreateCaseForAuthenticatedUserAndReturnDefaultResponse() {
-        UUID userId = UUID.randomUUID();
-        when(securityContextService.getCurrentUserDetails())
-            .thenReturn(UserInfo.builder().uid(userId.toString()).build());
+    void submitShouldUpdateCaseAndReturnDefaultResponse() {
         PTCase caseData = getTestPTCase();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
-        verify(ptCaseService).createCase(TEST_CASE_REFERENCE, userId, caseData);
+        verify(ptCaseService).updateCase(TEST_CASE_REFERENCE, caseData);
         assertThat(result).isEqualTo(SubmitResponse.<State>builder().build());
     }
 

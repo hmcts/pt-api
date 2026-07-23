@@ -9,35 +9,30 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
-import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
-
-import java.util.UUID;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CITIZEN;
-import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
+import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_SUBMIT_APPLICATION;
 
 @Component
 @RequiredArgsConstructor
-public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRole> {
+public class CitizenSubmitApplication implements CCDConfig<PTCase, State, UserRole> {
 
     private final PTCaseService ptCaseService;
-    private final SecurityContextService securityContextService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
-            .decentralisedEvent(CITIZEN_CREATE_APPLICATION.getId(), this::submit)
-            .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit)
+            .forStateTransition(State.AWAITING_SUBMISSION_TO_HMCTS, State.PENDING_CASE_ISSUED)
             .showSummary()
-            .name(CITIZEN_CREATE_APPLICATION.getName())
+            .name(CITIZEN_SUBMIT_APPLICATION.getName())
             .grant(CRU, CITIZEN);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
-        UUID userId = UUID.fromString(securityContextService.getCurrentUserDetails().getUid());
-        ptCaseService.createCase(eventPayload.caseReference(), userId, eventPayload.caseData());
+        ptCaseService.updateCase(eventPayload.caseReference(), eventPayload.caseData());
         return SubmitResponse.<State>builder().build();
     }
 }
