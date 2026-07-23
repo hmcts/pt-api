@@ -124,7 +124,7 @@ class CaseApplicationServiceTest {
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
             .caseType(CaseTypeEntity.builder()
-                          .applicationTypeName(ApplicationType.CHALLENGE_NOTICE_LEGAL_VALIDITY).build())
+                          .applicationTypeName(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .build();
     }
 }
