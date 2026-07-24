@@ -260,7 +260,7 @@ dependencies {
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
 
   // Compile-time only: needed for IdamApi.class reference in @EnableFeignClients (ccd-sdk's IdamClient depends on it).
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '4.0.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.3.0'
