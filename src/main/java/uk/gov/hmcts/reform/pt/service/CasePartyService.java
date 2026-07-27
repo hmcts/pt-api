@@ -22,10 +22,6 @@ public class CasePartyService {
     private final CasePartyAccessRepository casePartyAccessRepository;
     private final AddressRepository addressRepository;
 
-    public Optional<CasePartyEntity> getCasePartyByIdamId(UUID idamId) {
-        return casePartyRepository.findFirstByAccessIdamId(idamId);
-    }
-
     public CasePartyEntity createCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())

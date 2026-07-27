@@ -39,20 +39,6 @@ class CasePartyServiceTest {
     private CasePartyService casePartyService;
 
     @Test
-    @DisplayName("Should return CasePartyEntity if it exists by idam id")
-    void getCasePartyByIdamId() {
-        UUID idamId = UUID.randomUUID();
-        CasePartyEntity caseParty = CasePartyEntity.builder().firstName("John").build();
-        when(casePartyRepository.findFirstByAccessIdamId(idamId)).thenReturn(Optional.of(caseParty));
-
-        Optional<CasePartyEntity> result = casePartyService.getCasePartyByIdamId(idamId);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getFirstName()).isEqualTo("John");
-        verify(casePartyRepository).findFirstByAccessIdamId(idamId);
-    }
-
-    @Test
     @DisplayName("Should create CasePartyEntity and related entities")
     void createCaseParty() {
         PTCase ptCase = PTCase.builder()

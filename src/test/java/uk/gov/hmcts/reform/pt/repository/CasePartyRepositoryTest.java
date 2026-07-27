@@ -24,29 +24,6 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     }
 
     @Test
-    @DisplayName("Should return case party associated with access idam id")
-    void findFirstByAccessIdamIdReturnsCaseParty() {
-        UUID idamId = UUID.randomUUID();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .firstName("FirstName")
-            .lastName("LastName")
-            .build();
-
-        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
-            .idamId(idamId)
-            .party(party)
-            .build();
-
-        party.setAccess(List.of(access));
-        repository.save(party);
-
-        Optional<CasePartyEntity> result = repository.findFirstByAccessIdamId(idamId);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getFirstName()).isEqualTo("FirstName");
-    }
-
-    @Test
     @DisplayName("Should return case party associated with a case reference")
     void findFirstByPtCaseCaseReferenceReturnsCaseParty() {
         long caseReference = 1234567890123456L;
