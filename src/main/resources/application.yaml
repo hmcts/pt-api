@@ -114,3 +114,8 @@ core_case_data:
 
 caseApi:
   url: ${CASE_API_URL:http://localhost:4550}
+
+doc_assembly:
+  url: ${DOC_ASSEMBLY_URL:http://localhost:8080}
+  s2s-authorised:
+    services: pt_api,ccd_data,ccd_gw,ccd_case_document_am_api,ccd_definition,ccd_admin,ccd_pt,ccd
