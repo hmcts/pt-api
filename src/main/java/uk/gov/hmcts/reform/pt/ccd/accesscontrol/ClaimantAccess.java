@@ -16,5 +16,4 @@ public class ClaimantAccess implements HasAccessControl {
         grants.putAll(PT_SOLICITOR, Permission.CRU);
         return grants;
     }
-
 }
