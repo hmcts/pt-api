@@ -13,8 +13,9 @@ class UserRoleTest {
 
     @Test
     void shouldHaveSingleRole() {
-        assertEquals(1, UserRole.values().length);
+        assertEquals(2, UserRole.values().length);
         assertEquals(UserRole.CASE_WORKER, UserRole.values()[0]);
+        assertEquals(UserRole.CITIZEN, UserRole.values()[1]);
     }
 
     @Test
