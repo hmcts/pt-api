@@ -98,14 +98,8 @@ class PTCaseServiceTest {
     @Test
     @DisplayName("Should save a case entity built from the case reference when party exists")
     void createCasePartyExists() {
-        long caseReference = 1234567890123456L;
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
-        PTCase ptCase = PTCase.builder()
-            .applicantFirstName("John")
-            .applicationType(applicationType)
-            .tenancyType(tenancyType)
-            .build();
         UUID userId = UUID.randomUUID();
         CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
 
@@ -114,6 +108,13 @@ class PTCaseServiceTest {
             .thenReturn(CaseTypeEntity.builder().build());
         when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType))
             .thenReturn(TenancyDetailsEntity.builder().build());
+
+        long caseReference = 1234567890123456L;
+        PTCase ptCase = PTCase.builder()
+            .applicantFirstName("John")
+            .applicationType(applicationType)
+            .tenancyType(tenancyType)
+            .build();
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 

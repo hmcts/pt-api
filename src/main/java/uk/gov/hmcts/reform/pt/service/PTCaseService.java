@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pt.entity.*;
+import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
@@ -32,7 +36,8 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
-        TenancyDetailsEntity tenancyDetails = tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType());
+        TenancyDetailsEntity tenancyDetails =
+            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType());
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
