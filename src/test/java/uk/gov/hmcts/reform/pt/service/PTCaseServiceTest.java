@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,14 +64,12 @@ class PTCaseServiceTest {
     private PTCaseService ptCaseService;
 
     @Test
-    @DisplayName("Should save a case entity built from the case reference when party does not exist")
-    void createCasePartyDoesNotExist() {
+    @DisplayName("Should save a case entity built from the case reference")
+    void createCase() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
-        UUID userId = UUID.randomUUID();
         long caseReference = 1234567890123456L;
 
-        when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
@@ -84,6 +81,7 @@ class PTCaseServiceTest {
             .applicationType(applicationType)
             .tenancyType(tenancyType)
             .build();
+        UUID userId = UUID.randomUUID();
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
@@ -92,37 +90,6 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
-        verify(caseApplicationRepository).save(any());
-    }
-
-    @Test
-    @DisplayName("Should save a case entity built from the case reference when party exists")
-    void createCasePartyExists() {
-        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
-        UUID userId = UUID.randomUUID();
-        CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
-        long caseReference = 1234567890123456L;
-
-        when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.of(existingParty));
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
-            .thenReturn(CaseTypeEntity.builder().build());
-        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference))
-            .thenReturn(TenancyDetailsEntity.builder().build());
-
-        PTCase ptCase = PTCase.builder()
-            .applicantFirstName("John")
-            .applicationType(applicationType)
-            .tenancyType(tenancyType)
-            .build();
-
-        ptCaseService.createCase(caseReference, userId, ptCase);
-
-        verify(ptCaseRepository).save(ptCaseEntityCaptor.capture());
-        PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
-
-        assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        verify(casePartyService, never()).createCaseParty(any(), any(), any());
         verify(caseApplicationRepository).save(any());
     }
 

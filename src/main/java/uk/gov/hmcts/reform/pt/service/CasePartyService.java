@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,15 +21,12 @@ public class CasePartyService {
     private final CasePartyAccessRepository casePartyAccessRepository;
     private final AddressRepository addressRepository;
 
-    public Optional<CasePartyEntity> getCasePartyByIdamId(UUID idamId) {
-        return casePartyRepository.findFirstByAccessIdamId(idamId);
-    }
-
     public CasePartyEntity createCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())
             .lastName(ptCase.getApplicantLastName())
             .emailAddress(ptCase.getEmail())
+            .ptCase(ptCaseEntity)
             .build();
         casePartyRepository.save(caseParty);
 
