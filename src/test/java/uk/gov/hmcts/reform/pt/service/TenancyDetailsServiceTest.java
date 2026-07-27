@@ -31,14 +31,16 @@ public class TenancyDetailsServiceTest {
     @DisplayName("Should return existing TenancyDetailsEntity if it exists")
     void getTenancyDetailsOrCreateIfNotExistsWhenExists() {
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
+        long caseReference = 1234567890123456L;
         TenancyDetailsEntity existingTenancyDetails = TenancyDetailsEntity.builder().tenancyType(tenancyType).build();
-        when(tenancyDetailsRepository.findFirstByTenancyType(tenancyType))
+        when(tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference))
             .thenReturn(Optional.of(existingTenancyDetails));
 
-        TenancyDetailsEntity result = tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType);
+        TenancyDetailsEntity result =
+            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference);
 
         assertThat(result).isEqualTo(existingTenancyDetails);
-        verify(tenancyDetailsRepository).findFirstByTenancyType(tenancyType);
+        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference);
         verify(tenancyDetailsRepository, never()).save(any());
     }
 
@@ -46,15 +48,17 @@ public class TenancyDetailsServiceTest {
     @DisplayName("Should create new TenancyDetailsEntity if it does not exist")
     void getTenancyDetailsOrCreateIfNotExistsWhenNotExists() {
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
-        when(tenancyDetailsRepository.findFirstByTenancyType(tenancyType))
+        long caseReference = 1234567890123456L;
+        when(tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference))
             .thenReturn(Optional.empty());
         when(tenancyDetailsRepository.save(any(TenancyDetailsEntity.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        TenancyDetailsEntity result = tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType);
+        TenancyDetailsEntity result =
+            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference);
 
         assertThat(result.getTenancyType()).isEqualTo(tenancyType);
-        verify(tenancyDetailsRepository).findFirstByTenancyType(tenancyType);
+        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference);
         verify(tenancyDetailsRepository).save(any(TenancyDetailsEntity.class));
     }
 

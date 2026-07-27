@@ -70,12 +70,13 @@ class PTCaseServiceTest {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         UUID userId = UUID.randomUUID();
+        long caseReference = 1234567890123456L;
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
-        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType))
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference))
             .thenReturn(TenancyDetailsEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
@@ -83,7 +84,6 @@ class PTCaseServiceTest {
             .applicationType(applicationType)
             .tenancyType(tenancyType)
             .build();
-        long caseReference = 1234567890123456L;
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
@@ -102,14 +102,14 @@ class PTCaseServiceTest {
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         UUID userId = UUID.randomUUID();
         CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
+        long caseReference = 1234567890123456L;
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.of(existingParty));
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
-        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType))
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference))
             .thenReturn(TenancyDetailsEntity.builder().build());
 
-        long caseReference = 1234567890123456L;
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)

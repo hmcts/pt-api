@@ -37,7 +37,7 @@ public class PTCaseService {
         PTCase ptCase
     ) {
         TenancyDetailsEntity tenancyDetails =
-            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType());
+            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), caseReference);
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
