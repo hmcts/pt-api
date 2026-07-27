@@ -10,10 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
@@ -42,6 +44,9 @@ class PTCaseServiceTest {
     private CasePartyService casePartyService;
 
     @Mock
+    private TenancyDetailsService tenancyDetailsService;
+
+    @Mock
     private CaseTypeService caseTypeService;
 
     @Mock
@@ -63,16 +68,20 @@ class PTCaseServiceTest {
     @DisplayName("Should save a case entity built from the case reference when party does not exist")
     void createCasePartyDoesNotExist() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+        TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         UUID userId = UUID.randomUUID();
 
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType))
+            .thenReturn(TenancyDetailsEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)
+            .tenancyType(tenancyType)
             .build();
         long caseReference = 1234567890123456L;
 
@@ -91,9 +100,11 @@ class PTCaseServiceTest {
     void createCasePartyExists() {
         long caseReference = 1234567890123456L;
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
+        TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)
+            .tenancyType(tenancyType)
             .build();
         UUID userId = UUID.randomUUID();
         CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
@@ -101,6 +112,8 @@ class PTCaseServiceTest {
         when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.of(existingParty));
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType))
+            .thenReturn(TenancyDetailsEntity.builder().build());
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
