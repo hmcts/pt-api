@@ -119,3 +119,6 @@ doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://localhost:8080}
   s2s-authorised:
     services: pt_api,ccd_data,ccd_gw,ccd_case_document_am_api,ccd_definition,ccd_admin,ccd_pt,ccd
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
