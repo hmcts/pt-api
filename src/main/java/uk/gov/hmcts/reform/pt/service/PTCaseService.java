@@ -45,8 +45,7 @@ public class PTCaseService {
             .build();
         ptCaseRepository.save(ptCaseEntity);
 
-        CasePartyEntity caseParty = casePartyService.getCasePartyByIdamId(userId)
-            .orElseGet(() -> casePartyService.createCaseParty(ptCaseEntity, ptCase, userId));
+        CasePartyEntity caseParty = casePartyService.createCaseParty(ptCaseEntity, ptCase, userId);
 
         CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
         CaseApplicationEntity application = CaseApplicationEntity.builder()
