@@ -65,6 +65,7 @@ public class ApplicationController {
         }
     )
     @ApiResponse(responseCode = "200", description = "Case retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid case reference")
     @ApiResponse(responseCode = "401", description = "Invalid access token")
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
     @ApiResponse(responseCode = "500", description = "Internal server error")
