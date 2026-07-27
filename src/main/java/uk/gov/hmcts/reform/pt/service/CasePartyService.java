@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,6 +26,7 @@ public class CasePartyService {
             .firstName(ptCase.getApplicantFirstName())
             .lastName(ptCase.getApplicantLastName())
             .emailAddress(ptCase.getEmail())
+            .ptCase(ptCaseEntity)
             .build();
         casePartyRepository.save(caseParty);
 

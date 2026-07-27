@@ -15,13 +15,11 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CasePartyServiceTest {
@@ -48,13 +46,15 @@ class CasePartyServiceTest {
             .postcode("AB12 3CD")
             .build();
         UUID idamId = UUID.randomUUID();
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(1234L).build();
+        long caseReference = 1234L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
 
         CasePartyEntity result = casePartyService.createCaseParty(ptCaseEntity, ptCase, idamId);
 
         assertThat(result.getFirstName()).isEqualTo("John");
         assertThat(result.getLastName()).isEqualTo("Doe");
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
+        assertThat(result.getPtCase().getCaseReference()).isEqualTo(caseReference);
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
         verify(addressRepository).save(any(AddressEntity.class));

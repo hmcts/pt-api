@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long> {
     // TODO: change to also query by rolename
