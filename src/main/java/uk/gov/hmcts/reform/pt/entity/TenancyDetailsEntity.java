@@ -17,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 
 @Entity
 @Setter
@@ -29,6 +30,9 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo documentUploaded;
+
+    @Enumerated(EnumType.STRING)
+    private TenancyType tenancyType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")

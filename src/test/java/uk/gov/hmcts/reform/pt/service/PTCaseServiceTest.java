@@ -10,10 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
@@ -28,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +41,9 @@ class PTCaseServiceTest {
 
     @Mock
     private CasePartyService casePartyService;
+
+    @Mock
+    private TenancyDetailsService tenancyDetailsService;
 
     @Mock
     private CaseTypeService caseTypeService;
@@ -60,21 +64,24 @@ class PTCaseServiceTest {
     private PTCaseService ptCaseService;
 
     @Test
-    @DisplayName("Should save a case entity built from the case reference when party does not exist")
-    void createCasePartyDoesNotExist() {
+    @DisplayName("Should save a case entity built from the case reference")
+    void createCase() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        UUID userId = UUID.randomUUID();
+        TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
+        long caseReference = 1234567890123456L;
 
-        when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.empty());
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference))
+            .thenReturn(TenancyDetailsEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)
+            .tenancyType(tenancyType)
             .build();
-        long caseReference = 1234567890123456L;
+        UUID userId = UUID.randomUUID();
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
@@ -83,32 +90,6 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
-        verify(caseApplicationRepository).save(any());
-    }
-
-    @Test
-    @DisplayName("Should save a case entity built from the case reference when party exists")
-    void createCasePartyExists() {
-        long caseReference = 1234567890123456L;
-        ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        PTCase ptCase = PTCase.builder()
-            .applicantFirstName("John")
-            .applicationType(applicationType)
-            .build();
-        UUID userId = UUID.randomUUID();
-        CasePartyEntity existingParty = CasePartyEntity.builder().firstName("John").build();
-
-        when(casePartyService.getCasePartyByIdamId(userId)).thenReturn(Optional.of(existingParty));
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
-            .thenReturn(CaseTypeEntity.builder().build());
-
-        ptCaseService.createCase(caseReference, userId, ptCase);
-
-        verify(ptCaseRepository).save(ptCaseEntityCaptor.capture());
-        PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
-
-        assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        verify(casePartyService, never()).createCaseParty(any(), any(), any());
         verify(caseApplicationRepository).save(any());
     }
 

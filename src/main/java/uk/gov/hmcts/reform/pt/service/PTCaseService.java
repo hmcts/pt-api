@@ -3,17 +3,19 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
-import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
+import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,6 +24,7 @@ public class PTCaseService {
 
     private final CasePartyService casePartyService;
     private final CaseTypeService caseTypeService;
+    private final TenancyDetailsService tenancyDetailsService;
     private final PTCaseRepository ptCaseRepository;
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
@@ -33,13 +36,16 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
+        TenancyDetailsEntity tenancyDetails =
+            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), caseReference);
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
+            .tenancyDetails(List.of(tenancyDetails))
             .build();
         ptCaseRepository.save(ptCaseEntity);
 
-        CasePartyEntity caseParty = casePartyService.getCasePartyByIdamId(userId)
-            .orElseGet(() -> casePartyService.createCaseParty(ptCaseEntity, ptCase, userId));
+        CasePartyEntity caseParty = casePartyService.createCaseParty(ptCaseEntity, ptCase, userId);
 
         CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
         CaseApplicationEntity application = CaseApplicationEntity.builder()

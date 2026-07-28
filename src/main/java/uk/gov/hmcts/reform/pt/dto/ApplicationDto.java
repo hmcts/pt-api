@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -16,4 +17,5 @@ public class ApplicationDto {
     private String postcode;
     private UUID applicantIdamUserId;
     private ApplicationType applicationType;
+    private LocalDateTime createdDate;
 }

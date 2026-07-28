@@ -35,6 +35,7 @@ public class ApplicationMapper {
                     ? caseParty.getAccess().getFirst().getIdamId()
                     : null)
             .email(caseParty.getEmailAddress())
+            .createdDate(entity.getCreatedDate())
             .build();
     }
 }

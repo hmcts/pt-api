@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -129,6 +130,7 @@ public class ApplicationMapperTest {
                 applicationType != null
                     ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
                     : null)
+            .createdDate(LocalDateTime.of(2026, 2, 24, 9, 0))
             .build();
     }
 
