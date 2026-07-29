@@ -13,8 +13,11 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 
 @EnableScheduling
-@ImportAutoConfiguration({FeignAutoConfiguration.class, FeignClientsConfiguration.class,
-    HttpMessageConvertersAutoConfiguration.class})
+@ImportAutoConfiguration({
+    FeignAutoConfiguration.class,
+    FeignClientsConfiguration.class,
+    HttpMessageConvertersAutoConfiguration.class
+})
 @EnableFeignClients(
     clients = {
         IdamUserInfoApi.class,
@@ -26,7 +29,8 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
     scanBasePackages = {
         "uk.gov.hmcts.reform.pt",
         "uk.gov.hmcts.ccd.sdk",
-        "uk.gov.hmcts.reform.ccd.client"
+        "uk.gov.hmcts.reform.ccd.client",
+        "uk.gov.hmcts.reform.docassembly",
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
