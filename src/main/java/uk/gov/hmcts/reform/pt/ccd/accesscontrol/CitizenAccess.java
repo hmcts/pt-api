@@ -16,5 +16,4 @@ public class CitizenAccess implements HasAccessControl {
         grants.putAll(CITIZEN, Permission.CRUD);
         return grants;
     }
-
 }

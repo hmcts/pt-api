@@ -8,6 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
     clients = {
         IdamUserInfoApi.class,
         IdamApi.class, // not used by pt-api code; required so ccd-sdk's IdamClient can wire.
+        CaseDocumentClientApi.class,
     }
 )
 @SpringBootApplication(
