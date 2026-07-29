@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @PactTestFor(providerName = "idamApi_oidc", port = "5000")
 
-@Disabled('Temporarily disabled until SIDM-10458 is done')
+@Disabled("Temporarily disabled until SIDM-10458 is done")
 public class IdamConsumerTest {
 
     @Autowired
