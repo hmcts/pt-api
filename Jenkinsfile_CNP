@@ -39,7 +39,7 @@ withPipeline(type, product, component) {
   enableDbMigration('pt-kv')
 
   onPR() {
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
     setPreviewEnvVars()
     if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
       env.CCD_ENABLED = "true"
@@ -50,7 +50,7 @@ withPipeline(type, product, component) {
   }
 
     onMaster() {
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
       setAatEnvVars()
 //  afterSuccess('smoketest:aat') {
 //    runE2eTests(env.ENVIRONMENT)
