@@ -1,0 +1,63 @@
+package uk.gov.hmcts.reform.pt.service;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
+import uk.gov.hmcts.reform.pt.repository.AddressRepository;
+import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class CasePartyServiceTest {
+
+    @Mock
+    private CasePartyRepository casePartyRepository;
+
+    @Mock
+    private CasePartyAccessRepository casePartyAccessRepository;
+
+    @Mock
+    private AddressRepository addressRepository;
+
+    @InjectMocks
+    private CasePartyService casePartyService;
+
+    @Test
+    @DisplayName("Should create CasePartyEntity and related entities")
+    void createCaseParty() {
+        PTCase ptCase = PTCase.builder()
+            .applicantFirstName("John")
+            .applicantLastName("Doe")
+            .email("john.doe@example.com")
+            .postcode("AB12 3CD")
+            .build();
+        UUID idamId = UUID.randomUUID();
+        long caseReference = 1234L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+
+        CasePartyEntity result = casePartyService.createCaseParty(ptCaseEntity, ptCase, idamId);
+
+        assertThat(result.getFirstName()).isEqualTo("John");
+        assertThat(result.getLastName()).isEqualTo("Doe");
+        assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
+        assertThat(result.getPtCase().getCaseReference()).isEqualTo(caseReference);
+
+        verify(casePartyRepository).save(any(CasePartyEntity.class));
+        verify(addressRepository).save(any(AddressEntity.class));
+        verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
+    }
+}

@@ -1,0 +1,48 @@
+package uk.gov.hmcts.reform.pt.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
+import uk.gov.hmcts.reform.pt.repository.AddressRepository;
+import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class CasePartyService {
+
+    private final CasePartyRepository casePartyRepository;
+    private final CasePartyAccessRepository casePartyAccessRepository;
+    private final AddressRepository addressRepository;
+
+    public CasePartyEntity createCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .firstName(ptCase.getApplicantFirstName())
+            .lastName(ptCase.getApplicantLastName())
+            .emailAddress(ptCase.getEmail())
+            .ptCase(ptCaseEntity)
+            .build();
+        casePartyRepository.save(caseParty);
+
+        AddressEntity address = AddressEntity.builder()
+            .postcode(ptCase.getPostcode())
+            .party(caseParty)
+            .ptCase(ptCaseEntity)
+            .build();
+        addressRepository.save(address);
+
+        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
+            .idamId(idamId)
+            .party(caseParty)
+            .build();
+        casePartyAccessRepository.save(access);
+
+        return caseParty;
+    }
+}
