@@ -114,3 +114,6 @@ core_case_data:
 
 caseApi:
   url: ${CASE_API_URL:http://localhost:4550}
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}

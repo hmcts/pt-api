@@ -18,5 +18,4 @@ public class DefendantAccess implements HasAccessControl {
         grants.putAll(DEFENDANT_SOLICITOR, Permission.CRU);
         return grants;
     }
-
 }
