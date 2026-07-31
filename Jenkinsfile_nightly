@@ -11,4 +11,6 @@ def type = "java"
 def product = "pt"
 def component = "api"
 
-withNightlyPipeline(type, product, component) {}
+withNightlyPipeline(type, product, component) {
+  enableSlackNotifications('#pt-tech')
+}
