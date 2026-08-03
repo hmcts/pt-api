@@ -62,7 +62,7 @@ public class MarketRentCaseEntity extends AuditableEntity {
     private String rentingFlatDetails;
 
     @Column(length = 500)
-    private String rentingRoomDetails;
+    private String rentingRoomsDetails;
 
     @Column(length = 500)
     private String otherMethodOfRentDetails;

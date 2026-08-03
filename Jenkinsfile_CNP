@@ -37,6 +37,7 @@ withPipeline(type, product, component) {
   env.PACT_BROKER_URL = "https://pact-broker.platform.hmcts.net"
   loadVaultSecrets(secrets)
   enableDbMigration('pt-kv')
+  syncBranchesWithMaster(['ithc', 'demo', 'perftest'])
 
   onPR() {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -49,15 +50,8 @@ withPipeline(type, product, component) {
     }
   }
 
-    onMaster() {
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-      setAatEnvVars()
-//  afterSuccess('smoketest:aat') {
-//    runE2eTests(env.ENVIRONMENT)
-//  }
-  }
-
   onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     enableHighLevelDataSetup("pt-kv", true)
     setAatEnvVars()
   }
@@ -103,6 +97,8 @@ withPipeline(type, product, component) {
     archiveFunctionalTestReports()
   }
 }
+
+
 def setPreviewEnvVars() {
   // TODO: Update URL to include XUI when available
   env.TEST_E2E_URL_WEB = "https://pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
