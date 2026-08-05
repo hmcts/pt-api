@@ -89,9 +89,6 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 30)
     private String previousTribunalCaseReference;
 
-    @Column(length = 5000)
-    private String tribunalCaseReferenceDetails;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
