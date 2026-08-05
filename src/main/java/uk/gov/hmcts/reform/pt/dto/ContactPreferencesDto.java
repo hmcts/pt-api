@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 public class ContactPreferencesDto {
     private YesOrNo contactByText;
-    private YesOrNo contactByPhone;
 
     private String phoneNumber;
     private String mobilePhoneNumber;

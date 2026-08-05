@@ -55,11 +55,6 @@ public class ApplicationMapper {
                     ? contactPreferences.getContactByText()
                     : null
             )
-            .contactByPhone(
-                contactPreferences != null
-                    ? contactPreferences.getContactByPhone()
-                    : null
-            )
             .build();
     }
 }

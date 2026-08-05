@@ -48,7 +48,6 @@ class ContactPreferencesServiceTest {
 
         assertThat(saved.getParty()).isEqualTo(caseParty);
         assertThat(saved.getContactByText()).isEqualTo(YesOrNo.YES);
-        assertThat(saved.getContactByPhone()).isEqualTo(YesOrNo.YES);
     }
 
     @Test
@@ -56,7 +55,6 @@ class ContactPreferencesServiceTest {
     void updateContactPreferencesUpdatesExisting() {
         CasePartyContactPreferenceEntity existing = CasePartyContactPreferenceEntity.builder()
             .contactByText(YesOrNo.NO)
-            .contactByPhone(YesOrNo.NO)
             .build();
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .contactPreferences(List.of(existing))
@@ -70,7 +68,6 @@ class ContactPreferencesServiceTest {
 
         verify(casePartyContactPreferenceRepository).save(existing);
         assertThat(existing.getContactByText()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getContactByPhone()).isEqualTo(YesOrNo.NO);
         assertThat(existing.getParty()).isEqualTo(caseParty);
     }
 }
