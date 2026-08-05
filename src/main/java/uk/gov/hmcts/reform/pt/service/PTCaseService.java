@@ -78,9 +78,6 @@ public class PTCaseService {
     @Transactional
     public void updateContactPreferences(PTCase ptCase, CasePartyEntity caseParty) {
         ApplicantContactPreferences contactPreferenceData = ptCase.getApplicantContactPreferences();
-        if (contactPreferenceData == null) {
-            return;
-        }
 
         contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
 
