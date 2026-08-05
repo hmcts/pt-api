@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,12 +26,13 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @AllArgsConstructor
 @Table(name = "case_party_contact_preference")
 public class CasePartyContactPreferenceEntity extends AuditableEntity {
-    @Column(length = 100)
-    private String preferenceType;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo contactByText;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo enabled;
+    private YesOrNo contactByPhone;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_id")
