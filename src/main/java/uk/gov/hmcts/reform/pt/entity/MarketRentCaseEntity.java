@@ -48,12 +48,10 @@ public class MarketRentCaseEntity extends AuditableEntity {
     private LocalDateTime submittedDate;
     private LocalDateTime issuedDate;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo propertyFloorPlanAvailable;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private PropertyType typeOfPropertyRenting;
@@ -73,7 +71,6 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 5000)
     private String propertyIndoorFeatures;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo sharePropertyWithLandlord;
@@ -90,7 +87,6 @@ public class MarketRentCaseEntity extends AuditableEntity {
     private BigDecimal rentCostMonthly;
     private BigDecimal rentCostYearly;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentIncludesCouncilTax;
@@ -119,19 +115,16 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 500)
     private String utilitiesFrequencyAndCostDetails;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo otherHouseholdManagementCharges;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentInclusiveOfUtilityCharges;
 
     private BigDecimal applicantSuggestedMonthlyMarketRent;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalRentalServiceChargesVary;
