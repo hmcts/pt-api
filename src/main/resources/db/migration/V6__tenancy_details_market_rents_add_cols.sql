@@ -19,18 +19,6 @@ ALTER TABLE tenancy_details
   ADD COLUMN tribunal_previously_determined_tenancy_rent YES_NO,
   ADD COLUMN previous_tribunal_case_reference VARCHAR (30);
 
-ALTER TABLE tenancy_details
-  ALTER COLUMN tenancy_type SET NOT NULL,
-  ALTER COLUMN additional_services_provided_in_tenancy SET NOT NULL,
-  ALTER COLUMN any_tenants_made_property_repairs SET NOT NULL,
-  ALTER COLUMN tenancy_include_facilities SET NOT NULL,
-  ALTER COLUMN furniture_provided_in_tenancy SET NOT NULL,
-  ALTER COLUMN tenancy_end_date SET NOT NULL,
-  ALTER COLUMN current_tenancy_replace_original_tenancy SET NOT NULL,
-  ALTER COLUMN current_tenancy_start_date SET NOT NULL,
-  ALTER COLUMN tribunal_previously_determined_tenancy_rent SET NOT NULL;
-
-
 ALTER TABLE market_rent_case
   ADD COLUMN rent_payment_frequency FREQUENCY,
   ADD COLUMN rent_cost_weekly NUMERIC(18,2),
@@ -55,13 +43,6 @@ ALTER TABLE market_rent_case
   ADD COLUMN applicant_suggested_monthly_market_rent NUMERIC(18,2),
   ADD COLUMN additional_rental_service_charges_vary YES_NO,
   ADD COLUMN additional_rental_varying_service_charges_details VARCHAR(5000);
-
-ALTER TABLE market_rent_case
-  ALTER COLUMN rent_includes_council_tax SET NOT NULL,
-  ALTER COLUMN other_household_management_charges SET NOT NULL,
-  ALTER COLUMN rent_inclusive_of_utility_charges SET NOT NULL,
-  ALTER COLUMN applicant_suggested_monthly_market_rent SET NOT NULL,
-  ALTER COLUMN additional_rental_service_charges_vary SET NOT NULL;
 
 ALTER TABLE market_rent_case
   RENAME COLUMN renting_rooms_details TO renting_room_details;
