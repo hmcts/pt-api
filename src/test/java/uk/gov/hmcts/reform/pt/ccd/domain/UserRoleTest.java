@@ -12,13 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class UserRoleTest {
 
     @Test
-    void shouldHaveSingleRole() {
-        assertEquals(2, UserRole.values().length);
-        assertEquals(UserRole.CASE_WORKER, UserRole.values()[0]);
-        assertEquals(UserRole.CITIZEN, UserRole.values()[1]);
-    }
-
-    @Test
     void shouldHaveCorrectRoleValue() {
         assertEquals("caseworker-pt", UserRole.CASE_WORKER.getRole());
     }

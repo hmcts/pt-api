@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.RoleType;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
+import static uk.gov.hmcts.ccd.sdk.api.Permission.CRUD;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.RoleType.IDAM;
 
 /**
@@ -20,7 +21,8 @@ import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.RoleType.IDAM;
 public enum UserRole implements HasRole {
 
     CASE_WORKER("caseworker-pt", CRU, IDAM),
-    CITIZEN("citizen", CRU, IDAM);
+    CITIZEN("citizen", CRU, IDAM),
+    SUPER_USER("super-user", CRUD, IDAM);
 
     @JsonValue
     private final String role;

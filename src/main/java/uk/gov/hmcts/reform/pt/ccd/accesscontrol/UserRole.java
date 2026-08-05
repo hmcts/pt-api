@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
+import static uk.gov.hmcts.ccd.sdk.api.Permission.CRUD;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.GS_PROFILE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.RoleType.IDAM;
@@ -41,7 +42,8 @@ public enum UserRole implements HasRole {
     LEADERSHIP_JUDGE("leadership-judge", Set.of(R), RAS),
     CIRCUIT_JUDGE("circuit-judge", Set.of(R), RAS),
     JUDGE("judge", Set.of(R), RAS),
-    SYSTEM_USER("pt-system-update", Permission.CRU, IDAM);
+    SYSTEM_USER("pt-system-update", Permission.CRU, IDAM),
+    SUPER_USER("super-user", CRUD, IDAM);
 
 
     @JsonValue

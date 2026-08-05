@@ -11,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.pages.TestPageBuilder;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
@@ -33,7 +33,7 @@ public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(CREATE_TEST_CASE.getName())
-            .grant(Permission.CRUD, UserRole.CASE_WORKER);
+            .grant(Permission.CRUD, UserRole.PT_CASE_WORKER);
         TestPageBuilder.createTestCase(eventBuilder);
     }
 
