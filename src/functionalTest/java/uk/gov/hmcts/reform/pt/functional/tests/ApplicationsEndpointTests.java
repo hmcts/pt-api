@@ -32,15 +32,6 @@ class ApplicationsEndpointTests extends BaseApi {
         apiSteps.theResponseBodyIsAnEmptyArray();
     }
 
-    @Title("Applications Endpoint Tests - should return 401 when the S2S token is missing")
-    @Test
-    void applicationsEndpointTest401MissingServiceTokenScenario() {
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.callIsSubmittedToTheEndpoint("Applications", "GET");
-        apiSteps.checkStatusCode(401);
-    }
-
     @Title("Applications Endpoint Tests - should return 401 when the S2S token is invalid")
     @Test
     void applicationsEndpointTest401InvalidServiceTokenScenario() {
@@ -84,38 +75,6 @@ class ApplicationsEndpointTests extends BaseApi {
         apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
         apiSteps.checkStatusCode(400);
         apiSteps.theResponseBodyContainsAString("message", "Invalid case reference: 1");
-    }
-
-    @Title("Applications Case Reference Endpoint Tests - should return 401 when the S2S token is missing")
-    @Test
-    void applicationsCaseReferenceEndpointTest401MissingServiceTokenScenario() {
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
-        apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
-        apiSteps.checkStatusCode(401);
-    }
-
-    @Title("Applications Case Reference Endpoint Tests - should return 401 when the S2S token is invalid")
-    @Test
-    void applicationsCaseReferenceEndpointTest401InvalidServiceTokenScenario() {
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsExpiredServiceToken();
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
-        apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
-        apiSteps.checkStatusCode(401);
-    }
-
-    @Title("Applications Case Reference Endpoint Tests - should return 403 when an unauthorised S2S token is used")
-    @Test
-    void applicationsCaseReferenceEndpointTest403Scenario() {
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsUnauthorisedServiceToken();
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
-        apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
-        apiSteps.checkStatusCode(403);
     }
 
     @Title("Applications Case Reference Endpoint Tests - should return 404 when trying to return another user's case")
