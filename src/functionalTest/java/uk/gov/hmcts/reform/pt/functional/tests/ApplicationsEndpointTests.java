@@ -5,6 +5,7 @@ import net.serenitybdd.annotations.Title;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
 
 @Tag("Functional")
 @ExtendWith(SerenityJUnit5Extension.class)
+@EnabledIfEnvironmentVariable(named = "CCD_ENABLED", matches = "true")
 class ApplicationsEndpointTests extends BaseApi {
 
     @Steps
