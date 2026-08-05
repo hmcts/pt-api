@@ -14,8 +14,6 @@ import net.serenitybdd.annotations.Step;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.citizenUser;
 import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.systemUser;
 import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.caseworkerUser;
@@ -116,22 +114,5 @@ public class ApiSteps {
         SerenityRest.then()
             .assertThat()
             .body("", Matchers.hasSize(0));
-    }
-
-    @Step("the request contains an expired IDAM token")
-    public void theRequestContainsExpiredIdamToken() {
-        String expiredIdamToken = TestConstants.EXPIRED_IDAM_TOKEN;
-        request = request.header(TestConstants.AUTHORIZATION, "Bearer " + expiredIdamToken);
-    }
-
-    @Step("Check Health")
-    public void getHealth() {
-        SerenityRest.given()
-            .baseUri(baseUrl)
-            .when()
-            .get("/health")
-            .then()
-            .statusCode(200)
-            .body("status", equalTo("UP"));
     }
 }

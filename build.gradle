@@ -174,7 +174,6 @@ pact {
   }
   publish {
     pactDirectory = 'pacts'
-    println "PACT_BRANCH_NAME = ${System.getenv('PACT_BRANCH_NAME')}"
     tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
     version = project.pactVersion
   }
