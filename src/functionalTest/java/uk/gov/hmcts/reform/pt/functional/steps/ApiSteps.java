@@ -120,4 +120,12 @@ public class ApiSteps {
     public void theRequestContainsThePathParameter(String pathParam, String value) {
         request = request.pathParam(pathParam, value);
     }
+
+    @Step("the response body contains {0} as a string: {1}")
+    public void theResponseBodyContainsAString(String attribute, String value) {
+        if (response == null) {
+            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
+        }
+        response.then().assertThat().body(attribute, Matchers.equalTo(value));
+    }
 }

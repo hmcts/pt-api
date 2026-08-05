@@ -83,6 +83,7 @@ class ApplicationsEndpointTests extends BaseApi {
         apiSteps.theRequestContainsThePathParameter("caseReference", "1");
         apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
         apiSteps.checkStatusCode(400);
+        apiSteps.theResponseBodyContainsAString("message", "Invalid case reference: 1");
     }
 
     @Title("Applications Case Reference Endpoint Tests - should return 401 when the S2S token is missing")
@@ -128,5 +129,6 @@ class ApplicationsEndpointTests extends BaseApi {
         apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
         apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
         apiSteps.checkStatusCode(404);
+        apiSteps.theResponseBodyContainsAString("message", "No case found with reference 1");
     }
 }
