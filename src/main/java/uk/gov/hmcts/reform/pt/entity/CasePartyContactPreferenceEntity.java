@@ -30,10 +30,6 @@ public class CasePartyContactPreferenceEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo contactByText;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo contactByPhone;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_id")
     @JsonBackReference

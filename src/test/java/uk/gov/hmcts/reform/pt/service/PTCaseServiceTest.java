@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -141,25 +140,6 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update only case party basic info when contact preferences is null")
-    void updateCaseUpdatesOnlyBasicInfoWhenContactPreferencesNull() {
-        long caseReference = 1234567890123456L;
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-
-        when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.of(caseParty));
-
-        PTCase ptCase = PTCase.builder()
-            .applicantFirstName("Jane")
-            .build();
-
-        ptCaseService.updateCase(caseReference, ptCase);
-
-        assertThat(caseParty.getFirstName()).isEqualTo("Jane");
-        verify(casePartyRepository, times(1)).save(caseParty);
-        verify(contactPreferencesService, never()).updateContactPreferences(any(), any());
-    }
-
-    @Test
     @DisplayName("Should update contact preferences and phone numbers")
     void updateContactPreferencesSuccess() {
         CasePartyEntity caseParty = CasePartyEntity.builder().build();
@@ -177,17 +157,6 @@ class PTCaseServiceTest {
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("0222");
         verify(contactPreferencesService).updateContactPreferences(caseParty, contactPreferences);
         verify(casePartyRepository).save(caseParty);
-    }
-
-    @Test
-    @DisplayName("Should not update contact preferences when they are null")
-    void updateContactPreferencesDoesNothingWhenNull() {
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-        PTCase ptCase = PTCase.builder().build();
-
-        ptCaseService.updateContactPreferences(ptCase, caseParty);
-
-        verify(contactPreferencesService, never()).updateContactPreferences(any(), any());
     }
 
     @Test

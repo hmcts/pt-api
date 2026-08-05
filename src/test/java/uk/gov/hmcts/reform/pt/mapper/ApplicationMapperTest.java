@@ -55,7 +55,6 @@ public class ApplicationMapperTest {
         assertThat(contactPreferences.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
         assertThat(contactPreferences.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
         assertThat(contactPreferences.getContactByText()).isEqualTo(YesOrNo.YES);
-        assertThat(contactPreferences.getContactByPhone()).isEqualTo(YesOrNo.NO);
     }
 
     @Test
@@ -94,7 +93,6 @@ public class ApplicationMapperTest {
         assertThat(result.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
         assertThat(result.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
         assertThat(result.getContactByText()).isEqualTo(YesOrNo.YES);
-        assertThat(result.getContactByPhone()).isEqualTo(YesOrNo.NO);
     }
 
     @Test
@@ -106,7 +104,6 @@ public class ApplicationMapperTest {
         assertThat(result.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
         assertThat(result.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
         assertThat(result.getContactByText()).isNull();
-        assertThat(result.getContactByPhone()).isNull();
     }
 
     @Test
@@ -179,7 +176,6 @@ public class ApplicationMapperTest {
     private static List<CasePartyContactPreferenceEntity> contactPreferences(YesOrNo text, YesOrNo phone) {
         return List.of(CasePartyContactPreferenceEntity.builder()
             .contactByText(text)
-            .contactByPhone(phone)
             .build());
     }
 
