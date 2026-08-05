@@ -18,7 +18,7 @@ def secrets = [
     secret('idam-system-user-password', 'IDAM_SYSTEM_USER_PASSWORD'),
     secret('pt-api-idam-secret', 'PT_API_IDAM_SECRET'),
     secret('idam-testing-support-url', 'IDAM_TESTING_SUPPORT_URL'),
-    secret('idam-pt-user-password', 'IDAM_PT_USER_PASSWORD'),
+    secret('pt-idam-test-user-password', 'IDAM_PT_USER_PASSWORD'),
     secret('pt-caseworker-automation-uid', 'PT_CASEWORKER_AUTOMATION_UID'),
     secret('idam-expired-user-token', 'IDAM_EXPIRED_USER_TOKEN'),
     secret('s2s-expired-service-token', 'S2S_EXPIRED_TOKEN'),
