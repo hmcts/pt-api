@@ -115,4 +115,9 @@ public class ApiSteps {
             .assertThat()
             .body("", Matchers.hasSize(0));
     }
+
+    @Step("the request contains the path parameter {0} as {1}")
+    public void theRequestContainsThePathParameter(String pathParam, String value) {
+        request = request.pathParam(pathParam, value);
+    }
 }
