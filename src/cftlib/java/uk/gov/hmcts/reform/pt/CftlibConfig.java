@@ -7,8 +7,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.reform.pt.ccd.CaseType;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
+import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
@@ -47,7 +47,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "ccd.import@pt.com", List.of("ccd-import"),
             "pt-system-user@localhost", List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update"),
             "prd-admin-user@localhost", List.of(),
-            "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt")
+            "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt"),
+            "pt-superuser@test.com", List.of("caseworker", "caseworker-pt", "caseworker-pt-superuser")
         );
 
         // Create users and roles including in idam simulator

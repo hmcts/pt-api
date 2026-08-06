@@ -6,14 +6,14 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SUPER_USER;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.SUPER_USER;
 
 public class SuperUserAccess implements HasAccessControl {
 
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
-        grants.putAll(SUPER_USER, Permission.CRUD);
+        grants.putAll(SUPER_USER, Permission.CRU);
         return grants;
     }
 }

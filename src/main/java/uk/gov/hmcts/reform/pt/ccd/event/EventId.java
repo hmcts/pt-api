@@ -13,7 +13,7 @@ public enum EventId {
     // TEST EVENTS
 
     CREATE_TEST_CASE("create-test-case", "Create Test Case"),
-    UPDATE_TEST_CASE_STATE("update-test-case-state", "Update Test Case State");
+    CHANGE_TEST_CASE_STATE("change-test-case-state", "Change Test Case State");
 
     private final String id;
     private final String name;

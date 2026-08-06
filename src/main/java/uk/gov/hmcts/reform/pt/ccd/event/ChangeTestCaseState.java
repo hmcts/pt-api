@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.event;
+package uk.gov.hmcts.reform.pt.ccd.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,25 +10,25 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
-import uk.gov.hmcts.reform.pt.pages.TestPageBuilder;
+import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.pages.TestPageBuilder;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
-import static uk.gov.hmcts.reform.pt.ccd.event.EventId.UPDATE_TEST_CASE_STATE;
+import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CHANGE_TEST_CASE_STATE;
 
 @Component
 @RequiredArgsConstructor
-public class UpdateTestCaseState implements CCDConfig<PTCase, State, UserRole> {
+public class ChangeTestCaseState implements CCDConfig<PTCase, State, UserRole> {
 
     private final PTCaseService ptCaseService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         Event.EventBuilder<PTCase, UserRole, State> eventBuilder = configBuilder
-            .decentralisedEvent(UPDATE_TEST_CASE_STATE.getId(), this::submit)
+            .decentralisedEvent(CHANGE_TEST_CASE_STATE.getId(), this::submit)
             .forAllStates()
-            .name(UPDATE_TEST_CASE_STATE.getName())
-            .grant(Permission.CRUD, UserRole.PT_CASE_WORKER)
+            .name(CHANGE_TEST_CASE_STATE.getName())
+            .grant(Permission.CRU, UserRole.SUPER_USER)
             .showSummary()
             .endButtonLabel("Submit");
         TestPageBuilder.changeCaseState(eventBuilder);
