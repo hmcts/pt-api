@@ -14,6 +14,14 @@ def component = "api"
 def secrets = [
   'pt-kv-${env}': [
     secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET'),
+    secret('idam-system-user-name', 'IDAM_SYSTEM_USERNAME'),
+    secret('idam-system-user-password', 'IDAM_SYSTEM_USER_PASSWORD'),
+    secret('pt-api-idam-secret', 'PT_API_IDAM_SECRET'),
+    secret('idam-testing-support-url', 'IDAM_TESTING_SUPPORT_URL'),
+    secret('pt-idam-test-user-password', 'IDAM_PT_USER_PASSWORD'),
+    secret('pt-caseworker-automation-uid', 'PT_CASEWORKER_AUTOMATION_UID'),
+    secret('idam-expired-user-token', 'IDAM_EXPIRED_USER_TOKEN'),
+    secret('s2s-expired-service-token', 'S2S_EXPIRED_TOKEN'),
     secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
     secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
   ]
@@ -90,6 +98,11 @@ withPipeline(type, product, component) {
       env.CASE_TYPE_SUFFIX=""
     }
     generateDefinitions(builder)
+  }
+
+  before('smoketest:aat') {
+    env.CASE_TYPE_SUFFIX="staging"
+    env.CCD_ENABLED = "true"
   }
 
   afterAlways('functionalTest:preview') {

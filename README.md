@@ -175,6 +175,7 @@ There is no need to remove postgres and java or similar core images.
 The Functional tests use [Rest Assured](https://rest-assured.io) and [Serenity](https://serenity-bdd.github.io) for reporting, and are located in the `/src/functionalTest` directory.
 
 The following environment variables are needed to run the tests:
+
 - PT_API_S2S_SECRET
 - TEST_URL
 - IDAM_S2S_AUTH_URL
@@ -182,6 +183,12 @@ The following environment variables are needed to run the tests:
 - IDAM_SYSTEM_USERNAME
 - IDAM_SYSTEM_USER_PASSWORD
 - PT_API_IDAM_SECRET
+- IDAM_PT_USER_PASSWORD
+- PT_CASEWORKER_AUTOMATION_UID
+- IDAM_EXPIRED_USER_TOKEN
+- S2S_EXPIRED_TOKEN
+- IDAM_TESTING_SUPPORT_URL
+- CCD_ENABLED
 
 To run the tests, use:
 ```bash
