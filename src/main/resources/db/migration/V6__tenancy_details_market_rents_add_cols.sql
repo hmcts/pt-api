@@ -42,7 +42,7 @@ ALTER TABLE market_rent_case
   ADD COLUMN rent_inclusive_of_utility_charges YES_NO,
   ADD COLUMN applicant_suggested_monthly_market_rent NUMERIC(18,2),
   ADD COLUMN additional_rental_service_charges_vary YES_NO,
-  ADD COLUMN additional_rental_varying_service_charges_details VARCHAR(5000);
+  ADD COLUMN additional_rental_varying_service_charges_details VARCHAR(500);
 
 ALTER TABLE market_rent_case
   RENAME COLUMN renting_rooms_details TO renting_room_details;

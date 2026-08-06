@@ -15,7 +15,7 @@ public enum YesNoNotSure implements HasLabel {
     NO("No"),
 
     @JsonProperty("notSure")
-    NOT_SURE("Not Sure");
+    NOT_SURE("I’m not sure");
 
     private final String label;
 }
