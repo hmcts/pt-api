@@ -38,7 +38,6 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private TenancyType tenancyType;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalServicesProvidedInTenancy;
@@ -52,7 +51,6 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 5000)
     private String tenantRepairsDetails;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesNoNotSure anyTenantsMadePropertyRepairs;
@@ -60,7 +58,6 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 5000)
     private String tenantsPropertyRepairsDetails;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo tenancyIncludeFacilities;
@@ -68,7 +65,6 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 5000)
     private String otherFacilitiesDetails;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo furnitureProvidedInTenancy;
@@ -76,29 +72,22 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 5000)
     private String furnitureProvidedInTenancyDetails;
 
-    @Column(nullable = false)
     private LocalDateTime tenancyEndDate;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesNoNotSure currentTenancyReplaceOriginalTenancy;
 
     private LocalDateTime originalTenancyStartDate;
 
-    @Column(nullable = false)
     private LocalDateTime currentTenancyStartDate;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo tribunalPreviouslyDeterminedTenancyRent;
 
     @Column(length = 30)
     private String previousTribunalCaseReference;
-
-    @Column(length = 5000)
-    private String tribunalCaseReferenceDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
