@@ -47,7 +47,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "ccd.import@pt.com", List.of("ccd-import"),
             "pt-system-user@localhost", List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update"),
             "prd-admin-user@localhost", List.of(),
-            "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt")
+            "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt"),
+            "pt-caseworker-automation@test.com", List.of("caseworker", "caseworker-pt")
         );
 
         // Create users and roles including in idam simulator
