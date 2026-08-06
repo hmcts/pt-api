@@ -46,6 +46,6 @@ public class PTCase {
     private TenancyType tenancyType;
 
     @Builder.Default
-    @JsonUnwrapped(prefix = "applicantContactPreferences_")
+    @JsonUnwrapped(prefix = "applicantContactPreferences")
     private ApplicantContactPreferences applicantContactPreferences = new ApplicantContactPreferences();
 }
