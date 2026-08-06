@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -43,4 +44,8 @@ public class PTCase {
         access = {CitizenAccess.class}
     )
     private TenancyType tenancyType;
+
+    @Builder.Default
+    @JsonUnwrapped(prefix = "applicantContactPreferences")
+    private ApplicantContactPreferences applicantContactPreferences = new ApplicantContactPreferences();
 }

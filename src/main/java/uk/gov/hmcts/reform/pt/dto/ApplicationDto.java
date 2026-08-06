@@ -18,4 +18,5 @@ public class ApplicationDto {
     private UUID applicantIdamUserId;
     private ApplicationType applicationType;
     private LocalDateTime createdDate;
+    private ContactPreferencesDto applicantContactPreferences;
 }
