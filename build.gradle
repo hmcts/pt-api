@@ -24,7 +24,7 @@ plugins {
   id 'hmcts.ccd.sdk' version '6.32.0'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2306'
   id 'io.freefair.lombok' version '9.5.0'
-  id 'au.com.dius.pact' version '4.7.3'
+  id 'au.com.dius.pact' version '4.7.4'
 
   /*
     Applies analysis tools including checkstyle and OWASP Dependency checker.
@@ -306,7 +306,7 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.7.3'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.7.4'
   contractTestImplementation group: 'org.hamcrest', name: 'java-hamcrest', version: '2.0.0.0'
   contractTestImplementation('org.junit.jupiter:junit-jupiter-api:6.1.2')
   contractTestImplementation sourceSets.main.runtimeClasspath
