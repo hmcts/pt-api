@@ -100,6 +100,11 @@ withPipeline(type, product, component) {
     generateDefinitions(builder)
   }
 
+  before('smoketest:aat') {
+    env.CASE_TYPE_SUFFIX="staging"
+    env.CCD_ENABLED = "true"
+  }
+
   afterAlways('functionalTest:preview') {
     archiveFunctionalTestReports()
   }
