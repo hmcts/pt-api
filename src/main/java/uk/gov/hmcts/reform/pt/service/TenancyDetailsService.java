@@ -16,8 +16,10 @@ public class TenancyDetailsService {
 
     @Transactional
     public TenancyDetailsEntity getTenancyDetailsOrCreateIfNotExists(TenancyType tenancyType, PTCaseEntity ptCase) {
-        return tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, ptCase.getCaseReference())
-            .orElseGet(() -> createTenancyDetails(tenancyType, ptCase));
+        return tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(
+            tenancyType,
+            ptCase.getCaseReference()
+            ).orElseGet(() -> createTenancyDetails(tenancyType, ptCase));
     }
 
     @Transactional

@@ -67,13 +67,14 @@ class PTCaseServiceTest {
     @DisplayName("Should save a case entity built from the case reference")
     void createCase() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        long caseReference = 1234567890123456L;
 
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
-        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(eq(ASSURED_PERIODIC_TENANCY), any(PTCaseEntity.class)))
-            .thenReturn(TenancyDetailsEntity.builder().build());
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(
+            eq(ASSURED_PERIODIC_TENANCY),
+            any(PTCaseEntity.class))
+        ).thenReturn(TenancyDetailsEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
@@ -81,6 +82,7 @@ class PTCaseServiceTest {
             .tenancyType(ASSURED_PERIODIC_TENANCY)
             .build();
         UUID userId = UUID.randomUUID();
+        long caseReference = 1234567890123456L;
 
         ptCaseService.createCase(caseReference, userId, ptCase);
 
