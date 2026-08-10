@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.ccd.event;
+package uk.gov.hmcts.reform.pt.ccd.event.test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
+import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
@@ -44,11 +45,5 @@ class CreateTestCaseTest extends BaseEventTest {
 
         verify(ptCaseService).createCase(TEST_CASE_REFERENCE, userId, caseData);
         assertThat(result).isEqualTo(SubmitResponse.<State>builder().build());
-    }
-
-    private PTCase getTestPTCase() {
-        return PTCase.builder()
-            .applicantFirstName("Jane")
-            .build();
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.ccd.event;
+package uk.gov.hmcts.reform.pt.ccd.event.citizen;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
