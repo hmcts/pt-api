@@ -36,14 +36,12 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
-        TenancyDetailsEntity tenancyDetails =
-            tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), caseReference);
-
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .tenancyDetails(List.of(tenancyDetails))
             .build();
         ptCaseRepository.save(ptCaseEntity);
+
+        tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), ptCaseEntity);
 
         CasePartyEntity caseParty = casePartyService.createCaseParty(ptCaseEntity, ptCase, userId);
 

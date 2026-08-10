@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -32,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.ccd.domain.TenancyType.ASSURED_PERIODIC_TENANCY;
 
 @ExtendWith(MockitoExtension.class)
 class PTCaseServiceTest {
@@ -67,19 +67,18 @@ class PTCaseServiceTest {
     @DisplayName("Should save a case entity built from the case reference")
     void createCase() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         long caseReference = 1234567890123456L;
 
         when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
-        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, caseReference))
+        when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(eq(ASSURED_PERIODIC_TENANCY), any(PTCaseEntity.class)))
             .thenReturn(TenancyDetailsEntity.builder().build());
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("John")
             .applicationType(applicationType)
-            .tenancyType(tenancyType)
+            .tenancyType(ASSURED_PERIODIC_TENANCY)
             .build();
         UUID userId = UUID.randomUUID();
 
