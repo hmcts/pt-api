@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.ccd.domain.TenancyType.ASSURED_PERIODIC_TENANCY;
 
 @ExtendWith(MockitoExtension.class)
 class CaseApplicationServiceTest {
@@ -71,6 +73,7 @@ class CaseApplicationServiceTest {
         ApplicationDto result = applicationService.getCaseByCaseReference(CASE_REFERENCE, userId);
 
         assertThat(result.getCaseReference()).isEqualTo(CASE_REFERENCE);
+        assertThat(result.getTenancyType()).isEqualTo(ASSURED_PERIODIC_TENANCY);
 
         verify(applicationRepository).findByPartyIdamIdAndCaseReference(CASE_REFERENCE, userId);
         verifyNoMoreInteractions(applicationRepository);
@@ -105,6 +108,7 @@ class CaseApplicationServiceTest {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
             .addresses(List.of(AddressEntity.builder().postcode("AB12 3CD").build()))
+            .tenancyDetails(List.of(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build()))
             .build();
 
         CasePartyEntity caseParty = CasePartyEntity.builder()
