@@ -28,7 +28,7 @@ public class ChangeTestCaseState implements CCDConfig<PTCase, State, UserRole> {
             .decentralisedEvent(CHANGE_TEST_CASE_STATE.getId(), this::submit)
             .forAllStates()
             .name(CHANGE_TEST_CASE_STATE.getName())
-            .grant(Permission.CRU, UserRole.SUPER_USER)
+            .grant(Permission.CRU, UserRole.PT_CASE_WORKER,  UserRole.SUPER_USER)
             .showSummary()
             .endButtonLabel("Submit");
         TestPageBuilder.changeCaseState(eventBuilder);
