@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 
 @Builder
 @Data
@@ -43,4 +46,11 @@ public class PTCase {
         access = {CitizenAccess.class}
     )
     private TenancyType tenancyType;
+
+    @CCD(label = "Which state are you moving the case to?",
+        typeOverride = FixedList,
+        typeParameterOverride = "State",
+        access = {SuperUserAccess.class}
+    )
+    private State targetState;
 }

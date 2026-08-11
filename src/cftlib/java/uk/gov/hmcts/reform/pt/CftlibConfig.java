@@ -7,8 +7,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.reform.pt.ccd.CaseType;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
+import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
@@ -38,17 +38,20 @@ public class CftlibConfig implements CFTLibConfigurer {
     @Override
     public void configure(CFTLib lib) throws Exception {
 
-        var users = Map.of(
-            "caseworker@pt.com", List.of("caseworker", "caseworker-pt"),
-            "pt-solicitor1@test.com", List.of("caseworker", "caseworker-pt-solicitor"),
-            "pt-defendant-solicitor@test.com", List.of("pui-case-manager", "caseworker", "caseworker-pt-solicitor"),
-            "citizen@pt.com", List.of("citizen"),
-            "data.store.idam.system.user@gmail.com", List.of(),
-            "ccd.import@pt.com", List.of("ccd-import"),
-            "pt-system-user@localhost", List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update"),
-            "prd-admin-user@localhost", List.of(),
-            "pt-caseworker@test.com", List.of("caseworker", "caseworker-pt"),
-            "pt-caseworker-automation@test.com", List.of("caseworker", "caseworker-pt")
+        var users = Map.ofEntries(
+            Map.entry("caseworker@pt.com", List.of("caseworker", "caseworker-pt")),
+            Map.entry("pt-solicitor1@test.com", List.of("caseworker", "caseworker-pt-solicitor")),
+            Map.entry("pt-defendant-solicitor@test.com",
+                List.of("pui-case-manager", "caseworker", "caseworker-pt-solicitor")),
+            Map.entry("citizen@pt.com", List.of("citizen")),
+            Map.entry("data.store.idam.system.user@gmail.com", List.of()),
+            Map.entry("ccd.import@pt.com", List.of("ccd-import")),
+            Map.entry("pt-system-user@localhost",
+                List.of("caseworker", "caseworker-pt", "ccd-import", "pt-system-update")),
+            Map.entry("prd-admin-user@localhost", List.of()),
+            Map.entry("pt-caseworker@test.com", List.of("caseworker", "caseworker-pt")),
+            Map.entry("pt-superuser@test.com", List.of("caseworker", "caseworker-pt", "caseworker-pt-superuser")),
+            Map.entry("pt-caseworker-automation@test.com", List.of("caseworker", "caseworker-pt"))
         );
 
         // Create users and roles including in idam simulator
