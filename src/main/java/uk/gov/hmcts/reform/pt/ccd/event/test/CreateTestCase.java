@@ -33,7 +33,7 @@ public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .showSummary()
             .name(CREATE_TEST_CASE.getName())
-            .grant(Permission.CRU, UserRole.PT_CASE_WORKER);
+            .grant(Permission.CRU, UserRole.PT_CASE_WORKER, UserRole.SUPER_USER);
         TestPageBuilder.createTestCase(eventBuilder);
     }
 
