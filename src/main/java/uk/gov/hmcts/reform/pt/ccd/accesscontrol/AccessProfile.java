@@ -31,7 +31,8 @@ public enum AccessProfile implements HasRole {
     HEARING_CENTRE_ADMIN("hearing-centre-admin", Permission.CRU),
     WLU_ADMIN("wlu-admin", Permission.CRU),
     GS_PROFILE("GS_profile", Set.of(R)),
-    SYSTEM_USER("pt-system-update", CRU);
+    SYSTEM_USER("pt-system-update", CRU),
+    SUPER_USER("caseworker-pt-superuser", CRU);
 
     @JsonValue
     private final String role;

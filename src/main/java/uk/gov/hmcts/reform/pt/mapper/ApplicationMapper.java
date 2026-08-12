@@ -30,6 +30,10 @@ public class ApplicationMapper {
                 entity.getCaseType() != null
                     ? entity.getCaseType().getApplicationTypeName()
                     : null)
+            .tenancyType(
+                !ptCase.getTenancyDetails().isEmpty()
+                    ? ptCase.getTenancyDetails().getFirst().getTenancyType()
+                    : null)
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
             .applicantIdamUserId(
