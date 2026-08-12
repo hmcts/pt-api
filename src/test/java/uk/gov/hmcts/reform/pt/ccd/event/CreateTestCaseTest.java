@@ -38,17 +38,11 @@ class CreateTestCaseTest extends BaseEventTest {
         UUID userId = UUID.randomUUID();
         when(securityContextService.getCurrentUserDetails())
             .thenReturn(UserInfo.builder().uid(userId.toString()).build());
-        PTCase caseData = getTestPTCase();
+        PTCase caseData = getSimpleTestPtCase();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
         verify(ptCaseService).createCase(TEST_CASE_REFERENCE, userId, caseData);
         assertThat(result).isEqualTo(SubmitResponse.<State>builder().build());
-    }
-
-    private PTCase getTestPTCase() {
-        return PTCase.builder()
-            .applicantFirstName("Jane")
-            .build();
     }
 }
