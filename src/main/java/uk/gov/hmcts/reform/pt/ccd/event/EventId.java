@@ -9,6 +9,7 @@ public enum EventId {
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+    CREATE_DRAFT_CASE("create-draft-case", "Create Draft Case"),
 
     // TEST EVENTS
 
