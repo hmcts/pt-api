@@ -6,13 +6,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CTSC_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.WLU_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CIRCUIT_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CTSC_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.LEADERSHIP_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.WLU_ADMIN;
 
 public class InternalCaseFlagAccess implements HasAccessControl {
 

@@ -12,28 +12,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class UserRoleTest {
 
     @Test
-    void shouldHaveSingleRole() {
-        assertEquals(2, UserRole.values().length);
-        assertEquals(UserRole.CASE_WORKER, UserRole.values()[0]);
-        assertEquals(UserRole.CITIZEN, UserRole.values()[1]);
-    }
-
-    @Test
     void shouldHaveCorrectRoleValue() {
-        assertEquals("caseworker-pt", UserRole.CASE_WORKER.getRole());
+        assertEquals("caseworker-pt", UserRole.PT_CASE_WORKER.getRole());
     }
 
     @Test
     void shouldHaveCorrectCaseTypePermissions() {
         assertEquals(
             Permission.toString(Permission.CRU),
-            UserRole.CASE_WORKER.getCaseTypePermissions()
+            UserRole.PT_CASE_WORKER.getCaseTypePermissions()
         );
     }
 
     @Test
     void shouldExposePermissionsAsString() {
-        String permissions = UserRole.CASE_WORKER.getCaseTypePermissions();
+        String permissions = UserRole.PT_CASE_WORKER.getCaseTypePermissions();
 
         assertNotNull(permissions);
         assertFalse(permissions.isBlank());
@@ -46,7 +39,7 @@ class UserRoleTest {
     void jsonValueShouldSerializeRoleField() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        String json = mapper.writeValueAsString(UserRole.CASE_WORKER);
+        String json = mapper.writeValueAsString(UserRole.PT_CASE_WORKER);
 
         assertEquals("\"caseworker-pt\"", json);
     }
