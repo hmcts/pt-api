@@ -20,4 +20,5 @@ public class ApplicationDto {
     private ApplicationType applicationType;
     private TenancyType tenancyType;
     private LocalDateTime createdDate;
+    private ContactPreferencesDto applicantContactPreferences;
 }
