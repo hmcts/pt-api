@@ -13,6 +13,7 @@ public enum EventId {
     DELETE_DRAFT_CASE("delete-draft-case", "Delete Draft Case"),
     SYSTEM_DISCARD_DRAFT_CASE("system-discard-draft-case", "Discard Draft Case"),
     RESUME_DRAFT_CASE("resume-draft-case", "Resume Draft Case"),
+    SUBMIT_DRAFT_CASE("submit-draft-case", "Submit Draft Case"),
 
     // TEST EVENTS
 
