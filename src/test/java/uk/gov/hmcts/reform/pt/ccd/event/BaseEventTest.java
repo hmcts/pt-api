@@ -46,6 +46,12 @@ public abstract class BaseEventTest {
         event = events.iterator().next();
     }
 
+    protected PTCase getSimpleTestPtCase() {
+        return PTCase.builder()
+            .applicantFirstName("Jane")
+            .build();
+    }
+
     private ConfigBuilderImpl<PTCase, State, UserRole> createConfigBuilder() {
         ResolvedCCDConfig<PTCase, State, UserRole> initialCCDConfig
             = new ResolvedCCDConfig<>(PTCase.class, State.class, UserRole.class, Map.of(), ImmutableSet.of());
