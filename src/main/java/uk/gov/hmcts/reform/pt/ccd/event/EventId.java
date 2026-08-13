@@ -31,6 +31,7 @@ public enum EventId {
     CASE_CHANGE_SECURITY_CLASS("case-change-security-class", "Case: Change security class"),
     CASE_CONTACT_PARTIES("case-contact-parties", "Case: Contact Parties"),
     CASE_SUBMIT_FURTHER_INFO("case-submit-further-info", "Case: Submit further info"),
+    NOTICE_OF_CHANGE("notice-of-change", "Notice of change"),
 
     // TEST EVENTS
 
