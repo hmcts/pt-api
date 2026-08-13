@@ -37,7 +37,6 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseworker-pt-superuser", "PUBLIC")
     };
 
-
     private final CcdEnvironment environment;
 
     public HighLevelDataSetupApp(CcdEnvironment dataSetupEnvironment) {
