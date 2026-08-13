@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pt.ccd.event;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DecentralisedConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.EventPayload;
@@ -12,6 +14,8 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CREATE_DRAFT_CASE;
 
+@Component
+@RequiredArgsConstructor
 public class CreateDraftCase implements CCDConfig<PTCase, State, UserRole> {
 
     @Override

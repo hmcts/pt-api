@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pt.ccd.event;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DecentralisedConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.EventPayload;
@@ -14,6 +16,8 @@ import static uk.gov.hmcts.reform.pt.ccd.domain.State.PENDING_CASE_ISSUED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.SUBMIT_DRAFT_CASE;
 
+@Component
+@RequiredArgsConstructor
 public class SubmitDraftCase implements CCDConfig<PTCase, State, UserRole> {
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
