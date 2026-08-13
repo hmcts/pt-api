@@ -21,6 +21,7 @@ public enum EventId {
     FLAGS_MANAGE_FLAG("flags-manage-flag", "Flags: Manage flag"),
     MANAGE_PARTY_INFORMATION("manage-party-information", "Manage party information"),
     SYSTEM_DELETE_AS_PER_HMCTS_POLICY("system-delete-as-per-hmcts-policy", "Delete as per HMCTS policy"),
+    LINKS_LINK_CASE("links-link-case", "Links: Link case"),
 
     // TEST EVENTS
 
