@@ -57,6 +57,7 @@ public enum EventId {
     HEARINGS_CREATE_SUMMARY("hearings-create-summary", "Hearings: Create summary"),
     HEARINGS_EDIT_HEARING("hearings-edit-hearing", "Hearings: Edit hearing"),
     HEARINGS_POSTPONE_HEARING("hearings-postpone-hearing", "Hearings: Postpone hearing"),
+    DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
 
     // TEST EVENTS
 
