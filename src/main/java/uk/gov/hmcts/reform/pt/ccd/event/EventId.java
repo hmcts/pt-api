@@ -40,6 +40,7 @@ public enum EventId {
     CASE_ADD_LISTING_REQUIREMENTS("case-add-listing-requirements", "Case: Add listing requirements"),
     CASE_ISSUE_TO_RESPONDENT("case-issue-to-respondent", "Case: Issue to respondent"),
     STAYS_CREATE_STAY("stays-create-stay", "Stays: Create stay"),
+    STAYS_EDIT_STAY("stays-edit-stay", "Stays: Edit stay"),
 
     // TEST EVENTS
 
