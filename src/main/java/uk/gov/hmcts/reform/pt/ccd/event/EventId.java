@@ -15,6 +15,7 @@ public enum EventId {
     RESUME_DRAFT_CASE("resume-draft-case", "Case: Resume Draft Case"),
     SUBMIT_DRAFT_CASE("submit-draft-case", "Case: Submit Draft Case"),
     EDIT_DRAFT_CASE("edit-draft-case", "Case: Edit Draft Case"),
+    DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
 
     // TEST EVENTS
 
