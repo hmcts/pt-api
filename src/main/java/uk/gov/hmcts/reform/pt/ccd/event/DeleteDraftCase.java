@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pt.ccd.event;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DecentralisedConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.EventPayload;
@@ -17,6 +19,8 @@ import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMC
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.PENDING_CASE_ISSUED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.REQUESTED_FOR_DELETION;
 
+@Component
+@RequiredArgsConstructor
 public class DeleteDraftCase implements CCDConfig<PTCase, State, UserRole> {
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
