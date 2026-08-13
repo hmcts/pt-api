@@ -25,6 +25,7 @@ public enum EventId {
     LINKS_MANAGE_LINKS("links-manage-links", "Links: Manage links"),
     REFER_TO_CASE_OFFICER("refer-to-case-officer", "Refer to case officer"),
     REFER_TO_JUDGE("refer-to-judge", "Refer to judge"),
+    REFER_TO_LEGAL_OFFICER("refer-to-legal-officer", "Refer to legal officer"),
 
     // TEST EVENTS
 
