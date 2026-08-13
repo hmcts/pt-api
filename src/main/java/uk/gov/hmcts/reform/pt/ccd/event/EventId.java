@@ -48,6 +48,7 @@ public enum EventId {
     BUNDLE_CREATE_A_BUNDLE("bundle-create-a-bundle", "Bundle: Create a bundle"),
     BUNDLE_EDIT_A_BUNDLE("bundle-edit-a-bundle", "Bundle: Edit a bundle"),
     BUNDLE_STITCH_A_BUNDLE("bundle-stitch-a-bundle", "Bundle: Stitch a bundle"),
+    DECISION_ISSUE_FINAL_DECISION("decision-issue-final-decision", "Decision: Issue final decision"),
 
     // TEST EVENTS
 
