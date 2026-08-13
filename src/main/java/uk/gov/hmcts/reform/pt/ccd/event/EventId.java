@@ -22,6 +22,7 @@ public enum EventId {
     MANAGE_PARTY_INFORMATION("manage-party-information", "Manage party information"),
     SYSTEM_DELETE_AS_PER_HMCTS_POLICY("system-delete-as-per-hmcts-policy", "Delete as per HMCTS policy"),
     LINKS_LINK_CASE("links-link-case", "Links: Link case"),
+    LINKS_MANAGE_LINKS("links-manage-links", "Links: Manage links"),
 
     // TEST EVENTS
 
