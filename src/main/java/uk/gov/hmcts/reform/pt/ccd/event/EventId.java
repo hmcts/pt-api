@@ -37,6 +37,7 @@ public enum EventId {
     ORDERS_ISSUE_DRAFT_ORDER("orders-issue-draft-order", "Orders: Issue draft order"),
     RAISE_A_QUERY("raise-a-query", "Raise a query"),
     RESET_PIN("reset-pin", "Reset PIN"),
+    CASE_ADD_LISTING_REQUIREMENTS("case-add-listing-requirements", "Case: Add listing requirements"),
 
     // TEST EVENTS
 
