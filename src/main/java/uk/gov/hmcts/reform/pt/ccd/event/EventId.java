@@ -47,6 +47,7 @@ public enum EventId {
     HEARING_CREATE_LISTING("hearing-create-listing", "Hearing: Create listing"),
     BUNDLE_CREATE_A_BUNDLE("bundle-create-a-bundle", "Bundle: Create a bundle"),
     BUNDLE_EDIT_A_BUNDLE("bundle-edit-a-bundle", "Bundle: Edit a bundle"),
+    BUNDLE_STITCH_A_BUNDLE("bundle-stitch-a-bundle", "Bundle: Stitch a bundle"),
 
     // TEST EVENTS
 
