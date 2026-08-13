@@ -38,6 +38,7 @@ public enum EventId {
     RAISE_A_QUERY("raise-a-query", "Raise a query"),
     RESET_PIN("reset-pin", "Reset PIN"),
     CASE_ADD_LISTING_REQUIREMENTS("case-add-listing-requirements", "Case: Add listing requirements"),
+    CASE_ISSUE_TO_RESPONDENT("case-issue-to-respondent", "Case: Issue to respondent"),
 
     // TEST EVENTS
 
