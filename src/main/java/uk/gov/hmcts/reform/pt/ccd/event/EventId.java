@@ -45,6 +45,7 @@ public enum EventId {
     MANAGE_CONTACT_INFORMATION("manage-contact-information", "Manage contact information"),
     CASE_EDIT_LISTING_REQS("case-edit-listing-reqs", "Case: Edit listing reqs"),
     HEARING_CREATE_LISTING("hearing-create-listing", "Hearing: Create listing"),
+    BUNDLE_CREATE_A_BUNDLE("bundle-create-a-bundle", "Bundle: Create a bundle"),
 
     // TEST EVENTS
 
