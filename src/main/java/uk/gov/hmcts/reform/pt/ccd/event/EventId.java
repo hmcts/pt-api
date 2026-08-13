@@ -44,6 +44,7 @@ public enum EventId {
     CASE_CLEAR_LISTING_REQS("case-clear-listing-reqs", "Case: Clear listing reqs"),
     MANAGE_CONTACT_INFORMATION("manage-contact-information", "Manage contact information"),
     CASE_EDIT_LISTING_REQS("case-edit-listing-reqs", "Case: Edit listing reqs"),
+    HEARING_CREATE_LISTING("hearing-create-listing", "Hearing: Create listing"),
 
     // TEST EVENTS
 
