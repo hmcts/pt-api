@@ -58,6 +58,8 @@ public enum EventId {
     HEARINGS_EDIT_HEARING("hearings-edit-hearing", "Hearings: Edit hearing"),
     HEARINGS_POSTPONE_HEARING("hearings-postpone-hearing", "Hearings: Postpone hearing"),
     DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
+    DOCUMENT_MANAGEMENT_REMOVE("document-management-remove", "Document Management: Remove"),
+    DOCUMENT_MANAGEMENT_UPLOAD("document-management-upload", "Document Management: Upload"),
 
     // TEST EVENTS
 
