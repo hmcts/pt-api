@@ -29,6 +29,7 @@ public enum EventId {
     REFER_TO_TEAM_LEADER("refer-to-team-leader", "Refer to team leader"),
     CASE_ADD_NOTE("case-add-note", "Case: Add note"),
     CASE_CHANGE_SECURITY_CLASS("case-change-security-class", "Case: Change security class"),
+    CASE_CONTACT_PARTIES("case-contact-parties", "Case: Contact Parties"),
 
     // TEST EVENTS
 
