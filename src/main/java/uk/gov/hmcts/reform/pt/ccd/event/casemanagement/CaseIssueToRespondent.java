@@ -24,10 +24,11 @@ public class CaseIssueToRespondent implements CCDConfig<PTCase, State, UserRole>
         configBuilder
             .decentralisedEvent(CASE_ISSUE_TO_RESPONDENT.getId(), this::submit)
             .forState(CASE_PROGRESSION)
-            .showSummary()
             .name(CASE_ISSUE_TO_RESPONDENT.getName())
             .description(CASE_ISSUE_TO_RESPONDENT.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

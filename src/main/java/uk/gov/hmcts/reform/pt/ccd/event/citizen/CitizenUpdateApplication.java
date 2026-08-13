@@ -26,9 +26,10 @@ public class CitizenUpdateApplication implements CCDConfig<PTCase, State, UserRo
         configBuilder
             .decentralisedEvent(CITIZEN_UPDATE_APPLICATION.getId(), this::submit)
             .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
-            .showSummary()
             .name(CITIZEN_UPDATE_APPLICATION.getName())
-            .grant(CRU, CITIZEN);
+            .grant(CRU, CITIZEN)
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

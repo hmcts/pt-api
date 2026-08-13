@@ -25,10 +25,11 @@ public class CaseClearListingReqs implements CCDConfig<PTCase, State, UserRole> 
         configBuilder
             .decentralisedEvent(CASE_CLEAR_LISTING_REQS.getId(), this::submit)
             .forStateTransition(HEARING_READINESS, CASE_PROGRESSION)
-            .showSummary()
             .name(CASE_CLEAR_LISTING_REQS.getName())
             .description(CASE_CLEAR_LISTING_REQS.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

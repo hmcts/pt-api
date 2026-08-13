@@ -25,10 +25,11 @@ public class CaseAddListingRequirements implements CCDConfig<PTCase, State, User
         configBuilder
             .decentralisedEvent(CASE_ADD_LISTING_REQUIREMENTS.getId(), this::submit)
             .forStateTransition(CASE_PROGRESSION, HEARING_READINESS)
-            .showSummary()
             .name(CASE_ADD_LISTING_REQUIREMENTS.getName())
             .description(CASE_ADD_LISTING_REQUIREMENTS.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

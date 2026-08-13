@@ -38,9 +38,10 @@ public class DocumentManagementUpload implements CCDConfig<PTCase, State, UserRo
                 CLOSED,
                 CASE_STAYED
             )
-            .showSummary()
             .name(DOCUMENT_MANAGEMENT_UPLOAD.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

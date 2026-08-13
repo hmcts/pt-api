@@ -28,10 +28,11 @@ public class DecisionIssueADecision implements CCDConfig<PTCase, State, UserRole
         configBuilder
             .decentralisedEvent(DECISION_ISSUE_A_DECISION.getId(), this::submit)
             .forStateTransition(AWAITING_JUDGMENT, EnumSet.of(CASE_PROGRESSION, PREPARE_FOR_HEARING_CONDUCT_HEARING))
-            .showSummary()
             .name(DECISION_ISSUE_A_DECISION.getName())
             .description(DECISION_ISSUE_A_DECISION.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

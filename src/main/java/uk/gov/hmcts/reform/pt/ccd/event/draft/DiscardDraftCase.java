@@ -27,9 +27,10 @@ public class DiscardDraftCase implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(SYSTEM_DISCARD_DRAFT_CASE.getId(), this::submit)
             .forStateTransition(EnumSet.of(AWAITING_SUBMISSION_TO_HMCTS, PENDING_CASE_ISSUED), DRAFT_DISCARDED)
-            .showSummary()
             .name(SYSTEM_DISCARD_DRAFT_CASE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

@@ -24,10 +24,11 @@ public class BundleEditABundle implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(BUNDLE_EDIT_A_BUNDLE.getId(), this::submit)
             .forState(PREPARE_FOR_HEARING_CONDUCT_HEARING)
-            .showSummary()
             .name(BUNDLE_EDIT_A_BUNDLE.getName())
             .description(BUNDLE_EDIT_A_BUNDLE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

@@ -24,10 +24,11 @@ public class HearingsEditSummary implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(HEARINGS_EDIT_SUMMARY.getId(), this::submit)
             .forState(AWAITING_JUDGMENT)
-            .showSummary()
             .name(HEARINGS_EDIT_SUMMARY.getName())
             .description(HEARINGS_EDIT_SUMMARY.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

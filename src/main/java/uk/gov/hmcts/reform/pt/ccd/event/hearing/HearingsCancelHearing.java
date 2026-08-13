@@ -30,10 +30,11 @@ public class HearingsCancelHearing implements CCDConfig<PTCase, State, UserRole>
                 PREPARE_FOR_HEARING_CONDUCT_HEARING,
                 EnumSet.of(CASE_PROGRESSION, PREPARE_FOR_HEARING_CONDUCT_HEARING)
             )
-            .showSummary()
             .name(HEARINGS_CANCEL_HEARING.getName())
             .description(HEARINGS_CANCEL_HEARING.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

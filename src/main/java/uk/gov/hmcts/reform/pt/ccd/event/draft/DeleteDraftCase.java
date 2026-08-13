@@ -27,9 +27,10 @@ public class DeleteDraftCase implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(DELETE_DRAFT_CASE.getId(), this::submit)
             .forStateTransition(EnumSet.of(AWAITING_SUBMISSION_TO_HMCTS, PENDING_CASE_ISSUED), REQUESTED_FOR_DELETION)
-            .showSummary()
             .name(DELETE_DRAFT_CASE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

@@ -26,9 +26,10 @@ public class CitizenSubmitApplication implements CCDConfig<PTCase, State, UserRo
         configBuilder
             .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit)
             .forStateTransition(State.AWAITING_SUBMISSION_TO_HMCTS, State.PENDING_CASE_ISSUED)
-            .showSummary()
             .name(CITIZEN_SUBMIT_APPLICATION.getName())
-            .grant(CRU, CITIZEN);
+            .grant(CRU, CITIZEN)
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

@@ -24,9 +24,10 @@ public class SubmitDraftCase implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(SUBMIT_DRAFT_CASE.getId(), this::submit)
             .forStateTransition(AWAITING_SUBMISSION_TO_HMCTS, PENDING_CASE_ISSUED)
-            .showSummary()
             .name(SUBMIT_DRAFT_CASE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

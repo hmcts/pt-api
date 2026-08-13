@@ -31,9 +31,10 @@ public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
         Event.EventBuilder<PTCase, UserRole, State> eventBuilder = configBuilder
             .decentralisedEvent(CREATE_TEST_CASE.getId(), this::submit)
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
-            .showSummary()
             .name(CREATE_TEST_CASE.getName())
-            .grant(Permission.CRU, UserRole.PT_CASE_WORKER, UserRole.SUPER_USER);
+            .grant(Permission.CRU, UserRole.PT_CASE_WORKER, UserRole.SUPER_USER)
+            .showSummary()
+            .endButtonLabel("Submit");
         TestPageBuilder.createTestCase(eventBuilder);
     }
 

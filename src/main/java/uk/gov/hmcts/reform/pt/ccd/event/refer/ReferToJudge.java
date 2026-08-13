@@ -36,10 +36,11 @@ public class ReferToJudge implements CCDConfig<PTCase, State, UserRole> {
                 CLOSED,
                 CASE_STAYED
             )
-            .showSummary()
             .name(REFER_TO_JUDGE.getName())
             .description(REFER_TO_JUDGE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

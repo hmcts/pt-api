@@ -26,10 +26,11 @@ public class LinksLinkCase implements CCDConfig<PTCase, State, UserRole> {
         configBuilder
             .decentralisedEvent(LINKS_LINK_CASE.getId(), this::submit)
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
-            .showSummary()
             .name(LINKS_LINK_CASE.getName())
             .description(LINKS_LINK_CASE.getName())
-            .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
+            .grant(CRU, PT_CASE_WORKER) // TODO: use correct roles when further details are released
+            .showSummary()
+            .endButtonLabel("Submit");
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
