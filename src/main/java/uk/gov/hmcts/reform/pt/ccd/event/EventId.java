@@ -42,6 +42,7 @@ public enum EventId {
     STAYS_CREATE_STAY("stays-create-stay", "Stays: Create stay"),
     STAYS_EDIT_STAY("stays-edit-stay", "Stays: Edit stay"),
     CASE_CLEAR_LISTING_REQS("case-clear-listing-reqs", "Case: Clear listing reqs"),
+    MANAGE_CONTACT_INFORMATION("manage-contact-information", "Manage contact information"),
 
     // TEST EVENTS
 
