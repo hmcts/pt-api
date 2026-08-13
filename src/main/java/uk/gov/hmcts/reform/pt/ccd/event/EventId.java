@@ -9,6 +9,12 @@ public enum EventId {
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+    CREATE_DRAFT_CASE("create-draft-case", "Case: Create Draft Case"),
+    DELETE_DRAFT_CASE("delete-draft-case", "Case: Delete Draft Case"),
+    SYSTEM_DISCARD_DRAFT_CASE("system-discard-draft-case", "Case: Discard Draft Case"),
+    RESUME_DRAFT_CASE("resume-draft-case", "Case: Resume Draft Case"),
+    SUBMIT_DRAFT_CASE("submit-draft-case", "Case: Submit Draft Case"),
+    EDIT_DRAFT_CASE("edit-draft-case", "Case: Edit Draft Case"),
 
     // TEST EVENTS
 
