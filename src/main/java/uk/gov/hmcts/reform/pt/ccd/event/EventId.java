@@ -23,6 +23,7 @@ public enum EventId {
     SYSTEM_DELETE_AS_PER_HMCTS_POLICY("system-delete-as-per-hmcts-policy", "Delete as per HMCTS policy"),
     LINKS_LINK_CASE("links-link-case", "Links: Link case"),
     LINKS_MANAGE_LINKS("links-manage-links", "Links: Manage links"),
+    REFER_TO_CASE_OFFICER("refer-to-case-officer", "Refer to case officer"),
 
     // TEST EVENTS
 
