@@ -26,6 +26,7 @@ public enum EventId {
     REFER_TO_CASE_OFFICER("refer-to-case-officer", "Refer to case officer"),
     REFER_TO_JUDGE("refer-to-judge", "Refer to judge"),
     REFER_TO_LEGAL_OFFICER("refer-to-legal-officer", "Refer to legal officer"),
+    REFER_TO_TEAM_LEADER("refer-to-team-leader", "Refer to team leader"),
 
     // TEST EVENTS
 
