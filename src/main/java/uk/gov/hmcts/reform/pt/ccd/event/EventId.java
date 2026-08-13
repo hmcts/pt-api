@@ -16,6 +16,8 @@ public enum EventId {
     SUBMIT_DRAFT_CASE("submit-draft-case", "Case: Submit Draft Case"),
     EDIT_DRAFT_CASE("edit-draft-case", "Case: Edit Draft Case"),
     DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
+    DOCUMENT_MANAGEMENT_REMOVE("document-management-remove", "Document Management: Remove"),
+    DOCUMENT_MANAGEMENT_UPLOAD("document-management-upload", "Document Management: Upload"),
 
     // TEST EVENTS
 
