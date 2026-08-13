@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -27,6 +28,7 @@ public class PTCaseService {
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
     private final AddressRepository addressRepository;
+    private final ContactPreferencesService contactPreferencesService;
 
     @Transactional
     public void createCase(
@@ -65,5 +67,18 @@ public class PTCaseService {
             address.setPostcode(ptCase.getPostcode());
             addressRepository.save(address);
         });
+
+        updateContactPreferences(ptCase, caseParty);
+    }
+
+    @Transactional
+    public void updateContactPreferences(PTCase ptCase, CasePartyEntity caseParty) {
+        ApplicantContactPreferences contactPreferenceData = ptCase.getApplicantContactPreferences();
+
+        contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
+
+        caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
+        caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdatesPhoneNumber());
+        casePartyRepository.save(caseParty);
     }
 }

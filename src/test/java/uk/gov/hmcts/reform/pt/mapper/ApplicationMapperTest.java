@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -28,6 +31,9 @@ public class ApplicationMapperTest {
     private static final String FIRST_NAME = "FirstName";
     private static final String LAST_NAME = "LastName";
     private static final String EMAIL = "test@test.com";
+    private static final String PHONE_NUMBER = "0123456789";
+    private static final String MOBILE_NUMBER = "0712345678";
+    private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2026, 2, 24, 9, 0);
 
     @Test
     public void shouldMapToDtoFromEntity() {
@@ -43,6 +49,12 @@ public class ApplicationMapperTest {
         assertThat(result.getApplicantLastName()).isEqualTo(LAST_NAME);
         assertThat(result.getEmail()).isEqualTo(EMAIL);
         assertThat(result.getApplicantIdamUserId()).isEqualTo(userId);
+        assertThat(result.getCreatedDate()).isEqualTo(CREATED_DATE);
+
+        ContactPreferencesDto contactPreferences = result.getApplicantContactPreferences();
+        assertThat(contactPreferences.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
+        assertThat(contactPreferences.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
+        assertThat(contactPreferences.getContactByText()).isEqualTo(YesOrNo.YES);
     }
 
     @Test
@@ -58,7 +70,7 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldThrowCaseNotFoundExceptionWhenPtCaseIsNull() {
-        CasePartyEntity caseParty = caseParty(null, Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(null, Collections.emptyList(), Collections.emptyList());
         CaseApplicationEntity entity = CaseApplicationEntity.builder()
             .caseParty(caseParty)
             .build();
@@ -69,9 +81,35 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapContactPreferences() {
+        CasePartyEntity caseParty = caseParty(
+            null,
+            Collections.emptyList(),
+            contactPreferences(YesOrNo.YES, YesOrNo.NO)
+        );
+
+        ContactPreferencesDto result = ApplicationMapper.mapContactPreferences(caseParty);
+
+        assertThat(result.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
+        assertThat(result.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
+        assertThat(result.getContactByText()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    public void shouldMapContactPreferencesWhenNoPreferences() {
+        CasePartyEntity caseParty = caseParty(null, Collections.emptyList(), Collections.emptyList());
+
+        ContactPreferencesDto result = ApplicationMapper.mapContactPreferences(caseParty);
+
+        assertThat(result.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
+        assertThat(result.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
+        assertThat(result.getContactByText()).isNull();
+    }
+
+    @Test
     public void shouldDefaultPostcodeToEmptyStringWhenNoProperties() {
         PTCaseEntity ptCase = ptCase(Collections.emptyList());
-        CasePartyEntity caseParty = caseParty(ptCase, Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(ptCase, Collections.emptyList(), Collections.emptyList());
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
@@ -81,7 +119,11 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
-        CasePartyEntity caseParty = caseParty(ptCase(addresses(POSTCODE)), Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(
+            ptCase(addresses(POSTCODE)),
+            Collections.emptyList(),
+            Collections.emptyList()
+        );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
@@ -91,7 +133,11 @@ public class ApplicationMapperTest {
 
     @Test
     public void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
-        CasePartyEntity caseParty = caseParty(ptCase(addresses(POSTCODE)), Collections.emptyList());
+        CasePartyEntity caseParty = caseParty(
+            ptCase(addresses(POSTCODE)),
+            Collections.emptyList(),
+            Collections.emptyList()
+        );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
         ApplicationDto result = ApplicationMapper.toDto(entity);
@@ -110,14 +156,27 @@ public class ApplicationMapperTest {
             .build();
     }
 
-    private static CasePartyEntity caseParty(PTCaseEntity ptCase, List<CasePartyAccessEntity> access) {
+    private static CasePartyEntity caseParty(
+        PTCaseEntity ptCase,
+        List<CasePartyAccessEntity> access,
+        List<CasePartyContactPreferenceEntity> contactPreferences
+    ) {
         return CasePartyEntity.builder()
             .firstName(FIRST_NAME)
             .lastName(LAST_NAME)
             .emailAddress(EMAIL)
+            .phoneNumber(PHONE_NUMBER)
+            .mobilePhoneNumber(MOBILE_NUMBER)
             .ptCase(ptCase)
             .access(access)
+            .contactPreferences(contactPreferences)
             .build();
+    }
+
+    private static List<CasePartyContactPreferenceEntity> contactPreferences(YesOrNo text, YesOrNo phone) {
+        return List.of(CasePartyContactPreferenceEntity.builder()
+            .contactByText(text)
+            .build());
     }
 
     private static CaseApplicationEntity entityWithCaseType(
@@ -130,7 +189,7 @@ public class ApplicationMapperTest {
                 applicationType != null
                     ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
                     : null)
-            .createdDate(LocalDateTime.of(2026, 2, 24, 9, 0))
+            .createdDate(CREATED_DATE)
             .build();
     }
 
@@ -139,7 +198,11 @@ public class ApplicationMapperTest {
         List<CasePartyAccessEntity> access = List.of(
             CasePartyAccessEntity.builder().idamId(userId).build()
         );
-        CasePartyEntity caseParty = caseParty(ptCase, access);
+        CasePartyEntity caseParty = caseParty(
+            ptCase,
+            access,
+            contactPreferences(YesOrNo.YES, YesOrNo.NO)
+        );
         return entityWithCaseType(caseParty, APPLICATION_TYPE);
     }
 }

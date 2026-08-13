@@ -8,6 +8,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
@@ -29,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pt.ccd.domain.TenancyType.ASSURED_PERIODIC_TENANCY;
@@ -56,6 +59,9 @@ class PTCaseServiceTest {
 
     @Mock
     private AddressRepository addressRepository;
+
+    @Mock
+    private ContactPreferencesService contactPreferencesService;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -114,6 +120,11 @@ class PTCaseServiceTest {
             .email("jane@example.com")
             .postcode("AB1 2CD")
             .applicationType(applicationType)
+            .applicantContactPreferences(ApplicantContactPreferences.builder()
+                .textUpdates(YesOrNo.YES)
+                .textUpdatesPhoneNumber("07777777777")
+                .phoneNumberForCalls("01111111111")
+                .build())
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -121,9 +132,32 @@ class PTCaseServiceTest {
         assertThat(caseParty.getFirstName()).isEqualTo("Jane");
         assertThat(caseParty.getLastName()).isEqualTo("Doe");
         assertThat(caseParty.getEmailAddress()).isEqualTo("jane@example.com");
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("01111111111");
+        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07777777777");
         assertThat(address.getPostcode()).isEqualTo("AB1 2CD");
-        verify(casePartyRepository).save(caseParty);
+        verify(casePartyRepository, times(2)).save(caseParty);
         verify(addressRepository).save(address);
+        verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
+    }
+
+    @Test
+    @DisplayName("Should update contact preferences and phone numbers")
+    void updateContactPreferencesSuccess() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        ApplicantContactPreferences contactPreferences = ApplicantContactPreferences.builder()
+            .phoneNumberForCalls("0111")
+            .textUpdatesPhoneNumber("0222")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .applicantContactPreferences(contactPreferences)
+            .build();
+
+        ptCaseService.updateContactPreferences(ptCase, caseParty);
+
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("0111");
+        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("0222");
+        verify(contactPreferencesService).updateContactPreferences(caseParty, contactPreferences);
+        verify(casePartyRepository).save(caseParty);
     }
 
     @Test
