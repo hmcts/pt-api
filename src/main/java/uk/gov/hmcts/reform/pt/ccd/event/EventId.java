@@ -17,6 +17,7 @@ public enum EventId {
     EDIT_DRAFT_CASE("edit-draft-case", "Case: Edit Draft Case"),
     CASE_ADD_HEARING_OPTIONS("case-add-hearing-options", "Case: Add hearing options"),
     SYSTEM_GENERATE_CASE_FORM("system-generate-case-form", "Generate case form"),
+    FLAGS_CREATE_FLAG("flags-create-flag", "Flags: Create flag"),
 
     // TEST EVENTS
 
