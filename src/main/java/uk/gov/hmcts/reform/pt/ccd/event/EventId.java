@@ -46,6 +46,7 @@ public enum EventId {
     CASE_EDIT_LISTING_REQS("case-edit-listing-reqs", "Case: Edit listing reqs"),
     HEARING_CREATE_LISTING("hearing-create-listing", "Hearing: Create listing"),
     BUNDLE_CREATE_A_BUNDLE("bundle-create-a-bundle", "Bundle: Create a bundle"),
+    BUNDLE_EDIT_A_BUNDLE("bundle-edit-a-bundle", "Bundle: Edit a bundle"),
 
     // TEST EVENTS
 
