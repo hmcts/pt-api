@@ -19,6 +19,7 @@ public enum EventId {
     SYSTEM_GENERATE_CASE_FORM("system-generate-case-form", "Generate case form"),
     FLAGS_CREATE_FLAG("flags-create-flag", "Flags: Create flag"),
     FLAGS_MANAGE_FLAG("flags-manage-flag", "Flags: Manage flag"),
+    MANAGE_PARTY_INFORMATION("manage-party-information", "Manage party information"),
 
     // TEST EVENTS
 
