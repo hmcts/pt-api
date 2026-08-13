@@ -54,6 +54,7 @@ public enum EventId {
     CASE_REINSTATE_CASE("case-reinstate-case", "Case: Reinstate case"),
     STAYS_REMOVE_STAY("stays-remove-stay", "Stays: Remove stay"),
     HEARINGS_CANCEL_HEARING("hearings-cancel-hearing", "Hearings: Cancel hearing"),
+    HEARINGS_CREATE_SUMMARY("hearings-create-summary", "Hearings: Create summary"),
 
     // TEST EVENTS
 
