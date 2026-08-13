@@ -20,6 +20,7 @@ public enum EventId {
     FLAGS_CREATE_FLAG("flags-create-flag", "Flags: Create flag"),
     FLAGS_MANAGE_FLAG("flags-manage-flag", "Flags: Manage flag"),
     MANAGE_PARTY_INFORMATION("manage-party-information", "Manage party information"),
+    SYSTEM_DELETE_AS_PER_HMCTS_POLICY("system-delete-as-per-hmcts-policy", "Delete as per HMCTS policy"),
 
     // TEST EVENTS
 
