@@ -35,6 +35,7 @@ public enum EventId {
     ORDERS_CREATE_DRAFT_ORDER("orders-create-draft-order", "Orders: Create draft order"),
     ORDERS_EDIT_DRAFT_ORDER("orders-edit-draft-order", "Orders: Edit draft order"),
     ORDERS_ISSUE_DRAFT_ORDER("orders-issue-draft-order", "Orders: Issue draft order"),
+    RAISE_A_QUERY("raise-a-query", "Raise a query"),
 
     // TEST EVENTS
 
