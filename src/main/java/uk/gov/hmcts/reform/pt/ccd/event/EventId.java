@@ -32,6 +32,7 @@ public enum EventId {
     CASE_CONTACT_PARTIES("case-contact-parties", "Case: Contact Parties"),
     CASE_SUBMIT_FURTHER_INFO("case-submit-further-info", "Case: Submit further info"),
     NOTICE_OF_CHANGE("notice-of-change", "Notice of change"),
+    ORDERS_CREATE_DRAFT_ORDER("orders-create-draft-order", "Orders: Create draft order"),
 
     // TEST EVENTS
 
