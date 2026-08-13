@@ -14,6 +14,8 @@ public enum EventId {
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+
+    // Manage Case Events
     CREATE_DRAFT_CASE("create-draft-case", "Case: Create Draft Case"),
     DELETE_DRAFT_CASE("delete-draft-case", "Case: Delete Draft Case"),
     SYSTEM_DISCARD_DRAFT_CASE("system-discard-draft-case", "Case: Discard Draft Case"),
@@ -65,8 +67,16 @@ public enum EventId {
     DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
     DOCUMENT_MANAGEMENT_REMOVE("document-management-remove", "Document Management: Remove"),
     DOCUMENT_MANAGEMENT_UPLOAD("document-management-upload", "Document Management: Upload"),
+    CASE_ADD_REVIEW_DATE("case-add-review-date", "Case: Add review date"),
+    CASE_CLOSE_CASE("case-close-case", "Case: Close case"),
+    CASE_EDIT_CASE("case-edit-case", "Case: Edit case"),
+    CASE_SELECT_HEARING_OPTIONS("case-select-hearing-options", "Case: Select hearing options"),
+    CASE_COMPLETE_VETTING("case-complete-vetting", "Case: Complete vetting"),
+    CASE_REQUEST_VETTING_INFORMATION("case-request-vetting-info", "Case: Request vetting info"),
+    CASE_EDIT_HEARING_OPTIONS("case-edit-hearing-options", "Case: Edit hearing options"),
+    CASE_SWITCH_TO_MANUAL_MODE("case-switch-to-manual-mode", "Case: Switch to manual mode"),
+    CASE_EXIT_MANUAL_MODE("case-exit-manual-mode", "Case: Exit manual mode"),
 
-    // Fee and Pay Events
     FEE_PAYMENT_SUCCESSFUL("fee-payment-successful", "Fee & Pay: Payment successful"),
     FEE_PAYMENT_FAILED("fee-payment-failed", "Fee & Pay: Payment failed"),
     REQUEST_TOP_UP_FEE("request-top-up-fee", "Fee & Pay: Request top-up fee"),
