@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.EventPayload;
 import uk.gov.hmcts.ccd.sdk.api.callback.Start;
 import uk.gov.hmcts.ccd.sdk.api.callback.Submit;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
@@ -46,9 +47,13 @@ public abstract class BaseEventTest {
         event = events.iterator().next();
     }
 
-    protected PTCase getSimpleTestPtCase() {
+    protected PTCase getTestPTCase() {
         return PTCase.builder()
             .applicantFirstName("Jane")
+            .applicantLastName("Doe")
+            .email("jane.doe@example.com")
+            .postcode("AB1 2CD")
+            .applicationType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .build();
     }
 

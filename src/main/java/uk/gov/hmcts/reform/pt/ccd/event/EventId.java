@@ -14,6 +14,8 @@ public enum EventId {
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+
+    // Manage Case Events
     CREATE_DRAFT_CASE("create-draft-case", "Case: Create Draft Case"),
     DELETE_DRAFT_CASE("delete-draft-case", "Case: Delete Draft Case"),
     SYSTEM_DISCARD_DRAFT_CASE("system-discard-draft-case", "Case: Discard Draft Case"),
@@ -65,8 +67,6 @@ public enum EventId {
     DOCUMENT_MANAGEMENT_AMEND("document-management-amend", "Document Management: Amend"),
     DOCUMENT_MANAGEMENT_REMOVE("document-management-remove", "Document Management: Remove"),
     DOCUMENT_MANAGEMENT_UPLOAD("document-management-upload", "Document Management: Upload"),
-
-    // Manage Case Events
     CASE_ADD_REVIEW_DATE("case-add-review-date", "Case: Add review date"),
     CASE_CLOSE_CASE("case-close-case", "Case: Close case"),
     CASE_EDIT_CASE("case-edit-case", "Case: Edit case"),
@@ -75,7 +75,17 @@ public enum EventId {
     CASE_REQUEST_VETTING_INFORMATION("case-request-vetting-info", "Case: Request vetting info"),
     CASE_EDIT_HEARING_OPTIONS("case-edit-hearing-options", "Case: Edit hearing options"),
     CASE_SWITCH_TO_MANUAL_MODE("case-switch-to-manual-mode", "Case: Switch to manual mode"),
-    CASE_EXIT_MANUAL_MODE("case-exit-manual-mode", "Case: Exit manual mode");
+    CASE_EXIT_MANUAL_MODE("case-exit-manual-mode", "Case: Exit manual mode"),
+
+    FEE_PAYMENT_SUCCESSFUL("fee-payment-successful", "Fee & Pay: Payment successful"),
+    FEE_PAYMENT_FAILED("fee-payment-failed", "Fee & Pay: Payment failed"),
+    REQUEST_TOP_UP_FEE("request-top-up-fee", "Fee & Pay: Request top-up fee"),
+    HWF_UPDATED_NUMBER("hwf-updated-number", "HwF: Updated number"),
+    HWF_INVALID_REFERENCE("hwf-invalid-reference", "HwF: Invalid reference"),
+    HWF_MORE_INFORMATION_REQUIRED("hwf-more-information-required", "HwF: More information required"),
+    HWF_FULL_REMISSION("hwf-full-remission", "HwF: Full remission"),
+    HWF_PART_REMISSION("hwf-part-remission", "HwF: Part remission"),
+    HWF_NO_REMISSION("hwf-no-remission", "HwF: No remission");
 
     private final String id;
     private final String name;

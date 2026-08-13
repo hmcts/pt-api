@@ -24,7 +24,7 @@ class CaseExitManualModeTest extends BaseEventTest {
 
     @Test
     void shouldReturnDefaultResponseOnSubmit() {
-        PTCase caseData = getSimpleTestPtCase();
+        PTCase caseData = getTestPTCase();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 

@@ -24,7 +24,7 @@ class CaseRequestVettingInformationTest extends BaseEventTest {
 
     @Test
     void shouldReturnCaseProgressionStateOnSubmit() {
-        PTCase caseData = getSimpleTestPtCase();
+        PTCase caseData = getTestPTCase();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 

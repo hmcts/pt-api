@@ -24,7 +24,7 @@ class CaseCloseCaseTest extends BaseEventTest {
 
     @Test
     void shouldReturnClosedStateOnSubmit() {
-        PTCase caseData = getSimpleTestPtCase();
+        PTCase caseData = getTestPTCase();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
