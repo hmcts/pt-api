@@ -55,6 +55,7 @@ public enum EventId {
     STAYS_REMOVE_STAY("stays-remove-stay", "Stays: Remove stay"),
     HEARINGS_CANCEL_HEARING("hearings-cancel-hearing", "Hearings: Cancel hearing"),
     HEARINGS_CREATE_SUMMARY("hearings-create-summary", "Hearings: Create summary"),
+    HEARINGS_EDIT_HEARING("hearings-edit-hearing", "Hearings: Edit hearing"),
 
     // TEST EVENTS
 
