@@ -32,6 +32,7 @@ public class HearingsCancelHearing implements CCDConfig<PTCase, State, UserRole>
             )
             .showSummary()
             .name(HEARINGS_CANCEL_HEARING.getName())
+            .description(HEARINGS_CANCEL_HEARING.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

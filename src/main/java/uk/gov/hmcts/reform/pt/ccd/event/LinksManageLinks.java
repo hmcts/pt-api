@@ -28,6 +28,7 @@ public class LinksManageLinks implements CCDConfig<PTCase, State, UserRole> {
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(LINKS_MANAGE_LINKS.getName())
+            .description(LINKS_MANAGE_LINKS.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

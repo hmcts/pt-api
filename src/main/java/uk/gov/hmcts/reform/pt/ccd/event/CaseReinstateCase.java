@@ -27,6 +27,7 @@ public class CaseReinstateCase implements CCDConfig<PTCase, State, UserRole> {
             .forStateTransition(CLOSED, CASE_PROGRESSION)
             .showSummary()
             .name(CASE_REINSTATE_CASE.getName())
+            .description(CASE_REINSTATE_CASE.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

@@ -26,6 +26,7 @@ public class HearingsEditSummary implements CCDConfig<PTCase, State, UserRole> {
             .forState(AWAITING_JUDGMENT)
             .showSummary()
             .name(HEARINGS_EDIT_SUMMARY.getName())
+            .description(HEARINGS_EDIT_SUMMARY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

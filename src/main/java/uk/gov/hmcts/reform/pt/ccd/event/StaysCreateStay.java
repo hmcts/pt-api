@@ -27,6 +27,7 @@ public class StaysCreateStay implements CCDConfig<PTCase, State, UserRole> {
             .forStateTransition(CASE_PROGRESSION, CASE_STAYED)
             .showSummary()
             .name(STAYS_CREATE_STAY.getName())
+            .description(STAYS_CREATE_STAY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

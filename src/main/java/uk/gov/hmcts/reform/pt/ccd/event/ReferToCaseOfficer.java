@@ -38,6 +38,7 @@ public class ReferToCaseOfficer implements CCDConfig<PTCase, State, UserRole> {
             )
             .showSummary()
             .name(REFER_TO_CASE_OFFICER.getName())
+            .description(REFER_TO_CASE_OFFICER.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

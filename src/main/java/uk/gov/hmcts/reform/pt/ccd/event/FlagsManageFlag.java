@@ -29,6 +29,7 @@ public class FlagsManageFlag implements CCDConfig<PTCase, State, UserRole> {
             .forStates(PENDING_CASE_ISSUED, CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(FLAGS_MANAGE_FLAG.getName())
+            .description(FLAGS_MANAGE_FLAG.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

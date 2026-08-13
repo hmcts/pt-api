@@ -26,6 +26,7 @@ public class CaseEditListingReqs implements CCDConfig<PTCase, State, UserRole> {
             .forState(HEARING_READINESS)
             .showSummary()
             .name(CASE_EDIT_LISTING_REQS.getName())
+            .description(CASE_EDIT_LISTING_REQS.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

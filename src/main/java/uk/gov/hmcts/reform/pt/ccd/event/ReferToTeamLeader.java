@@ -28,6 +28,7 @@ public class ReferToTeamLeader implements CCDConfig<PTCase, State, UserRole> {
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(REFER_TO_TEAM_LEADER.getName())
+            .description(REFER_TO_TEAM_LEADER.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

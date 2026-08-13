@@ -28,6 +28,7 @@ public class RaiseAQuery implements CCDConfig<PTCase, State, UserRole> {
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(RAISE_A_QUERY.getName())
+            .description(RAISE_A_QUERY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

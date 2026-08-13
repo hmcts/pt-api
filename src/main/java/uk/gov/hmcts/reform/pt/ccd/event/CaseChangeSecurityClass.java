@@ -28,6 +28,7 @@ public class CaseChangeSecurityClass implements CCDConfig<PTCase, State, UserRol
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(CASE_CHANGE_SECURITY_CLASS.getName())
+            .description(CASE_CHANGE_SECURITY_CLASS.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

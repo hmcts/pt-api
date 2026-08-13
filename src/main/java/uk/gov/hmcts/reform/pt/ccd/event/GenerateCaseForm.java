@@ -26,6 +26,7 @@ public class GenerateCaseForm implements CCDConfig<PTCase, State, UserRole> {
             .forState(PENDING_CASE_ISSUED)
             .showSummary()
             .name(SYSTEM_GENERATE_CASE_FORM.getName())
+            .description(SYSTEM_GENERATE_CASE_FORM.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

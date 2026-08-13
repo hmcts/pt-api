@@ -27,6 +27,7 @@ public class HearingCreateListing implements CCDConfig<PTCase, State, UserRole> 
             .forStateTransition(HEARING_READINESS, PREPARE_FOR_HEARING_CONDUCT_HEARING)
             .showSummary()
             .name(HEARING_CREATE_LISTING.getName())
+            .description(HEARING_CREATE_LISTING.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

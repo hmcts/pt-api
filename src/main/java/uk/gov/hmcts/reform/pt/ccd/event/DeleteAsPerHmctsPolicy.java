@@ -27,6 +27,7 @@ public class DeleteAsPerHmctsPolicy implements CCDConfig<PTCase, State, UserRole
             .forStates(REQUESTED_FOR_DELETION, DRAFT_DISCARDED)
             .showSummary()
             .name(SYSTEM_DELETE_AS_PER_HMCTS_POLICY.getName())
+            .description(SYSTEM_DELETE_AS_PER_HMCTS_POLICY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

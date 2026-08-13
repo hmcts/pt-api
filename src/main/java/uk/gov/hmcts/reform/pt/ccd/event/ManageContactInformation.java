@@ -27,6 +27,7 @@ public class ManageContactInformation implements CCDConfig<PTCase, State, UserRo
             .forStates(CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(MANAGE_CONTACT_INFORMATION.getName())
+            .description(MANAGE_CONTACT_INFORMATION.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

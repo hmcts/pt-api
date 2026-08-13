@@ -24,10 +24,4 @@ class BundleStitchABundleTest extends BaseEventTest {
 
         assertThat(result).isEqualTo(SubmitResponse.<State>builder().build());
     }
-
-    private PTCase getTestPTCase() {
-        return PTCase.builder()
-            .applicantFirstName("Jane")
-            .build();
-    }
 }

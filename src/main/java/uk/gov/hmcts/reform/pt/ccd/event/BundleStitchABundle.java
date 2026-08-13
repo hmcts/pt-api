@@ -26,6 +26,7 @@ public class BundleStitchABundle implements CCDConfig<PTCase, State, UserRole> {
             .forState(PREPARE_FOR_HEARING_CONDUCT_HEARING)
             .showSummary()
             .name(BUNDLE_STITCH_A_BUNDLE.getName())
+            .description(BUNDLE_STITCH_A_BUNDLE.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

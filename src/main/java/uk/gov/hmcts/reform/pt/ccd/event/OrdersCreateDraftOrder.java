@@ -28,6 +28,7 @@ public class OrdersCreateDraftOrder implements CCDConfig<PTCase, State, UserRole
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(ORDERS_CREATE_DRAFT_ORDER.getName())
+            .description(ORDERS_CREATE_DRAFT_ORDER.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

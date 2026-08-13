@@ -28,6 +28,7 @@ public class CaseSubmitFurtherInfo implements CCDConfig<PTCase, State, UserRole>
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(CASE_SUBMIT_FURTHER_INFO.getName())
+            .description(CASE_SUBMIT_FURTHER_INFO.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

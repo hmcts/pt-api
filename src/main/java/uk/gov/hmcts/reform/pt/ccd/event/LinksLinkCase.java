@@ -28,6 +28,7 @@ public class LinksLinkCase implements CCDConfig<PTCase, State, UserRole> {
             .forStates(CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(LINKS_LINK_CASE.getName())
+            .description(LINKS_LINK_CASE.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

@@ -27,6 +27,7 @@ public class StaysRemoveStay implements CCDConfig<PTCase, State, UserRole> {
             .forStateTransition(CASE_STAYED, CASE_PROGRESSION)
             .showSummary()
             .name(STAYS_REMOVE_STAY.getName())
+            .description(STAYS_REMOVE_STAY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

@@ -26,6 +26,7 @@ public class CaseIssueToRespondent implements CCDConfig<PTCase, State, UserRole>
             .forState(CASE_PROGRESSION)
             .showSummary()
             .name(CASE_ISSUE_TO_RESPONDENT.getName())
+            .description(CASE_ISSUE_TO_RESPONDENT.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

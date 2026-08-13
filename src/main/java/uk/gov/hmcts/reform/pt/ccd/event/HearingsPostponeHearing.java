@@ -32,6 +32,7 @@ public class HearingsPostponeHearing implements CCDConfig<PTCase, State, UserRol
             )
             .showSummary()
             .name(HEARINGS_POSTPONE_HEARING.getName())
+            .description(HEARINGS_POSTPONE_HEARING.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

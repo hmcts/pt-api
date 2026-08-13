@@ -29,6 +29,7 @@ public class ManagePartyInformation implements CCDConfig<PTCase, State, UserRole
             .forStates(PENDING_CASE_ISSUED, CASE_ISSUED, CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(MANAGE_PARTY_INFORMATION.getName())
+            .description(MANAGE_PARTY_INFORMATION.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

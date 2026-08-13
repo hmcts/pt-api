@@ -27,6 +27,7 @@ public class HearingsCreateSummary implements CCDConfig<PTCase, State, UserRole>
             .forStateTransition(PREPARE_FOR_HEARING_CONDUCT_HEARING, AWAITING_JUDGMENT)
             .showSummary()
             .name(HEARINGS_CREATE_SUMMARY.getName())
+            .description(HEARINGS_CREATE_SUMMARY.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

@@ -27,6 +27,7 @@ public class CaseAddListingRequirements implements CCDConfig<PTCase, State, User
             .forStateTransition(CASE_PROGRESSION, HEARING_READINESS)
             .showSummary()
             .name(CASE_ADD_LISTING_REQUIREMENTS.getName())
+            .description(CASE_ADD_LISTING_REQUIREMENTS.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 

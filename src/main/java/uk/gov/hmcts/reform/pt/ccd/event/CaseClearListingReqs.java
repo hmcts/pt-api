@@ -27,6 +27,7 @@ public class CaseClearListingReqs implements CCDConfig<PTCase, State, UserRole> 
             .forStateTransition(HEARING_READINESS, CASE_PROGRESSION)
             .showSummary()
             .name(CASE_CLEAR_LISTING_REQS.getName())
+            .description(CASE_CLEAR_LISTING_REQS.getName())
             .grant(CRU, PT_CASE_WORKER); // TODO: use correct roles when further details are released
     }
 
