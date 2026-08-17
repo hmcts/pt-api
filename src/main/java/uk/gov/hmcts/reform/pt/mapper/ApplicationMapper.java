@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -42,6 +43,7 @@ public class ApplicationMapper {
                     : null)
             .email(caseParty.getEmailAddress())
             .applicantContactPreferences(mapContactPreferences(caseParty))
+            .tenantDetails(mapTenantDetails(caseParty))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -59,6 +61,15 @@ public class ApplicationMapper {
                     ? contactPreferences.getContactByText()
                     : null
             )
+            .build();
+    }
+
+    public static TenantDetailsDto mapTenantDetails(CasePartyEntity caseParty) {
+        return TenantDetailsDto.builder()
+            .firstName(caseParty.getFirstName())
+            .lastName(caseParty.getLastName())
+            .companyName(caseParty.getOrganisationName())
+            .referenceNumberForCommunications(caseParty.getReferenceNumber())
             .build();
     }
 }

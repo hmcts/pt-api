@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.pt.mapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
@@ -27,12 +30,15 @@ public class ApplicationMapperTest {
 
     private static final long CASE_REFERENCE = 1234567890123456L;
     private static final ApplicationType APPLICATION_TYPE = ApplicationType.CHALLENGE_RENT_INCREASE;
+    private static final TenancyType TENANCY_TYPE = TenancyType.ASSURED_PERIODIC_TENANCY;
     private static final String POSTCODE = "AB12 3CD";
     private static final String FIRST_NAME = "FirstName";
     private static final String LAST_NAME = "LastName";
     private static final String EMAIL = "test@test.com";
     private static final String PHONE_NUMBER = "0123456789";
     private static final String MOBILE_NUMBER = "0712345678";
+    private static final String COMPANY_NAME = "Test Company Ltd";
+    private static final String REFERENCE_NUMBER = "REF12";
     private static final LocalDateTime CREATED_DATE = LocalDateTime.of(2026, 2, 24, 9, 0);
 
     @Test
@@ -45,6 +51,7 @@ public class ApplicationMapperTest {
         assertThat(result.getCaseReference()).isEqualTo(CASE_REFERENCE);
         assertThat(result.getPostcode()).isEqualTo(POSTCODE);
         assertThat(result.getApplicationType()).isEqualTo(APPLICATION_TYPE);
+        assertThat(result.getTenancyType()).isEqualTo(TENANCY_TYPE);
         assertThat(result.getApplicantFirstName()).isEqualTo(FIRST_NAME);
         assertThat(result.getApplicantLastName()).isEqualTo(LAST_NAME);
         assertThat(result.getEmail()).isEqualTo(EMAIL);
@@ -55,6 +62,12 @@ public class ApplicationMapperTest {
         assertThat(contactPreferences.getPhoneNumber()).isEqualTo(PHONE_NUMBER);
         assertThat(contactPreferences.getMobilePhoneNumber()).isEqualTo(MOBILE_NUMBER);
         assertThat(contactPreferences.getContactByText()).isEqualTo(YesOrNo.YES);
+
+        TenantDetailsDto tenantDetails = result.getTenantDetails();
+        assertThat(tenantDetails.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(tenantDetails.getLastName()).isEqualTo(LAST_NAME);
+        assertThat(tenantDetails.getCompanyName()).isEqualTo(COMPANY_NAME);
+        assertThat(tenantDetails.getReferenceNumberForCommunications()).isEqualTo(REFERENCE_NUMBER);
     }
 
     @Test
@@ -107,8 +120,32 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapTenantDetails() {
+        CasePartyEntity caseParty = caseParty(null, Collections.emptyList(), Collections.emptyList());
+
+        TenantDetailsDto result = ApplicationMapper.mapTenantDetails(caseParty);
+
+        assertThat(result.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(result.getLastName()).isEqualTo(LAST_NAME);
+        assertThat(result.getCompanyName()).isEqualTo(COMPANY_NAME);
+        assertThat(result.getReferenceNumberForCommunications()).isEqualTo(REFERENCE_NUMBER);
+    }
+
+    @Test
+    public void shouldMapTenantDetailsWhenFieldsNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+
+        TenantDetailsDto result = ApplicationMapper.mapTenantDetails(caseParty);
+
+        assertThat(result.getFirstName()).isNull();
+        assertThat(result.getLastName()).isNull();
+        assertThat(result.getCompanyName()).isNull();
+        assertThat(result.getReferenceNumberForCommunications()).isNull();
+    }
+
+    @Test
     public void shouldDefaultPostcodeToEmptyStringWhenNoProperties() {
-        PTCaseEntity ptCase = ptCase(Collections.emptyList());
+        PTCaseEntity ptCase = ptCase(Collections.emptyList(), Collections.emptyList());
         CasePartyEntity caseParty = caseParty(ptCase, Collections.emptyList(), Collections.emptyList());
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
@@ -120,7 +157,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
         CasePartyEntity caseParty = caseParty(
-            ptCase(addresses(POSTCODE)),
+            ptCase(addresses(POSTCODE), Collections.emptyList()),
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -134,7 +171,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
         CasePartyEntity caseParty = caseParty(
-            ptCase(addresses(POSTCODE)),
+            ptCase(addresses(POSTCODE), Collections.emptyList()),
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -149,10 +186,15 @@ public class ApplicationMapperTest {
         return List.of(AddressEntity.builder().postcode(postcode).build());
     }
 
-    private static PTCaseEntity ptCase(List<AddressEntity> addresses) {
+    private static List<TenancyDetailsEntity> tenancyDetails(TenancyType tenancyType) {
+        return List.of(TenancyDetailsEntity.builder().tenancyType(tenancyType).build());
+    }
+
+    private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .addresses(addresses)
+            .tenancyDetails(tenancyDetails)
             .build();
     }
 
@@ -164,6 +206,8 @@ public class ApplicationMapperTest {
         return CasePartyEntity.builder()
             .firstName(FIRST_NAME)
             .lastName(LAST_NAME)
+            .organisationName(COMPANY_NAME)
+            .referenceNumber(REFERENCE_NUMBER)
             .emailAddress(EMAIL)
             .phoneNumber(PHONE_NUMBER)
             .mobilePhoneNumber(MOBILE_NUMBER)
@@ -194,7 +238,7 @@ public class ApplicationMapperTest {
     }
 
     private static CaseApplicationEntity fullEntity(UUID userId) {
-        PTCaseEntity ptCase = ptCase(addresses(POSTCODE));
+        PTCaseEntity ptCase = ptCase(addresses(POSTCODE), tenancyDetails(TENANCY_TYPE));
         List<CasePartyAccessEntity> access = List.of(
             CasePartyAccessEntity.builder().idamId(userId).build()
         );

@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -125,6 +126,10 @@ class PTCaseServiceTest {
                 .textUpdatesPhoneNumber("07777777777")
                 .phoneNumberForCalls("01111111111")
                 .build())
+            .tenantDetails(TenantDetails.builder()
+                .companyName("Test Company")
+                .referenceNumberForCommunications("REF12")
+                .build())
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -134,8 +139,10 @@ class PTCaseServiceTest {
         assertThat(caseParty.getEmailAddress()).isEqualTo("jane@example.com");
         assertThat(caseParty.getPhoneNumber()).isEqualTo("01111111111");
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07777777777");
+        assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
+        assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
         assertThat(address.getPostcode()).isEqualTo("AB1 2CD");
-        verify(casePartyRepository, times(2)).save(caseParty);
+        verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressRepository).save(address);
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
     }
@@ -170,5 +177,24 @@ class PTCaseServiceTest {
 
         assertThatThrownBy(() -> ptCaseService.updateCase(caseReference, ptCase))
             .isInstanceOf(CaseNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("Should update tenant details and save")
+    void updateTenantDetailsSuccess() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        TenantDetails tenantDetails = TenantDetails.builder()
+            .companyName("ACME")
+            .referenceNumberForCommunications("12345")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .tenantDetails(tenantDetails)
+            .build();
+
+        ptCaseService.updateTenantDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
+        assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
+        verify(casePartyRepository).save(caseParty);
     }
 }

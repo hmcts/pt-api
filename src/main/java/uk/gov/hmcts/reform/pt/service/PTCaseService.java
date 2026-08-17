@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -69,6 +70,7 @@ public class PTCaseService {
         });
 
         updateContactPreferences(ptCase, caseParty);
+        updateTenantDetails(ptCase, caseParty);
     }
 
     @Transactional
@@ -79,6 +81,14 @@ public class PTCaseService {
 
         caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
         caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdatesPhoneNumber());
+        casePartyRepository.save(caseParty);
+    }
+
+    @Transactional
+    public void updateTenantDetails(PTCase ptCase, CasePartyEntity caseParty) {
+        TenantDetails tenantDetails = ptCase.getTenantDetails();
+        caseParty.setOrganisationName(tenantDetails.getCompanyName());
+        caseParty.setReferenceNumber(tenantDetails.getReferenceNumberForCommunications());
         casePartyRepository.save(caseParty);
     }
 }

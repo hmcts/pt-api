@@ -58,4 +58,8 @@ public class PTCase {
     @Builder.Default
     @JsonUnwrapped(prefix = "applicantContactPreferences")
     private ApplicantContactPreferences applicantContactPreferences = new ApplicantContactPreferences();
+
+    @Builder.Default
+    @JsonUnwrapped(prefix = "tenantDetails")
+    private TenantDetails tenantDetails = new TenantDetails();
 }
