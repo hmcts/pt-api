@@ -62,4 +62,8 @@ public class PTCase {
     @Builder.Default
     @JsonUnwrapped(prefix = "tenantDetails")
     private TenantDetails tenantDetails = new TenantDetails();
+
+    @Builder.Default
+    @JsonUnwrapped(prefix = "hearingInspectionDetails")
+    private HearingPropertyInspectionDetails hearingInspectionDetails = new HearingPropertyInspectionDetails();
 }

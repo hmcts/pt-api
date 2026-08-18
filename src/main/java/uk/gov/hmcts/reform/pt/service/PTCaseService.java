@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -30,6 +31,7 @@ public class PTCaseService {
     private final CasePartyRepository casePartyRepository;
     private final AddressRepository addressRepository;
     private final ContactPreferencesService contactPreferencesService;
+    private final PropertyInspectionService propertyInspectionService;
 
     @Transactional
     public void createCase(
@@ -71,6 +73,8 @@ public class PTCaseService {
 
         updateContactPreferences(ptCase, caseParty);
         updateTenantDetails(ptCase, caseParty);
+        PTCaseEntity ptCaseEntity = caseParty.getPtCase();
+        updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -90,5 +94,15 @@ public class PTCaseService {
         caseParty.setOrganisationName(tenantDetails.getCompanyName());
         caseParty.setReferenceNumber(tenantDetails.getReferenceNumberForCommunications());
         casePartyRepository.save(caseParty);
+    }
+
+    @Transactional
+    public void updateHearingOrPropertyInspectionDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        HearingPropertyInspectionDetails hearingOrPropertyInspectionDetails = ptCase.getHearingInspectionDetails();
+
+        ptCaseEntity.setHearingRequested(hearingOrPropertyInspectionDetails.getHearingRequested());
+        ptCaseRepository.save(ptCaseEntity);
+
+        propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
     }
 }

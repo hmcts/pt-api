@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
@@ -64,6 +65,9 @@ class PTCaseServiceTest {
     @Mock
     private ContactPreferencesService contactPreferencesService;
 
+    @Mock
+    private PropertyInspectionService propertyInspectionService;
+
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
 
@@ -108,12 +112,20 @@ class PTCaseServiceTest {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
 
         AddressEntity address = AddressEntity.builder().build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .id(1L)
             .addresses(List.of(address))
+            .ptCase(ptCaseEntity)
             .build();
 
         when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.of(caseParty));
+
+        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .agreeToDecisionWithoutInspection(YesOrNo.NO)
+            .noDecisionWithoutInspectionReason("Inspection needed")
+            .build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -130,6 +142,7 @@ class PTCaseServiceTest {
                 .companyName("Test Company")
                 .referenceNumberForCommunications("REF12")
                 .build())
+            .hearingInspectionDetails(hearingInspectionDetails)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -142,9 +155,12 @@ class PTCaseServiceTest {
         assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
         assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
         assertThat(address.getPostcode()).isEqualTo("AB1 2CD");
+        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressRepository).save(address);
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
+        verify(ptCaseRepository).save(ptCaseEntity);
+        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
     }
 
     @Test
@@ -196,5 +212,25 @@ class PTCaseServiceTest {
         assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
         assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
         verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should update hearing and property inspection details")
+    void updateHearingOrPropertyInspectionDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .agreeToDecisionWithoutInspection(YesOrNo.NO)
+            .noDecisionWithoutInspectionReason("Inspection needed")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .hearingInspectionDetails(hearingInspectionDetails)
+            .build();
+
+        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+
+        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        verify(ptCaseRepository).save(ptCaseEntity);
+        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
     }
 }

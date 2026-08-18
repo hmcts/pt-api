@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
@@ -44,6 +46,7 @@ public class ApplicationMapper {
             .email(caseParty.getEmailAddress())
             .applicantContactPreferences(mapContactPreferences(caseParty))
             .tenantDetails(mapTenantDetails(caseParty))
+            .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -70,6 +73,24 @@ public class ApplicationMapper {
             .lastName(caseParty.getLastName())
             .companyName(caseParty.getOrganisationName())
             .referenceNumberForCommunications(caseParty.getReferenceNumber())
+            .build();
+    }
+
+    public static HearingInspectionDetailsDto mapHearingInspectionDetails(PTCaseEntity ptCaseEntity) {
+        PropertyInspectionEntity propertyInspectionEntity = ptCaseEntity.getPropertyInspections().stream()
+            .findFirst()
+            .orElse(null);
+
+        return HearingInspectionDetailsDto.builder()
+            .hearingRequested(ptCaseEntity.getHearingRequested())
+            .agreeToDecisionWithoutInspection(
+                propertyInspectionEntity != null
+                    ? propertyInspectionEntity.getAgreeToDecisionWithoutInspection()
+                    : null)
+            .noDecisionWithoutInspectionReason(
+                propertyInspectionEntity != null
+                    ? propertyInspectionEntity.getNoDecisionWithoutInspectionReason()
+                    : null)
             .build();
     }
 }

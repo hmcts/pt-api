@@ -22,4 +22,5 @@ public class ApplicationDto {
     private LocalDateTime createdDate;
     private ContactPreferencesDto applicantContactPreferences;
     private TenantDetailsDto tenantDetails;
+    private HearingInspectionDetailsDto hearingInspectionDetails;
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,6 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +44,10 @@ public class PTCaseEntity extends AuditableEntity {
 
     @Column(length = 100)
     private String landlordType;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo hearingRequested;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -129,6 +138,11 @@ public class PTCaseEntity extends AuditableEntity {
     @JsonManagedReference
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @Builder.Default
+    private List<PropertyInspectionEntity> propertyInspections = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")

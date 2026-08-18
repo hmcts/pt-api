@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
@@ -68,6 +70,11 @@ public class ApplicationMapperTest {
         assertThat(tenantDetails.getLastName()).isEqualTo(LAST_NAME);
         assertThat(tenantDetails.getCompanyName()).isEqualTo(COMPANY_NAME);
         assertThat(tenantDetails.getReferenceNumberForCommunications()).isEqualTo(REFERENCE_NUMBER);
+
+        HearingInspectionDetailsDto hearingInspectionDetails = result.getHearingInspectionDetails();
+        assertThat(hearingInspectionDetails.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(hearingInspectionDetails.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(hearingInspectionDetails.getNoDecisionWithoutInspectionReason()).isEqualTo("Inspection reason");
     }
 
     @Test
@@ -144,6 +151,50 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapHearingInspectionDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .hearingRequested(YesOrNo.NO)
+            .propertyInspections(List.of(
+                PropertyInspectionEntity.builder()
+                    .agreeToDecisionWithoutInspection(YesOrNo.YES)
+                    .noDecisionWithoutInspectionReason("Some reason")
+                    .build()
+            ))
+            .build();
+
+        HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
+
+        assertThat(result.getHearingRequested()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getNoDecisionWithoutInspectionReason()).isEqualTo("Some reason");
+    }
+
+    @Test
+    public void shouldMapHearingInspectionDetailsWhenNoPropertyInspections() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .hearingRequested(YesOrNo.YES)
+            .propertyInspections(Collections.emptyList())
+            .build();
+
+        HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
+
+        assertThat(result.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
+        assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
+    }
+
+    @Test
+    public void shouldMapHearingInspectionDetailsWhenFieldsNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+
+        HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
+
+        assertThat(result.getHearingRequested()).isNull();
+        assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
+        assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
+    }
+
+    @Test
     public void shouldDefaultPostcodeToEmptyStringWhenNoProperties() {
         PTCaseEntity ptCase = ptCase(Collections.emptyList(), Collections.emptyList());
         CasePartyEntity caseParty = caseParty(ptCase, Collections.emptyList(), Collections.emptyList());
@@ -193,6 +244,13 @@ public class ApplicationMapperTest {
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
+            .hearingRequested(YesOrNo.YES)
+            .propertyInspections(List.of(
+                PropertyInspectionEntity.builder()
+                    .agreeToDecisionWithoutInspection(YesOrNo.YES)
+                    .noDecisionWithoutInspectionReason("Inspection reason")
+                    .build()
+            ))
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .build();
