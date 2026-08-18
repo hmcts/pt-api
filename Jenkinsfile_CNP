@@ -12,7 +12,7 @@ def component = "api"
 
 
 def secrets = [
-  'pt-kv-${env}': [
+  'pt-${env}': [
     secret('pt-api-s2s-secret', 'PT_API_S2S_SECRET'),
     secret('idam-system-user-name', 'IDAM_SYSTEM_USERNAME'),
     secret('idam-system-user-password', 'IDAM_SYSTEM_USER_PASSWORD'),
@@ -44,7 +44,7 @@ withPipeline(type, product, component) {
   env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
   env.PACT_BROKER_URL = "https://pact-broker.platform.hmcts.net"
   loadVaultSecrets(secrets)
-  enableDbMigration('pt-kv')
+  enableDbMigration('pt')
   syncBranchesWithMaster(['ithc', 'demo', 'perftest'])
 
   onPR() {
@@ -52,7 +52,7 @@ withPipeline(type, product, component) {
     setPreviewEnvVars()
     if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
       env.CCD_ENABLED = "true"
-      enableHighLevelDataSetup("pt-kv")
+      enableHighLevelDataSetup("pt")
     } else {
       env.CCD_ENABLED = "false"
     }
@@ -60,7 +60,7 @@ withPipeline(type, product, component) {
 
   onMaster() {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
-    enableHighLevelDataSetup("pt-kv", true)
+    enableHighLevelDataSetup("pt", true)
     setAatEnvVars()
     //  afterSuccess('smoketest:aat') {
     //    runE2eTests(env.ENVIRONMENT)
@@ -69,17 +69,17 @@ withPipeline(type, product, component) {
 
   onDemo {
     setDemoEnvVars()
-    enableHighLevelDataSetup("pt-kv")
+    enableHighLevelDataSetup("pt")
   }
 
   onIthc {
     setIthcEnvVars()
-    enableHighLevelDataSetup("pt-kv")
+    enableHighLevelDataSetup("pt")
   }
 
   onPerftest {
     setPerftestEnvVars()
-    enableHighLevelDataSetup("pt-kv")
+    enableHighLevelDataSetup("pt")
   }
 
   before('highleveldatasetup') {

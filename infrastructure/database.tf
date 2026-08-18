@@ -6,7 +6,7 @@ provider "azurerm" {
 }
 
 data "azurerm_key_vault" "pt_key_vault" {
-  name                = "pt-kv-${var.env}"
+  name                = "pt-${var.env}"
   resource_group_name = "pt-${var.env}"
 }
 
