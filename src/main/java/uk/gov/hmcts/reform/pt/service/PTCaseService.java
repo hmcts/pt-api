@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -32,6 +33,8 @@ public class PTCaseService {
     private final AddressRepository addressRepository;
     private final ContactPreferencesService contactPreferencesService;
     private final PropertyInspectionService propertyInspectionService;
+    private final NoticeOfRentChangeService noticeOfRentChangeService;
+    private final DocumentService documentService;
 
     @Transactional
     public void createCase(
@@ -73,8 +76,10 @@ public class PTCaseService {
 
         updateContactPreferences(ptCase, caseParty);
         updateTenantDetails(ptCase, caseParty);
+
         PTCaseEntity ptCaseEntity = caseParty.getPtCase();
         updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+        updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -104,5 +109,19 @@ public class PTCaseService {
         ptCaseRepository.save(ptCaseEntity);
 
         propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
+    }
+
+    @Transactional
+    public void updateNoticeOfRentChangeDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails = ptCase.getNoticeOfRentIncreaseDetails();
+        if (noticeOfRentIncreaseDetails.getReceivedLandlordNoticeProposingNewRent() == null
+            || noticeOfRentIncreaseDetails.getNoticeLegallyValid() == null
+            || noticeOfRentIncreaseDetails.getRentIncreaseToCauseHardship() == null) {
+            // cannot create notice of rent change details without all the required fields
+            return;
+        }
+
+        noticeOfRentChangeService.updateNoticeOfRentChangeDetails(noticeOfRentIncreaseDetails, ptCaseEntity);
+        documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
     }
 }

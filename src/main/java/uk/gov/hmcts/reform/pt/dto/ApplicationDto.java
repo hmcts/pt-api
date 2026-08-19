@@ -23,4 +23,5 @@ public class ApplicationDto {
     private ContactPreferencesDto applicantContactPreferences;
     private TenantDetailsDto tenantDetails;
     private HearingInspectionDetailsDto hearingInspectionDetails;
+    private NoticeOfRentIncreaseDto noticeOfRentIncreaseDetails;
 }

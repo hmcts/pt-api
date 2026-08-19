@@ -1,16 +1,23 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
+import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
+import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
+
+import java.util.Optional;
 
 public class ApplicationMapper {
     public static ApplicationDto toDto(CaseApplicationEntity entity) {
@@ -47,6 +54,7 @@ public class ApplicationMapper {
             .applicantContactPreferences(mapContactPreferences(caseParty))
             .tenantDetails(mapTenantDetails(caseParty))
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
+            .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -92,5 +100,54 @@ public class ApplicationMapper {
                     ? propertyInspectionEntity.getNoDecisionWithoutInspectionReason()
                     : null)
             .build();
+    }
+
+    public static NoticeOfRentIncreaseDto mapNoticeOfRentChangeDetails(PTCaseEntity ptCaseEntity) {
+        NoticeOfRentChangeEntity entity = ptCaseEntity.getNoticeOfRentChanges().stream()
+            .findFirst()
+            .orElse(null);
+
+        if (entity == null) {
+            return NoticeOfRentIncreaseDto.builder().build();
+        }
+
+        return NoticeOfRentIncreaseDto.builder()
+            .receivedLandlordNoticeProposingNewRent(entity.getReceivedLandlordNoticeProposingNewRent())
+            .noUploadOfNoticeProposingNewRentReason(entity.getNoUploadOfNoticeProposingNewRentReason())
+            .landlordNoticeProposingNewRentDocument(
+                findDocumentOfType(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null)
+            )
+            .noticeLegallyValid(entity.getNoticeLegallyValid())
+            .noticeNotLegallyValidDetails(entity.getNoticeNotLegallyValidDetails())
+            .noticeNotLegallyValidDocument(
+                findDocumentOfType(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null)
+            )
+            .rentIncreaseToCauseHardship(entity.getRentIncreaseToCauseHardship())
+            .rentIncreaseToCauseHardshipDocument(
+                findDocumentOfType(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null)
+            )
+            .build();
+    }
+
+    public static DocumentDto mapDocument(DocumentEntity entity) {
+        return DocumentDto.builder()
+            .url(entity.getUrl())
+            .binaryUrl(entity.getBinaryUrl())
+            .filename(entity.getFileName())
+            .contentType(entity.getContentType())
+            .size(entity.getSize())
+            .build();
+    }
+
+    private static Optional<DocumentEntity> findDocumentOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
+        return ptCaseEntity.getDocuments().stream()
+            .filter(document -> document.getDocumentType() == type)
+            .findFirst();
     }
 }

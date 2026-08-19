@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.pt.mapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
+import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -14,6 +17,8 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
+import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -75,6 +80,9 @@ public class ApplicationMapperTest {
         assertThat(hearingInspectionDetails.getHearingRequested()).isEqualTo(YesOrNo.YES);
         assertThat(hearingInspectionDetails.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
         assertThat(hearingInspectionDetails.getNoDecisionWithoutInspectionReason()).isEqualTo("Inspection reason");
+
+        NoticeOfRentIncreaseDto noticeOfRentIncreaseDetails = result.getNoticeOfRentIncreaseDetails();
+        assertThat(noticeOfRentIncreaseDetails).isNotNull();
     }
 
     @Test
@@ -231,6 +239,146 @@ public class ApplicationMapperTest {
         ApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
+    }
+
+    @Test
+    public void shouldMapNoticeOfRentChangeDetails() {
+        DocumentEntity rentNoticeDoc = DocumentEntity.builder()
+            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
+            .url("http://dm-store/doc/1")
+            .binaryUrl("http://dm-store/doc/1/binary")
+            .fileName("rent_notice.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        DocumentEntity invalidNoticeDoc = DocumentEntity.builder()
+            .documentType(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE)
+            .url("http://dm-store/doc/2")
+            .binaryUrl("http://dm-store/doc/2/binary")
+            .fileName("invalid_notice.pdf")
+            .contentType("application/pdf")
+            .size(2048L)
+            .build();
+
+        DocumentEntity hardshipDoc = DocumentEntity.builder()
+            .documentType(DocumentType.HARDSHIP_EVIDENCE)
+            .url("http://dm-store/doc/3")
+            .binaryUrl("http://dm-store/doc/3/binary")
+            .fileName("hardship.pdf")
+            .contentType("application/pdf")
+            .size(4096L)
+            .build();
+
+        NoticeOfRentChangeEntity noticeOfRentChange = NoticeOfRentChangeEntity.builder()
+            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
+            .noUploadOfNoticeProposingNewRentReason("Paper copy only")
+            .noticeLegallyValid(YesOrNo.NO)
+            .noticeNotLegallyValidDetails("Incorrect notice period")
+            .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .noticeOfRentChanges(List.of(noticeOfRentChange))
+            .documents(List.of(rentNoticeDoc, invalidNoticeDoc, hardshipDoc))
+            .build();
+
+        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
+
+        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Paper copy only");
+        assertThat(result.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getNoticeNotLegallyValidDetails()).isEqualTo("Incorrect notice period");
+        assertThat(result.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
+
+        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isEqualTo(
+            DocumentDto.builder()
+                .url("http://dm-store/doc/1")
+                .binaryUrl("http://dm-store/doc/1/binary")
+                .filename("rent_notice.pdf")
+                .contentType("application/pdf")
+                .size(1024L)
+                .build()
+        );
+        assertThat(result.getNoticeNotLegallyValidDocument()).isEqualTo(
+            DocumentDto.builder()
+                .url("http://dm-store/doc/2")
+                .binaryUrl("http://dm-store/doc/2/binary")
+                .filename("invalid_notice.pdf")
+                .contentType("application/pdf")
+                .size(2048L)
+                .build()
+        );
+        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isEqualTo(
+            DocumentDto.builder()
+                .url("http://dm-store/doc/3")
+                .binaryUrl("http://dm-store/doc/3/binary")
+                .filename("hardship.pdf")
+                .contentType("application/pdf")
+                .size(4096L)
+                .build()
+        );
+    }
+
+    @Test
+    public void shouldMapNoticeOfRentChangeDetailsWhenNoNoticeOfRentChanges() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .noticeOfRentChanges(Collections.emptyList())
+            .build();
+
+        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isNull();
+        assertThat(result.getNoUploadOfNoticeProposingNewRentReason()).isNull();
+        assertThat(result.getNoticeLegallyValid()).isNull();
+        assertThat(result.getNoticeNotLegallyValidDetails()).isNull();
+        assertThat(result.getRentIncreaseToCauseHardship()).isNull();
+        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
+        assertThat(result.getNoticeNotLegallyValidDocument()).isNull();
+        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
+    }
+
+    @Test
+    public void shouldMapNoticeOfRentChangeDetailsWhenNoDocuments() {
+        NoticeOfRentChangeEntity noticeOfRentChange = NoticeOfRentChangeEntity.builder()
+            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
+            .noticeLegallyValid(YesOrNo.YES)
+            .rentIncreaseToCauseHardship(YesOrNo.NO)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .noticeOfRentChanges(List.of(noticeOfRentChange))
+            .documents(Collections.emptyList())
+            .build();
+
+        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
+
+        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getNoticeLegallyValid()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
+        assertThat(result.getNoticeNotLegallyValidDocument()).isNull();
+        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
+    }
+
+    @Test
+    public void shouldMapDocument() {
+        DocumentEntity entity = DocumentEntity.builder()
+            .url("http://dm-store/doc/1")
+            .binaryUrl("http://dm-store/doc/1/binary")
+            .fileName("file.pdf")
+            .contentType("application/pdf")
+            .size(5000L)
+            .build();
+
+        DocumentDto result = ApplicationMapper.mapDocument(entity);
+
+        assertThat(result.getUrl()).isEqualTo("http://dm-store/doc/1");
+        assertThat(result.getBinaryUrl()).isEqualTo("http://dm-store/doc/1/binary");
+        assertThat(result.getFilename()).isEqualTo("file.pdf");
+        assertThat(result.getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getSize()).isEqualTo(5000L);
     }
 
     private static List<AddressEntity> addresses(String postcode) {

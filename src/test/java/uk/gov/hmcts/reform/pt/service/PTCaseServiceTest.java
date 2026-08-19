@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
@@ -67,6 +68,12 @@ class PTCaseServiceTest {
 
     @Mock
     private PropertyInspectionService propertyInspectionService;
+
+    @Mock
+    private NoticeOfRentChangeService noticeOfRentChangeService;
+
+    @Mock
+    private DocumentService documentService;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -127,6 +134,12 @@ class PTCaseServiceTest {
             .noDecisionWithoutInspectionReason("Inspection needed")
             .build();
 
+        NoticeOfRentIncreaseDetails noticeDetails = NoticeOfRentIncreaseDetails.builder()
+            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
+            .noticeLegallyValid(YesOrNo.YES)
+            .rentIncreaseToCauseHardship(YesOrNo.NO)
+            .build();
+
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
             .applicantLastName("Doe")
@@ -143,6 +156,7 @@ class PTCaseServiceTest {
                 .referenceNumberForCommunications("REF12")
                 .build())
             .hearingInspectionDetails(hearingInspectionDetails)
+            .noticeOfRentIncreaseDetails(noticeDetails)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -161,6 +175,8 @@ class PTCaseServiceTest {
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
         verify(ptCaseRepository).save(ptCaseEntity);
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+        verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
+        verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
     }
 
     @Test
@@ -232,5 +248,43 @@ class PTCaseServiceTest {
         assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository).save(ptCaseEntity);
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+    }
+
+    @Test
+    @DisplayName("Should update notice of rent change details and documents when all required fields are present")
+    void updateNoticeOfRentChangeDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        NoticeOfRentIncreaseDetails noticeDetails = NoticeOfRentIncreaseDetails.builder()
+            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
+            .noticeLegallyValid(YesOrNo.NO)
+            .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .noticeOfRentIncreaseDetails(noticeDetails)
+            .build();
+
+        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+
+        verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
+        verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should skip updating notice of rent change details when required fields are missing")
+    void updateNoticeOfRentChangeDetailsSkippedWhenMissingRequiredFields() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        NoticeOfRentIncreaseDetails noticeDetails = NoticeOfRentIncreaseDetails.builder()
+            .receivedLandlordNoticeProposingNewRent(null)
+            .noticeLegallyValid(YesOrNo.NO)
+            .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .noticeOfRentIncreaseDetails(noticeDetails)
+            .build();
+
+        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+
+        verify(noticeOfRentChangeService, org.mockito.Mockito.never()).updateNoticeOfRentChangeDetails(any(), any());
+        verify(documentService, org.mockito.Mockito.never()).updateDocumentsForNoticeOfRentChange(any(), any());
     }
 }
