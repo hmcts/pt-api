@@ -13,7 +13,7 @@ def component = "api"
 
 withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#pt-tech')
-  enableFortifyScan()
+  enableFortifyScan('pt-kv1-aat')
 
    afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
