@@ -18,7 +18,19 @@ public enum DocumentType implements HasLabel {
     NEW_RENT_INCREASE_NOTICE("New rent increase notice"),
 
     @JsonProperty("noticeNotLegallyValidEvidence")
-    NOTICE_NOT_LEGALLY_VALID_EVIDENCE("Notice not legally valid evidence");
+    NOTICE_NOT_LEGALLY_VALID_EVIDENCE("Notice not legally valid evidence"),
+
+    @JsonProperty("floorPlan")
+    FLOOR_PLAN("Floor plan"),
+
+    @JsonProperty("outsideProperty")
+    OUTSIDE_PROPERTY("Outside property"),
+
+    @JsonProperty("propertyRooms")
+    PROPERTY_ROOMS("Property rooms"),
+
+    @JsonProperty("repairsEvidence")
+    REPAIRS_EVIDENCE("Repairs evidence");
 
     private final String label;
 }

@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -35,6 +37,7 @@ public class PTCaseService {
     private final PropertyInspectionService propertyInspectionService;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
+    private final MarketRentCaseService marketRentCaseService;
 
     @Transactional
     public void createCase(
@@ -69,22 +72,21 @@ public class PTCaseService {
         caseParty.setEmailAddress(ptCase.getEmail());
         casePartyRepository.save(caseParty);
 
-        caseParty.getAddresses().stream().findFirst().ifPresent(address -> {
-            address.setPostcode(ptCase.getPostcode());
-            addressRepository.save(address);
-        });
-
         updateContactPreferences(ptCase, caseParty);
         updateTenantDetails(ptCase, caseParty);
 
         PTCaseEntity ptCaseEntity = caseParty.getPtCase();
         updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
         updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+        updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
     }
 
     @Transactional
     public void updateContactPreferences(PTCase ptCase, CasePartyEntity caseParty) {
         ApplicantContactPreferences contactPreferenceData = ptCase.getApplicantContactPreferences();
+        if (contactPreferenceData == null) {
+            return;
+        }
 
         contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
 
@@ -96,6 +98,10 @@ public class PTCaseService {
     @Transactional
     public void updateTenantDetails(PTCase ptCase, CasePartyEntity caseParty) {
         TenantDetails tenantDetails = ptCase.getTenantDetails();
+        if (tenantDetails == null) {
+            return;
+        }
+
         caseParty.setOrganisationName(tenantDetails.getCompanyName());
         caseParty.setReferenceNumber(tenantDetails.getReferenceNumberForCommunications());
         casePartyRepository.save(caseParty);
@@ -104,6 +110,9 @@ public class PTCaseService {
     @Transactional
     public void updateHearingOrPropertyInspectionDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
         HearingPropertyInspectionDetails hearingOrPropertyInspectionDetails = ptCase.getHearingInspectionDetails();
+        if (hearingOrPropertyInspectionDetails == null) {
+            return;
+        }
 
         ptCaseEntity.setHearingRequested(hearingOrPropertyInspectionDetails.getHearingRequested());
         ptCaseRepository.save(ptCaseEntity);
@@ -114,14 +123,35 @@ public class PTCaseService {
     @Transactional
     public void updateNoticeOfRentChangeDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
         NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails = ptCase.getNoticeOfRentIncreaseDetails();
-        if (noticeOfRentIncreaseDetails.getReceivedLandlordNoticeProposingNewRent() == null
-            || noticeOfRentIncreaseDetails.getNoticeLegallyValid() == null
-            || noticeOfRentIncreaseDetails.getRentIncreaseToCauseHardship() == null) {
-            // cannot create notice of rent change details without all the required fields
+        if (noticeOfRentIncreaseDetails == null) {
             return;
         }
 
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(noticeOfRentIncreaseDetails, ptCaseEntity);
         documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
+    }
+
+    @Transactional
+    public void updatePropertyDetails(PTCase ptCase, PTCaseEntity ptCaseEntity, CasePartyEntity caseParty) {
+        PropertyDetails propertyDetails = ptCase.getPropertyDetails();
+        if (propertyDetails == null) {
+            return;
+        }
+
+        AddressEntity address = caseParty.getAddresses().stream()
+            .findFirst()
+            .orElse(new AddressEntity());
+        address.setAddressLine1(propertyDetails.getAddressLine1());
+        address.setAddressLine2(propertyDetails.getAddressLine2());
+        address.setPostTown(propertyDetails.getPostTown());
+        address.setCounty(propertyDetails.getCounty());
+        address.setPostcode(propertyDetails.getPostcode());
+        address.setParty(caseParty);
+        address.setPtCase(ptCaseEntity);
+        addressRepository.save(address);
+
+        tenancyDetailsService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        marketRentCaseService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        documentService.updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
     }
 }

@@ -6,17 +6,22 @@ import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
+import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
+import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
+import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
+import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ApplicationMapper {
@@ -55,6 +60,7 @@ public class ApplicationMapper {
             .tenantDetails(mapTenantDetails(caseParty))
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
+            .propertyDetails(mapPropertyDetails(ptCase, caseParty))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -70,8 +76,7 @@ public class ApplicationMapper {
             .contactByText(
                 contactPreferences != null
                     ? contactPreferences.getContactByText()
-                    : null
-            )
+                    : null)
             .build();
     }
 
@@ -117,21 +122,71 @@ public class ApplicationMapper {
             .landlordNoticeProposingNewRentDocument(
                 findDocumentOfType(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null)
-            )
+                    .orElse(null))
             .noticeLegallyValid(entity.getNoticeLegallyValid())
             .noticeNotLegallyValidDetails(entity.getNoticeNotLegallyValidDetails())
             .noticeNotLegallyValidDocument(
                 findDocumentOfType(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null)
-            )
+                    .orElse(null))
             .rentIncreaseToCauseHardship(entity.getRentIncreaseToCauseHardship())
             .rentIncreaseToCauseHardshipDocument(
                 findDocumentOfType(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null)
-            )
+                    .orElse(null))
+            .build();
+    }
+
+    public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity, CasePartyEntity party) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        AddressEntity address = party.getAddresses().stream().findFirst().orElse(null);
+
+        if (tenancyDetails == null || marketRentCase == null || address == null) {
+            return null;
+        }
+
+        return PropertyDetailsDto.builder()
+            .addressLine1(address.getAddressLine1())
+            .addressLine2(address.getAddressLine2())
+            .postTown(address.getPostTown())
+            .county(address.getCounty())
+            .postcode(address.getPostcode())
+            .propertyType(marketRentCase.getTypeOfPropertyRenting())
+            .rentingFlatDetails(marketRentCase.getRentingFlatDetails())
+            .rentingRoomDetails(marketRentCase.getRentingRoomDetails())
+            .otherMethodRentingDetails(marketRentCase.getOtherMethodOfRentDetails())
+            .propertyFloorPlanAvailable(marketRentCase.getPropertyFloorPlanAvailable())
+            .floorPlanManualDetails(marketRentCase.getFloorplanManualDetails())
+            .floorPlanDocument(
+                findDocumentOfType(DocumentType.FLOOR_PLAN, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
+            .indoorFeatures(marketRentCase.getPropertyIndoorFeatures())
+            .otherFacilitiesAvailable(tenancyDetails.getTenancyIncludeFacilities())
+            .otherFacilitiesDetails(tenancyDetails.getOtherFacilitiesDetails())
+            .outsidePropertyDocument(
+                findDocumentOfType(DocumentType.OUTSIDE_PROPERTY, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
+            .propertyRoomsDocuments(
+                findDocumentsOfType(DocumentType.PROPERTY_ROOMS, ptCaseEntity)
+                    .stream()
+                    .map(ApplicationMapper::mapDocument)
+                    .toList())
+            .furnitureProvidedInTenancy(tenancyDetails.getFurnitureProvidedInTenancy())
+            .furnitureProvidedInTenancyDetails(tenancyDetails.getFurnitureProvidedInTenancyDetails())
+            .additionalServicesProvidedInTenancy(tenancyDetails.getAdditionalServicesProvidedInTenancy())
+            .additionalServicesProvidedInTenancyDetails(tenancyDetails.getAdditionalServicesProvidedInTenancyDetails())
+            .sharePropertyWithLandlord(marketRentCase.getSharePropertyWithLandlord())
+            .sharePropertyWithLandlordDetails(marketRentCase.getSharePropertyWithLandlordDetails())
+            .landlordRepairsDetails(tenancyDetails.getLandlordRepairsDetails())
+            .tenantRepairsDetails(tenancyDetails.getTenantRepairsDetails())
+            .anyTenantsMadePropertyRepairs(tenancyDetails.getAnyTenantsMadePropertyRepairs())
+            .repairsEvidenceDocument(
+                findDocumentOfType(DocumentType.REPAIRS_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
             .build();
     }
 
@@ -149,5 +204,11 @@ public class ApplicationMapper {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
             .findFirst();
+    }
+
+    private static List<DocumentEntity> findDocumentsOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
+        return ptCaseEntity.getDocuments().stream()
+            .filter(document -> document.getDocumentType() == type)
+            .toList();
     }
 }
