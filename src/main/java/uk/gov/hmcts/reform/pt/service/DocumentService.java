@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,10 +66,6 @@ public class DocumentService {
         );
     }
 
-    /**
-     * For document types where the case can only ever hold one document of that type.
-     * Overwrites the existing entity if present, otherwise creates a new one.
-     */
     @Transactional
     protected void updateSingleDocument(
         DocumentType documentType,
@@ -79,10 +77,7 @@ public class DocumentService {
             .findFirst();
 
         if (uploadedDocument == null) {
-            // todo unsure what we want to do here
-            // existing.ifPresent(documentEntity -> {
-            //     documentRepository.delete(documentEntity);
-            // });
+            existing.ifPresent(documentRepository::delete);
             return;
         }
 
@@ -90,11 +85,6 @@ public class DocumentService {
         saveDocument(documentEntity, uploadedDocument, documentType, ptCaseEntity);
     }
 
-    /**
-     * For document types where the case can hold many documents of that type.
-     * Reconciles the incoming list against what is already stored, matched by document URL
-     * existing documents still present are updated in place, ones no longer present are to be removed.
-     */
     @Transactional
     protected void updateMultipleDocuments(
         DocumentType documentType,
@@ -103,16 +93,13 @@ public class DocumentService {
     ) {
         List<DocumentEntity> existingEntities = getDocumentsOfTypeForCase(documentType, ptCaseEntity);
 
-        // todo unsure what we want to do here
-        // Set<String> incomingUrls = uploadedDocuments.stream()
-        //     .map(uploadedDocument -> uploadedDocument.getDocument().getUrl())
-        //     .collect(Collectors.toSet());
+        Set<String> incomingUrls = uploadedDocuments.stream()
+            .map(uploadedDocument -> uploadedDocument.getDocument().getUrl())
+            .collect(Collectors.toSet());
 
-        // existingEntities.stream()
-        //    .filter(documentEntity -> !incomingUrls.contains(documentEntity.getUrl()))
-        //    .forEach(documentEntity -> {
-        //        documentRepository.delete(documentEntity);
-        //    });
+        existingEntities.stream()
+            .filter(documentEntity -> !incomingUrls.contains(documentEntity.getUrl()))
+            .forEach(documentRepository::delete);
 
         for (UploadedDocument uploadedDocument : uploadedDocuments) {
             DocumentEntity documentEntity = existingEntities.stream()
@@ -130,20 +117,16 @@ public class DocumentService {
         DocumentType documentType,
         PTCaseEntity ptCaseEntity
     ) {
-        entity.setPtCase(ptCaseEntity);
-        // todo entity.setCaseApplication(ptCaseEntity.getParties());
-        entity.setCategoryId(CaseFileCategory.UNCATEGORISED_DOCUMENTS.getId());
-
         Document document = uploadedDocument.getDocument();
         entity.setUrl(document.getUrl());
         entity.setFileName(document.getFilename());
         entity.setBinaryUrl(document.getBinaryUrl());
-
         entity.setSize(uploadedDocument.getSizeInBytes());
         entity.setContentType(uploadedDocument.getContentType());
-
         entity.setDocumentType(documentType);
         entity.setDescription(documentType.getLabel());
+        entity.setPtCase(ptCaseEntity);
+        entity.setCategoryId(CaseFileCategory.UNCATEGORISED_DOCUMENTS.getId());
 
         documentRepository.save(entity);
     }

@@ -114,8 +114,8 @@ class DocumentServiceTest {
     }
 
     @Test
-    @DisplayName("Should do nothing when single uploaded document is null")
-    void updateSingleDocumentDoesNothingWhenUploadedDocumentIsNull() {
+    @DisplayName("Should delete existing document when single uploaded document is null")
+    void updateSingleDocumentDeletesExistingWhenUploadedDocumentIsNull() {
         DocumentEntity existing = DocumentEntity.builder()
             .documentType(DocumentType.HARDSHIP_EVIDENCE)
             .url("http://dm-store/documents/hardship")
@@ -128,12 +128,25 @@ class DocumentServiceTest {
 
         documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
 
+        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should do nothing when single uploaded document is null and no existing document exists")
+    void updateSingleDocumentDoesNothingWhenUploadedDocumentIsNullAndNoExistingDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
+
         verify(documentRepository, never()).delete(any());
         verify(documentRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Should update multiple documents creating new and updating existing matching by url")
+    @DisplayName("Should update multiple documents creating new, updating existing, and deleting removed documents")
     void updateMultipleDocuments() {
         DocumentEntity existingDoc = DocumentEntity.builder()
             .documentType(DocumentType.PROPERTY_ROOMS)
@@ -141,8 +154,14 @@ class DocumentServiceTest {
             .fileName("room1.pdf")
             .build();
 
+        DocumentEntity removedDoc = DocumentEntity.builder()
+            .documentType(DocumentType.PROPERTY_ROOMS)
+            .url("http://dm-store/documents/room-removed")
+            .fileName("room_removed.pdf")
+            .build();
+
         PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existingDoc))
+            .documents(List.of(existingDoc, removedDoc))
             .build();
 
         UploadedDocument updatedDoc = UploadedDocument.builder()
@@ -166,6 +185,9 @@ class DocumentServiceTest {
             .build();
 
         documentService.updateMultipleDocuments(DocumentType.PROPERTY_ROOMS, List.of(updatedDoc, newDoc), ptCase);
+
+        verify(documentRepository).delete(removedDoc);
+        verify(documentRepository, never()).delete(existingDoc);
 
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
         verify(documentRepository, times(2)).save(captor.capture());
