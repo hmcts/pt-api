@@ -2,9 +2,11 @@
 ALTER TABLE case_party
   ALTER COLUMN reference_number TYPE VARCHAR(5);
 
+
 -- Case table updates
 ALTER TABLE pt_case
-  ADD COLUMN hearing_requested YES_NO; -- todo not null in ddl but cannot be
+  ADD COLUMN hearing_requested YES_NO;
+
 
 -- Property inspection table updates
 CREATE TABLE property_inspection (
