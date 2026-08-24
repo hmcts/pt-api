@@ -11,18 +11,9 @@ def type = "java"
 def product = "pt"
 def component = "api"
 
-static Map<String, Object> secret(String secretName, String envVariable) {
-  [$class     : 'AzureKeyVaultSecret',
-    secretType : 'Secret',
-    name       : secretName,
-    envVariable: envVariable
-  ]
-}
-
 withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#pt-tech')
-  loadVaultSecrets(secrets)
-  enableFortifyScan()
+  enableFortifyScan('pt-kv1-aat')
 
    afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
