@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -98,6 +99,36 @@ class PTCaseServiceTest {
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
         verify(caseApplicationRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("Should delete the case applications and the case when the case exists")
+    void deleteCaseDeletesApplicationsAndCase() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        List<CaseApplicationEntity> applications = List.of(CaseApplicationEntity.builder().build());
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        when(caseApplicationRepository.findAllByCaseReference(caseReference)).thenReturn(applications);
+
+        ptCaseService.deleteCase(caseReference);
+
+        verify(caseApplicationRepository).deleteAll(applications);
+        verify(ptCaseRepository).delete(ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should throw CaseNotFoundException when deleting a case that does not exist")
+    void deleteCaseThrowsWhenCaseNotFound() {
+        long caseReference = 1234567890123456L;
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ptCaseService.deleteCase(caseReference))
+            .isInstanceOf(CaseNotFoundException.class);
+
+        verify(caseApplicationRepository, times(0)).deleteAll(any());
+        verify(ptCaseRepository, times(0)).delete(any());
     }
 
     @Test
