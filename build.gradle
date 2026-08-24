@@ -234,7 +234,7 @@ ext {
   log4JVersion = "2.26.1"
   logbackVersion = "1.6.2"
   springFrameworkBootVersion = "3.5.16"
-  springSecurityVersion = "7.1.0"
+  springSecurityVersion = "7.1.1"
   lombokVersion = "1.18.46"
   testcontainersVersion = "2.0.5"
   testcontainersAdditionsVersion = "1.21.4"
