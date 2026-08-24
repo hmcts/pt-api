@@ -25,4 +25,12 @@ public interface CaseApplicationRepository extends JpaRepository<CaseApplication
         @Param("caseReference") Long caseReference,
         @Param("idamId") UUID idamId
     );
+
+    @Query("""
+        SELECT ca FROM CaseApplicationEntity ca
+        JOIN ca.caseParty cp
+        JOIN cp.ptCase pc
+        WHERE pc.caseReference = :caseReference
+        """)
+    List<CaseApplicationEntity> findAllByCaseReference(@Param("caseReference") Long caseReference);
 }

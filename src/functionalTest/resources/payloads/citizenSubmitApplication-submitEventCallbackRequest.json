@@ -1,0 +1,29 @@
+{
+  "case_details_before": {},
+  "case_details": {
+    "id": "${caseId}",
+    "jurisdiction": "PT",
+    "case_type_id": "${caseTypeId}",
+    "state": "PENDING_CASE_ISSUED",
+    "security_classification": "PUBLIC",
+    "case_data": {
+      "applicantFirstName": "Test",
+      "applicantLastName": "Applicant",
+      "email": "test.applicant@example.com",
+      "postcode": "BH1 3BP",
+      "applicationType": "challengeRentIncrease",
+      "tenancyType": "assuredPeriodicTenancy",
+      "applicantContactPreferencesTextUpdates": "Yes",
+      "applicantContactPreferencesTextUpdatesPhoneNumber": "07700900000",
+      "applicantContactPreferencesPhoneNumberForCalls": "07700900000"
+    }
+  },
+  "event_details": {
+    "case_type": "${caseTypeId}",
+    "event_name": "citizen-submit-application",
+    "event_id": "citizen-submit-application"
+  },
+  "internal_case_id": "${caseId}",
+  "start_revision": 1,
+  "merge_revision": 1
+}
