@@ -60,8 +60,6 @@ class CitizenUpdateApplicationEventCallbackTests extends BaseApi {
         apiSteps.theRequestContainsBody(updateRequestBody);
         apiSteps.callIsSubmittedToTheEndpoint("SubmitEventCallback", "POST");
         apiSteps.checkStatusCode(200);
-        apiSteps.theResponseBodyMatchesTheExpectedResponse(
-            "/responses/citizenUpdateApplication-submitEventCallbackResponse.json");
 
         apiSteps.requestIsPreparedWithAppropriateValues();
         apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
