@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.mapper;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
@@ -61,6 +62,7 @@ public class ApplicationMapper {
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase, caseParty))
+            .currentRentsDetails(mapCurrentRentDetails(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -187,6 +189,45 @@ public class ApplicationMapper {
                 findDocumentOfType(DocumentType.REPAIRS_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
+            .build();
+    }
+
+    public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+
+        if (tenancyDetails == null || marketRentCase == null) {
+            return null;
+        }
+
+        return CurrentRentsDetailsDto.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(tenancyDetails.getTribunalPreviouslyDeterminedTenancyRent())
+            .previousTribunalCaseReference(tenancyDetails.getPreviousTribunalCaseReference())
+            .rentPaymentFrequency(marketRentCase.getRentPaymentFrequency())
+            .rentCostWeekly(marketRentCase.getRentCostWeekly())
+            .rentCostFortnightly(marketRentCase.getRentCostFortnightly())
+            .rentCostMonthly(marketRentCase.getRentCostMonthly())
+            .rentCostYearly(marketRentCase.getRentCostYearly())
+            .rentIncludesCouncilTax(marketRentCase.getRentIncludesCouncilTax())
+            .councilTaxFrequency(marketRentCase.getCouncilTaxFrequency())
+            .councilTaxCostWeekly(marketRentCase.getCouncilTaxCostWeekly())
+            .councilTaxCostFortnightly(marketRentCase.getCouncilTaxCostFortnightly())
+            .councilTaxCostMonthly(marketRentCase.getCouncilTaxCostMonthly())
+            .councilTaxCostYearly(marketRentCase.getCouncilTaxCostYearly())
+            .councilTaxFrequencyAndCostDetails(marketRentCase.getCouncilTaxFrequencyAndCostDetails())
+            .utilitiesPaidFrequency(marketRentCase.getUtilitiesPaidFrequency())
+            .utilitiesCostWeekly(marketRentCase.getUtilitiesCostWeekly())
+            .utilitiesCostFortnightly(marketRentCase.getUtilitiesCostFortnightly())
+            .utilitiesCostMonthly(marketRentCase.getUtilitiesCostMonthly())
+            .utilitiesCostYearly(marketRentCase.getUtilitiesCostYearly())
+            .utilitiesPaidFrequencyAndCostDetails(marketRentCase.getUtilitiesFrequencyAndCostDetails())
+            .currentTenancyStartDate(tenancyDetails.getCurrentTenancyStartDate())
+            .currentTenancyEndDate(tenancyDetails.getTenancyEndDate())
+            .currentTenancyReplaceOriginalTenancy(tenancyDetails.getCurrentTenancyReplaceOriginalTenancy())
+            .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
+            .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
+            .additionalRentalVaryingServiceChargesDetails(
+                marketRentCase.getAdditionalRentalVaryingServiceChargesDetails())
             .build();
     }
 

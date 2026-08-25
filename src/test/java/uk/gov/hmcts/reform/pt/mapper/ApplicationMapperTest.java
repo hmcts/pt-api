@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -93,6 +96,9 @@ public class ApplicationMapperTest {
         assertThat(propertyDetails.getAddressLine1()).isEqualTo("123 Test St");
         assertThat(propertyDetails.getPostTown()).isEqualTo("London");
         assertThat(propertyDetails.getPropertyType()).isEqualTo(PropertyType.TERRACED_HOUSE);
+
+        CurrentRentsDetailsDto currentRentsDetails = result.getCurrentRentsDetails();
+        assertThat(currentRentsDetails).isNotNull();
     }
 
     @Test
@@ -584,6 +590,104 @@ public class ApplicationMapperTest {
             .build();
 
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapCurrentRentDetails() {
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
+        LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
+            .previousTribunalCaseReference("TRIB-123")
+            .currentTenancyStartDate(startDate)
+            .tenancyEndDate(endDate)
+            .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
+            .originalTenancyStartDate(originalStartDate)
+            .build();
+
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .rentPaymentFrequency(Frequency.MONTHLY)
+            .rentCostWeekly(new BigDecimal("100.00"))
+            .rentCostFortnightly(new BigDecimal("200.00"))
+            .rentCostMonthly(new BigDecimal("400.00"))
+            .rentCostYearly(new BigDecimal("4800.00"))
+            .rentIncludesCouncilTax(YesOrNo.YES)
+            .councilTaxFrequency(Frequency.MONTHLY)
+            .councilTaxCostWeekly(new BigDecimal("25.00"))
+            .councilTaxCostFortnightly(new BigDecimal("50.00"))
+            .councilTaxCostMonthly(new BigDecimal("100.00"))
+            .councilTaxCostYearly(new BigDecimal("1200.00"))
+            .councilTaxFrequencyAndCostDetails("Council tax details")
+            .utilitiesPaidFrequency(Frequency.MONTHLY)
+            .utilitiesCostWeekly(new BigDecimal("15.00"))
+            .utilitiesCostFortnightly(new BigDecimal("30.00"))
+            .utilitiesCostMonthly(new BigDecimal("60.00"))
+            .utilitiesCostYearly(new BigDecimal("720.00"))
+            .utilitiesFrequencyAndCostDetails("Utilities details")
+            .additionalRentalServiceChargesVary(YesOrNo.YES)
+            .additionalRentalVaryingServiceChargesDetails("Service charge details")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCases(List.of(marketRentCase))
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getPreviousTribunalCaseReference()).isEqualTo("TRIB-123");
+        assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getRentCostWeekly()).isEqualTo(new BigDecimal("100.00"));
+        assertThat(result.getRentCostFortnightly()).isEqualTo(new BigDecimal("200.00"));
+        assertThat(result.getRentCostMonthly()).isEqualTo(new BigDecimal("400.00"));
+        assertThat(result.getRentCostYearly()).isEqualTo(new BigDecimal("4800.00"));
+        assertThat(result.getRentIncludesCouncilTax()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getCouncilTaxFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getCouncilTaxCostWeekly()).isEqualTo(new BigDecimal("25.00"));
+        assertThat(result.getCouncilTaxCostFortnightly()).isEqualTo(new BigDecimal("50.00"));
+        assertThat(result.getCouncilTaxCostMonthly()).isEqualTo(new BigDecimal("100.00"));
+        assertThat(result.getCouncilTaxCostYearly()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(result.getCouncilTaxFrequencyAndCostDetails()).isEqualTo("Council tax details");
+        assertThat(result.getUtilitiesPaidFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getUtilitiesCostWeekly()).isEqualTo(new BigDecimal("15.00"));
+        assertThat(result.getUtilitiesCostFortnightly()).isEqualTo(new BigDecimal("30.00"));
+        assertThat(result.getUtilitiesCostMonthly()).isEqualTo(new BigDecimal("60.00"));
+        assertThat(result.getUtilitiesCostYearly()).isEqualTo(new BigDecimal("720.00"));
+        assertThat(result.getUtilitiesPaidFrequencyAndCostDetails()).isEqualTo("Utilities details");
+        assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(result.getCurrentTenancyEndDate()).isEqualTo(endDate);
+        assertThat(result.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
+        assertThat(result.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
+        assertThat(result.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getAdditionalRentalVaryingServiceChargesDetails()).isEqualTo("Service charge details");
+    }
+
+    @Test
+    public void shouldReturnNullWhenTenancyDetailsIsNullForCurrentRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenMarketRentCaseIsNullForCurrentRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
 
         assertThat(result).isNull();
     }

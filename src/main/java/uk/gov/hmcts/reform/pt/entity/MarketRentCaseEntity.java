@@ -132,6 +132,16 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 500)
     private String additionalRentalVaryingServiceChargesDetails;
 
+    @Column(length = 5000)
+    private String applicantSuggestedMonthlyMarketRentReasons;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo additionalPropertyInfoToConsiderWhenDetermining;
+
+    @Column(length = 500)
+    private String additionalPropertyInfoToConsiderWhenDeterminingDetails;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")
     @JsonBackReference

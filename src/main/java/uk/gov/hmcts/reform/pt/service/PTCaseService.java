@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -79,6 +80,7 @@ public class PTCaseService {
         updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
         updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
         updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
+        updateCurrentRentDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -153,5 +155,16 @@ public class PTCaseService {
         tenancyDetailsService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         marketRentCaseService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         documentService.updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
+    }
+
+    @Transactional
+    public void updateCurrentRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        CurrentRentDetails currentRentDetails = ptCase.getCurrentRentDetails();
+        if (currentRentDetails == null) {
+            return;
+        }
+
+        tenancyDetailsService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
+        marketRentCaseService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -30,6 +31,34 @@ public class MarketRentCaseService {
         marketRentCase.setPropertyIndoorFeatures(propertyDetails.getIndoorFeatures());
         marketRentCase.setSharePropertyWithLandlord(propertyDetails.getSharePropertyWithLandlord());
         marketRentCase.setSharePropertyWithLandlordDetails(propertyDetails.getSharePropertyWithLandlordDetails());
+
+        marketRentCaseRepository.save(marketRentCase);
+    }
+
+    @Transactional
+    public void updateWithCurrentRentDetails(PTCaseEntity ptCaseEntity, CurrentRentDetails details) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
+            .findFirst()
+            .orElse(new MarketRentCaseEntity());
+
+        marketRentCase.setRentPaymentFrequency(details.getRentPaymentFrequency());
+        marketRentCase.setRentCostWeekly(details.getRentCostWeekly());
+        marketRentCase.setRentCostFortnightly(details.getRentCostFortnightly());
+        marketRentCase.setRentCostMonthly(details.getRentCostMonthly());
+        marketRentCase.setRentCostYearly(details.getRentCostYearly());
+        marketRentCase.setRentIncludesCouncilTax(details.getRentIncludesCouncilTax());
+        marketRentCase.setCouncilTaxFrequency(details.getCouncilTaxFrequency());
+        marketRentCase.setCouncilTaxCostWeekly(details.getCouncilTaxCostWeekly());
+        marketRentCase.setCouncilTaxCostFortnightly(details.getCouncilTaxCostFortnightly());
+        marketRentCase.setCouncilTaxCostMonthly(details.getCouncilTaxCostMonthly());
+        marketRentCase.setCouncilTaxCostYearly(details.getCouncilTaxCostYearly());
+        marketRentCase.setCouncilTaxFrequencyAndCostDetails(details.getCouncilTaxFrequencyAndCostDetails());
+        marketRentCase.setUtilitiesPaidFrequency(details.getUtilitiesPaidFrequency());
+        marketRentCase.setUtilitiesCostWeekly(details.getUtilitiesPaidCostWeekly());
+        marketRentCase.setUtilitiesCostFortnightly(details.getUtilitiesPaidCostFortnightly());
+        marketRentCase.setUtilitiesCostMonthly(details.getUtilitiesPaidCostMonthly());
+        marketRentCase.setUtilitiesCostYearly(details.getUtilitiesPaidCostYearly());
+        marketRentCase.setUtilitiesFrequencyAndCostDetails(details.getUtilitiesPaidFrequencyAndCostDetails());
 
         marketRentCaseRepository.save(marketRentCase);
     }
