@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
@@ -62,6 +63,15 @@ public class DocumentService {
         updateMultipleDocuments(
             DocumentType.PROPERTY_ROOMS,
             details.getPropertyRoomsDocuments(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
+        updateSingleDocument(
+            DocumentType.PROPOSED_RENT_EVIDENCE,
+            details.getSuggestedMarketRentEvidence(),
             ptCaseEntity
         );
     }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -153,6 +154,7 @@ class PTCaseServiceTest {
             .build();
 
         CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
+        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -173,6 +175,7 @@ class PTCaseServiceTest {
             .noticeOfRentIncreaseDetails(noticeDetails)
             .propertyDetails(propertyDetails)
             .currentRentDetails(currentRentDetails)
+            .marketRentDetails(marketRentDetails)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -199,6 +202,8 @@ class PTCaseServiceTest {
         verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
         verify(marketRentCaseService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
+        verify(marketRentCaseService).updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
+        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
     }
 
     @Test
@@ -420,5 +425,34 @@ class PTCaseServiceTest {
 
         verify(tenancyDetailsService, never()).updateWithCurrentRentDetails(any(), any());
         verify(marketRentCaseService, never()).updateWithCurrentRentDetails(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should update market rent details when marketRentDetails is present")
+    void updateMarketRentDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .marketRentDetails(marketRentDetails)
+            .build();
+
+        ptCaseService.updateMarketRentDetails(ptCase, ptCaseEntity);
+
+        verify(marketRentCaseService).updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
+        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should skip updating market rent details when marketRentDetails is null")
+    void updateMarketRentDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .marketRentDetails(null)
+            .build();
+
+        ptCaseService.updateMarketRentDetails(ptCase, ptCaseEntity);
+
+        verify(marketRentCaseService, never()).updateWithMarketRentDetails(any(), any());
+        verify(documentService, never()).updateDocumentsForMarketRentDetails(any(), any());
     }
 }

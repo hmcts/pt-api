@@ -30,7 +30,10 @@ public enum DocumentType implements HasLabel {
     PROPERTY_ROOMS("Property rooms"),
 
     @JsonProperty("repairsEvidence")
-    REPAIRS_EVIDENCE("Repairs evidence");
+    REPAIRS_EVIDENCE("Repairs evidence"),
+
+    @JsonProperty("proposedRentEvidence")
+    PROPOSED_RENT_EVIDENCE("Proposed rent evidence");
 
     private final String label;
 }

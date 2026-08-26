@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -59,6 +60,23 @@ public class MarketRentCaseService {
         marketRentCase.setUtilitiesCostMonthly(details.getUtilitiesPaidCostMonthly());
         marketRentCase.setUtilitiesCostYearly(details.getUtilitiesPaidCostYearly());
         marketRentCase.setUtilitiesFrequencyAndCostDetails(details.getUtilitiesPaidFrequencyAndCostDetails());
+
+        marketRentCaseRepository.save(marketRentCase);
+    }
+
+    @Transactional
+    public void updateWithMarketRentDetails(PTCaseEntity ptCaseEntity, MarketRentDetails details) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
+            .findFirst()
+            .orElse(new MarketRentCaseEntity());
+
+        marketRentCase.setApplicantSuggestedMonthlyMarketRent(details.getApplicantSuggestedMonthlyMarketRent());
+        marketRentCase.setApplicantSuggestedMonthlyMarketRentReasons(
+            details.getApplicantSuggestedMonthlyMarketRentReasons());
+        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDetermining(
+            details.getAdditionalPropertyInfoToConsiderWhenDetermining());
+        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingDetails(
+            details.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails());
 
         marketRentCaseRepository.save(marketRentCase);
     }

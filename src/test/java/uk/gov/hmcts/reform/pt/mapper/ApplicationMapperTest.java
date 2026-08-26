@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
@@ -99,6 +100,15 @@ public class ApplicationMapperTest {
 
         CurrentRentsDetailsDto currentRentsDetails = result.getCurrentRentsDetails();
         assertThat(currentRentsDetails).isNotNull();
+
+        MarketRentDto marketRentDetails = result.getMarketRentDetails();
+        assertThat(marketRentDetails).isNotNull();
+        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRentReasons())
+            .isEqualTo("Market rate for the area");
+        assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
+        assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .isEqualTo("Recently refurbished");
     }
 
     @Test
@@ -693,6 +703,81 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapMarketRentDetails() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.PROPOSED_RENT_EVIDENCE)
+            .url("http://dm-store/doc/proposed-rent")
+            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+            .fileName("proposed-rent.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Garden was recently renovated")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(List.of(marketRentCase))
+            .documents(List.of(document))
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons())
+            .isEqualTo("Similar properties in the area rent for this amount");
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .isEqualTo("Garden was recently renovated");
+        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
+        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/proposed-rent/binary");
+        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
+    }
+
+    @Test
+    public void shouldMapMarketRentDetailsWithoutEvidenceDocument() {
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Reasons")
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.NO)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(List.of(marketRentCase))
+            .documents(Collections.emptyList())
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reasons");
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenMarketRentCaseIsNullForMarketRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
     public void shouldMapDocument() {
         DocumentEntity entity = DocumentEntity.builder()
             .url("http://dm-store/doc/1")
@@ -724,7 +809,13 @@ public class ApplicationMapperTest {
     }
 
     private static List<MarketRentCaseEntity> marketRentCases() {
-        return List.of(MarketRentCaseEntity.builder().typeOfPropertyRenting(PropertyType.TERRACED_HOUSE).build());
+        return List.of(MarketRentCaseEntity.builder()
+            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Recently refurbished")
+            .build());
     }
 
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {

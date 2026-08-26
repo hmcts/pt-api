@@ -72,4 +72,7 @@ public class PTCase {
 
     @JsonUnwrapped(prefix = "currentRentDetails")
     private CurrentRentDetails currentRentDetails;
+
+    @JsonUnwrapped(prefix = "marketRentDetails")
+    private MarketRentDetails marketRentDetails;
 }

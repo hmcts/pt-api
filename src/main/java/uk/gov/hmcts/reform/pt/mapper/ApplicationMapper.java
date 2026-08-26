@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
@@ -63,6 +64,7 @@ public class ApplicationMapper {
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase, caseParty))
             .currentRentsDetails(mapCurrentRentDetails(ptCase))
+            .marketRentDetails(mapMarketRentDetails(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -228,6 +230,26 @@ public class ApplicationMapper {
             .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
             .additionalRentalVaryingServiceChargesDetails(
                 marketRentCase.getAdditionalRentalVaryingServiceChargesDetails())
+            .build();
+    }
+
+    public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        if (marketRentCase == null) {
+            return null;
+        }
+
+        return MarketRentDto.builder()
+            .applicantSuggestedMonthlyMarketRent(marketRentCase.getApplicantSuggestedMonthlyMarketRent())
+            .applicantSuggestedMonthlyMarketRentReasons(marketRentCase.getApplicantSuggestedMonthlyMarketRentReasons())
+            .suggestedMarketRentEvidence(
+                findDocumentOfType(DocumentType.PROPOSED_RENT_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
+            .additionalPropertyInfoToConsiderWhenDetermining(
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDetermining())
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails(
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
             .build();
     }
 

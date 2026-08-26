@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
@@ -81,6 +82,7 @@ public class PTCaseService {
         updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
         updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
         updateCurrentRentDetails(ptCase, ptCaseEntity);
+        updateMarketRentDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -166,5 +168,16 @@ public class PTCaseService {
 
         tenancyDetailsService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
         marketRentCaseService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
+    }
+
+    @Transactional
+    public void updateMarketRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        MarketRentDetails marketRentDetails = ptCase.getMarketRentDetails();
+        if (marketRentDetails == null) {
+            return;
+        }
+
+        marketRentCaseService.updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
+        documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
     }
 }

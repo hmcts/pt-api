@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
@@ -295,5 +296,56 @@ class DocumentServiceTest {
                 DocumentType.OUTSIDE_PROPERTY,
                 DocumentType.REPAIRS_EVIDENCE,
                 DocumentType.PROPERTY_ROOMS);
+    }
+
+    @Test
+    @DisplayName("Should update document for market rent details when evidence document is present")
+    void updateDocumentsForMarketRentDetailsUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument rentDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/market-rent").filename("market-rent.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(500L)
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .suggestedMarketRentEvidence(rentDoc)
+            .build();
+
+        documentService.updateDocumentsForMarketRentDetails(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.PROPOSED_RENT_EVIDENCE);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
+        assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
+    }
+
+    @Test
+    @DisplayName("Should delete document for market rent details when evidence document is null and existing exists")
+    void updateDocumentsForMarketRentDetailsDeletesDocumentWhenNull() {
+        DocumentEntity existing = DocumentEntity.builder()
+            .documentType(DocumentType.PROPOSED_RENT_EVIDENCE)
+            .url("http://dm-store/documents/existing-rent")
+            .fileName("existing-rent.pdf")
+            .build();
+
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(List.of(existing))
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .suggestedMarketRentEvidence(null)
+            .build();
+
+        documentService.updateDocumentsForMarketRentDetails(details, ptCase);
+
+        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).save(any());
     }
 }

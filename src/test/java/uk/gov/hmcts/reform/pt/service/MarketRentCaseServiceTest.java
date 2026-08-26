@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -162,5 +163,55 @@ class MarketRentCaseServiceTest {
 
         assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
         assertThat(saved.getRentCostWeekly()).isEqualTo(new BigDecimal("200.00"));
+    }
+
+    @Test
+    @DisplayName("Should update existing MarketRentCaseEntity with market rent details")
+    void updateWithMarketRentDetailsWhenExists() {
+        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(List.of(existing))
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Market rate for area")
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Recently renovated")
+            .build();
+
+        marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
+
+        verify(marketRentCaseRepository).save(existing);
+        assertThat(existing.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(existing.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Market rate for area");
+        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .isEqualTo("Recently renovated");
+    }
+
+    @Test
+    @DisplayName("Should create and save new MarketRentCaseEntity with market rent details when list is empty")
+    void updateWithMarketRentDetailsWhenEmpty() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(new ArrayList<>())
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("950.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Reason for rate")
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.NO)
+            .build();
+
+        marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
+
+        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
+        verify(marketRentCaseRepository).save(captor.capture());
+        MarketRentCaseEntity saved = captor.getValue();
+
+        assertThat(saved.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("950.00"));
+        assertThat(saved.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reason for rate");
+        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
     }
 }
