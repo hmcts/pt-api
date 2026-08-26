@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -65,6 +66,7 @@ public class ApplicationMapper {
             .propertyDetails(mapPropertyDetails(ptCase, caseParty))
             .currentRentsDetails(mapCurrentRentDetails(ptCase))
             .marketRentDetails(mapMarketRentDetails(ptCase))
+            .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -250,6 +252,22 @@ public class ApplicationMapper {
                 marketRentCase.getAdditionalPropertyInfoToConsiderWhenDetermining())
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
                 marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .build();
+    }
+
+    public static TenancyAgreementDto mapTenancyAgreement(PTCaseEntity ptCaseEntity) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        if (tenancyDetails == null) {
+            return null;
+        }
+
+        return TenancyAgreementDto.builder()
+            .copyOfTenancyAgreement(tenancyDetails.getCopyOfTenancyAgreement())
+            .noTenancyAgreementReason(tenancyDetails.getNoTenancyAgreementReason())
+            .tenancyAgreementEvidence(
+                findDocumentOfType(DocumentType.TENANCY_AGREEMENT, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
             .build();
     }
 

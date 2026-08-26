@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -109,6 +110,14 @@ public class ApplicationMapperTest {
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
             .isEqualTo("Recently refurbished");
+
+        TenancyAgreementDto tenancyAgreementDetails = result.getTenancyAgreementDetails();
+        assertThat(tenancyAgreementDetails).isNotNull();
+        assertThat(tenancyAgreementDetails.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(tenancyAgreementDetails.getNoTenancyAgreementReason()).isEqualTo("No agreement reason");
+        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence()).isNotNull();
+        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence().getUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement");
     }
 
     @Test
@@ -778,6 +787,72 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapTenancyAgreement() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/doc/tenancy-agreement")
+            .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+            .fileName("tenancy-agreement.pdf")
+            .contentType("application/pdf")
+            .size(2048L)
+            .build();
+
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("Reason")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .documents(List.of(document))
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getNoTenancyAgreementReason()).isEqualTo("Reason");
+        assertThat(result.getTenancyAgreementEvidence()).isNotNull();
+        assertThat(result.getTenancyAgreementEvidence().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
+        assertThat(result.getTenancyAgreementEvidence().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementEvidence().getSize()).isEqualTo(2048L);
+    }
+
+    @Test
+    public void shouldMapTenancyAgreementWithoutEvidenceDocument() {
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .copyOfTenancyAgreement(YesOrNo.NO)
+            .noTenancyAgreementReason("No agreement available")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .documents(Collections.emptyList())
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
+        assertThat(result.getTenancyAgreementEvidence()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenTenancyDetailsIsNullForTenancyAgreement() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
     public void shouldMapDocument() {
         DocumentEntity entity = DocumentEntity.builder()
             .url("http://dm-store/doc/1")
@@ -805,7 +880,11 @@ public class ApplicationMapperTest {
     }
 
     private static List<TenancyDetailsEntity> tenancyDetails(TenancyType tenancyType) {
-        return List.of(TenancyDetailsEntity.builder().tenancyType(tenancyType).build());
+        return List.of(TenancyDetailsEntity.builder()
+            .tenancyType(tenancyType)
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("No agreement reason")
+            .build());
     }
 
     private static List<MarketRentCaseEntity> marketRentCases() {
@@ -831,6 +910,16 @@ public class ApplicationMapperTest {
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .marketRentCases(marketRentCases())
+            .documents(List.of(
+                DocumentEntity.builder()
+                    .documentType(DocumentType.TENANCY_AGREEMENT)
+                    .url("http://dm-store/doc/tenancy-agreement")
+                    .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+                    .fileName("tenancy-agreement.pdf")
+                    .contentType("application/pdf")
+                    .size(2048L)
+                    .build()
+            ))
             .build();
     }
 

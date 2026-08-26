@@ -27,4 +27,5 @@ public class ApplicationDto {
     private PropertyDetailsDto propertyDetails;
     private CurrentRentsDetailsDto currentRentsDetails;
     private MarketRentDto marketRentDetails;
+    private TenancyAgreementDto tenancyAgreementDetails;
 }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -344,6 +345,57 @@ class DocumentServiceTest {
             .build();
 
         documentService.updateDocumentsForMarketRentDetails(details, ptCase);
+
+        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should update document for tenancy agreement details when evidence document is present")
+    void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument agreementDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/tenancy-agreement").filename("agreement.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(1024L)
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .tenancyAgreementDocument(agreementDoc)
+            .build();
+
+        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANCY_AGREEMENT);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy-agreement");
+        assertThat(savedDoc.getFileName()).isEqualTo("agreement.pdf");
+    }
+
+    @Test
+    @DisplayName("Should delete tenancy agreement document when evidence is null and existing exists")
+    void updateDocumentsForTenancyAgreementDetailsDeletesDocumentWhenNull() {
+        DocumentEntity existing = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/documents/existing-agreement")
+            .fileName("existing-agreement.pdf")
+            .build();
+
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(List.of(existing))
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .tenancyAgreementDocument(null)
+            .build();
+
+        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
 
         verify(documentRepository).delete(existing);
         verify(documentRepository, never()).save(any());

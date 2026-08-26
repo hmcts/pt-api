@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -155,6 +156,7 @@ class PTCaseServiceTest {
 
         CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
         MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
+        TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -176,6 +178,7 @@ class PTCaseServiceTest {
             .propertyDetails(propertyDetails)
             .currentRentDetails(currentRentDetails)
             .marketRentDetails(marketRentDetails)
+            .tenancyAgreementDetails(tenancyAgreementDetails)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -204,6 +207,8 @@ class PTCaseServiceTest {
         verify(marketRentCaseService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
         verify(marketRentCaseService).updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
         verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
+        verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
     }
 
     @Test
@@ -454,5 +459,34 @@ class PTCaseServiceTest {
 
         verify(marketRentCaseService, never()).updateWithMarketRentDetails(any(), any());
         verify(documentService, never()).updateDocumentsForMarketRentDetails(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should update tenancy agreement details when tenancyAgreementDetails is present")
+    void updateTenancyAgreementDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .tenancyAgreementDetails(tenancyAgreementDetails)
+            .build();
+
+        ptCaseService.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
+
+        verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
+        verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should skip updating tenancy agreement details when tenancyAgreementDetails is null")
+    void updateTenancyAgreementDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .tenancyAgreementDetails(null)
+            .build();
+
+        ptCaseService.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
+
+        verify(tenancyDetailsService, never()).updateWithTenancyAgreementDetails(any(), any());
+        verify(documentService, never()).updateDocumentsForTenancyAgreementDetails(any(), any());
     }
 }

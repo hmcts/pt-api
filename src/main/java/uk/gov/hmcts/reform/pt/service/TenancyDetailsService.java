@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -71,6 +72,19 @@ public class TenancyDetailsService {
         tenancyDetails.setAdditionalServicesProvidedInTenancy(details.getAdditionalRentalServiceChargesVary());
         tenancyDetails.setAdditionalServicesProvidedInTenancyDetails(
             details.getAdditionalRentalVaryingServiceChargesDetails());
+
+        tenancyDetailsRepository.save(tenancyDetails);
+    }
+
+    @Transactional
+    public void updateWithTenancyAgreementDetails(PTCaseEntity ptCaseEntity, TenancyAgreementDetails details) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream()
+            .findFirst()
+            // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
+            .orElse(new TenancyDetailsEntity());
+
+        tenancyDetails.setCopyOfTenancyAgreement(details.getCopyOfTenancyAgreement());
+        tenancyDetails.setNoTenancyAgreementReason(details.getNoTenancyAgreementReason());
 
         tenancyDetailsRepository.save(tenancyDetails);
     }

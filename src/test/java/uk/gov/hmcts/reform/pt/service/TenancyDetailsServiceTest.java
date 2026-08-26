@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -205,5 +206,47 @@ public class TenancyDetailsServiceTest {
 
         assertThat(saved.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getCurrentTenancyStartDate()).isEqualTo(startDate);
+    }
+
+    @Test
+    @DisplayName("Should update existing TenancyDetailsEntity with tenancy agreement details")
+    void updateWithTenancyAgreementDetailsWhenExists() {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(List.of(existing))
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("Reason")
+            .build();
+
+        tenancyDetailsService.updateWithTenancyAgreementDetails(ptCase, details);
+
+        verify(tenancyDetailsRepository).save(existing);
+        assertThat(existing.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getNoTenancyAgreementReason()).isEqualTo("Reason");
+    }
+
+    @Test
+    @DisplayName("Should create and save TenancyDetailsEntity with tenancy agreement details when list is empty")
+    void updateWithTenancyAgreementDetailsWhenEmpty() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(new ArrayList<>())
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .copyOfTenancyAgreement(YesOrNo.NO)
+            .noTenancyAgreementReason("No agreement available")
+            .build();
+
+        tenancyDetailsService.updateWithTenancyAgreementDetails(ptCase, details);
+
+        ArgumentCaptor<TenancyDetailsEntity> captor = ArgumentCaptor.forClass(TenancyDetailsEntity.class);
+        verify(tenancyDetailsRepository).save(captor.capture());
+        TenancyDetailsEntity saved = captor.getValue();
+
+        assertThat(saved.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
     }
 }

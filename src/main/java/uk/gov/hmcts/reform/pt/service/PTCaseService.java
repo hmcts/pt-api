@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -83,6 +84,7 @@ public class PTCaseService {
         updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
         updateCurrentRentDetails(ptCase, ptCaseEntity);
         updateMarketRentDetails(ptCase, ptCaseEntity);
+        updateTenancyAgreementDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -179,5 +181,16 @@ public class PTCaseService {
 
         marketRentCaseService.updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
         documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+    }
+
+    @Transactional
+    public void updateTenancyAgreementDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        TenancyAgreementDetails tenancyAgreementDetails = ptCase.getTenancyAgreementDetails();
+        if (tenancyAgreementDetails == null) {
+            return;
+        }
+
+        tenancyDetailsService.updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
+        documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
     }
 }

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -72,6 +73,15 @@ public class DocumentService {
         updateSingleDocument(
             DocumentType.PROPOSED_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForTenancyAgreementDetails(TenancyAgreementDetails details, PTCaseEntity ptCaseEntity) {
+        updateSingleDocument(
+            DocumentType.TENANCY_AGREEMENT,
+            details.getTenancyAgreementDocument(),
             ptCaseEntity
         );
     }
