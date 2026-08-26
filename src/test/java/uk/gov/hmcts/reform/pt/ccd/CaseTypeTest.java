@@ -54,7 +54,7 @@ class CaseTypeTest {
     void shouldGetCaseTypeName() {
         String result = CaseType.getCaseTypeName();
 
-        assertThat(result).isEqualTo("Possession");
+        assertThat(result).isEqualTo("Property Tribunal");
     }
 
     @Test
@@ -70,14 +70,14 @@ class CaseTypeTest {
 
         verify(builder).caseType(
             eq("PT"),
-            eq("Possession"),
-            eq("Possession Case Type")
+            eq("Property Tribunal"),
+            eq("Property Tribunal Case Type")
         );
 
         verify(builder).jurisdiction(
             eq("PT"),
-            eq("Civil Possession"),
-            eq("Civil Possession Jurisdiction")
+            eq("Property Tribunal"),
+            eq("Property Tribunal Jurisdiction")
         );
 
         verify(builder).searchInputFields();

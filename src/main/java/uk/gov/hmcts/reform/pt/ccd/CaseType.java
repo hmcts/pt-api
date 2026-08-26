@@ -18,11 +18,11 @@ import static java.util.Optional.ofNullable;
 public class CaseType implements CCDConfig<PTCase, State, UserRole> {
 
     private static final String CASE_TYPE_ID = "PT";
-    private static final String CASE_TYPE_NAME = "Possession";
-    private static final String CASE_TYPE_DESCRIPTION = "Possession Case Type";
+    private static final String CASE_TYPE_NAME = "Property Tribunal";
+    private static final String CASE_TYPE_DESCRIPTION = "Property Tribunal Case Type";
     private static final String JURISDICTION_ID = "PT";
-    private static final String JURISDICTION_NAME = "Civil Possession";
-    private static final String JURISDICTION_DESCRIPTION = "Civil Possession Jurisdiction";
+    private static final String JURISDICTION_NAME = "Property Tribunal";
+    private static final String JURISDICTION_DESCRIPTION = "Property Tribunal Jurisdiction";
 
     @Value("${caseApi.url}")
     private String caseApiUrl;

@@ -344,8 +344,8 @@ tasks.register('fortifyScan', JavaExec) {
 project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
-  environment 'PCS_DB_USER_NAME', 'postgres'
-  environment 'PCS_DB_PASSWORD', 'postgres'
+  environment 'PT_DB_USER_NAME', 'postgres'
+  environment 'PT_DB_PASSWORD', 'postgres'
   environment 'DB_PORT', '6432'
 }
 
