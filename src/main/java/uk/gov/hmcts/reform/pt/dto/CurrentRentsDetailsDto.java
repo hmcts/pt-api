@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.pt.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 
@@ -44,6 +46,6 @@ public class CurrentRentsDetailsDto {
     private YesOrNo additionalRentalServiceChargesVary;
     private String additionalRentalVaryingServiceChargesDetails;
 
-    // todo charged separately for anything else
-    // todo other charges
+    private YesOrNo anyOtherHouseholdManagementCharges;
+    private String otherHouseholdManagementChargesDetails;
 }

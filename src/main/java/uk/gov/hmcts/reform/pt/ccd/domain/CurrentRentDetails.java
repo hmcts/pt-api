@@ -175,6 +175,15 @@ public class CurrentRentDetails {
     )
     private String additionalRentalVaryingServiceChargesDetails;
 
-    // todo charged separately for anything else
-    // todo other charges
+    @CCD(
+        label = "Any other charges",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo anyOtherHouseholdManagementCharges;
+
+    @CCD(
+        label = "Other charges details",
+        access = {CitizenAccess.class}
+    )
+    private String otherHouseholdManagementChargesDetails;
 }

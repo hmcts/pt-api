@@ -119,6 +119,9 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo otherHouseholdManagementCharges;
 
+    @Column(length = 500)
+    private String otherHouseholdManagementChargesDetails;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentInclusiveOfUtilityCharges;
@@ -137,10 +140,11 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo additionalPropertyInfoToConsiderWhenDetermining;
+    @Column(name = "additional_prop_info_to_consider_when_determining_rent")
+    private YesOrNo additionalPropertyInfoToConsiderWhenDeterminingRent;
 
-    @Column(length = 500)
-    private String additionalPropertyInfoToConsiderWhenDeterminingDetails;
+    @Column(name = "additional_prop_info_to_consider_when_determining_rent_details", length = 500)
+    private String additionalPropertyInfoToConsiderWhenDeterminingRentDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")

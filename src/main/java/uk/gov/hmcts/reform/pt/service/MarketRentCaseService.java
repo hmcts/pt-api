@@ -60,6 +60,8 @@ public class MarketRentCaseService {
         marketRentCase.setUtilitiesCostMonthly(details.getUtilitiesPaidCostMonthly());
         marketRentCase.setUtilitiesCostYearly(details.getUtilitiesPaidCostYearly());
         marketRentCase.setUtilitiesFrequencyAndCostDetails(details.getUtilitiesPaidFrequencyAndCostDetails());
+        marketRentCase.setOtherHouseholdManagementCharges(details.getAnyOtherHouseholdManagementCharges());
+        marketRentCase.setOtherHouseholdManagementChargesDetails(details.getOtherHouseholdManagementChargesDetails());
 
         marketRentCaseRepository.save(marketRentCase);
     }
@@ -73,9 +75,9 @@ public class MarketRentCaseService {
         marketRentCase.setApplicantSuggestedMonthlyMarketRent(details.getApplicantSuggestedMonthlyMarketRent());
         marketRentCase.setApplicantSuggestedMonthlyMarketRentReasons(
             details.getApplicantSuggestedMonthlyMarketRentReasons());
-        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDetermining(
+        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingRent(
             details.getAdditionalPropertyInfoToConsiderWhenDetermining());
-        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingDetails(
+        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails(
             details.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails());
 
         marketRentCaseRepository.save(marketRentCase);

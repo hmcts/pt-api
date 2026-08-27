@@ -232,6 +232,8 @@ public class ApplicationMapper {
             .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
             .additionalRentalVaryingServiceChargesDetails(
                 marketRentCase.getAdditionalRentalVaryingServiceChargesDetails())
+            .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
+            .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())
             .build();
     }
 
@@ -249,9 +251,9 @@ public class ApplicationMapper {
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .additionalPropertyInfoToConsiderWhenDetermining(
-                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDetermining())
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRent())
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
-                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
             .build();
     }
 
