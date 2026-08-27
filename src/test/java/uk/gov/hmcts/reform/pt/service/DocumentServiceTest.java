@@ -280,7 +280,7 @@ class DocumentServiceTest {
             .floorPlanDocument(floorPlanDoc)
             .outsidePropertyDocument(outsidePropertyDoc)
             .repairsEvidenceDocument(repairsDoc)
-            .propertyRoomsDocuments(List.of(roomDoc))
+            .roomsDocuments(List.of(roomDoc))
             .build();
 
         documentService.updateDocumentsForPropertyDetails(details, ptCase);
