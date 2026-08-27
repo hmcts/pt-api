@@ -4,7 +4,7 @@
     "id": "${caseId}",
     "jurisdiction": "PT",
     "case_type_id": "${caseTypeId}",
-    "state": "PENDING_CASE_ISSUED",
+    "state": "AWAITING_SUBMISSION_TO_HMCTS",
     "security_classification": "PUBLIC",
     "case_data": {
       "applicantFirstName": "Test",
