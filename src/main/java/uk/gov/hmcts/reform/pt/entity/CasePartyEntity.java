@@ -51,7 +51,8 @@ public class CasePartyEntity extends AuditableEntity {
     @Column
     private LocalDateTime dateOfBirth;
 
-    private Integer referenceNumber;
+    @Column(length = 5)
+    private String referenceNumber;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
