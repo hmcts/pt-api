@@ -19,11 +19,11 @@ import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 @AllArgsConstructor
 public class CcdApiClient {
     private final CoreCaseDataApi ccdApi;
-    private final IdamTokenProvider idamTokenProvider;
+    private final IdamTokenProvider systemUpdateUserTokenProvider;
     private final AuthTokenGenerator authTokenGenerator;
 
     public StartEventResponse startEvent(EventId eventId) {
-        String idamToken = idamTokenProvider.getAuthToken();
+        String idamToken = systemUpdateUserTokenProvider.getAuthToken();
         String s2sToken = authTokenGenerator.generate();
         StartEventResponse startEventResponse;
         try {
@@ -34,17 +34,15 @@ public class CcdApiClient {
                 eventId.getId()
             );
         } catch (FeignException e) {
-            throw new CcdException(
-                String.format("Failed to start %s event in CCD: %s", eventId.getId(), e.getMessage())
-            );
+            throw new CcdException(String.format("Failed to start %s event in CCD", eventId.getId()), e);
         }
         return startEventResponse;
     }
 
     public CaseDetails submitCaseCreation(PTCase ptCase, EventId eventId, String eventToken) {
-        String idamToken = idamTokenProvider.getAuthToken();
+        String idamToken = systemUpdateUserTokenProvider.getAuthToken();
         String s2sToken = authTokenGenerator.generate();
-        CaseDataContent caseDateContent = CaseDataContent.builder()
+        CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(ptCase)
             .event(Event.builder().id(eventId.getId()).build())
             .eventToken(eventToken)
@@ -55,12 +53,10 @@ public class CcdApiClient {
                 idamToken,
                 s2sToken,
                 CaseType.getCaseType(),
-                caseDateContent
+                caseDataContent
             );
         } catch (FeignException e) {
-            throw new CcdException(
-                String.format("Failed to submit case creation for event %s: %s", eventToken, e.getMessage())
-            );
+            throw new CcdException(String.format("Failed to submit case creation for event %s", eventId.getId()), e);
         }
         return caseDetails;
     }
