@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -25,40 +26,23 @@ import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "document")
-public class DocumentEntity extends AuditableEntity {
-    @Column(length = 100)
-    private String url;
-
-    @Column(length = 100)
-    private String fileName;
-
-    @Column(length = 100)
-    private String binaryUrl;
-
-    @Column(length = 100)
-    private String contentType;
-
+@Table(name = "property_inspection")
+public class PropertyInspectionEntity extends AuditableEntity {
     @Column(length = 100)
     private String description;
 
-    private Long size;
-
-    @Column(length = 50)
-    private String categoryId;
+    private LocalDateTime inspectionDate;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private DocumentType documentType;
+    private YesOrNo agreeToDecisionWithoutInspection;
+
+    @Column(length = 500)
+    private String noDecisionWithoutInspectionReason;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @JoinColumn(name = "pt_case_id", nullable = false)
     @JsonBackReference
     private PTCaseEntity ptCase;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_application_id")
-    @JsonBackReference
-    private CaseApplicationEntity caseApplication;
 }

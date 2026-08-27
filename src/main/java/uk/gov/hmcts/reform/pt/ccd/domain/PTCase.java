@@ -55,7 +55,18 @@ public class PTCase {
     )
     private State targetState;
 
-    @Builder.Default
     @JsonUnwrapped(prefix = "applicantContactPreferences")
-    private ApplicantContactPreferences applicantContactPreferences = new ApplicantContactPreferences();
+    private ApplicantContactPreferences applicantContactPreferences;
+
+    @JsonUnwrapped(prefix = "tenantDetails")
+    private TenantDetails tenantDetails;
+
+    @JsonUnwrapped(prefix = "hearingInspectionDetails")
+    private HearingPropertyInspectionDetails hearingInspectionDetails;
+
+    @JsonUnwrapped(prefix = "noticeOfRentIncreaseDetails")
+    private NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails;
+
+    @JsonUnwrapped(prefix = "propertyDetails")
+    private PropertyDetails propertyDetails;
 }
