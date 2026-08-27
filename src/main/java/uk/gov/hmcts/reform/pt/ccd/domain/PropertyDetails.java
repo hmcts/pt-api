@@ -116,11 +116,11 @@ public class PropertyDetails {
     private UploadedDocument outsidePropertyDocument;
 
     @CCD(
-        label = "Outside property document",
+        label = "Property rooms documents",
         access = {CitizenAccess.class}
     )
     @Builder.Default
-    private List<UploadedDocument> propertyRoomsDocuments = new ArrayList<>();
+    private List<UploadedDocument> roomsDocuments = new ArrayList<>();
 
     @CCD(
         label = "Has furniture provided in tenancy",
