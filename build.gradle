@@ -232,7 +232,7 @@ repositories {
 
 ext {
   log4JVersion = "2.26.1"
-  logbackVersion = "1.6.2"
+  logbackVersion = "1.6.3"
   springFrameworkBootVersion = "3.5.16"
   springSecurityVersion = "7.1.1"
   lombokVersion = "1.18.46"
@@ -344,8 +344,8 @@ tasks.register('fortifyScan', JavaExec) {
 project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
-  environment 'PCS_DB_USER_NAME', 'postgres'
-  environment 'PCS_DB_PASSWORD', 'postgres'
+  environment 'PT_DB_USER_NAME', 'postgres'
+  environment 'PT_DB_PASSWORD', 'postgres'
   environment 'DB_PORT', '6432'
 }
 
