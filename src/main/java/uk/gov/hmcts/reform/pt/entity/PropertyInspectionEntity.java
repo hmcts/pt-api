@@ -33,7 +33,6 @@ public class PropertyInspectionEntity extends AuditableEntity {
 
     private LocalDateTime inspectionDate;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo agreeToDecisionWithoutInspection;
