@@ -45,7 +45,6 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Column(length = 100)
     private String reasonNoticeOfIncreaseValidityDocumentNotUploaded;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo receivedLandlordNoticeProposingNewRent;
@@ -53,12 +52,10 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Column(length = 500)
     private String noUploadOfNoticeProposingNewRentReason;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentIncreaseToCauseHardship;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo noticeLegallyValid;
