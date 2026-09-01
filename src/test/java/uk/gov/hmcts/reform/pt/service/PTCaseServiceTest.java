@@ -13,9 +13,12 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
@@ -26,11 +29,9 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
-import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,9 +68,6 @@ class PTCaseServiceTest {
     private CasePartyRepository casePartyRepository;
 
     @Mock
-    private AddressRepository addressRepository;
-
-    @Mock
     private ContactPreferencesService contactPreferencesService;
 
     @Mock
@@ -84,6 +82,9 @@ class PTCaseServiceTest {
     @Mock
     private MarketRentCaseService marketRentCaseService;
 
+    @Mock
+    private AddressService addressService;
+
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
 
@@ -95,7 +96,8 @@ class PTCaseServiceTest {
     void createCase() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
 
-        when(casePartyService.createCaseParty(any(), any(), any())).thenReturn(CasePartyEntity.builder().build());
+        when(casePartyService.createApplicantCaseParty(any(), any(), any()))
+            .thenReturn(CasePartyEntity.builder().build());
         when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
             .thenReturn(CaseTypeEntity.builder().build());
         when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(
@@ -117,7 +119,7 @@ class PTCaseServiceTest {
         PTCaseEntity savedEntity = ptCaseEntityCaptor.getValue();
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
-        verify(casePartyService).createCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
+        verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
         verify(caseApplicationRepository).save(any());
     }
 
@@ -135,7 +137,9 @@ class PTCaseServiceTest {
             .ptCase(ptCaseEntity)
             .build();
 
-        when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.of(caseParty));
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT))
+            .thenReturn(Optional.of(caseParty));
 
         HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
             .hearingRequested(YesOrNo.YES)
@@ -157,6 +161,7 @@ class PTCaseServiceTest {
         CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
         MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
+        LandlordDetails landlordDetails = LandlordDetails.builder().build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -179,6 +184,7 @@ class PTCaseServiceTest {
             .currentRentDetails(currentRentDetails)
             .marketRentDetails(marketRentDetails)
             .tenancyAgreementDetails(tenancyAgreementDetails)
+            .landlordDetails(landlordDetails)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -190,11 +196,9 @@ class PTCaseServiceTest {
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07777777777");
         assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
         assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
-        assertThat(address.getAddressLine1()).isEqualTo("123 Main St");
-        assertThat(address.getPostcode()).isEqualTo("AB1 2CD");
         assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
         verify(casePartyRepository, times(3)).save(caseParty);
-        verify(addressRepository).save(address);
+        verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
         verify(ptCaseRepository).save(ptCaseEntity);
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
@@ -209,35 +213,30 @@ class PTCaseServiceTest {
         verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
         verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+        verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
     }
 
     @Test
-    @DisplayName("Should update contact preferences and phone numbers")
-    void updateContactPreferencesSuccess() {
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-        ApplicantContactPreferences contactPreferences = ApplicantContactPreferences.builder()
-            .phoneNumberForCalls("0111")
-            .textUpdatesPhoneNumber("0222")
-            .build();
-        PTCase ptCase = PTCase.builder()
-            .applicantContactPreferences(contactPreferences)
-            .build();
-
-        ptCaseService.updateContactPreferences(ptCase, caseParty);
-
-        assertThat(caseParty.getPhoneNumber()).isEqualTo("0111");
-        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("0222");
-        verify(contactPreferencesService).updateContactPreferences(caseParty, contactPreferences);
-        verify(casePartyRepository).save(caseParty);
-    }
-
-    @Test
-    @DisplayName("Should throw CaseNotFoundException when no case party is found for the case reference")
-    void updateCaseThrowsWhenCasePartyNotFound() {
+    @DisplayName("Should throw CaseNotFoundException when case is not found for the case reference")
+    void updateCaseThrowsWhenPTCaseNotFound() {
         long caseReference = 1234567890123456L;
         PTCase ptCase = PTCase.builder().build();
 
-        when(casePartyRepository.findFirstByPtCaseCaseReference(caseReference)).thenReturn(Optional.empty());
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ptCaseService.updateCase(caseReference, ptCase))
+            .isInstanceOf(CaseNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("Should throw CaseNotFoundException when no applicant case party is found for the case reference")
+    void updateCaseThrowsWhenCasePartyNotFound() {
+        long caseReference = 1234567890123456L;
+        PTCase ptCase = PTCase.builder().build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> ptCaseService.updateCase(caseReference, ptCase))
             .isInstanceOf(CaseNotFoundException.class);
@@ -316,13 +315,10 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update property details when propertyDetails is present and party has existing address")
+    @DisplayName("Should update property details when propertyDetails is present")
     void updatePropertyDetailsSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        AddressEntity existingAddress = AddressEntity.builder().build();
-        CasePartyEntity caseParty = CasePartyEntity.builder()
-            .addresses(List.of(existingAddress))
-            .build();
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
 
         PropertyDetails propertyDetails = PropertyDetails.builder()
             .addressLine1("1 High Street")
@@ -338,47 +334,14 @@ class PTCaseServiceTest {
 
         ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
 
-        assertThat(existingAddress.getAddressLine1()).isEqualTo("1 High Street");
-        assertThat(existingAddress.getAddressLine2()).isEqualTo("Suite 2");
-        assertThat(existingAddress.getPostTown()).isEqualTo("London");
-        assertThat(existingAddress.getCounty()).isEqualTo("Greater London");
-        assertThat(existingAddress.getPostcode()).isEqualTo("SW1A 1AA");
-        assertThat(existingAddress.getParty()).isEqualTo(caseParty);
-        assertThat(existingAddress.getPtCase()).isEqualTo(ptCaseEntity);
-
-        verify(addressRepository).save(existingAddress);
-        verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
-    }
-
-    @Test
-    @DisplayName("Should update property details when party addresses list is empty")
-    void updatePropertyDetailsWhenAddressListEmpty() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CasePartyEntity caseParty = CasePartyEntity.builder()
-            .addresses(new ArrayList<>())
-            .build();
-
-        PropertyDetails propertyDetails = PropertyDetails.builder()
-            .addressLine1("1 High Street")
-            .postcode("SW1A 1AA")
-            .build();
-
-        PTCase ptCase = PTCase.builder()
-            .propertyDetails(propertyDetails)
-            .build();
-
-        ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
-
-        ArgumentCaptor<AddressEntity> addressCaptor = ArgumentCaptor.forClass(AddressEntity.class);
-        verify(addressRepository).save(addressCaptor.capture());
-        AddressEntity savedAddress = addressCaptor.getValue();
-
-        assertThat(savedAddress.getAddressLine1()).isEqualTo("1 High Street");
-        assertThat(savedAddress.getPostcode()).isEqualTo("SW1A 1AA");
-        assertThat(savedAddress.getParty()).isEqualTo(caseParty);
-        assertThat(savedAddress.getPtCase()).isEqualTo(ptCaseEntity);
+        ArgumentCaptor<PartyDetails> partyDetailsCaptor = ArgumentCaptor.forClass(PartyDetails.class);
+        verify(addressService).updateAddress(partyDetailsCaptor.capture(), eq(caseParty), eq(ptCaseEntity));
+        PartyDetails capturedPartyDetails = partyDetailsCaptor.getValue();
+        assertThat(capturedPartyDetails.getAddressLine1()).isEqualTo("1 High Street");
+        assertThat(capturedPartyDetails.getAddressLine2()).isEqualTo("Suite 2");
+        assertThat(capturedPartyDetails.getPostTown()).isEqualTo("London");
+        assertThat(capturedPartyDetails.getCounty()).isEqualTo("Greater London");
+        assertThat(capturedPartyDetails.getPostcode()).isEqualTo("SW1A 1AA");
 
         verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
@@ -397,7 +360,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
 
-        verify(addressRepository, never()).save(any());
+        verify(addressService, never()).updateAddress(any(), any(), any());
         verify(tenancyDetailsService, never()).updateWithPropertyDetails(any(), any());
         verify(marketRentCaseService, never()).updateWithPropertyDetails(any(), any());
         verify(documentService, never()).updateDocumentsForPropertyDetails(any(), any());
@@ -488,5 +451,32 @@ class PTCaseServiceTest {
 
         verify(tenancyDetailsService, never()).updateWithTenancyAgreementDetails(any(), any());
         verify(documentService, never()).updateDocumentsForTenancyAgreementDetails(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should update landlord details when landlordDetails is present")
+    void updateLandlordDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        LandlordDetails landlordDetails = LandlordDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .landlordDetails(landlordDetails)
+            .build();
+
+        ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
+
+        verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+    }
+
+    @Test
+    @DisplayName("Should skip updating landlord details when landlordDetails is null")
+    void updateLandlordDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .landlordDetails(null)
+            .build();
+
+        ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
+
+        verify(casePartyService, never()).updateWithLandlordDetails(any(), any());
     }
 }

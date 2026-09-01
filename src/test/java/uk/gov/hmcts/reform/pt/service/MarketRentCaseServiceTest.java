@@ -177,7 +177,7 @@ class MarketRentCaseServiceTest {
             .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
             .applicantSuggestedMonthlyMarketRentReasons("Market rate for area")
             .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Recently renovated")
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovated")
             .build();
 
         marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
@@ -185,9 +185,9 @@ class MarketRentCaseServiceTest {
         verify(marketRentCaseRepository).save(existing);
         assertThat(existing.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
         assertThat(existing.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Market rate for area");
-        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
-            .isEqualTo("Recently renovated");
+        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
+            .isEqualTo("Renovated");
     }
 
     @Test
@@ -211,7 +211,7 @@ class MarketRentCaseServiceTest {
 
         assertThat(saved.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("950.00"));
         assertThat(saved.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reason for rate");
-        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
-        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();
     }
 }

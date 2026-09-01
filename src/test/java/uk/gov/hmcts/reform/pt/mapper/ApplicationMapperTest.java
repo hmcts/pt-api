@@ -109,7 +109,7 @@ public class ApplicationMapperTest {
             .isEqualTo("Market rate for the area");
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
-            .isEqualTo("Recently refurbished");
+            .isEqualTo("Renovations");
 
         TenancyAgreementDto tenancyAgreementDetails = result.getTenancyAgreementDetails();
         assertThat(tenancyAgreementDetails).isNotNull();
@@ -725,8 +725,8 @@ public class ApplicationMapperTest {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
-            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Garden was recently renovated")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -742,7 +742,7 @@ public class ApplicationMapperTest {
             .isEqualTo("Similar properties in the area rent for this amount");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
-            .isEqualTo("Garden was recently renovated");
+            .isEqualTo("Renovations");
         assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
         assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
         assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
@@ -757,7 +757,7 @@ public class ApplicationMapperTest {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMonthlyMarketRentReasons("Reasons")
-            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.NO)
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -892,8 +892,8 @@ public class ApplicationMapperTest {
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
             .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
-            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Recently refurbished")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
             .build());
     }
 

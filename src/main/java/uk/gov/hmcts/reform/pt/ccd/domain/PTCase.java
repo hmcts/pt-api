@@ -78,4 +78,7 @@ public class PTCase {
 
     @JsonUnwrapped(prefix = "tenancyAgreementDetails")
     private TenancyAgreementDetails tenancyAgreementDetails;
+
+    @JsonUnwrapped(prefix = "landlordDetails")
+    private LandlordDetails landlordDetails;
 }

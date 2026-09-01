@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
+import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
@@ -283,6 +286,40 @@ public class ApplicationMapper {
             .build();
     }
 
+    public static LandlordDetailsDto mapLandlordDetails(PTCaseEntity ptCaseEntity) {
+        return LandlordDetailsDto.builder()
+            .landlord(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD)))
+            .lettingAgent(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LETTING_AGENT)))
+            .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
+            // todo work out where this is saved
+            .landlordRepresentativeType(null)
+            .build();
+    }
+
+    public static PartyDto mapParty(CasePartyEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        AddressEntity address = entity.getAddresses().stream()
+            .findFirst()
+            .orElse(null);
+
+        return PartyDto.builder()
+            .firstName(entity.getFirstName())
+            .lastName(entity.getLastName())
+            .organisationName(entity.getOrganisationName())
+            .emailAddress(entity.getEmailAddress())
+            .phoneNumber(entity.getPhoneNumber())
+            .dxNumber(entity.getReferenceNumber())
+            .addressLine1(address != null ? address.getAddressLine1() : null)
+            .addressLine2(address != null ? address.getAddressLine2() : null)
+            .postTown(address != null ? address.getPostTown() : null)
+            .county(address != null ? address.getCounty() : null)
+            .postcode(address != null ? address.getPostcode() : null)
+            .build();
+    }
+
     private static Optional<DocumentEntity> findDocumentOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
@@ -293,5 +330,12 @@ public class ApplicationMapper {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
             .toList();
+    }
+
+    private static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
+        return ptCaseEntity.getParties().stream()
+            .filter(party -> party.getRole() != null && party.getRole().getRoleName() == role)
+            .findFirst()
+            .orElse(null);
     }
 }
