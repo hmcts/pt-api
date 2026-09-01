@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
@@ -13,8 +14,10 @@ import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
+import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -33,6 +37,7 @@ import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -869,6 +874,93 @@ public class ApplicationMapperTest {
         assertThat(result.getFilename()).isEqualTo("file.pdf");
         assertThat(result.getContentType()).isEqualTo("application/pdf");
         assertThat(result.getSize()).isEqualTo(5000L);
+    }
+
+    @Test
+    public void shouldMapLandlordDetails() {
+        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
+        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
+        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
+
+        AddressEntity landlordAddress = AddressEntity.builder()
+            .addressLine1("1 Landlord Way")
+            .addressLine2("Somewhere")
+            .postTown("London")
+            .county("Greater London")
+            .postcode("SW1 1AA")
+            .build();
+
+        CasePartyEntity landlordParty = CasePartyEntity.builder()
+            .firstName("Lord")
+            .lastName("Landlord")
+            .organisationName("Landlord Estates")
+            .emailAddress("landlord@example.com")
+            .phoneNumber("0123456789")
+            .referenceNumber("LL01")
+            .role(landlordRole)
+            .addresses(List.of(landlordAddress))
+            .build();
+
+        CasePartyEntity agentParty = CasePartyEntity.builder()
+            .firstName("Agent")
+            .lastName("Smith")
+            .role(agentRole)
+            .addresses(Collections.emptyList())
+            .build();
+
+        CasePartyEntity repParty = CasePartyEntity.builder()
+            .firstName("Rep")
+            .lastName("Jones")
+            .role(repRole)
+            .addresses(Collections.emptyList())
+            .build();
+
+        CasePartyEntity partyWithoutRole = CasePartyEntity.builder()
+            .firstName("NoRole")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(List.of(partyWithoutRole, landlordParty, agentParty, repParty))
+            .build();
+
+        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlord()).isNotNull();
+        assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
+        assertThat(result.getLandlord().getAddressLine1()).isEqualTo("Somewhere");
+        assertThat(result.getLettingAgent()).isNotNull();
+        assertThat(result.getLettingAgent().getFirstName()).isEqualTo("Agent");
+        assertThat(result.getRepresentative()).isNotNull();
+        assertThat(result.getRepresentative().getFirstName()).isEqualTo("Rep");
+        assertThat(result.getLandlordRepresentativeType()).isNull();
+    }
+
+    @Test
+    public void shouldMapLandlordDetailsWhenPartiesEmpty() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(Collections.emptyList())
+            .build();
+
+        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlord()).isNull();
+        assertThat(result.getLettingAgent()).isNull();
+        assertThat(result.getRepresentative()).isNull();
+    }
+
+    @Test
+    public void shouldMapPartyWhenEntityNull() {
+        assertThat(ApplicationMapper.mapParty(null)).isNull();
+    }
+
+    @Test
+    public void shouldInvokePrivateConstructor() throws Exception {
+        Constructor<ApplicationMapper> constructor = ApplicationMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        ApplicationMapper instance = constructor.newInstance();
+        assertThat(instance).isNotNull();
     }
 
     private static List<AddressEntity> addresses(String postcode) {

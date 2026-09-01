@@ -63,7 +63,7 @@ public class DocumentService {
         );
         updateMultipleDocuments(
             DocumentType.PROPERTY_ROOMS,
-            details.getPropertyRoomsDocuments(),
+            details.getRoomsDocuments(),
             ptCaseEntity
         );
     }

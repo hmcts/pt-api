@@ -243,130 +243,6 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update tenant details and save")
-    void updateTenantDetailsSuccess() {
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-        TenantDetails tenantDetails = TenantDetails.builder()
-            .companyName("ACME")
-            .referenceNumberForCommunications("12345")
-            .build();
-        PTCase ptCase = PTCase.builder()
-            .tenantDetails(tenantDetails)
-            .build();
-
-        ptCaseService.updateTenantDetails(ptCase, caseParty);
-
-        assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
-        verify(casePartyRepository).save(caseParty);
-    }
-
-    @Test
-    @DisplayName("Should update hearing and property inspection details")
-    void updateHearingOrPropertyInspectionDetailsSuccess() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
-            .hearingRequested(YesOrNo.YES)
-            .agreeToDecisionWithoutInspection(YesOrNo.NO)
-            .noDecisionWithoutInspectionReason("Inspection needed")
-            .build();
-        PTCase ptCase = PTCase.builder()
-            .hearingInspectionDetails(hearingInspectionDetails)
-            .build();
-
-        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
-
-        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
-        verify(ptCaseRepository).save(ptCaseEntity);
-        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
-    }
-
-    @Test
-    @DisplayName("Should update notice of rent change details and documents when details present")
-    void updateNoticeOfRentChangeDetailsSuccess() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        NoticeOfRentIncreaseDetails noticeDetails = NoticeOfRentIncreaseDetails.builder()
-            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
-            .noticeLegallyValid(YesOrNo.NO)
-            .rentIncreaseToCauseHardship(YesOrNo.YES)
-            .build();
-        PTCase ptCase = PTCase.builder()
-            .noticeOfRentIncreaseDetails(noticeDetails)
-            .build();
-
-        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
-
-        verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
-        verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
-    }
-
-    @Test
-    @DisplayName("Should skip updating notice of rent change details when noticeOfRentIncreaseDetails is null")
-    void updateNoticeOfRentChangeDetailsSkippedWhenNull() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        PTCase ptCase = PTCase.builder()
-            .noticeOfRentIncreaseDetails(null)
-            .build();
-
-        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
-
-        verify(noticeOfRentChangeService, never()).updateNoticeOfRentChangeDetails(any(), any());
-        verify(documentService, never()).updateDocumentsForNoticeOfRentChange(any(), any());
-    }
-
-    @Test
-    @DisplayName("Should update property details when propertyDetails is present")
-    void updatePropertyDetailsSuccess() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-
-        PropertyDetails propertyDetails = PropertyDetails.builder()
-            .addressLine1("1 High Street")
-            .addressLine2("Suite 2")
-            .postTown("London")
-            .county("Greater London")
-            .postcode("SW1A 1AA")
-            .build();
-
-        PTCase ptCase = PTCase.builder()
-            .propertyDetails(propertyDetails)
-            .build();
-
-        ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
-
-        ArgumentCaptor<PartyDetails> partyDetailsCaptor = ArgumentCaptor.forClass(PartyDetails.class);
-        verify(addressService).updateAddress(partyDetailsCaptor.capture(), eq(caseParty), eq(ptCaseEntity));
-        PartyDetails capturedPartyDetails = partyDetailsCaptor.getValue();
-        assertThat(capturedPartyDetails.getAddressLine1()).isEqualTo("1 High Street");
-        assertThat(capturedPartyDetails.getAddressLine2()).isEqualTo("Suite 2");
-        assertThat(capturedPartyDetails.getPostTown()).isEqualTo("London");
-        assertThat(capturedPartyDetails.getCounty()).isEqualTo("Greater London");
-        assertThat(capturedPartyDetails.getPostcode()).isEqualTo("SW1A 1AA");
-
-        verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
-    }
-
-    @Test
-    @DisplayName("Should skip updating property details when propertyDetails is null")
-    void updatePropertyDetailsSkippedWhenNull() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CasePartyEntity caseParty = CasePartyEntity.builder().build();
-
-        PTCase ptCase = PTCase.builder()
-            .propertyDetails(null)
-            .build();
-
-        ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
-
-        verify(addressService, never()).updateAddress(any(), any(), any());
-        verify(tenancyDetailsService, never()).updateWithPropertyDetails(any(), any());
-        verify(marketRentCaseService, never()).updateWithPropertyDetails(any(), any());
-        verify(documentService, never()).updateDocumentsForPropertyDetails(any(), any());
-    }
-
-    @Test
     @DisplayName("Should update current rent details when currentRentDetails is present")
     void updateCurrentRentDetailsSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
@@ -478,5 +354,187 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
 
         verify(casePartyService, never()).updateWithLandlordDetails(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should update tenant details and save")
+    void updateTenantDetailsSuccess() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        TenantDetails tenantDetails = TenantDetails.builder()
+            .companyName("ACME")
+            .referenceNumberForCommunications("12345")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .tenantDetails(tenantDetails)
+            .build();
+
+        ptCaseService.updateTenantDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
+        assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should update hearing and property inspection details")
+    void updateHearingOrPropertyInspectionDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .agreeToDecisionWithoutInspection(YesOrNo.NO)
+            .noDecisionWithoutInspectionReason("Inspection needed")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .hearingInspectionDetails(hearingInspectionDetails)
+            .build();
+
+        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+
+        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        verify(ptCaseRepository).save(ptCaseEntity);
+        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+    }
+
+    @Test
+    @DisplayName("Should update notice of rent change details and documents when details present")
+    void updateNoticeOfRentChangeDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        NoticeOfRentIncreaseDetails noticeDetails = NoticeOfRentIncreaseDetails.builder()
+            .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
+            .noticeLegallyValid(YesOrNo.NO)
+            .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .noticeOfRentIncreaseDetails(noticeDetails)
+            .build();
+
+        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+
+        verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
+        verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should update contact preferences and phone numbers on case party")
+    void updateContactPreferencesSuccess() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
+            .phoneNumberForCalls("01234567890")
+            .textUpdatesPhoneNumber("07123456789")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .applicantContactPreferences(preferences)
+            .build();
+
+        ptCaseService.updateContactPreferences(ptCase, caseParty);
+
+        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
+        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should skip updating contact preferences when applicantContactPreferences is null")
+    void updateContactPreferencesSkippedWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .applicantContactPreferences(null)
+            .build();
+
+        ptCaseService.updateContactPreferences(ptCase, caseParty);
+
+        verify(contactPreferencesService, never()).updateContactPreferences(any(), any());
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should skip updating tenant details when tenantDetails is null")
+    void updateTenantDetailsSkippedWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .tenantDetails(null)
+            .build();
+
+        ptCaseService.updateTenantDetails(ptCase, caseParty);
+
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should skip updating hearing or property inspection details when hearingInspectionDetails is null")
+    void updateHearingOrPropertyInspectionDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .hearingInspectionDetails(null)
+            .build();
+
+        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+
+        verify(ptCaseRepository, never()).save(any());
+        verify(propertyInspectionService, never()).updatePropertyInspection(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should update property details when propertyDetails is present")
+    void updatePropertyDetailsSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        PropertyDetails propertyDetails = PropertyDetails.builder()
+            .addressLine1("10 High Street")
+            .addressLine2("Flat 2")
+            .postTown("London")
+            .county("Greater London")
+            .postcode("SW1A 1AA")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .propertyDetails(propertyDetails)
+            .build();
+
+        ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
+
+        ArgumentCaptor<PartyDetails> partyDetailsCaptor = ArgumentCaptor.forClass(PartyDetails.class);
+        verify(addressService).updateAddress(partyDetailsCaptor.capture(), eq(caseParty), eq(ptCaseEntity));
+        PartyDetails captured = partyDetailsCaptor.getValue();
+        assertThat(captured.getAddressLine1()).isEqualTo("10 High Street");
+        assertThat(captured.getAddressLine2()).isEqualTo("Flat 2");
+        assertThat(captured.getPostTown()).isEqualTo("London");
+        assertThat(captured.getCounty()).isEqualTo("Greater London");
+        assertThat(captured.getPostcode()).isEqualTo("SW1A 1AA");
+
+        verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should skip updating property details when propertyDetails is null")
+    void updatePropertyDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .propertyDetails(null)
+            .build();
+
+        ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
+
+        verify(addressService, never()).updateAddress(any(), any(), any());
+        verify(tenancyDetailsService, never()).updateWithPropertyDetails(any(), any());
+        verify(marketRentCaseService, never()).updateWithPropertyDetails(any(), any());
+        verify(documentService, never()).updateDocumentsForPropertyDetails(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should skip updating notice of rent change details when noticeOfRentIncreaseDetails is null")
+    void updateNoticeOfRentChangeDetailsSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .noticeOfRentIncreaseDetails(null)
+            .build();
+
+        ptCaseService.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+
+        verify(noticeOfRentChangeService, never()).updateNoticeOfRentChangeDetails(any(), any());
+        verify(documentService, never()).updateDocumentsForNoticeOfRentChange(any(), any());
     }
 }

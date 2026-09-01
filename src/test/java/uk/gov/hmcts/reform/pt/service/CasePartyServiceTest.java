@@ -220,6 +220,33 @@ class CasePartyServiceTest {
     }
 
     @Test
+    @DisplayName("Should remove agent and rep when representative type is NOT_SURE")
+    void updateWithLandlordDetailsNotSure() {
+        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
+        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
+        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
+
+        CasePartyEntity existingAgent = CasePartyEntity.builder().role(agentRole).build();
+        CasePartyEntity existingRep = CasePartyEntity.builder().role(repRole).build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(new ArrayList<>(List.of(existingAgent, existingRep)))
+            .build();
+
+        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
+
+        PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
+        LandlordDetails landlordDetails = LandlordDetails.builder()
+            .landlordPartyDetails(landlordParty)
+            .representativeType(LandlordRepresentativeType.NOT_SURE)
+            .build();
+
+        casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+
+        verify(casePartyRepository).delete(existingAgent);
+        verify(casePartyRepository).delete(existingRep);
+    }
+
+    @Test
     @DisplayName("Should do nothing when partyDetails is null in updatePartyDetails")
     void updatePartyDetailsWhenNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();

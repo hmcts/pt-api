@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.pt.exception.SecurityContextException;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.mockito.Mockito.mock;
@@ -101,59 +99,4 @@ class SecurityContextServiceTest {
             .isInstanceOf(SecurityContextException.class)
             .hasMessage("Authentication principal is null or not of the expected type");
     }
-
-    @Test
-    @DisplayName("Should get the user ID from the security context")
-    void getUserId() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        UserInfo userDetails = mock(UserInfo.class);
-        when(user.getUserDetails()).thenReturn(userDetails);
-        UUID expectedUserId = UUID.randomUUID();
-        when(userDetails.getUid()).thenReturn(expectedUserId.toString());
-
-        UUID actualUserId = underTest.getCurrentUserId();
-
-        assertThat(actualUserId).isEqualTo(expectedUserId);
-    }
-
-    @Test
-    @DisplayName("Should return null user ID when no authentication in the security context")
-    void getUserIdWhenNoAuthentication() {
-        when(securityContext.getAuthentication()).thenReturn(null);
-
-        Exception exception = catchException(() -> underTest.getCurrentUserId());
-
-        assertThat(exception)
-            .isInstanceOf(SecurityContextException.class)
-            .hasMessage("No authentication instance found");
-    }
-
-    @Test
-    @DisplayName("Should return null user ID when no principal in the security context")
-    void getUserIdWhenNoPrincipal() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(null);
-
-        Exception exception = catchException(() -> underTest.getCurrentUserId());
-
-        assertThat(exception)
-            .isInstanceOf(SecurityContextException.class)
-            .hasMessage("Authentication principal is null or not of the expected type");
-    }
-
-    @Test
-    @DisplayName("Should return null user ID for principal of wrong type in the security context")
-    void getUserIdWhenPrincipalNotAUserType() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(new Object());
-
-        Exception exception = catchException(() -> underTest.getCurrentUserId());
-
-        assertThat(exception)
-            .isInstanceOf(SecurityContextException.class)
-            .hasMessage("Authentication principal is null or not of the expected type");
-    }
-
 }

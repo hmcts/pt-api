@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class ApplicationMapper {
+
+    private ApplicationMapper() {
+    }
+
     public static ApplicationDto toDto(CaseApplicationEntity entity) {
         CasePartyEntity caseParty = entity.getCaseParty();
         if (caseParty == null) {

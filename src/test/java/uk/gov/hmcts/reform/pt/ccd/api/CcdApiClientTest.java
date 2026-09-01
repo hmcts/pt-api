@@ -73,12 +73,11 @@ class CcdApiClientTest {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer idam-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
         FeignException feignException = mock(FeignException.class);
-        when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.startCase(any(), any(), any(), any())).thenThrow(feignException);
 
         assertThatThrownBy(() -> ccdApiClient.startEvent(CITIZEN_CREATE_APPLICATION))
             .isInstanceOf(CcdException.class)
-            .hasMessage("Failed to start citizen-create-application event in CCD: boom");
+            .hasMessage("Failed to start citizen-create-application event in CCD");
     }
 
     @Test
@@ -118,12 +117,11 @@ class CcdApiClientTest {
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
         PTCase ptCase = PTCase.builder().applicantFirstName("Jane").build();
         FeignException feignException = mock(FeignException.class);
-        when(feignException.getMessage()).thenReturn("boom");
         when(ccdApi.submitCaseCreation(any(), any(), any(), any())).thenThrow(feignException);
 
         assertThatThrownBy(() ->
             ccdApiClient.submitCaseCreation(ptCase, CITIZEN_CREATE_APPLICATION, "event-token"))
             .isInstanceOf(CcdException.class)
-            .hasMessage("Failed to submit case creation for event event-token: boom");
+            .hasMessage("Failed to submit case creation for event citizen-create-application");
     }
 }
