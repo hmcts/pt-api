@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -41,25 +40,25 @@ public class CurrentRentDetails {
         label = "Weekly rent cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal rentCostWeekly;
+    private Long rentCostWeekly;
 
     @CCD(
         label = "Rent cost fortnightly",
         access = {CitizenAccess.class}
     )
-    private BigDecimal rentCostFortnightly;
+    private Long rentCostFortnightly;
 
     @CCD(
         label = "Rent cost monthly",
         access = {CitizenAccess.class}
     )
-    private BigDecimal rentCostMonthly;
+    private Long rentCostMonthly;
 
     @CCD(
         label = "Rent cost yearly",
         access = {CitizenAccess.class}
     )
-    private BigDecimal rentCostYearly;
+    private Long rentCostYearly;
 
     @CCD(
         label = "Rent includes council tax",
@@ -77,25 +76,25 @@ public class CurrentRentDetails {
         label = "Weekly council tax cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal councilTaxCostWeekly;
+    private Long councilTaxCostWeekly;
 
     @CCD(
         label = "Fortnightly council tax cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal councilTaxCostFortnightly;
+    private Long councilTaxCostFortnightly;
 
     @CCD(
         label = "Monthly council tax cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal councilTaxCostMonthly;
+    private Long councilTaxCostMonthly;
 
     @CCD(
         label = "Yearly council tax cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal councilTaxCostYearly;
+    private Long councilTaxCostYearly;
 
     @CCD(
         label = "Council tax frequency and cost details",
@@ -113,25 +112,25 @@ public class CurrentRentDetails {
         label = "Weekly utilities cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal utilitiesPaidCostWeekly;
+    private Long utilitiesPaidCostWeekly;
 
     @CCD(
         label = "Fortnightly utilities cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal utilitiesPaidCostFortnightly;
+    private Long utilitiesPaidCostFortnightly;
 
     @CCD(
         label = "Monthly utilities cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal utilitiesPaidCostMonthly;
+    private Long utilitiesPaidCostMonthly;
 
     @CCD(
         label = "Yearly utilities cost",
         access = {CitizenAccess.class}
     )
-    private BigDecimal utilitiesPaidCostYearly;
+    private Long utilitiesPaidCostYearly;
 
     @CCD(
         label = "Utilities paid frequency and cost details",
