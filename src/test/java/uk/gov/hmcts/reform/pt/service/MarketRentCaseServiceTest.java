@@ -101,46 +101,50 @@ class MarketRentCaseServiceTest {
 
         CurrentRentDetails details = CurrentRentDetails.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
-            .rentCostWeekly(new BigDecimal("150.00"))
-            .rentCostFortnightly(new BigDecimal("300.00"))
-            .rentCostMonthly(new BigDecimal("600.00"))
-            .rentCostYearly(new BigDecimal("7200.00"))
+            .rentCostWeekly(150L)
+            .rentCostFortnightly(300L)
+            .rentCostMonthly(600L)
+            .rentCostYearly(7200L)
             .rentIncludesCouncilTax(YesOrNo.YES)
             .councilTaxFrequency(Frequency.MONTHLY)
-            .councilTaxCostWeekly(new BigDecimal("25.00"))
-            .councilTaxCostFortnightly(new BigDecimal("50.00"))
-            .councilTaxCostMonthly(new BigDecimal("100.00"))
-            .councilTaxCostYearly(new BigDecimal("1200.00"))
+            .councilTaxCostWeekly(25L)
+            .councilTaxCostFortnightly(50L)
+            .councilTaxCostMonthly(100L)
+            .councilTaxCostYearly(1200L)
             .councilTaxFrequencyAndCostDetails("Council tax breakdown")
             .utilitiesPaidFrequency(Frequency.MONTHLY)
-            .utilitiesPaidCostWeekly(new BigDecimal("20.00"))
-            .utilitiesPaidCostFortnightly(new BigDecimal("40.00"))
-            .utilitiesPaidCostMonthly(new BigDecimal("80.00"))
-            .utilitiesPaidCostYearly(new BigDecimal("960.00"))
+            .utilitiesPaidCostWeekly(20L)
+            .utilitiesPaidCostFortnightly(40L)
+            .utilitiesPaidCostMonthly(80L)
+            .utilitiesPaidCostYearly(960L)
             .utilitiesPaidFrequencyAndCostDetails("Utilities breakdown")
+            .anyOtherHouseholdManagementCharges(YesOrNo.YES)
+            .otherHouseholdManagementChargesDetails("Other charges")
             .build();
 
         marketRentCaseService.updateWithCurrentRentDetails(ptCase, details);
 
         verify(marketRentCaseRepository).save(existing);
         assertThat(existing.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
-        assertThat(existing.getRentCostWeekly()).isEqualTo(new BigDecimal("150.00"));
-        assertThat(existing.getRentCostFortnightly()).isEqualTo(new BigDecimal("300.00"));
-        assertThat(existing.getRentCostMonthly()).isEqualTo(new BigDecimal("600.00"));
-        assertThat(existing.getRentCostYearly()).isEqualTo(new BigDecimal("7200.00"));
+        assertThat(existing.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(150));
+        assertThat(existing.getRentCostFortnightly()).isEqualTo(BigDecimal.valueOf(300));
+        assertThat(existing.getRentCostMonthly()).isEqualTo(BigDecimal.valueOf(600));
+        assertThat(existing.getRentCostYearly()).isEqualTo(BigDecimal.valueOf(7200));
         assertThat(existing.getRentIncludesCouncilTax()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getCouncilTaxFrequency()).isEqualTo(Frequency.MONTHLY);
-        assertThat(existing.getCouncilTaxCostWeekly()).isEqualTo(new BigDecimal("25.00"));
-        assertThat(existing.getCouncilTaxCostFortnightly()).isEqualTo(new BigDecimal("50.00"));
-        assertThat(existing.getCouncilTaxCostMonthly()).isEqualTo(new BigDecimal("100.00"));
-        assertThat(existing.getCouncilTaxCostYearly()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(existing.getCouncilTaxCostWeekly()).isEqualTo(BigDecimal.valueOf(25));
+        assertThat(existing.getCouncilTaxCostFortnightly()).isEqualTo(BigDecimal.valueOf(50));
+        assertThat(existing.getCouncilTaxCostMonthly()).isEqualTo(BigDecimal.valueOf(100));
+        assertThat(existing.getCouncilTaxCostYearly()).isEqualTo(BigDecimal.valueOf(1200));
         assertThat(existing.getCouncilTaxFrequencyAndCostDetails()).isEqualTo("Council tax breakdown");
         assertThat(existing.getUtilitiesPaidFrequency()).isEqualTo(Frequency.MONTHLY);
-        assertThat(existing.getUtilitiesCostWeekly()).isEqualTo(new BigDecimal("20.00"));
-        assertThat(existing.getUtilitiesCostFortnightly()).isEqualTo(new BigDecimal("40.00"));
-        assertThat(existing.getUtilitiesCostMonthly()).isEqualTo(new BigDecimal("80.00"));
-        assertThat(existing.getUtilitiesCostYearly()).isEqualTo(new BigDecimal("960.00"));
+        assertThat(existing.getUtilitiesCostWeekly()).isEqualTo(BigDecimal.valueOf(20));
+        assertThat(existing.getUtilitiesCostFortnightly()).isEqualTo(BigDecimal.valueOf(40));
+        assertThat(existing.getUtilitiesCostMonthly()).isEqualTo(BigDecimal.valueOf(80));
+        assertThat(existing.getUtilitiesCostYearly()).isEqualTo(BigDecimal.valueOf(960));
         assertThat(existing.getUtilitiesFrequencyAndCostDetails()).isEqualTo("Utilities breakdown");
+        assertThat(existing.getOtherHouseholdManagementCharges()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getOtherHouseholdManagementChargesDetails()).isEqualTo("Other charges");
     }
 
     @Test
@@ -152,7 +156,7 @@ class MarketRentCaseServiceTest {
 
         CurrentRentDetails details = CurrentRentDetails.builder()
             .rentPaymentFrequency(Frequency.WEEKLY)
-            .rentCostWeekly(new BigDecimal("200.00"))
+            .rentCostWeekly(200L)
             .build();
 
         marketRentCaseService.updateWithCurrentRentDetails(ptCase, details);
@@ -162,7 +166,7 @@ class MarketRentCaseServiceTest {
         MarketRentCaseEntity saved = captor.getValue();
 
         assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
-        assertThat(saved.getRentCostWeekly()).isEqualTo(new BigDecimal("200.00"));
+        assertThat(saved.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(200));
     }
 
     @Test
@@ -174,16 +178,16 @@ class MarketRentCaseServiceTest {
             .build();
 
         MarketRentDetails details = MarketRentDetails.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
+            .applicantSuggestedMonthlyMarketRent(1200L)
             .applicantSuggestedMonthlyMarketRentReasons("Market rate for area")
-            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovated")
+            .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
             .build();
 
         marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
 
         verify(marketRentCaseRepository).save(existing);
-        assertThat(existing.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(existing.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(BigDecimal.valueOf(1200));
         assertThat(existing.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Market rate for area");
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
@@ -198,9 +202,9 @@ class MarketRentCaseServiceTest {
             .build();
 
         MarketRentDetails details = MarketRentDetails.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("950.00"))
+            .applicantSuggestedMonthlyMarketRent(950L)
             .applicantSuggestedMonthlyMarketRentReasons("Reason for rate")
-            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.NO)
+            .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
         marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
@@ -209,7 +213,7 @@ class MarketRentCaseServiceTest {
         verify(marketRentCaseRepository).save(captor.capture());
         MarketRentCaseEntity saved = captor.getValue();
 
-        assertThat(saved.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("950.00"));
+        assertThat(saved.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(BigDecimal.valueOf(950));
         assertThat(saved.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();

@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
-import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;

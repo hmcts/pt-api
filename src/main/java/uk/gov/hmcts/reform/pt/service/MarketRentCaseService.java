@@ -45,22 +45,22 @@ public class MarketRentCaseService {
             .orElse(new MarketRentCaseEntity());
 
         marketRentCase.setRentPaymentFrequency(details.getRentPaymentFrequency());
-        marketRentCase.setRentCostWeekly(BigDecimal.valueOf(details.getRentCostWeekly()));
-        marketRentCase.setRentCostFortnightly(BigDecimal.valueOf(details.getRentCostFortnightly()));
-        marketRentCase.setRentCostMonthly(BigDecimal.valueOf(details.getRentCostMonthly()));
-        marketRentCase.setRentCostYearly(BigDecimal.valueOf(details.getRentCostYearly()));
+        marketRentCase.setRentCostWeekly(toBigDecimal(details.getRentCostWeekly()));
+        marketRentCase.setRentCostFortnightly(toBigDecimal(details.getRentCostFortnightly()));
+        marketRentCase.setRentCostMonthly(toBigDecimal(details.getRentCostMonthly()));
+        marketRentCase.setRentCostYearly(toBigDecimal(details.getRentCostYearly()));
         marketRentCase.setRentIncludesCouncilTax(details.getRentIncludesCouncilTax());
         marketRentCase.setCouncilTaxFrequency(details.getCouncilTaxFrequency());
-        marketRentCase.setCouncilTaxCostWeekly(BigDecimal.valueOf(details.getCouncilTaxCostWeekly()));
-        marketRentCase.setCouncilTaxCostFortnightly(BigDecimal.valueOf(details.getCouncilTaxCostFortnightly()));
-        marketRentCase.setCouncilTaxCostMonthly(BigDecimal.valueOf(details.getCouncilTaxCostMonthly()));
-        marketRentCase.setCouncilTaxCostYearly(BigDecimal.valueOf(details.getCouncilTaxCostYearly()));
+        marketRentCase.setCouncilTaxCostWeekly(toBigDecimal(details.getCouncilTaxCostWeekly()));
+        marketRentCase.setCouncilTaxCostFortnightly(toBigDecimal(details.getCouncilTaxCostFortnightly()));
+        marketRentCase.setCouncilTaxCostMonthly(toBigDecimal(details.getCouncilTaxCostMonthly()));
+        marketRentCase.setCouncilTaxCostYearly(toBigDecimal(details.getCouncilTaxCostYearly()));
         marketRentCase.setCouncilTaxFrequencyAndCostDetails(details.getCouncilTaxFrequencyAndCostDetails());
         marketRentCase.setUtilitiesPaidFrequency(details.getUtilitiesPaidFrequency());
-        marketRentCase.setUtilitiesCostWeekly(BigDecimal.valueOf(details.getUtilitiesPaidCostWeekly()));
-        marketRentCase.setUtilitiesCostFortnightly(BigDecimal.valueOf(details.getUtilitiesPaidCostFortnightly()));
-        marketRentCase.setUtilitiesCostMonthly(BigDecimal.valueOf(details.getUtilitiesPaidCostMonthly()));
-        marketRentCase.setUtilitiesCostYearly(BigDecimal.valueOf(details.getUtilitiesPaidCostYearly()));
+        marketRentCase.setUtilitiesCostWeekly(toBigDecimal(details.getUtilitiesPaidCostWeekly()));
+        marketRentCase.setUtilitiesCostFortnightly(toBigDecimal(details.getUtilitiesPaidCostFortnightly()));
+        marketRentCase.setUtilitiesCostMonthly(toBigDecimal(details.getUtilitiesPaidCostMonthly()));
+        marketRentCase.setUtilitiesCostYearly(toBigDecimal(details.getUtilitiesPaidCostYearly()));
         marketRentCase.setUtilitiesFrequencyAndCostDetails(details.getUtilitiesPaidFrequencyAndCostDetails());
         marketRentCase.setOtherHouseholdManagementCharges(details.getAnyOtherHouseholdManagementCharges());
         marketRentCase.setOtherHouseholdManagementChargesDetails(details.getOtherHouseholdManagementChargesDetails());
@@ -74,7 +74,8 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
-        marketRentCase.setApplicantSuggestedMonthlyMarketRent(BigDecimal.valueOf(details.getApplicantSuggestedMonthlyMarketRent()));
+        marketRentCase.setApplicantSuggestedMonthlyMarketRent(
+            toBigDecimal(details.getApplicantSuggestedMonthlyMarketRent()));
         marketRentCase.setApplicantSuggestedMonthlyMarketRentReasons(
             details.getApplicantSuggestedMonthlyMarketRentReasons());
         marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingRent(
@@ -83,5 +84,9 @@ public class MarketRentCaseService {
             details.getAdditionalInfoToConsiderWhenDeterminingRentDetails());
 
         marketRentCaseRepository.save(marketRentCase);
+    }
+
+    private BigDecimal toBigDecimal(Long value) {
+        return value != null ? BigDecimal.valueOf(value) : null;
     }
 }
