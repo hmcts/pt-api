@@ -96,6 +96,7 @@ tasks.register('functional', Test) {
   dependsOn assemble, testClasses
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = configurations.functionalTestRuntimeClasspath + sourceSets.functionalTest.output
+  failFast = false
 
   useJUnitPlatform {
     includeTags System.getProperty("tags", "Functional")
