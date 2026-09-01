@@ -928,7 +928,7 @@ public class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getLandlord()).isNotNull();
         assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
-        assertThat(result.getLandlord().getAddressLine1()).isEqualTo("Somewhere");
+        assertThat(result.getLandlord().getAddressLine1()).isEqualTo("1 Landlord Way");
         assertThat(result.getLettingAgent()).isNotNull();
         assertThat(result.getLettingAgent().getFirstName()).isEqualTo("Agent");
         assertThat(result.getRepresentative()).isNotNull();
