@@ -20,7 +20,7 @@ public class MarketRentDetails {
         label = "Applicant's suggested monthly market rent",
         access = {CitizenAccess.class}
     )
-    private Long applicantSuggestedMonthlyMarketRent;
+    private Double applicantSuggestedMonthlyMarketRent;
 
     @CCD(
         label = "Applicant's suggested monthly market rent reasons",

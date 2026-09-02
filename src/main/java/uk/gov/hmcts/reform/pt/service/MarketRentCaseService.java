@@ -86,7 +86,7 @@ public class MarketRentCaseService {
         marketRentCaseRepository.save(marketRentCase);
     }
 
-    private BigDecimal toBigDecimal(Long value) {
+    private BigDecimal toBigDecimal(Double value) {
         return value != null ? BigDecimal.valueOf(value) : null;
     }
 }

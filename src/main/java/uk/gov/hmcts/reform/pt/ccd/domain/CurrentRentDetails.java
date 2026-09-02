@@ -40,25 +40,25 @@ public class CurrentRentDetails {
         label = "Weekly rent cost",
         access = {CitizenAccess.class}
     )
-    private Long rentCostWeekly;
+    private Double rentCostWeekly;
 
     @CCD(
         label = "Rent cost fortnightly",
         access = {CitizenAccess.class}
     )
-    private Long rentCostFortnightly;
+    private Double rentCostFortnightly;
 
     @CCD(
         label = "Rent cost monthly",
         access = {CitizenAccess.class}
     )
-    private Long rentCostMonthly;
+    private Double rentCostMonthly;
 
     @CCD(
         label = "Rent cost yearly",
         access = {CitizenAccess.class}
     )
-    private Long rentCostYearly;
+    private Double rentCostYearly;
 
     @CCD(
         label = "Rent includes council tax",
@@ -76,25 +76,25 @@ public class CurrentRentDetails {
         label = "Weekly council tax cost",
         access = {CitizenAccess.class}
     )
-    private Long councilTaxCostWeekly;
+    private Double councilTaxCostWeekly;
 
     @CCD(
         label = "Fortnightly council tax cost",
         access = {CitizenAccess.class}
     )
-    private Long councilTaxCostFortnightly;
+    private Double councilTaxCostFortnightly;
 
     @CCD(
         label = "Monthly council tax cost",
         access = {CitizenAccess.class}
     )
-    private Long councilTaxCostMonthly;
+    private Double councilTaxCostMonthly;
 
     @CCD(
         label = "Yearly council tax cost",
         access = {CitizenAccess.class}
     )
-    private Long councilTaxCostYearly;
+    private Double councilTaxCostYearly;
 
     @CCD(
         label = "Council tax frequency and cost details",
@@ -112,25 +112,25 @@ public class CurrentRentDetails {
         label = "Weekly utilities cost",
         access = {CitizenAccess.class}
     )
-    private Long utilitiesPaidCostWeekly;
+    private Double utilitiesPaidCostWeekly;
 
     @CCD(
         label = "Fortnightly utilities cost",
         access = {CitizenAccess.class}
     )
-    private Long utilitiesPaidCostFortnightly;
+    private Double utilitiesPaidCostFortnightly;
 
     @CCD(
         label = "Monthly utilities cost",
         access = {CitizenAccess.class}
     )
-    private Long utilitiesPaidCostMonthly;
+    private Double utilitiesPaidCostMonthly;
 
     @CCD(
         label = "Yearly utilities cost",
         access = {CitizenAccess.class}
     )
-    private Long utilitiesPaidCostYearly;
+    private Double utilitiesPaidCostYearly;
 
     @CCD(
         label = "Utilities paid frequency and cost details",
