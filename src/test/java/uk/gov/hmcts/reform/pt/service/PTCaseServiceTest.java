@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
@@ -161,7 +162,9 @@ class PTCaseServiceTest {
         CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
         MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
-        LandlordDetails landlordDetails = LandlordDetails.builder().build();
+        LandlordDetails landlordDetails = LandlordDetails.builder()
+            .representativeType(LandlordRepresentativeType.LETTING_AGENT)
+            .build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -197,10 +200,11 @@ class PTCaseServiceTest {
         assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
         assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
         assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
-        verify(ptCaseRepository).save(ptCaseEntity);
+        verify(ptCaseRepository, times(2)).save(ptCaseEntity);
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
@@ -333,7 +337,9 @@ class PTCaseServiceTest {
     @DisplayName("Should update landlord details when landlordDetails is present")
     void updateLandlordDetailsSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        LandlordDetails landlordDetails = LandlordDetails.builder().build();
+        LandlordDetails landlordDetails = LandlordDetails.builder()
+            .representativeType(LandlordRepresentativeType.LETTING_AGENT)
+            .build();
         PTCase ptCase = PTCase.builder()
             .landlordDetails(landlordDetails)
             .build();
@@ -341,6 +347,8 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
 
         verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
+        verify(ptCaseRepository).save(ptCaseEntity);
     }
 
     @Test
@@ -354,6 +362,7 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
 
         verify(casePartyService, never()).updateWithLandlordDetails(any(), any());
+        verify(ptCaseRepository, never()).save(any());
     }
 
     @Test

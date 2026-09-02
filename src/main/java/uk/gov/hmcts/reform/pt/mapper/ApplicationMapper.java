@@ -291,9 +291,9 @@ public class ApplicationMapper {
             .landlord(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD)))
             .lettingAgent(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LETTING_AGENT)))
             .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
-            // todo work out where this is saved
-            .landlordRepresentativeType(null)
+            .landlordRepresentativeType(ptCaseEntity.getLandlordType())
             .build();
+
     }
 
     public static PartyDto mapParty(CasePartyEntity entity) {

@@ -202,5 +202,7 @@ public class PTCaseService {
         }
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+        ptCaseEntity.setLandlordType(landlordDetails.getRepresentativeType());
+        ptCaseRepository.save(ptCaseEntity);
     }
 }

@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
@@ -919,6 +920,7 @@ public class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .landlordType(LandlordRepresentativeType.LETTING_AGENT)
             .parties(List.of(partyWithoutRole, landlordParty, agentParty, repParty))
             .build();
 
@@ -932,7 +934,7 @@ public class ApplicationMapperTest {
         assertThat(result.getLettingAgent().getFirstName()).isEqualTo("Agent");
         assertThat(result.getRepresentative()).isNotNull();
         assertThat(result.getRepresentative().getFirstName()).isEqualTo("Rep");
-        assertThat(result.getLandlordRepresentativeType()).isNull();
+        assertThat(result.getLandlordRepresentativeType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
     }
 
     @Test
@@ -947,6 +949,7 @@ public class ApplicationMapperTest {
         assertThat(result.getLandlord()).isNull();
         assertThat(result.getLettingAgent()).isNull();
         assertThat(result.getRepresentative()).isNull();
+        assertThat(result.getLandlordRepresentativeType()).isNull();
     }
 
     @Test
