@@ -13,9 +13,14 @@
       "postcode": "SW1A 1AA",
       "applicationType": "challengeRentIncrease",
       "tenancyType": "assuredPeriodicTenancy",
-      "applicantContactPreferencesTextUpdates": "Yes",
-      "applicantContactPreferencesTextUpdatesPhoneNumber": "07700900001",
-      "applicantContactPreferencesPhoneNumberForCalls": "07700900002"
+      "applicantContactPreferences": {
+        "textUpdates": "Yes",
+        "textUpdatesPhoneNumber": "07700900001",
+        "phoneNumberForCalls": "07700900002"
+      },
+      "propertyDetails": {
+        "postcode": "SW1A 1AA"
+      }
     }
   },
   "event_details": {
