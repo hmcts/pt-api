@@ -99,4 +99,37 @@ class SecurityContextServiceTest {
             .isInstanceOf(SecurityContextException.class)
             .hasMessage("Authentication principal is null or not of the expected type");
     }
+
+    @Test
+    @DisplayName("Should get the user's auth token from the security context")
+    void getAuthToken() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(user.getAuthToken()).thenReturn("Bearer user-token");
+
+        assertThat(underTest.getCurrentUserAuthToken()).isEqualTo("Bearer user-token");
+    }
+
+    @Test
+    @DisplayName("Should throw for the auth token when no authentication in the security context")
+    void getAuthTokenWhenNoAuthentication() {
+        when(securityContext.getAuthentication()).thenReturn(null);
+
+        Exception exception = catchException(() -> underTest.getCurrentUserAuthToken());
+
+        assertThat(exception)
+            .isInstanceOf(SecurityContextException.class)
+            .hasMessage("No authentication instance found");
+    }
+
+    @Test
+    @DisplayName("Should throw for the auth token when the principal is not a user")
+    void getAuthTokenWhenPrincipalNotAUserType() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn("not a user");
+
+        Exception exception = catchException(() -> underTest.getCurrentUserAuthToken());
+
+        assertThat(exception).isInstanceOf(SecurityContextException.class);
+    }
 }

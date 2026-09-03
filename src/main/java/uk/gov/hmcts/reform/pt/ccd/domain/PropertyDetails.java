@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 
@@ -89,6 +91,7 @@ public class PropertyDetails {
         label = "Floor plan document",
         access = {CitizenAccess.class}
     )
+    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument floorPlanDocument;
 
     @CCD(
@@ -113,6 +116,7 @@ public class PropertyDetails {
         label = "Outside property document",
         access = {CitizenAccess.class}
     )
+    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument outsidePropertyDocument;
 
     @CCD(
@@ -120,7 +124,7 @@ public class PropertyDetails {
         access = {CitizenAccess.class}
     )
     @Builder.Default
-    private List<UploadedDocument> roomsDocuments = new ArrayList<>();
+    private List<ListValue<UploadedDocument>> roomsDocuments = new ArrayList<>();
 
     @CCD(
         label = "Has furniture provided in tenancy",
@@ -180,5 +184,6 @@ public class PropertyDetails {
         label = "Have any tenants made property repairs details",
         access = {CitizenAccess.class}
     )
+    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument repairsEvidenceDocument;
 }

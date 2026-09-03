@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -15,22 +17,33 @@ import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
+import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory.UNCATEGORISED_DOCUMENTS;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
 
+    private static final long CASE_REFERENCE = 1234567890123456L;
+
     @Mock
     private DocumentRepository documentRepository;
+
+    @Mock
+    private CaseDocumentService caseDocumentService;
 
     @InjectMocks
     private DocumentService documentService;
@@ -114,8 +127,8 @@ class DocumentServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete existing document when single uploaded document is null")
-    void updateSingleDocumentDeletesExistingWhenUploadedDocumentIsNull() {
+    @DisplayName("Should leave an existing document alone when the incoming field is null")
+    void updateSingleDocumentLeavesExistingWhenUploadedDocumentIsNull() {
         DocumentEntity existing = DocumentEntity.builder()
             .documentType(DocumentType.HARDSHIP_EVIDENCE)
             .url("http://dm-store/documents/hardship")
@@ -128,7 +141,7 @@ class DocumentServiceTest {
 
         documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
 
-        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).delete(existing);
         verify(documentRepository, never()).save(any());
     }
 
@@ -146,7 +159,7 @@ class DocumentServiceTest {
     }
 
     @Test
-    @DisplayName("Should update multiple documents creating new, updating existing, and deleting removed documents")
+    @DisplayName("Should upsert multiple documents and leave ones absent from the list alone")
     void updateMultipleDocuments() {
         DocumentEntity existingDoc = DocumentEntity.builder()
             .documentType(DocumentType.PROPERTY_ROOMS)
@@ -154,14 +167,14 @@ class DocumentServiceTest {
             .fileName("room1.pdf")
             .build();
 
-        DocumentEntity removedDoc = DocumentEntity.builder()
+        DocumentEntity untouchedDoc = DocumentEntity.builder()
             .documentType(DocumentType.PROPERTY_ROOMS)
-            .url("http://dm-store/documents/room-removed")
-            .fileName("room_removed.pdf")
+            .url("http://dm-store/documents/room-untouched")
+            .fileName("room_untouched.pdf")
             .build();
 
         PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existingDoc, removedDoc))
+            .documents(List.of(existingDoc, untouchedDoc))
             .build();
 
         UploadedDocument updatedDoc = UploadedDocument.builder()
@@ -184,9 +197,13 @@ class DocumentServiceTest {
             .sizeInBytes(2500L)
             .build();
 
-        documentService.updateMultipleDocuments(DocumentType.PROPERTY_ROOMS, List.of(updatedDoc, newDoc), ptCase);
+        documentService.updateMultipleDocuments(
+            DocumentType.PROPERTY_ROOMS,
+            List.of(new ListValue<>("1", updatedDoc), new ListValue<>("2", newDoc)),
+            ptCase
+        );
 
-        verify(documentRepository).delete(removedDoc);
+        verify(documentRepository, never()).delete(untouchedDoc);
         verify(documentRepository, never()).delete(existingDoc);
 
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
@@ -280,7 +297,7 @@ class DocumentServiceTest {
             .floorPlanDocument(floorPlanDoc)
             .outsidePropertyDocument(outsidePropertyDoc)
             .repairsEvidenceDocument(repairsDoc)
-            .roomsDocuments(List.of(roomDoc))
+            .roomsDocuments(List.of(new ListValue<>("1", roomDoc)))
             .build();
 
         documentService.updateDocumentsForPropertyDetails(details, ptCase);
@@ -295,5 +312,63 @@ class DocumentServiceTest {
                 DocumentType.OUTSIDE_PROPERTY,
                 DocumentType.REPAIRS_EVIDENCE,
                 DocumentType.PROPERTY_ROOMS);
+    }
+
+    @Test
+    @DisplayName("Should delete the row and the stored file, scoped to the case")
+    void deleteDocumentRemovesRowAndStoredFile() {
+        DocumentEntity stored = DocumentEntity.builder()
+            .documentType(DocumentType.FLOOR_PLAN)
+            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+            .build();
+        when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
+            .thenReturn(Optional.of(stored));
+
+        assertThat(documentService.deleteDocument(1L, CASE_REFERENCE)).isTrue();
+
+        verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+        verify(caseDocumentService).deleteDocument(stored.getUrl());
+    }
+
+    @Test
+    @DisplayName("Should read the URL before deleting the row, or there is nothing left to read")
+    void deleteDocumentReadsUrlBeforeDeletingRow() {
+        DocumentEntity stored = DocumentEntity.builder()
+            .documentType(DocumentType.FLOOR_PLAN)
+            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+            .build();
+        when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
+            .thenReturn(Optional.of(stored));
+
+        documentService.deleteDocument(1L, CASE_REFERENCE);
+
+        InOrder inOrder = inOrder(documentRepository, caseDocumentService);
+        inOrder.verify(documentRepository).findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+        inOrder.verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+        inOrder.verify(caseDocumentService).deleteDocument(anyString());
+    }
+
+    @Test
+    @DisplayName("Should delete a document of any type without knowing which type it is")
+    void deleteDocumentIsTypeAgnostic() {
+        when(documentRepository.findByIdAndPtCaseCaseReference(7L, CASE_REFERENCE))
+            .thenReturn(Optional.of(DocumentEntity.builder()
+                .documentType(DocumentType.TENANCY_AGREEMENT)
+                .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+                .build()));
+
+        assertThat(documentService.deleteDocument(7L, CASE_REFERENCE)).isTrue();
+    }
+
+    @Test
+    @DisplayName("Should touch nothing when the document is not on this case")
+    void deleteDocumentDoesNothingWhenNotOnCase() {
+        when(documentRepository.findByIdAndPtCaseCaseReference(999L, CASE_REFERENCE))
+            .thenReturn(Optional.empty());
+
+        assertThat(documentService.deleteDocument(999L, CASE_REFERENCE)).isFalse();
+
+        verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
+        verify(caseDocumentService, never()).deleteDocument(anyString());
     }
 }
