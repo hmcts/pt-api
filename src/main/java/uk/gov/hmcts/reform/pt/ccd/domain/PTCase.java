@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -55,18 +54,13 @@ public class PTCase {
     )
     private State targetState;
 
-    @JsonUnwrapped(prefix = "applicantContactPreferences")
     private ApplicantContactPreferences applicantContactPreferences;
 
-    @JsonUnwrapped(prefix = "tenantDetails")
     private TenantDetails tenantDetails;
 
-    @JsonUnwrapped(prefix = "hearingInspectionDetails")
     private HearingPropertyInspectionDetails hearingInspectionDetails;
 
-    @JsonUnwrapped(prefix = "noticeOfRentIncreaseDetails")
     private NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails;
 
-    @JsonUnwrapped(prefix = "propertyDetails")
     private PropertyDetails propertyDetails;
 }
