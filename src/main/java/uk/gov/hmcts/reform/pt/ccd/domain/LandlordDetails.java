@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +11,12 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class LandlordDetails {
 
-    @JsonUnwrapped(prefix = "Landlord")
+    @CCD(
+        label = "Landlord Party Details",
+        access = {CitizenAccess.class}
+    )
     private PartyDetails landlordPartyDetails;
 
     @CCD(
@@ -26,10 +25,16 @@ public class LandlordDetails {
     )
     private LandlordRepresentativeType representativeType;
 
-    @JsonUnwrapped(prefix = "LettingAgent")
+    @CCD(
+        label = "Letting Agent Party Details",
+        access = {CitizenAccess.class}
+    )
     private PartyDetails lettingAgentPartyDetails;
 
-    @JsonUnwrapped(prefix = "Representative")
+    @CCD(
+        label = "Representative Party Details",
+        access = {CitizenAccess.class}
+    )
     private PartyDetails representativePartyDetails;
 
 

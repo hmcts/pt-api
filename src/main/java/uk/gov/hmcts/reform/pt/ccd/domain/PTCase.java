@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -55,30 +54,57 @@ public class PTCase {
     )
     private State targetState;
 
-    @JsonUnwrapped(prefix = "applicantContactPreferences")
+    @CCD(
+        label = "Applicant's contact preferences",
+        access = {CitizenAccess.class}
+    )
     private ApplicantContactPreferences applicantContactPreferences;
 
-    @JsonUnwrapped(prefix = "tenantDetails")
+    @CCD(
+        label = "Tenant's details",
+        access = {CitizenAccess.class}
+    )
     private TenantDetails tenantDetails;
 
-    @JsonUnwrapped(prefix = "hearingInspectionDetails")
+    @CCD(
+        label = "Hearing and property inspection details",
+        access = {CitizenAccess.class}
+    )
     private HearingPropertyInspectionDetails hearingInspectionDetails;
 
-    @JsonUnwrapped(prefix = "noticeOfRentIncreaseDetails")
+    @CCD(
+        label = "Notice of rent increase details",
+        access = {CitizenAccess.class}
+    )
     private NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails;
 
-    @JsonUnwrapped(prefix = "propertyDetails")
+    @CCD(
+        label = "Property details",
+        access = {CitizenAccess.class}
+    )
     private PropertyDetails propertyDetails;
 
-    @JsonUnwrapped(prefix = "currentRentDetails")
+    @CCD(
+        label = "Current rent details",
+        access = {CitizenAccess.class}
+    )
     private CurrentRentDetails currentRentDetails;
 
-    @JsonUnwrapped(prefix = "marketRentDetails")
+    @CCD(
+        label = "Market rent details",
+        access = {CitizenAccess.class}
+    )
     private MarketRentDetails marketRentDetails;
 
-    @JsonUnwrapped(prefix = "tenancyAgreementDetails")
+    @CCD(
+        label = "Tenancy agreement details",
+        access = {CitizenAccess.class}
+    )
     private TenancyAgreementDetails tenancyAgreementDetails;
 
-    @JsonUnwrapped(prefix = "landlordDetails")
+    @CCD(
+        label = "Landlord details",
+        access = {CitizenAccess.class}
+    )
     private LandlordDetails landlordDetails;
 }
