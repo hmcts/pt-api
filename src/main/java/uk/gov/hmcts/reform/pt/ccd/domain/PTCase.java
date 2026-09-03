@@ -54,13 +54,33 @@ public class PTCase {
     )
     private State targetState;
 
+    @CCD(
+        label = "Applicant's contact preferences",
+        access = {CitizenAccess.class}
+    )
     private ApplicantContactPreferences applicantContactPreferences;
 
+    @CCD(
+        label = "Tenant's details",
+        access = {CitizenAccess.class}
+    )
     private TenantDetails tenantDetails;
 
+    @CCD(
+        label = "Hearing and property inspection details",
+        access = {CitizenAccess.class}
+    )
     private HearingPropertyInspectionDetails hearingInspectionDetails;
 
+    @CCD(
+        label = "Notice of rent increase details",
+        access = {CitizenAccess.class}
+    )
     private NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails;
 
+    @CCD(
+        label = "Property details",
+        access = {CitizenAccess.class}
+    )
     private PropertyDetails propertyDetails;
 }
