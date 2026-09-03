@@ -168,7 +168,7 @@ public class ApplicationMapper {
             .propertyFloorPlanAvailable(marketRentCase.getPropertyFloorPlanAvailable())
             .floorPlanManualDetails(marketRentCase.getFloorplanManualDetails())
             .floorPlanDocument(
-                findDocumentOfType(DocumentType.FLOOR_PLAN, ptCaseEntity)
+                findDocumentOfType(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .indoorFeatures(marketRentCase.getPropertyIndoorFeatures())
@@ -193,7 +193,7 @@ public class ApplicationMapper {
             .tenantRepairsDetails(tenancyDetails.getTenantRepairsDetails())
             .anyTenantsMadePropertyRepairs(tenancyDetails.getAnyTenantsMadePropertyRepairs())
             .repairsEvidenceDocument(
-                findDocumentOfType(DocumentType.REPAIRS_EVIDENCE, ptCaseEntity)
+                findDocumentOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .build();
@@ -250,7 +250,7 @@ public class ApplicationMapper {
             .applicantSuggestedMonthlyMarketRent(marketRentCase.getApplicantSuggestedMonthlyMarketRent())
             .applicantSuggestedMonthlyMarketRentReasons(marketRentCase.getApplicantSuggestedMonthlyMarketRentReasons())
             .suggestedMarketRentEvidence(
-                findDocumentOfType(DocumentType.PROPOSED_RENT_EVIDENCE, ptCaseEntity)
+                findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .additionalPropertyInfoToConsiderWhenDetermining(

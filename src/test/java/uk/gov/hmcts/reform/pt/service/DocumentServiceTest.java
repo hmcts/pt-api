@@ -293,9 +293,9 @@ class DocumentServiceTest {
         List<DocumentEntity> savedDocs = captor.getAllValues();
         assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
             .containsExactlyInAnyOrder(
-                DocumentType.FLOOR_PLAN,
+                DocumentType.PROPERTY_FLOOR_PLAN,
                 DocumentType.OUTSIDE_PROPERTY,
-                DocumentType.REPAIRS_EVIDENCE,
+                DocumentType.TENANT_REPAIRS_EVIDENCE,
                 DocumentType.PROPERTY_ROOMS);
     }
 
@@ -322,7 +322,7 @@ class DocumentServiceTest {
         verify(documentRepository).save(captor.capture());
 
         DocumentEntity savedDoc = captor.getValue();
-        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.PROPOSED_RENT_EVIDENCE);
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
         assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
         assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
     }
@@ -331,7 +331,7 @@ class DocumentServiceTest {
     @DisplayName("Should delete document for market rent details when evidence document is null and existing exists")
     void updateDocumentsForMarketRentDetailsDeletesDocumentWhenNull() {
         DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.PROPOSED_RENT_EVIDENCE)
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
             .url("http://dm-store/documents/existing-rent")
             .fileName("existing-rent.pdf")
             .build();

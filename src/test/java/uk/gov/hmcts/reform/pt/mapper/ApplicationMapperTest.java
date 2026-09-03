@@ -428,7 +428,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapPropertyDetails() {
         DocumentEntity floorPlanDoc = DocumentEntity.builder()
-            .documentType(DocumentType.FLOOR_PLAN)
+            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
             .url("http://dm-store/doc/floor")
             .binaryUrl("http://dm-store/doc/floor/binary")
             .fileName("floor.pdf")
@@ -464,7 +464,7 @@ public class ApplicationMapperTest {
             .build();
 
         DocumentEntity repairsDoc = DocumentEntity.builder()
-            .documentType(DocumentType.REPAIRS_EVIDENCE)
+            .documentType(DocumentType.TENANT_REPAIRS_EVIDENCE)
             .url("http://dm-store/doc/repairs")
             .binaryUrl("http://dm-store/doc/repairs/binary")
             .fileName("repairs.pdf")
@@ -719,7 +719,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapMarketRentDetails() {
         DocumentEntity document = DocumentEntity.builder()
-            .documentType(DocumentType.PROPOSED_RENT_EVIDENCE)
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
             .url("http://dm-store/doc/proposed-rent")
             .binaryUrl("http://dm-store/doc/proposed-rent/binary")
             .fileName("proposed-rent.pdf")

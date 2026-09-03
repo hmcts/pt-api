@@ -47,7 +47,7 @@ public class DocumentService {
     @Transactional
     public void updateDocumentsForPropertyDetails(PropertyDetails details, PTCaseEntity ptCaseEntity) {
         updateSingleDocument(
-            DocumentType.FLOOR_PLAN,
+            DocumentType.PROPERTY_FLOOR_PLAN,
             details.getFloorPlanDocument(),
             ptCaseEntity
         );
@@ -57,7 +57,7 @@ public class DocumentService {
             ptCaseEntity
         );
         updateSingleDocument(
-            DocumentType.REPAIRS_EVIDENCE,
+            DocumentType.TENANT_REPAIRS_EVIDENCE,
             details.getRepairsEvidenceDocument(),
             ptCaseEntity
         );
@@ -71,7 +71,7 @@ public class DocumentService {
     @Transactional
     public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
         updateSingleDocument(
-            DocumentType.PROPOSED_RENT_EVIDENCE,
+            DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
             ptCaseEntity
         );
