@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +12,6 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class ApplicantContactPreferences {
     @CCD(
         label = "Applicant wants to receive text updates",

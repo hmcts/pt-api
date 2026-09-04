@@ -63,6 +63,16 @@ public class PTCaseService {
     }
 
     @Transactional
+    public void deleteCase(long caseReference) {
+        PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        caseApplicationRepository.deleteAll(caseApplicationRepository.findAllByCaseReference(caseReference));
+
+        ptCaseRepository.delete(ptCaseEntity);
+    }
+
+    @Transactional
     public void updateCase(long caseReference, PTCase ptCase) {
         CasePartyEntity caseParty = casePartyRepository.findFirstByPtCaseCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
