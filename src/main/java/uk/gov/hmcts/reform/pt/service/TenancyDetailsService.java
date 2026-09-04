@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class TenancyDetailsService {
@@ -42,16 +44,24 @@ public class TenancyDetailsService {
             .orElse(new TenancyDetailsEntity());
 
         tenancyDetails.setPtCase(ptCaseEntity);
-        tenancyDetails.setTenancyIncludeFacilities(details.getOtherFacilitiesAvailable());
-        tenancyDetails.setOtherFacilitiesDetails(details.getOtherFacilitiesDetails());
-        tenancyDetails.setFurnitureProvidedInTenancy(details.getFurnitureProvidedInTenancy());
-        tenancyDetails.setFurnitureProvidedInTenancyDetails(details.getFurnitureProvidedInTenancyDetails());
-        tenancyDetails.setAdditionalServicesProvidedInTenancy(details.getAdditionalServicesProvidedInTenancy());
-        tenancyDetails.setAdditionalServicesProvidedInTenancyDetails(
-            details.getAdditionalServicesProvidedInTenancyDetails());
-        tenancyDetails.setLandlordRepairsDetails(details.getLandlordRepairsDetails());
-        tenancyDetails.setTenantRepairsDetails(details.getTenantRepairsDetails());
-        tenancyDetails.setAnyTenantsMadePropertyRepairs(details.getAnyTenantsMadePropertyRepairs());
+        setIfNotNull(details.getOtherFacilitiesAvailable(), tenancyDetails::setTenancyIncludeFacilities);
+        setIfNotNull(details.getOtherFacilitiesDetails(), tenancyDetails::setOtherFacilitiesDetails);
+        setIfNotNull(details.getFurnitureProvidedInTenancy(), tenancyDetails::setFurnitureProvidedInTenancy);
+        setIfNotNull(
+            details.getFurnitureProvidedInTenancyDetails(),
+            tenancyDetails::setFurnitureProvidedInTenancyDetails
+        );
+        setIfNotNull(
+            details.getAdditionalServicesProvidedInTenancy(),
+            tenancyDetails::setAdditionalServicesProvidedInTenancy
+        );
+        setIfNotNull(
+            details.getAdditionalServicesProvidedInTenancyDetails(),
+            tenancyDetails::setAdditionalServicesProvidedInTenancyDetails
+        );
+        setIfNotNull(details.getLandlordRepairsDetails(), tenancyDetails::setLandlordRepairsDetails);
+        setIfNotNull(details.getTenantRepairsDetails(), tenancyDetails::setTenantRepairsDetails);
+        setIfNotNull(details.getAnyTenantsMadePropertyRepairs(), tenancyDetails::setAnyTenantsMadePropertyRepairs);
 
         tenancyDetailsRepository.save(tenancyDetails);
     }
@@ -63,15 +73,26 @@ public class TenancyDetailsService {
             // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
             .orElse(new TenancyDetailsEntity());
 
-        tenancyDetails.setTribunalPreviouslyDeterminedTenancyRent(details.getTribunalPreviouslyDeterminedTenancyRent());
-        tenancyDetails.setPreviousTribunalCaseReference(details.getPreviousTribunalCaseReference());
-        tenancyDetails.setCurrentTenancyStartDate(details.getCurrentTenancyStartDate());
-        tenancyDetails.setTenancyEndDate(details.getCurrentTenancyEndDate());
-        tenancyDetails.setCurrentTenancyReplaceOriginalTenancy(details.getCurrentTenancyReplaceOriginalTenancy());
-        tenancyDetails.setOriginalTenancyStartDate(details.getOriginalTenancyStartDate());
-        tenancyDetails.setAdditionalServicesProvidedInTenancy(details.getAdditionalRentalServiceChargesVary());
-        tenancyDetails.setAdditionalServicesProvidedInTenancyDetails(
-            details.getAdditionalRentalVaryingServiceChargesDetails());
+        setIfNotNull(
+            details.getTribunalPreviouslyDeterminedTenancyRent(),
+            tenancyDetails::setTribunalPreviouslyDeterminedTenancyRent
+        );
+        setIfNotNull(details.getPreviousTribunalCaseReference(), tenancyDetails::setPreviousTribunalCaseReference);
+        setIfNotNull(details.getCurrentTenancyStartDate(), tenancyDetails::setCurrentTenancyStartDate);
+        setIfNotNull(details.getCurrentTenancyEndDate(), tenancyDetails::setTenancyEndDate);
+        setIfNotNull(
+            details.getCurrentTenancyReplaceOriginalTenancy(),
+            tenancyDetails::setCurrentTenancyReplaceOriginalTenancy
+        );
+        setIfNotNull(details.getOriginalTenancyStartDate(), tenancyDetails::setOriginalTenancyStartDate);
+        setIfNotNull(
+            details.getAdditionalRentalServiceChargesVary(),
+            tenancyDetails::setAdditionalServicesProvidedInTenancy
+        );
+        setIfNotNull(
+            details.getAdditionalRentalVaryingServiceChargesDetails(),
+            tenancyDetails::setAdditionalServicesProvidedInTenancyDetails
+        );
 
         tenancyDetailsRepository.save(tenancyDetails);
     }
@@ -83,8 +104,8 @@ public class TenancyDetailsService {
             // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
             .orElse(new TenancyDetailsEntity());
 
-        tenancyDetails.setCopyOfTenancyAgreement(details.getCopyOfTenancyAgreement());
-        tenancyDetails.setNoTenancyAgreementReason(details.getNoTenancyAgreementReason());
+        setIfNotNull(details.getCopyOfTenancyAgreement(), tenancyDetails::setCopyOfTenancyAgreement);
+        setIfNotNull(details.getNoTenancyAgreementReason(), tenancyDetails::setNoTenancyAgreementReason);
 
         tenancyDetailsRepository.save(tenancyDetails);
     }

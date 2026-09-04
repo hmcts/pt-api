@@ -546,4 +546,109 @@ class PTCaseServiceTest {
         verify(noticeOfRentChangeService, never()).updateNoticeOfRentChangeDetails(any(), any());
         verify(documentService, never()).updateDocumentsForNoticeOfRentChange(any(), any());
     }
+
+    @Test
+    @DisplayName("Should preserve existing applicant names and email when null in updateCase")
+    void updateCasePreservesExistingApplicantDetailsWhenNull() {
+        long caseReference = 1234567890123456L;
+
+        CasePartyEntity applicantCaseParty = CasePartyEntity.builder()
+            .firstName("ExistingFirst")
+            .lastName("ExistingLast")
+            .emailAddress("existing@example.com")
+            .build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .caseReference(caseReference)
+            .build();
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT))
+            .thenReturn(Optional.of(applicantCaseParty));
+
+        PTCase ptCase = PTCase.builder().build();
+
+        ptCaseService.updateCase(caseReference, ptCase);
+
+        assertThat(applicantCaseParty.getFirstName()).isEqualTo("ExistingFirst");
+        assertThat(applicantCaseParty.getLastName()).isEqualTo("ExistingLast");
+        assertThat(applicantCaseParty.getEmailAddress()).isEqualTo("existing@example.com");
+        verify(casePartyRepository).save(applicantCaseParty);
+    }
+
+    @Test
+    @DisplayName("Should preserve phone numbers when null in contact preferences")
+    void updateContactPreferencesPreservesPhoneNumbersWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .phoneNumber("01234567890")
+            .mobilePhoneNumber("07123456789")
+            .build();
+        ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
+            .textUpdates(YesOrNo.YES)
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .applicantContactPreferences(preferences)
+            .build();
+
+        ptCaseService.updateContactPreferences(ptCase, caseParty);
+
+        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
+        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should preserve tenant details when null in tenantDetails")
+    void updateTenantDetailsPreservesDetailsWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .organisationName("ExistingOrg")
+            .referenceNumber("EXISTING-REF")
+            .build();
+        TenantDetails tenantDetails = TenantDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .tenantDetails(tenantDetails)
+            .build();
+
+        ptCaseService.updateTenantDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getOrganisationName()).isEqualTo("ExistingOrg");
+        assertThat(caseParty.getReferenceNumber()).isEqualTo("EXISTING-REF");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should preserve hearing requested when null in hearingInspectionDetails")
+    void updateHearingOrPropertyInspectionDetailsPreservesHearingRequestedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .hearingRequested(YesOrNo.YES)
+            .build();
+        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .hearingInspectionDetails(hearingInspectionDetails)
+            .build();
+
+        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+
+        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        verify(ptCaseRepository).save(ptCaseEntity);
+        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+    }
+
+    @Test
+    @DisplayName("Should preserve landlord type when representativeType is null in landlordDetails")
+    void updateLandlordDetailsPreservesLandlordTypeWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .landlordType(LandlordRepresentativeType.LETTING_AGENT)
+            .build();
+        LandlordDetails landlordDetails = LandlordDetails.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .landlordDetails(landlordDetails)
+            .build();
+
+        ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
+
+        verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
+        verify(ptCaseRepository).save(ptCaseEntity);
+    }
 }

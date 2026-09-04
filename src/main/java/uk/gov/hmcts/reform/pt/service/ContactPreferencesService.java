@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyContactPreferenceRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class ContactPreferencesService {
@@ -21,7 +23,8 @@ public class ContactPreferencesService {
             .orElse(new CasePartyContactPreferenceEntity());
 
         contactPreferences.setParty(caseParty);
-        contactPreferences.setContactByText(contactPreferenceData.getTextUpdates());
+        setIfNotNull(contactPreferenceData.getTextUpdates(), contactPreferences::setContactByText);
+
         casePartyContactPreferenceRepository.save(contactPreferences);
     }
 }

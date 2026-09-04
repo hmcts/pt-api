@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.pt.repository.MarketRentCaseRepository;
 
 import java.math.BigDecimal;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class MarketRentCaseService {
@@ -25,15 +27,18 @@ public class MarketRentCaseService {
             .orElse(new MarketRentCaseEntity());
 
         marketRentCase.setPtCase(ptCaseEntity);
-        marketRentCase.setTypeOfPropertyRenting(propertyDetails.getPropertyType());
-        marketRentCase.setRentingFlatDetails(propertyDetails.getRentingFlatDetails());
-        marketRentCase.setRentingRoomDetails(propertyDetails.getRentingRoomDetails());
-        marketRentCase.setOtherMethodOfRentDetails(propertyDetails.getOtherMethodRentingDetails());
-        marketRentCase.setPropertyFloorPlanAvailable(propertyDetails.getPropertyFloorPlanAvailable());
-        marketRentCase.setFloorplanManualDetails(propertyDetails.getFloorPlanManualDetails());
-        marketRentCase.setPropertyIndoorFeatures(propertyDetails.getIndoorFeatures());
-        marketRentCase.setSharePropertyWithLandlord(propertyDetails.getSharePropertyWithLandlord());
-        marketRentCase.setSharePropertyWithLandlordDetails(propertyDetails.getSharePropertyWithLandlordDetails());
+        setIfNotNull(propertyDetails.getPropertyType(), marketRentCase::setTypeOfPropertyRenting);
+        setIfNotNull(propertyDetails.getRentingFlatDetails(), marketRentCase::setRentingFlatDetails);
+        setIfNotNull(propertyDetails.getRentingRoomDetails(), marketRentCase::setRentingRoomDetails);
+        setIfNotNull(propertyDetails.getOtherMethodRentingDetails(), marketRentCase::setOtherMethodOfRentDetails);
+        setIfNotNull(propertyDetails.getPropertyFloorPlanAvailable(), marketRentCase::setPropertyFloorPlanAvailable);
+        setIfNotNull(propertyDetails.getFloorPlanManualDetails(), marketRentCase::setFloorplanManualDetails);
+        setIfNotNull(propertyDetails.getIndoorFeatures(), marketRentCase::setPropertyIndoorFeatures);
+        setIfNotNull(propertyDetails.getSharePropertyWithLandlord(), marketRentCase::setSharePropertyWithLandlord);
+        setIfNotNull(
+            propertyDetails.getSharePropertyWithLandlordDetails(),
+            marketRentCase::setSharePropertyWithLandlordDetails
+        );
 
         marketRentCaseRepository.save(marketRentCase);
     }
@@ -44,26 +49,45 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
-        marketRentCase.setRentPaymentFrequency(details.getRentPaymentFrequency());
-        marketRentCase.setRentCostWeekly(toBigDecimal(details.getRentCostWeekly()));
-        marketRentCase.setRentCostFortnightly(toBigDecimal(details.getRentCostFortnightly()));
-        marketRentCase.setRentCostMonthly(toBigDecimal(details.getRentCostMonthly()));
-        marketRentCase.setRentCostYearly(toBigDecimal(details.getRentCostYearly()));
-        marketRentCase.setRentIncludesCouncilTax(details.getRentIncludesCouncilTax());
-        marketRentCase.setCouncilTaxFrequency(details.getCouncilTaxFrequency());
-        marketRentCase.setCouncilTaxCostWeekly(toBigDecimal(details.getCouncilTaxCostWeekly()));
-        marketRentCase.setCouncilTaxCostFortnightly(toBigDecimal(details.getCouncilTaxCostFortnightly()));
-        marketRentCase.setCouncilTaxCostMonthly(toBigDecimal(details.getCouncilTaxCostMonthly()));
-        marketRentCase.setCouncilTaxCostYearly(toBigDecimal(details.getCouncilTaxCostYearly()));
-        marketRentCase.setCouncilTaxFrequencyAndCostDetails(details.getCouncilTaxFrequencyAndCostDetails());
-        marketRentCase.setUtilitiesPaidFrequency(details.getUtilitiesPaidFrequency());
-        marketRentCase.setUtilitiesCostWeekly(toBigDecimal(details.getUtilitiesPaidCostWeekly()));
-        marketRentCase.setUtilitiesCostFortnightly(toBigDecimal(details.getUtilitiesPaidCostFortnightly()));
-        marketRentCase.setUtilitiesCostMonthly(toBigDecimal(details.getUtilitiesPaidCostMonthly()));
-        marketRentCase.setUtilitiesCostYearly(toBigDecimal(details.getUtilitiesPaidCostYearly()));
-        marketRentCase.setUtilitiesFrequencyAndCostDetails(details.getUtilitiesPaidFrequencyAndCostDetails());
-        marketRentCase.setOtherHouseholdManagementCharges(details.getAnyOtherHouseholdManagementCharges());
-        marketRentCase.setOtherHouseholdManagementChargesDetails(details.getOtherHouseholdManagementChargesDetails());
+        setIfNotNull(details.getRentPaymentFrequency(), marketRentCase::setRentPaymentFrequency);
+        setIfNotNull(toBigDecimal(details.getRentCostWeekly()), marketRentCase::setRentCostWeekly);
+        setIfNotNull(toBigDecimal(details.getRentCostFortnightly()), marketRentCase::setRentCostFortnightly);
+        setIfNotNull(toBigDecimal(details.getRentCostMonthly()), marketRentCase::setRentCostMonthly);
+        setIfNotNull(toBigDecimal(details.getRentCostYearly()), marketRentCase::setRentCostYearly);
+        setIfNotNull(details.getRentIncludesCouncilTax(), marketRentCase::setRentIncludesCouncilTax);
+        setIfNotNull(details.getCouncilTaxFrequency(), marketRentCase::setCouncilTaxFrequency);
+        setIfNotNull(toBigDecimal(details.getCouncilTaxCostWeekly()), marketRentCase::setCouncilTaxCostWeekly);
+        setIfNotNull(
+            toBigDecimal(details.getCouncilTaxCostFortnightly()),
+            marketRentCase::setCouncilTaxCostFortnightly
+        );
+        setIfNotNull(toBigDecimal(details.getCouncilTaxCostMonthly()), marketRentCase::setCouncilTaxCostMonthly);
+        setIfNotNull(toBigDecimal(details.getCouncilTaxCostYearly()), marketRentCase::setCouncilTaxCostYearly);
+
+        setIfNotNull(
+            details.getCouncilTaxFrequencyAndCostDetails(),
+            marketRentCase::setCouncilTaxFrequencyAndCostDetails
+        );
+        setIfNotNull(details.getUtilitiesPaidFrequency(), marketRentCase::setUtilitiesPaidFrequency);
+        setIfNotNull(toBigDecimal(details.getUtilitiesPaidCostWeekly()), marketRentCase::setUtilitiesCostWeekly);
+        setIfNotNull(
+            toBigDecimal(details.getUtilitiesPaidCostFortnightly()),
+            marketRentCase::setUtilitiesCostFortnightly
+        );
+        setIfNotNull(toBigDecimal(details.getUtilitiesPaidCostMonthly()), marketRentCase::setUtilitiesCostMonthly);
+        setIfNotNull(toBigDecimal(details.getUtilitiesPaidCostYearly()), marketRentCase::setUtilitiesCostYearly);
+        setIfNotNull(
+            details.getUtilitiesPaidFrequencyAndCostDetails(),
+            marketRentCase::setUtilitiesFrequencyAndCostDetails
+        );
+        setIfNotNull(
+            details.getAnyOtherHouseholdManagementCharges(),
+            marketRentCase::setOtherHouseholdManagementCharges
+        );
+        setIfNotNull(
+            details.getOtherHouseholdManagementChargesDetails(),
+            marketRentCase::setOtherHouseholdManagementChargesDetails
+        );
 
         marketRentCaseRepository.save(marketRentCase);
     }
@@ -74,14 +98,22 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
-        marketRentCase.setApplicantSuggestedMonthlyMarketRent(
-            toBigDecimal(details.getApplicantSuggestedMonthlyMarketRent()));
-        marketRentCase.setApplicantSuggestedMonthlyMarketRentReasons(
-            details.getApplicantSuggestedMonthlyMarketRentReasons());
-        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingRent(
-            details.getAdditionalInfoToConsiderWhenDeterminingRent());
-        marketRentCase.setAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails(
-            details.getAdditionalInfoToConsiderWhenDeterminingRentDetails());
+        setIfNotNull(
+            toBigDecimal(details.getApplicantSuggestedMonthlyMarketRent()),
+            marketRentCase::setApplicantSuggestedMonthlyMarketRent
+        );
+        setIfNotNull(
+            details.getApplicantSuggestedMonthlyMarketRentReasons(),
+            marketRentCase::setApplicantSuggestedMonthlyMarketRentReasons
+        );
+        setIfNotNull(
+            details.getAdditionalInfoToConsiderWhenDeterminingRent(),
+            marketRentCase::setAdditionalPropertyInfoToConsiderWhenDeterminingRent
+        );
+        setIfNotNull(
+            details.getAdditionalInfoToConsiderWhenDeterminingRentDetails(),
+            marketRentCase::setAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails
+        );
 
         marketRentCaseRepository.save(marketRentCase);
     }

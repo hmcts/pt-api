@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.AddressRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class AddressService {
@@ -18,13 +20,15 @@ public class AddressService {
     @Transactional
     public void updateAddress(PartyDetails partyDetails, CasePartyEntity caseParty, PTCaseEntity ptCaseEntity) {
         AddressEntity address = caseParty.getAddresses().stream().findFirst().orElse(new AddressEntity());
-        address.setAddressLine1(partyDetails.getAddressLine1());
-        address.setAddressLine2(partyDetails.getAddressLine2());
-        address.setPostTown(partyDetails.getPostTown());
-        address.setCounty(partyDetails.getCounty());
-        address.setPostcode(partyDetails.getPostcode());
+
+        setIfNotNull(partyDetails.getAddressLine1(), address::setAddressLine1);
+        setIfNotNull(partyDetails.getAddressLine2(), address::setAddressLine2);
+        setIfNotNull(partyDetails.getPostTown(), address::setPostTown);
+        setIfNotNull(partyDetails.getCounty(), address::setCounty);
+        setIfNotNull(partyDetails.getPostcode(), address::setPostcode);
         address.setParty(caseParty);
         address.setPtCase(ptCaseEntity);
+
         addressRepository.save(address);
     }
 

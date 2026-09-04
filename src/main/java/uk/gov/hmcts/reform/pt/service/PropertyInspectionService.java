@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.repository.PropertyInspectionRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class PropertyInspectionService {
@@ -22,9 +24,16 @@ public class PropertyInspectionService {
             .findFirst()
             .orElse(new PropertyInspectionEntity());
 
-        entity.setAgreeToDecisionWithoutInspection(inspectionDetails.getAgreeToDecisionWithoutInspection());
-        entity.setNoDecisionWithoutInspectionReason(inspectionDetails.getNoDecisionWithoutInspectionReason());
+        setIfNotNull(
+            inspectionDetails.getAgreeToDecisionWithoutInspection(),
+            entity::setAgreeToDecisionWithoutInspection
+        );
+        setIfNotNull(
+            inspectionDetails.getNoDecisionWithoutInspectionReason(),
+            entity::setNoDecisionWithoutInspectionReason
+        );
         entity.setPtCase(ptCaseEntity);
+
         propertyInspectionRepository.save(entity);
     }
 }

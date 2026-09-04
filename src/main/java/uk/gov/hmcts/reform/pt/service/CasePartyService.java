@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyRoleRepository;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class CasePartyService {
@@ -99,12 +101,12 @@ public class CasePartyService {
             .orElse(new CasePartyEntity());
         caseParty.setPtCase(ptCaseEntity);
         caseParty.setRole(getOrCreateCasePartyRole(role));
-        caseParty.setFirstName(partyDetails.getFirstName());
-        caseParty.setLastName(partyDetails.getLastName());
-        caseParty.setEmailAddress(partyDetails.getEmailAddress());
-        caseParty.setPhoneNumber(partyDetails.getPhoneNumber());
-        caseParty.setOrganisationName(partyDetails.getOrganisationName());
-        caseParty.setReferenceNumber(partyDetails.getDxNumber());
+        setIfNotNull(partyDetails.getFirstName(), caseParty::setFirstName);
+        setIfNotNull(partyDetails.getLastName(), caseParty::setLastName);
+        setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);
+        setIfNotNull(partyDetails.getPhoneNumber(), caseParty::setPhoneNumber);
+        setIfNotNull(partyDetails.getOrganisationName(), caseParty::setOrganisationName);
+        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumber);
         casePartyRepository.save(caseParty);
 
         addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);

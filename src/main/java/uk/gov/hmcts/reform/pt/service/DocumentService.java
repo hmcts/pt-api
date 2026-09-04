@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
@@ -138,16 +140,16 @@ public class DocumentService {
         PTCaseEntity ptCaseEntity
     ) {
         Document document = uploadedDocument.getDocument();
-        entity.setUrl(document.getUrl());
-        entity.setFileName(document.getFilename());
-        entity.setBinaryUrl(document.getBinaryUrl());
-        entity.setSize(uploadedDocument.getSizeInBytes());
-        entity.setContentType(uploadedDocument.getContentType());
+
+        setIfNotNull(document.getUrl(), entity::setUrl);
+        setIfNotNull(document.getFilename(), entity::setFileName);
+        setIfNotNull(document.getBinaryUrl(), entity::setBinaryUrl);
+        setIfNotNull(uploadedDocument.getSizeInBytes(), entity::setSize);
+        setIfNotNull(uploadedDocument.getContentType(), entity::setContentType);
+        setIfNotNull(documentType.getLabel(), entity::setDescription);
         entity.setDocumentType(documentType);
-        entity.setDescription(documentType.getLabel());
         entity.setPtCase(ptCaseEntity);
         entity.setCategoryId(CaseFileCategory.UNCATEGORISED_DOCUMENTS.getId());
-
         documentRepository.save(entity);
     }
 

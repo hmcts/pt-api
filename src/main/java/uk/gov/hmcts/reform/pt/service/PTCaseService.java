@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @AllArgsConstructor
 public class PTCaseService {
@@ -74,9 +76,9 @@ public class PTCaseService {
         CasePartyEntity applicantCaseParty = casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
 
-        applicantCaseParty.setFirstName(ptCase.getApplicantFirstName());
-        applicantCaseParty.setLastName(ptCase.getApplicantLastName());
-        applicantCaseParty.setEmailAddress(ptCase.getEmail());
+        setIfNotNull(ptCase.getApplicantFirstName(), applicantCaseParty::setFirstName);
+        setIfNotNull(ptCase.getApplicantLastName(), applicantCaseParty::setLastName);
+        setIfNotNull(ptCase.getEmail(), applicantCaseParty::setEmailAddress);
         casePartyRepository.save(applicantCaseParty);
 
         updateContactPreferences(ptCase, applicantCaseParty);
@@ -99,8 +101,8 @@ public class PTCaseService {
 
         contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
 
-        caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
-        caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdatesPhoneNumber());
+        setIfNotNull(contactPreferenceData.getPhoneNumberForCalls(), caseParty::setPhoneNumber);
+        setIfNotNull(contactPreferenceData.getTextUpdatesPhoneNumber(), caseParty::setMobilePhoneNumber);
         casePartyRepository.save(caseParty);
     }
 
@@ -111,8 +113,8 @@ public class PTCaseService {
             return;
         }
 
-        caseParty.setOrganisationName(tenantDetails.getCompanyName());
-        caseParty.setReferenceNumber(tenantDetails.getReferenceNumberForCommunications());
+        setIfNotNull(tenantDetails.getCompanyName(), caseParty::setOrganisationName);
+        setIfNotNull(tenantDetails.getReferenceNumberForCommunications(), caseParty::setReferenceNumber);
         casePartyRepository.save(caseParty);
     }
 
@@ -123,7 +125,7 @@ public class PTCaseService {
             return;
         }
 
-        ptCaseEntity.setHearingRequested(hearingOrPropertyInspectionDetails.getHearingRequested());
+        setIfNotNull(hearingOrPropertyInspectionDetails.getHearingRequested(), ptCaseEntity::setHearingRequested);
         ptCaseRepository.save(ptCaseEntity);
 
         propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
@@ -202,7 +204,8 @@ public class PTCaseService {
         }
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-        ptCaseEntity.setLandlordType(landlordDetails.getRepresentativeType());
+
+        setIfNotNull(landlordDetails.getRepresentativeType(), ptCaseEntity::setLandlordType);
         ptCaseRepository.save(ptCaseEntity);
     }
 }
