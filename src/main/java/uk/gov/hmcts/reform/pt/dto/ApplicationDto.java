@@ -25,4 +25,8 @@ public class ApplicationDto {
     private HearingInspectionDetailsDto hearingInspectionDetails;
     private NoticeOfRentIncreaseDto noticeOfRentIncreaseDetails;
     private PropertyDetailsDto propertyDetails;
+    private CurrentRentsDetailsDto currentRentsDetails;
+    private MarketRentDto marketRentDetails;
+    private TenancyAgreementDto tenancyAgreementDetails;
+    private LandlordDetailsDto landlordDetails;
 }

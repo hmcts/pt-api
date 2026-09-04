@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -17,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +49,7 @@ public class DocumentService {
     @Transactional
     public void updateDocumentsForPropertyDetails(PropertyDetails details, PTCaseEntity ptCaseEntity) {
         updateSingleDocument(
-            DocumentType.FLOOR_PLAN,
+            DocumentType.PROPERTY_FLOOR_PLAN,
             details.getFloorPlanDocument(),
             ptCaseEntity
         );
@@ -55,13 +59,31 @@ public class DocumentService {
             ptCaseEntity
         );
         updateSingleDocument(
-            DocumentType.REPAIRS_EVIDENCE,
+            DocumentType.TENANT_REPAIRS_EVIDENCE,
             details.getRepairsEvidenceDocument(),
             ptCaseEntity
         );
         updateMultipleDocuments(
             DocumentType.PROPERTY_ROOMS,
             details.getRoomsDocuments(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
+        updateSingleDocument(
+            DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
+            details.getSuggestedMarketRentEvidence(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForTenancyAgreementDetails(TenancyAgreementDetails details, PTCaseEntity ptCaseEntity) {
+        updateSingleDocument(
+            DocumentType.TENANCY_AGREEMENT,
+            details.getTenancyAgreementDocument(),
             ptCaseEntity
         );
     }
@@ -118,16 +140,16 @@ public class DocumentService {
         PTCaseEntity ptCaseEntity
     ) {
         Document document = uploadedDocument.getDocument();
-        entity.setUrl(document.getUrl());
-        entity.setFileName(document.getFilename());
-        entity.setBinaryUrl(document.getBinaryUrl());
-        entity.setSize(uploadedDocument.getSizeInBytes());
-        entity.setContentType(uploadedDocument.getContentType());
+
+        setIfNotNull(document.getUrl(), entity::setUrl);
+        setIfNotNull(document.getFilename(), entity::setFileName);
+        setIfNotNull(document.getBinaryUrl(), entity::setBinaryUrl);
+        setIfNotNull(uploadedDocument.getSizeInBytes(), entity::setSize);
+        setIfNotNull(uploadedDocument.getContentType(), entity::setContentType);
+        setIfNotNull(documentType.getLabel(), entity::setDescription);
         entity.setDocumentType(documentType);
-        entity.setDescription(documentType.getLabel());
         entity.setPtCase(ptCaseEntity);
         entity.setCategoryId(CaseFileCategory.UNCATEGORISED_DOCUMENTS.getId());
-
         documentRepository.save(entity);
     }
 

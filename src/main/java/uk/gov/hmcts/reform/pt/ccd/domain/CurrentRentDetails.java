@@ -1,0 +1,185 @@
+package uk.gov.hmcts.reform.pt.ccd.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CurrentRentDetails {
+    @CCD(
+        label = "Tribunal previously determined tenancy rent",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo tribunalPreviouslyDeterminedTenancyRent;
+
+    @CCD(
+        label = "Previous tribunal case reference",
+        access = {CitizenAccess.class}
+    )
+    private String previousTribunalCaseReference;
+
+    @CCD(
+        label = "Rent payment frequency",
+        access = {CitizenAccess.class}
+    )
+    private Frequency rentPaymentFrequency;
+
+    @CCD(
+        label = "Weekly rent cost",
+        access = {CitizenAccess.class}
+    )
+    private Double rentCostWeekly;
+
+    @CCD(
+        label = "Rent cost fortnightly",
+        access = {CitizenAccess.class}
+    )
+    private Double rentCostFortnightly;
+
+    @CCD(
+        label = "Rent cost monthly",
+        access = {CitizenAccess.class}
+    )
+    private Double rentCostMonthly;
+
+    @CCD(
+        label = "Rent cost yearly",
+        access = {CitizenAccess.class}
+    )
+    private Double rentCostYearly;
+
+    @CCD(
+        label = "Rent includes council tax",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo rentIncludesCouncilTax;
+
+    @CCD(
+        label = "Council tax frequency",
+        access = {CitizenAccess.class}
+    )
+    private Frequency councilTaxFrequency;
+
+    @CCD(
+        label = "Weekly council tax cost",
+        access = {CitizenAccess.class}
+    )
+    private Double councilTaxCostWeekly;
+
+    @CCD(
+        label = "Fortnightly council tax cost",
+        access = {CitizenAccess.class}
+    )
+    private Double councilTaxCostFortnightly;
+
+    @CCD(
+        label = "Monthly council tax cost",
+        access = {CitizenAccess.class}
+    )
+    private Double councilTaxCostMonthly;
+
+    @CCD(
+        label = "Yearly council tax cost",
+        access = {CitizenAccess.class}
+    )
+    private Double councilTaxCostYearly;
+
+    @CCD(
+        label = "Council tax frequency and cost details",
+        access = {CitizenAccess.class}
+    )
+    private String councilTaxFrequencyAndCostDetails;
+
+    @CCD(
+        label = "Utilities paid frequency",
+        access = {CitizenAccess.class}
+    )
+    private Frequency utilitiesPaidFrequency;
+
+    @CCD(
+        label = "Weekly utilities cost",
+        access = {CitizenAccess.class}
+    )
+    private Double utilitiesPaidCostWeekly;
+
+    @CCD(
+        label = "Fortnightly utilities cost",
+        access = {CitizenAccess.class}
+    )
+    private Double utilitiesPaidCostFortnightly;
+
+    @CCD(
+        label = "Monthly utilities cost",
+        access = {CitizenAccess.class}
+    )
+    private Double utilitiesPaidCostMonthly;
+
+    @CCD(
+        label = "Yearly utilities cost",
+        access = {CitizenAccess.class}
+    )
+    private Double utilitiesPaidCostYearly;
+
+    @CCD(
+        label = "Utilities paid frequency and cost details",
+        access = {CitizenAccess.class}
+    )
+    private String utilitiesPaidFrequencyAndCostDetails;
+
+    @CCD(
+        label = "Current tenancy start date",
+        access = {CitizenAccess.class}
+    )
+    private LocalDateTime currentTenancyStartDate;
+
+    @CCD(
+        label = "Current tenancy end date",
+        access = {CitizenAccess.class}
+    )
+    private LocalDateTime currentTenancyEndDate;
+
+    @CCD(
+        label = "Does current tenancy replace original tenancy",
+        access = {CitizenAccess.class}
+    )
+    private YesNoNotSure currentTenancyReplaceOriginalTenancy;
+
+    @CCD(
+        label = "Original tenancy start date",
+        access = {CitizenAccess.class}
+    )
+    private LocalDateTime originalTenancyStartDate;
+
+    @CCD(
+        label = "Additional charges vary",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo additionalRentalServiceChargesVary;
+
+    @CCD(
+        label = "Additional charges vary details",
+        access = {CitizenAccess.class}
+    )
+    private String additionalRentalVaryingServiceChargesDetails;
+
+    @CCD(
+        label = "Any other charges",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo anyOtherHouseholdManagementCharges;
+
+    @CCD(
+        label = "Other charges details",
+        access = {CitizenAccess.class}
+    )
+    private String otherHouseholdManagementChargesDetails;
+}

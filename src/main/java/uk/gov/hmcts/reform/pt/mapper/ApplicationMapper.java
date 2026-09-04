@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
+import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
@@ -61,6 +67,9 @@ public class ApplicationMapper {
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase, caseParty))
+            .currentRentsDetails(mapCurrentRentDetails(ptCase))
+            .marketRentDetails(mapMarketRentDetails(ptCase))
+            .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
             .createdDate(entity.getCreatedDate())
             .build();
     }
@@ -159,7 +168,7 @@ public class ApplicationMapper {
             .propertyFloorPlanAvailable(marketRentCase.getPropertyFloorPlanAvailable())
             .floorPlanManualDetails(marketRentCase.getFloorplanManualDetails())
             .floorPlanDocument(
-                findDocumentOfType(DocumentType.FLOOR_PLAN, ptCaseEntity)
+                findDocumentOfType(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .indoorFeatures(marketRentCase.getPropertyIndoorFeatures())
@@ -184,7 +193,84 @@ public class ApplicationMapper {
             .tenantRepairsDetails(tenancyDetails.getTenantRepairsDetails())
             .anyTenantsMadePropertyRepairs(tenancyDetails.getAnyTenantsMadePropertyRepairs())
             .repairsEvidenceDocument(
-                findDocumentOfType(DocumentType.REPAIRS_EVIDENCE, ptCaseEntity)
+                findDocumentOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
+            .build();
+    }
+
+    public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+
+        if (tenancyDetails == null || marketRentCase == null) {
+            return null;
+        }
+
+        return CurrentRentsDetailsDto.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(tenancyDetails.getTribunalPreviouslyDeterminedTenancyRent())
+            .previousTribunalCaseReference(tenancyDetails.getPreviousTribunalCaseReference())
+            .rentPaymentFrequency(marketRentCase.getRentPaymentFrequency())
+            .rentCostWeekly(marketRentCase.getRentCostWeekly())
+            .rentCostFortnightly(marketRentCase.getRentCostFortnightly())
+            .rentCostMonthly(marketRentCase.getRentCostMonthly())
+            .rentCostYearly(marketRentCase.getRentCostYearly())
+            .rentIncludesCouncilTax(marketRentCase.getRentIncludesCouncilTax())
+            .councilTaxFrequency(marketRentCase.getCouncilTaxFrequency())
+            .councilTaxCostWeekly(marketRentCase.getCouncilTaxCostWeekly())
+            .councilTaxCostFortnightly(marketRentCase.getCouncilTaxCostFortnightly())
+            .councilTaxCostMonthly(marketRentCase.getCouncilTaxCostMonthly())
+            .councilTaxCostYearly(marketRentCase.getCouncilTaxCostYearly())
+            .councilTaxFrequencyAndCostDetails(marketRentCase.getCouncilTaxFrequencyAndCostDetails())
+            .utilitiesPaidFrequency(marketRentCase.getUtilitiesPaidFrequency())
+            .utilitiesCostWeekly(marketRentCase.getUtilitiesCostWeekly())
+            .utilitiesCostFortnightly(marketRentCase.getUtilitiesCostFortnightly())
+            .utilitiesCostMonthly(marketRentCase.getUtilitiesCostMonthly())
+            .utilitiesCostYearly(marketRentCase.getUtilitiesCostYearly())
+            .utilitiesPaidFrequencyAndCostDetails(marketRentCase.getUtilitiesFrequencyAndCostDetails())
+            .currentTenancyStartDate(tenancyDetails.getCurrentTenancyStartDate())
+            .currentTenancyEndDate(tenancyDetails.getTenancyEndDate())
+            .currentTenancyReplaceOriginalTenancy(tenancyDetails.getCurrentTenancyReplaceOriginalTenancy())
+            .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
+            .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
+            .additionalRentalVaryingServiceChargesDetails(
+                marketRentCase.getAdditionalRentalVaryingServiceChargesDetails())
+            .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
+            .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())
+            .build();
+    }
+
+    public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        if (marketRentCase == null) {
+            return null;
+        }
+
+        return MarketRentDto.builder()
+            .applicantSuggestedMonthlyMarketRent(marketRentCase.getApplicantSuggestedMonthlyMarketRent())
+            .applicantSuggestedMonthlyMarketRentReasons(marketRentCase.getApplicantSuggestedMonthlyMarketRentReasons())
+            .suggestedMarketRentEvidence(
+                findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
+                    .map(ApplicationMapper::mapDocument)
+                    .orElse(null))
+            .additionalPropertyInfoToConsiderWhenDetermining(
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRent())
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails(
+                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
+            .build();
+    }
+
+    public static TenancyAgreementDto mapTenancyAgreement(PTCaseEntity ptCaseEntity) {
+        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        if (tenancyDetails == null) {
+            return null;
+        }
+
+        return TenancyAgreementDto.builder()
+            .copyOfTenancyAgreement(tenancyDetails.getCopyOfTenancyAgreement())
+            .noTenancyAgreementReason(tenancyDetails.getNoTenancyAgreementReason())
+            .tenancyAgreementEvidence(
+                findDocumentOfType(DocumentType.TENANCY_AGREEMENT, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .build();
@@ -200,6 +286,40 @@ public class ApplicationMapper {
             .build();
     }
 
+    public static LandlordDetailsDto mapLandlordDetails(PTCaseEntity ptCaseEntity) {
+        return LandlordDetailsDto.builder()
+            .landlord(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD)))
+            .lettingAgent(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LETTING_AGENT)))
+            .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
+            .landlordRepresentativeType(ptCaseEntity.getLandlordType())
+            .build();
+
+    }
+
+    public static PartyDto mapParty(CasePartyEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        AddressEntity address = entity.getAddresses().stream()
+            .findFirst()
+            .orElse(null);
+
+        return PartyDto.builder()
+            .firstName(entity.getFirstName())
+            .lastName(entity.getLastName())
+            .organisationName(entity.getOrganisationName())
+            .emailAddress(entity.getEmailAddress())
+            .phoneNumber(entity.getPhoneNumber())
+            .dxNumber(entity.getReferenceNumber())
+            .addressLine1(address != null ? address.getAddressLine1() : null)
+            .addressLine2(address != null ? address.getAddressLine2() : null)
+            .postTown(address != null ? address.getPostTown() : null)
+            .county(address != null ? address.getCounty() : null)
+            .postcode(address != null ? address.getPostcode() : null)
+            .build();
+    }
+
     private static Optional<DocumentEntity> findDocumentOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
@@ -210,5 +330,12 @@ public class ApplicationMapper {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
             .toList();
+    }
+
+    private static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
+        return ptCaseEntity.getParties().stream()
+            .filter(party -> party.getRole() != null && party.getRole().getRoleName() == role)
+            .findFirst()
+            .orElse(null);
     }
 }

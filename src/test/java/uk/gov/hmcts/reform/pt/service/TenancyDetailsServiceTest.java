@@ -8,13 +8,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -144,5 +147,106 @@ public class TenancyDetailsServiceTest {
         assertThat(saved.getPtCase()).isEqualTo(ptCase);
         assertThat(saved.getTenancyIncludeFacilities()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getLandlordRepairsDetails()).isEqualTo("Roof leak");
+    }
+
+    @Test
+    @DisplayName("Should update existing TenancyDetailsEntity with current rent details")
+    void updateWithCurrentRentDetailsWhenExists() {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(List.of(existing))
+            .build();
+
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
+        LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        CurrentRentDetails details = CurrentRentDetails.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
+            .previousTribunalCaseReference("TRIB-123")
+            .currentTenancyStartDate(startDate)
+            .currentTenancyEndDate(endDate)
+            .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
+            .originalTenancyStartDate(originalStartDate)
+            .additionalRentalServiceChargesVary(YesOrNo.YES)
+            .additionalRentalVaryingServiceChargesDetails("Charge details")
+            .build();
+
+        tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
+
+        verify(tenancyDetailsRepository).save(existing);
+        assertThat(existing.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getPreviousTribunalCaseReference()).isEqualTo("TRIB-123");
+        assertThat(existing.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(existing.getTenancyEndDate()).isEqualTo(endDate);
+        assertThat(existing.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
+        assertThat(existing.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
+        assertThat(existing.getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isEqualTo("Charge details");
+    }
+
+    @Test
+    @DisplayName("Should create and save TenancyDetailsEntity with current rent details when list is empty")
+    void updateWithCurrentRentDetailsWhenEmpty() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(new ArrayList<>())
+            .build();
+
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        CurrentRentDetails details = CurrentRentDetails.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.NO)
+            .currentTenancyStartDate(startDate)
+            .build();
+
+        tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
+
+        ArgumentCaptor<TenancyDetailsEntity> captor = ArgumentCaptor.forClass(TenancyDetailsEntity.class);
+        verify(tenancyDetailsRepository).save(captor.capture());
+        TenancyDetailsEntity saved = captor.getValue();
+
+        assertThat(saved.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getCurrentTenancyStartDate()).isEqualTo(startDate);
+    }
+
+    @Test
+    @DisplayName("Should update existing TenancyDetailsEntity with tenancy agreement details")
+    void updateWithTenancyAgreementDetailsWhenExists() {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(List.of(existing))
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("Reason")
+            .build();
+
+        tenancyDetailsService.updateWithTenancyAgreementDetails(ptCase, details);
+
+        verify(tenancyDetailsRepository).save(existing);
+        assertThat(existing.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getNoTenancyAgreementReason()).isEqualTo("Reason");
+    }
+
+    @Test
+    @DisplayName("Should create and save TenancyDetailsEntity with tenancy agreement details when list is empty")
+    void updateWithTenancyAgreementDetailsWhenEmpty() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .tenancyDetails(new ArrayList<>())
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .copyOfTenancyAgreement(YesOrNo.NO)
+            .noTenancyAgreementReason("No agreement available")
+            .build();
+
+        tenancyDetailsService.updateWithTenancyAgreementDetails(ptCase, details);
+
+        ArgumentCaptor<TenancyDetailsEntity> captor = ArgumentCaptor.forClass(TenancyDetailsEntity.class);
+        verify(tenancyDetailsRepository).save(captor.capture());
+        TenancyDetailsEntity saved = captor.getValue();
+
+        assertThat(saved.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
     }
 }
