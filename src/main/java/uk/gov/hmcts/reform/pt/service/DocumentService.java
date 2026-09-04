@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
@@ -12,16 +13,16 @@ import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
+import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
     private final DocumentRepository documentRepository;
+    private final CaseDocumentService caseDocumentService;
 
     @Transactional
     public void updateDocumentsForNoticeOfRentChange(NoticeOfRentIncreaseDetails details, PTCaseEntity ptCaseEntity) {
@@ -77,7 +78,6 @@ public class DocumentService {
             .findFirst();
 
         if (uploadedDocument == null) {
-            existing.ifPresent(documentRepository::delete);
             return;
         }
 
@@ -88,27 +88,43 @@ public class DocumentService {
     @Transactional
     protected void updateMultipleDocuments(
         DocumentType documentType,
-        List<UploadedDocument> uploadedDocuments,
+        List<ListValue<UploadedDocument>> uploadedDocuments,
         PTCaseEntity ptCaseEntity
     ) {
+        if (uploadedDocuments == null) {
+            return;
+        }
+
         List<DocumentEntity> existingEntities = getDocumentsOfTypeForCase(documentType, ptCaseEntity);
 
-        Set<String> incomingUrls = uploadedDocuments.stream()
-            .map(uploadedDocument -> uploadedDocument.getDocument().getUrl())
-            .collect(Collectors.toSet());
+        for (ListValue<UploadedDocument> item : uploadedDocuments) {
+            UploadedDocument uploadedDocument = item == null ? null : item.getValue();
+            if (uploadedDocument == null || uploadedDocument.getDocument() == null) {
+                continue;
+            }
 
-        existingEntities.stream()
-            .filter(documentEntity -> !incomingUrls.contains(documentEntity.getUrl()))
-            .forEach(documentRepository::delete);
-
-        for (UploadedDocument uploadedDocument : uploadedDocuments) {
             DocumentEntity documentEntity = existingEntities.stream()
-                .filter(entity -> entity.getUrl().equals(uploadedDocument.getDocument().getUrl()))
+                .filter(entity -> uploadedDocument.getDocument().getUrl().equals(entity.getUrl()))
                 .findFirst()
                 .orElseGet(DocumentEntity::new);
 
             saveDocument(documentEntity, uploadedDocument, documentType, ptCaseEntity);
         }
+    }
+
+    @Transactional
+    public boolean deleteDocument(long documentId, long caseReference) {
+        Optional<DocumentEntity> document =
+            documentRepository.findByIdAndPtCaseCaseReference(documentId, caseReference);
+
+        if (document.isEmpty()) {
+            return false;
+        }
+
+        documentRepository.deleteByIdAndPtCaseCaseReference(documentId, caseReference);
+        caseDocumentService.deleteDocument(document.get().getUrl());
+
+        return true;
     }
 
     private void saveDocument(

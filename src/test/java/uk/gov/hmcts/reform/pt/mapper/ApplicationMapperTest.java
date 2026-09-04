@@ -544,7 +544,7 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldReturnNullWhenTenancyDetailsIsNull() {
+    public void shouldMapPropertyDetailsWhenTenancyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(Collections.emptyList())
             .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
@@ -555,11 +555,13 @@ public class ApplicationMapperTest {
 
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
 
-        assertThat(result).isNull();
+        assertThat(result).isNotNull();
+        assertThat(result.getOtherFacilitiesAvailable()).isNull();
+        assertThat(result.getLandlordRepairsDetails()).isNull();
     }
 
     @Test
-    public void shouldReturnNullWhenMarketRentCaseIsNull() {
+    public void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
             .marketRentCases(Collections.emptyList())
@@ -570,11 +572,13 @@ public class ApplicationMapperTest {
 
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
 
-        assertThat(result).isNull();
+        assertThat(result).isNotNull();
+        assertThat(result.getPropertyType()).isNull();
+        assertThat(result.getSharePropertyWithLandlord()).isNull();
     }
 
     @Test
-    public void shouldReturnNullWhenAddressIsNull() {
+    public void shouldMapPropertyDetailsWhenAddressIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
             .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
@@ -585,7 +589,78 @@ public class ApplicationMapperTest {
 
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
 
+        assertThat(result).isNotNull();
+        assertThat(result.getAddressLine1()).isNull();
+        assertThat(result.getPostcode()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenNoPropertyEntitiesAndNoDocumentsExist() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .marketRentCases(Collections.emptyList())
+            .documents(Collections.emptyList())
+            .build();
+        CasePartyEntity party = CasePartyEntity.builder()
+            .addresses(Collections.emptyList())
+            .build();
+
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+
         assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapPropertyDocumentsWhenNoOtherPropertyEntitiesExist() {
+        DocumentEntity floorPlan = DocumentEntity.builder()
+            .documentType(DocumentType.FLOOR_PLAN)
+            .url("http://cdam/cases/documents/abc")
+            .binaryUrl("http://cdam/cases/documents/abc/binary")
+            .fileName("floor-plan.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .marketRentCases(Collections.emptyList())
+            .documents(List.of(floorPlan))
+            .build();
+        CasePartyEntity party = CasePartyEntity.builder()
+            .addresses(Collections.emptyList())
+            .build();
+
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getFloorPlanDocument()).isNotNull();
+        assertThat(result.getFloorPlanDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
+        assertThat(result.getFloorPlanDocument().getFilename()).isEqualTo("floor-plan.pdf");
+        assertThat(result.getAddressLine1()).isNull();
+        assertThat(result.getPropertyType()).isNull();
+    }
+
+    @Test
+    public void shouldMapNoticeDocumentsWhenNoNoticeOfRentChangeExists() {
+        DocumentEntity notice = DocumentEntity.builder()
+            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
+            .url("http://cdam/cases/documents/def")
+            .binaryUrl("http://cdam/cases/documents/def/binary")
+            .fileName("notice.pdf")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .noticeOfRentChanges(Collections.emptyList())
+            .documents(List.of(notice))
+            .build();
+
+        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNotNull();
+        assertThat(result.getLandlordNoticeProposingNewRentDocument().getUrl())
+            .isEqualTo("http://cdam/cases/documents/def");
+        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isNull();
     }
 
     @Test

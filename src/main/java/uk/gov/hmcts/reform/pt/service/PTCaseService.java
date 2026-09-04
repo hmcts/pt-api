@@ -82,6 +82,32 @@ public class PTCaseService {
     }
 
     @Transactional
+    public void updateDocuments(long caseReference, PTCase ptCase) {
+        PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        PropertyDetails propertyDetails = ptCase.getPropertyDetails();
+        if (propertyDetails != null) {
+            documentService.updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
+        }
+
+        NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails = ptCase.getNoticeOfRentIncreaseDetails();
+        if (noticeOfRentIncreaseDetails != null) {
+            documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
+        }
+    }
+
+    @Transactional
+    public void deleteDocument(long caseReference, PTCase ptCase) {
+        String documentId = ptCase.getDocumentIdToDelete();
+        if (documentId == null || documentId.isBlank()) {
+            throw new IllegalArgumentException("No document id supplied for deletion");
+        }
+
+        documentService.deleteDocument(Long.parseLong(documentId), caseReference);
+    }
+
+    @Transactional
     public void updateContactPreferences(PTCase ptCase, CasePartyEntity caseParty) {
         ApplicantContactPreferences contactPreferenceData = ptCase.getApplicantContactPreferences();
         if (contactPreferenceData == null) {

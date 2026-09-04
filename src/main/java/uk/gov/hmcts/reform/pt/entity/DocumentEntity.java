@@ -27,16 +27,16 @@ import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 @AllArgsConstructor
 @Table(name = "document")
 public class DocumentEntity extends AuditableEntity {
-    @Column(length = 100)
+    @Column(length = 1024)
     private String url;
 
-    @Column(length = 100)
+    @Column(length = 255)
     private String fileName;
 
-    @Column(length = 100)
+    @Column(length = 1024)
     private String binaryUrl;
 
-    @Column(length = 100)
+    @Column(length = 255)
     private String contentType;
 
     @Column(length = 100)

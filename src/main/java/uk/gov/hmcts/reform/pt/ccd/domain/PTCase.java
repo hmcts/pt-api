@@ -55,6 +55,12 @@ public class PTCase {
     )
     private State targetState;
 
+    @CCD(
+        label = "Id of the document to remove",
+        access = {CitizenAccess.class}
+    )
+    private String documentIdToDelete;
+
     @JsonUnwrapped(prefix = "applicantContactPreferences")
     private ApplicantContactPreferences applicantContactPreferences;
 
