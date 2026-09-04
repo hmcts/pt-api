@@ -65,8 +65,6 @@ public class CasePartyService {
         PartyDetails lettingAgent = landlordDetails.getLettingAgentPartyDetails();
         PartyDetails representative = landlordDetails.getRepresentativePartyDetails();
 
-        // todo save the representative type value somewhere
-
         switch (landlordDetails.getRepresentativeType()) {
             case LETTING_AGENT -> {
                 updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);

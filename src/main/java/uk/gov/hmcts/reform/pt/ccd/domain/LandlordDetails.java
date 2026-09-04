@@ -36,6 +36,4 @@ public class LandlordDetails {
         access = {CitizenAccess.class}
     )
     private PartyDetails representativePartyDetails;
-
-
 }
