@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -139,12 +140,14 @@ public class CurrentRentDetails {
         label = "Current tenancy start date",
         access = {CitizenAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime currentTenancyStartDate;
 
     @CCD(
         label = "Current tenancy end date",
         access = {CitizenAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime currentTenancyEndDate;
 
     @CCD(
@@ -157,6 +160,7 @@ public class CurrentRentDetails {
         label = "Original tenancy start date",
         access = {CitizenAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime originalTenancyStartDate;
 
     @CCD(
