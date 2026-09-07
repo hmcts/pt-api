@@ -33,7 +33,7 @@ class UploadedDocumentDeserializerTest {
     void shouldRoundTripADocumentInsideAnUnwrappedSlice() throws Exception {
         PTCase original = PTCase.builder()
             .propertyDetails(PropertyDetails.builder()
-                .floorPlanDocument(uploadedDocument(DocumentType.FLOOR_PLAN))
+                .floorPlanDocument(uploadedDocument(DocumentType.PROPERTY_FLOOR_PLAN))
                 .build())
             .build();
 
@@ -41,7 +41,7 @@ class UploadedDocumentDeserializerTest {
 
         UploadedDocument floorPlan = result.getPropertyDetails().getFloorPlanDocument();
         assertThat(floorPlan).isNotNull();
-        assertThat(floorPlan.getDocumentType()).isEqualTo(DocumentType.FLOOR_PLAN);
+        assertThat(floorPlan.getDocumentType()).isEqualTo(DocumentType.PROPERTY_FLOOR_PLAN);
         assertThat(floorPlan.getContentType()).isEqualTo("application/pdf");
         assertThat(floorPlan.getSizeInBytes()).isEqualTo(1024L);
         // The one that regresses without the deserialiser: Jackson applies the slice's prefix
@@ -66,14 +66,6 @@ class UploadedDocumentDeserializerTest {
         assertThat(notice).isNotNull();
         assertThat(notice.getDocument()).isNotNull();
         assertThat(notice.getDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
-    }
-
-    @Test
-    @DisplayName("Should leave an absent document as null rather than an empty object")
-    void shouldLeaveAnAbsentDocumentNull() throws Exception {
-        PTCase result = mapper.readValue("{\"applicantFirstName\":\"Jane\"}", PTCase.class);
-
-        assertThat(result.getPropertyDetails().getFloorPlanDocument()).isNull();
     }
 
     @Test

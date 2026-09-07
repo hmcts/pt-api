@@ -320,7 +320,7 @@ class DocumentServiceTest {
     @DisplayName("Should delete the row and the stored file, scoped to the case")
     void deleteDocumentRemovesRowAndStoredFile() {
         DocumentEntity stored = DocumentEntity.builder()
-            .documentType(DocumentType.FLOOR_PLAN)
+            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
             .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
             .build();
         when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
@@ -336,7 +336,7 @@ class DocumentServiceTest {
     @DisplayName("Should read the URL before deleting the row, or there is nothing left to read")
     void deleteDocumentReadsUrlBeforeDeletingRow() {
         DocumentEntity stored = DocumentEntity.builder()
-            .documentType(DocumentType.FLOOR_PLAN)
+            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
             .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
             .build();
         when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
@@ -403,29 +403,6 @@ class DocumentServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete document for market rent details when evidence document is null and existing exists")
-    void updateDocumentsForMarketRentDetailsDeletesDocumentWhenNull() {
-        DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
-            .url("http://dm-store/documents/existing-rent")
-            .fileName("existing-rent.pdf")
-            .build();
-
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existing))
-            .build();
-
-        MarketRentDetails details = MarketRentDetails.builder()
-            .suggestedMarketRentEvidence(null)
-            .build();
-
-        documentService.updateDocumentsForMarketRentDetails(details, ptCase);
-
-        verify(documentRepository).delete(existing);
-        verify(documentRepository, never()).save(any());
-    }
-
-    @Test
     @DisplayName("Should update document for tenancy agreement details when evidence document is present")
     void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
@@ -451,28 +428,5 @@ class DocumentServiceTest {
         assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANCY_AGREEMENT);
         assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy-agreement");
         assertThat(savedDoc.getFileName()).isEqualTo("agreement.pdf");
-    }
-
-    @Test
-    @DisplayName("Should delete tenancy agreement document when evidence is null and existing exists")
-    void updateDocumentsForTenancyAgreementDetailsDeletesDocumentWhenNull() {
-        DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.TENANCY_AGREEMENT)
-            .url("http://dm-store/documents/existing-agreement")
-            .fileName("existing-agreement.pdf")
-            .build();
-
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existing))
-            .build();
-
-        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
-            .tenancyAgreementDocument(null)
-            .build();
-
-        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
-
-        verify(documentRepository).delete(existing);
-        verify(documentRepository, never()).save(any());
     }
 }

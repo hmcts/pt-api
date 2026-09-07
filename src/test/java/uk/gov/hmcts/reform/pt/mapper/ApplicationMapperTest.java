@@ -643,7 +643,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapPropertyDocumentsWhenNoOtherPropertyEntitiesExist() {
         DocumentEntity floorPlan = DocumentEntity.builder()
-            .documentType(DocumentType.FLOOR_PLAN)
+            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
             .url("http://cdam/cases/documents/abc")
             .binaryUrl("http://cdam/cases/documents/abc/binary")
             .fileName("floor-plan.pdf")
@@ -669,7 +669,8 @@ public class ApplicationMapperTest {
         assertThat(result.getAddressLine1()).isNull();
         assertThat(result.getPropertyType()).isNull();
     }
-  
+
+    @Test
     public void shouldMapCurrentRentDetails() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
@@ -778,47 +779,6 @@ public class ApplicationMapperTest {
             .size(1024L)
             .build();
 
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
-            .marketRentCases(Collections.emptyList())
-            .documents(List.of(floorPlan))
-            .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(Collections.emptyList())
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
-
-        assertThat(result).isNotNull();
-        assertThat(result.getFloorPlanDocument()).isNotNull();
-        assertThat(result.getFloorPlanDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
-        assertThat(result.getFloorPlanDocument().getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(result.getAddressLine1()).isNull();
-        assertThat(result.getPropertyType()).isNull();
-    }
-
-    @Test
-    public void shouldMapNoticeDocumentsWhenNoNoticeOfRentChangeExists() {
-        DocumentEntity notice = DocumentEntity.builder()
-            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
-            .url("http://cdam/cases/documents/def")
-            .binaryUrl("http://cdam/cases/documents/def/binary")
-            .fileName("notice.pdf")
-            .build();
-
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(Collections.emptyList())
-            .documents(List.of(notice))
-            .build();
-
-        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
-
-        assertThat(result).isNotNull();
-        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNotNull();
-        assertThat(result.getLandlordNoticeProposingNewRentDocument().getUrl())
-            .isEqualTo("http://cdam/cases/documents/def");
-        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isNull();
-
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
@@ -916,6 +876,29 @@ public class ApplicationMapperTest {
         assertThat(result.getTenancyAgreementEvidence().getFilename()).isEqualTo("tenancy-agreement.pdf");
         assertThat(result.getTenancyAgreementEvidence().getContentType()).isEqualTo("application/pdf");
         assertThat(result.getTenancyAgreementEvidence().getSize()).isEqualTo(2048L);
+    }
+
+    @Test
+    public void shouldMapNoticeDocumentsWhenNoNoticeOfRentChangeExists() {
+        DocumentEntity notice = DocumentEntity.builder()
+            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
+            .url("http://cdam/cases/documents/def")
+            .binaryUrl("http://cdam/cases/documents/def/binary")
+            .fileName("notice.pdf")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .noticeOfRentChanges(Collections.emptyList())
+            .documents(List.of(notice))
+            .build();
+
+        NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNotNull();
+        assertThat(result.getLandlordNoticeProposingNewRentDocument().getUrl())
+            .isEqualTo("http://cdam/cases/documents/def");
+        assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isNull();
     }
 
     @Test
@@ -1059,28 +1042,28 @@ public class ApplicationMapperTest {
 
     private static List<AddressEntity> addresses(String postcode) {
         return List.of(AddressEntity.builder()
-            .addressLine1("123 Test St")
-            .postTown("London")
-            .postcode(postcode)
-            .build());
+                           .addressLine1("123 Test St")
+                           .postTown("London")
+                           .postcode(postcode)
+                           .build());
     }
 
     private static List<TenancyDetailsEntity> tenancyDetails(TenancyType tenancyType) {
         return List.of(TenancyDetailsEntity.builder()
-            .tenancyType(tenancyType)
-            .copyOfTenancyAgreement(YesOrNo.YES)
-            .noTenancyAgreementReason("No agreement reason")
-            .build());
+                           .tenancyType(tenancyType)
+                           .copyOfTenancyAgreement(YesOrNo.YES)
+                           .noTenancyAgreementReason("No agreement reason")
+                           .build());
     }
 
     private static List<MarketRentCaseEntity> marketRentCases() {
         return List.of(MarketRentCaseEntity.builder()
-            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
-            .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
-            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
-            .build());
+                           .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
+                           .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
+                           .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+                           .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+                           .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
+                           .build());
     }
 
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
@@ -1132,8 +1115,8 @@ public class ApplicationMapperTest {
 
     private static List<CasePartyContactPreferenceEntity> contactPreferences(YesOrNo text, YesOrNo phone) {
         return List.of(CasePartyContactPreferenceEntity.builder()
-            .contactByText(text)
-            .build());
+                           .contactByText(text)
+                           .build());
     }
 
     private static CaseApplicationEntity entityWithCaseType(
