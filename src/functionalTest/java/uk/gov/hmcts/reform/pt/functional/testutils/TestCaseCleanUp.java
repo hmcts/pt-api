@@ -4,8 +4,8 @@ import net.serenitybdd.rest.SerenityRest;
 import uk.gov.hmcts.reform.pt.functional.config.Endpoints;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 
-import static uk.gov.hmcts.reform.pt.functional.steps.ApiSteps.citizenUserIdamToken;
 import static uk.gov.hmcts.reform.pt.functional.steps.ApiSteps.ptApiS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.steps.ApiSteps.systemUserIdamToken;
 
 public class TestCaseCleanUp {
 
@@ -15,7 +15,7 @@ public class TestCaseCleanUp {
         try {
             SerenityRest.given()
                 .baseUri(baseUrl)
-                .header(TestConstants.AUTHORIZATION, "Bearer " + citizenUserIdamToken)
+                .header(TestConstants.AUTHORIZATION, "Bearer " + systemUserIdamToken)
                 .header(TestConstants.SERVICE_AUTHORIZATION, ptApiS2sToken)
                 .pathParam("caseReference", caseReference)
                 .when()
