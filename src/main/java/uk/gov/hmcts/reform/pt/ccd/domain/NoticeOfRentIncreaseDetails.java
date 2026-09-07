@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +13,6 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class NoticeOfRentIncreaseDetails {
     @CCD(
         label = "Has received landlord notice proposing new rent",
@@ -41,7 +38,6 @@ public class NoticeOfRentIncreaseDetails {
         access = {CitizenAccess.class}
     )
     private YesOrNo noticeLegallyValid;
-
 
     @CCD(
         label = "Details why notice is not legally valid",

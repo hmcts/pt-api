@@ -13,7 +13,6 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UploadedDocument {
-
     @CCD(ignore = true)
     private static final String ACCEPT_TYPES = ".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.rtf,.txt,.csv,"
         + ".jpg,.jpeg,.png,.bmp,.tif,.tiff";
@@ -37,5 +36,4 @@ public class UploadedDocument {
 
     @CCD
     private Long sizeInBytes;
-
 }

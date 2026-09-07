@@ -12,22 +12,22 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicantContactPreferences {
+public class TenancyAgreementDetails {
     @CCD(
-        label = "Applicant wants to receive text updates",
+        label = "Do you have a copy of the tenancy agreement?",
         access = {CitizenAccess.class}
     )
-    private YesOrNo textUpdates;
+    private YesOrNo copyOfTenancyAgreement;
 
     @CCD(
-        label = "Mobile phone number applicant want to receive text updates for",
+        label = "Reason for no copy of tenancy agreement",
         access = {CitizenAccess.class}
     )
-    private String textUpdatesPhoneNumber;
+    private String noTenancyAgreementReason;
 
     @CCD(
-        label = "Applicant wants to receive text updates",
+        label = "Tenancy agreement document",
         access = {CitizenAccess.class}
     )
-    private String phoneNumberForCalls;
+    private UploadedDocument tenancyAgreementDocument;
 }
