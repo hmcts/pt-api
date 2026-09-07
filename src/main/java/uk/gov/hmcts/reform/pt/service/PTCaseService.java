@@ -101,8 +101,11 @@ public class PTCaseService {
 
         contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
 
-        setIfNotNull(contactPreferenceData.getPhoneNumberForCalls(), caseParty::setPhoneNumber);
-        setIfNotNull(contactPreferenceData.getTextUpdatesPhoneNumber(), caseParty::setMobilePhoneNumber);
+        caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
+        caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdates().toBoolean()
+                                           ? contactPreferenceData.getTextUpdatesPhoneNumber()
+                                           : null);
+
         casePartyRepository.save(caseParty);
     }
 

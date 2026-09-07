@@ -428,6 +428,7 @@ class PTCaseServiceTest {
     void updateContactPreferencesSuccess() {
         CasePartyEntity caseParty = CasePartyEntity.builder().build();
         ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
+            .textUpdates(YesOrNo.YES)
             .phoneNumberForCalls("01234567890")
             .textUpdatesPhoneNumber("07123456789")
             .build();
@@ -576,14 +577,16 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should preserve phone numbers when null in contact preferences")
-    void updateContactPreferencesPreservesPhoneNumbersWhenNull() {
+    @DisplayName("Should remove mobile phone number when text updates is NO")
+    void updateContactPreferencesRemovesMobilePhoneNumberWhenTextUpdatesNo() {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .phoneNumber("01234567890")
             .mobilePhoneNumber("07123456789")
             .build();
         ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
-            .textUpdates(YesOrNo.YES)
+            .phoneNumberForCalls("09876543210")
+            .textUpdates(YesOrNo.NO)
+            .textUpdatesPhoneNumber("07123456789")
             .build();
         PTCase ptCase = PTCase.builder()
             .applicantContactPreferences(preferences)
@@ -592,8 +595,8 @@ class PTCaseServiceTest {
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
         verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
-        assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
-        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("09876543210");
+        assertThat(caseParty.getMobilePhoneNumber()).isNull();
         verify(casePartyRepository).save(caseParty);
     }
 
