@@ -83,4 +83,28 @@ public class PTCase {
         access = {CitizenAccess.class}
     )
     private PropertyDetails propertyDetails;
+
+    @CCD(
+        label = "Current rent details",
+        access = {CitizenAccess.class}
+    )
+    private CurrentRentDetails currentRentDetails;
+
+    @CCD(
+        label = "Market rent details",
+        access = {CitizenAccess.class}
+    )
+    private MarketRentDetails marketRentDetails;
+
+    @CCD(
+        label = "Tenancy agreement details",
+        access = {CitizenAccess.class}
+    )
+    private TenancyAgreementDetails tenancyAgreementDetails;
+
+    @CCD(
+        label = "Landlord details",
+        access = {CitizenAccess.class}
+    )
+    private LandlordDetails landlordDetails;
 }

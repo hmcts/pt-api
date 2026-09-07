@@ -37,7 +37,6 @@ public class NoticeOfRentIncreaseDetails {
     )
     private YesOrNo noticeLegallyValid;
 
-
     @CCD(
         label = "Details why notice is not legally valid",
         access = {CitizenAccess.class}

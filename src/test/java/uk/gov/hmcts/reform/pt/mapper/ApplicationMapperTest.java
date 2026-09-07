@@ -4,21 +4,29 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
+import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -29,6 +37,8 @@ import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
+import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -93,6 +103,26 @@ public class ApplicationMapperTest {
         assertThat(propertyDetails.getAddressLine1()).isEqualTo("123 Test St");
         assertThat(propertyDetails.getPostTown()).isEqualTo("London");
         assertThat(propertyDetails.getPropertyType()).isEqualTo(PropertyType.TERRACED_HOUSE);
+
+        CurrentRentsDetailsDto currentRentsDetails = result.getCurrentRentsDetails();
+        assertThat(currentRentsDetails).isNotNull();
+
+        MarketRentDto marketRentDetails = result.getMarketRentDetails();
+        assertThat(marketRentDetails).isNotNull();
+        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRentReasons())
+            .isEqualTo("Market rate for the area");
+        assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
+        assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .isEqualTo("Renovations");
+
+        TenancyAgreementDto tenancyAgreementDetails = result.getTenancyAgreementDetails();
+        assertThat(tenancyAgreementDetails).isNotNull();
+        assertThat(tenancyAgreementDetails.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(tenancyAgreementDetails.getNoTenancyAgreementReason()).isEqualTo("No agreement reason");
+        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence()).isNotNull();
+        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence().getUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement");
     }
 
     @Test
@@ -398,7 +428,7 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapPropertyDetails() {
         DocumentEntity floorPlanDoc = DocumentEntity.builder()
-            .documentType(DocumentType.FLOOR_PLAN)
+            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
             .url("http://dm-store/doc/floor")
             .binaryUrl("http://dm-store/doc/floor/binary")
             .fileName("floor.pdf")
@@ -434,7 +464,7 @@ public class ApplicationMapperTest {
             .build();
 
         DocumentEntity repairsDoc = DocumentEntity.builder()
-            .documentType(DocumentType.REPAIRS_EVIDENCE)
+            .documentType(DocumentType.TENANT_REPAIRS_EVIDENCE)
             .url("http://dm-store/doc/repairs")
             .binaryUrl("http://dm-store/doc/repairs/binary")
             .fileName("repairs.pdf")
@@ -589,6 +619,245 @@ public class ApplicationMapperTest {
     }
 
     @Test
+    public void shouldMapCurrentRentDetails() {
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
+        LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
+            .previousTribunalCaseReference("TRIB-123")
+            .currentTenancyStartDate(startDate)
+            .tenancyEndDate(endDate)
+            .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
+            .originalTenancyStartDate(originalStartDate)
+            .build();
+
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .rentPaymentFrequency(Frequency.MONTHLY)
+            .rentCostWeekly(new BigDecimal("100.00"))
+            .rentCostFortnightly(new BigDecimal("200.00"))
+            .rentCostMonthly(new BigDecimal("400.00"))
+            .rentCostYearly(new BigDecimal("4800.00"))
+            .rentIncludesCouncilTax(YesOrNo.YES)
+            .councilTaxFrequency(Frequency.MONTHLY)
+            .councilTaxCostWeekly(new BigDecimal("25.00"))
+            .councilTaxCostFortnightly(new BigDecimal("50.00"))
+            .councilTaxCostMonthly(new BigDecimal("100.00"))
+            .councilTaxCostYearly(new BigDecimal("1200.00"))
+            .councilTaxFrequencyAndCostDetails("Council tax details")
+            .utilitiesPaidFrequency(Frequency.MONTHLY)
+            .utilitiesCostWeekly(new BigDecimal("15.00"))
+            .utilitiesCostFortnightly(new BigDecimal("30.00"))
+            .utilitiesCostMonthly(new BigDecimal("60.00"))
+            .utilitiesCostYearly(new BigDecimal("720.00"))
+            .utilitiesFrequencyAndCostDetails("Utilities details")
+            .additionalRentalServiceChargesVary(YesOrNo.YES)
+            .additionalRentalVaryingServiceChargesDetails("Service charge details")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCases(List.of(marketRentCase))
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getPreviousTribunalCaseReference()).isEqualTo("TRIB-123");
+        assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getRentCostWeekly()).isEqualTo(new BigDecimal("100.00"));
+        assertThat(result.getRentCostFortnightly()).isEqualTo(new BigDecimal("200.00"));
+        assertThat(result.getRentCostMonthly()).isEqualTo(new BigDecimal("400.00"));
+        assertThat(result.getRentCostYearly()).isEqualTo(new BigDecimal("4800.00"));
+        assertThat(result.getRentIncludesCouncilTax()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getCouncilTaxFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getCouncilTaxCostWeekly()).isEqualTo(new BigDecimal("25.00"));
+        assertThat(result.getCouncilTaxCostFortnightly()).isEqualTo(new BigDecimal("50.00"));
+        assertThat(result.getCouncilTaxCostMonthly()).isEqualTo(new BigDecimal("100.00"));
+        assertThat(result.getCouncilTaxCostYearly()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(result.getCouncilTaxFrequencyAndCostDetails()).isEqualTo("Council tax details");
+        assertThat(result.getUtilitiesPaidFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getUtilitiesCostWeekly()).isEqualTo(new BigDecimal("15.00"));
+        assertThat(result.getUtilitiesCostFortnightly()).isEqualTo(new BigDecimal("30.00"));
+        assertThat(result.getUtilitiesCostMonthly()).isEqualTo(new BigDecimal("60.00"));
+        assertThat(result.getUtilitiesCostYearly()).isEqualTo(new BigDecimal("720.00"));
+        assertThat(result.getUtilitiesPaidFrequencyAndCostDetails()).isEqualTo("Utilities details");
+        assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(result.getCurrentTenancyEndDate()).isEqualTo(endDate);
+        assertThat(result.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
+        assertThat(result.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
+        assertThat(result.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getAdditionalRentalVaryingServiceChargesDetails()).isEqualTo("Service charge details");
+    }
+
+    @Test
+    public void shouldReturnNullWhenTenancyDetailsIsNullForCurrentRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenMarketRentCaseIsNullForCurrentRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapMarketRentDetails() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
+            .url("http://dm-store/doc/proposed-rent")
+            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+            .fileName("proposed-rent.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(List.of(marketRentCase))
+            .documents(List.of(document))
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons())
+            .isEqualTo("Similar properties in the area rent for this amount");
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
+            .isEqualTo("Renovations");
+        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
+        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/proposed-rent/binary");
+        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
+    }
+
+    @Test
+    public void shouldMapMarketRentDetailsWithoutEvidenceDocument() {
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Reasons")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(List.of(marketRentCase))
+            .documents(Collections.emptyList())
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reasons");
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenMarketRentCaseIsNullForMarketRentDetails() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapTenancyAgreement() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/doc/tenancy-agreement")
+            .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+            .fileName("tenancy-agreement.pdf")
+            .contentType("application/pdf")
+            .size(2048L)
+            .build();
+
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("Reason")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .documents(List.of(document))
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getNoTenancyAgreementReason()).isEqualTo("Reason");
+        assertThat(result.getTenancyAgreementEvidence()).isNotNull();
+        assertThat(result.getTenancyAgreementEvidence().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
+        assertThat(result.getTenancyAgreementEvidence().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementEvidence().getSize()).isEqualTo(2048L);
+    }
+
+    @Test
+    public void shouldMapTenancyAgreementWithoutEvidenceDocument() {
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .copyOfTenancyAgreement(YesOrNo.NO)
+            .noTenancyAgreementReason("No agreement available")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(List.of(tenancyDetails))
+            .documents(Collections.emptyList())
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
+        assertThat(result.getTenancyAgreementEvidence()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenTenancyDetailsIsNullForTenancyAgreement() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
     public void shouldMapDocument() {
         DocumentEntity entity = DocumentEntity.builder()
             .url("http://dm-store/doc/1")
@@ -607,6 +876,95 @@ public class ApplicationMapperTest {
         assertThat(result.getSize()).isEqualTo(5000L);
     }
 
+    @Test
+    public void shouldMapLandlordDetails() {
+        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
+        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
+        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
+
+        AddressEntity landlordAddress = AddressEntity.builder()
+            .addressLine1("1 Landlord Way")
+            .addressLine2("Somewhere")
+            .postTown("London")
+            .county("Greater London")
+            .postcode("SW1 1AA")
+            .build();
+
+        CasePartyEntity landlordParty = CasePartyEntity.builder()
+            .firstName("Lord")
+            .lastName("Landlord")
+            .organisationName("Landlord Estates")
+            .emailAddress("landlord@example.com")
+            .phoneNumber("0123456789")
+            .referenceNumber("LL01")
+            .role(landlordRole)
+            .addresses(List.of(landlordAddress))
+            .build();
+
+        CasePartyEntity agentParty = CasePartyEntity.builder()
+            .firstName("Agent")
+            .lastName("Smith")
+            .role(agentRole)
+            .addresses(Collections.emptyList())
+            .build();
+
+        CasePartyEntity repParty = CasePartyEntity.builder()
+            .firstName("Rep")
+            .lastName("Jones")
+            .role(repRole)
+            .addresses(Collections.emptyList())
+            .build();
+
+        CasePartyEntity partyWithoutRole = CasePartyEntity.builder()
+            .firstName("NoRole")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .landlordType(LandlordRepresentativeType.LETTING_AGENT)
+            .parties(List.of(partyWithoutRole, landlordParty, agentParty, repParty))
+            .build();
+
+        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlord()).isNotNull();
+        assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
+        assertThat(result.getLandlord().getAddressLine1()).isEqualTo("1 Landlord Way");
+        assertThat(result.getLettingAgent()).isNotNull();
+        assertThat(result.getLettingAgent().getFirstName()).isEqualTo("Agent");
+        assertThat(result.getRepresentative()).isNotNull();
+        assertThat(result.getRepresentative().getFirstName()).isEqualTo("Rep");
+        assertThat(result.getLandlordRepresentativeType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
+    }
+
+    @Test
+    public void shouldMapLandlordDetailsWhenPartiesEmpty() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(Collections.emptyList())
+            .build();
+
+        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlord()).isNull();
+        assertThat(result.getLettingAgent()).isNull();
+        assertThat(result.getRepresentative()).isNull();
+        assertThat(result.getLandlordRepresentativeType()).isNull();
+    }
+
+    @Test
+    public void shouldMapPartyWhenEntityNull() {
+        assertThat(ApplicationMapper.mapParty(null)).isNull();
+    }
+
+    @Test
+    public void shouldInvokePrivateConstructor() throws Exception {
+        Constructor<ApplicationMapper> constructor = ApplicationMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        ApplicationMapper instance = constructor.newInstance();
+        assertThat(instance).isNotNull();
+    }
+
     private static List<AddressEntity> addresses(String postcode) {
         return List.of(AddressEntity.builder()
             .addressLine1("123 Test St")
@@ -616,11 +974,21 @@ public class ApplicationMapperTest {
     }
 
     private static List<TenancyDetailsEntity> tenancyDetails(TenancyType tenancyType) {
-        return List.of(TenancyDetailsEntity.builder().tenancyType(tenancyType).build());
+        return List.of(TenancyDetailsEntity.builder()
+            .tenancyType(tenancyType)
+            .copyOfTenancyAgreement(YesOrNo.YES)
+            .noTenancyAgreementReason("No agreement reason")
+            .build());
     }
 
     private static List<MarketRentCaseEntity> marketRentCases() {
-        return List.of(MarketRentCaseEntity.builder().typeOfPropertyRenting(PropertyType.TERRACED_HOUSE).build());
+        return List.of(MarketRentCaseEntity.builder()
+            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
+            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
+            .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
+            .build());
     }
 
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
@@ -636,6 +1004,16 @@ public class ApplicationMapperTest {
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .marketRentCases(marketRentCases())
+            .documents(List.of(
+                DocumentEntity.builder()
+                    .documentType(DocumentType.TENANCY_AGREEMENT)
+                    .url("http://dm-store/doc/tenancy-agreement")
+                    .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+                    .fileName("tenancy-agreement.pdf")
+                    .contentType("application/pdf")
+                    .size(2048L)
+                    .build()
+            ))
             .build();
     }
 

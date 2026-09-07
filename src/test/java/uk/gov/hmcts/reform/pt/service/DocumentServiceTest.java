@@ -9,8 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -291,9 +293,111 @@ class DocumentServiceTest {
         List<DocumentEntity> savedDocs = captor.getAllValues();
         assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
             .containsExactlyInAnyOrder(
-                DocumentType.FLOOR_PLAN,
+                DocumentType.PROPERTY_FLOOR_PLAN,
                 DocumentType.OUTSIDE_PROPERTY,
-                DocumentType.REPAIRS_EVIDENCE,
+                DocumentType.TENANT_REPAIRS_EVIDENCE,
                 DocumentType.PROPERTY_ROOMS);
+    }
+
+    @Test
+    @DisplayName("Should update document for market rent details when evidence document is present")
+    void updateDocumentsForMarketRentDetailsUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument rentDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/market-rent").filename("market-rent.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(500L)
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .suggestedMarketRentEvidence(rentDoc)
+            .build();
+
+        documentService.updateDocumentsForMarketRentDetails(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
+        assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
+    }
+
+    @Test
+    @DisplayName("Should delete document for market rent details when evidence document is null and existing exists")
+    void updateDocumentsForMarketRentDetailsDeletesDocumentWhenNull() {
+        DocumentEntity existing = DocumentEntity.builder()
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
+            .url("http://dm-store/documents/existing-rent")
+            .fileName("existing-rent.pdf")
+            .build();
+
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(List.of(existing))
+            .build();
+
+        MarketRentDetails details = MarketRentDetails.builder()
+            .suggestedMarketRentEvidence(null)
+            .build();
+
+        documentService.updateDocumentsForMarketRentDetails(details, ptCase);
+
+        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should update document for tenancy agreement details when evidence document is present")
+    void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument agreementDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/tenancy-agreement").filename("agreement.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(1024L)
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .tenancyAgreementDocument(agreementDoc)
+            .build();
+
+        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANCY_AGREEMENT);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy-agreement");
+        assertThat(savedDoc.getFileName()).isEqualTo("agreement.pdf");
+    }
+
+    @Test
+    @DisplayName("Should delete tenancy agreement document when evidence is null and existing exists")
+    void updateDocumentsForTenancyAgreementDetailsDeletesDocumentWhenNull() {
+        DocumentEntity existing = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/documents/existing-agreement")
+            .fileName("existing-agreement.pdf")
+            .build();
+
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(List.of(existing))
+            .build();
+
+        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+            .tenancyAgreementDocument(null)
+            .build();
+
+        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
+
+        verify(documentRepository).delete(existing);
+        verify(documentRepository, never()).save(any());
     }
 }
