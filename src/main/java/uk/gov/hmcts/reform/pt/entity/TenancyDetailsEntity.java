@@ -89,6 +89,13 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 30)
     private String previousTribunalCaseReference;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo copyOfTenancyAgreement;
+
+    @Column(length = 500)
+    private String noTenancyAgreementReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference

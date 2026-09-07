@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.NoticeOfRentChangeRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
+
 @Service
 @RequiredArgsConstructor
 public class NoticeOfRentChangeService {
@@ -19,11 +21,17 @@ public class NoticeOfRentChangeService {
             .findFirst()
             .orElse(new NoticeOfRentChangeEntity());
 
-        entity.setReceivedLandlordNoticeProposingNewRent(details.getReceivedLandlordNoticeProposingNewRent());
-        entity.setNoUploadOfNoticeProposingNewRentReason(details.getNoUploadOfNoticeProposingNewRentReason());
-        entity.setNoticeLegallyValid(details.getNoticeLegallyValid());
-        entity.setNoticeNotLegallyValidDetails(details.getNoticeNotLegallyValidDetails());
-        entity.setRentIncreaseToCauseHardship(details.getRentIncreaseToCauseHardship());
+        setIfNotNull(
+            details.getReceivedLandlordNoticeProposingNewRent(),
+            entity::setReceivedLandlordNoticeProposingNewRent
+        );
+        setIfNotNull(
+            details.getNoUploadOfNoticeProposingNewRentReason(),
+            entity::setNoUploadOfNoticeProposingNewRentReason
+        );
+        setIfNotNull(details.getNoticeLegallyValid(), entity::setNoticeLegallyValid);
+        setIfNotNull(details.getNoticeNotLegallyValidDetails(), entity::setNoticeNotLegallyValidDetails);
+        setIfNotNull(details.getRentIncreaseToCauseHardship(), entity::setRentIncreaseToCauseHardship);
         entity.setPtCase(ptCaseEntity);
 
         noticeOfRentChangeRepository.save(entity);
