@@ -169,7 +169,7 @@ public class TenancyDetailsServiceTest {
             .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
             .originalTenancyStartDate(originalStartDate)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .additionalRentalVaryingServiceChargesDetails("Charge details")
+            .varyingAdditionalRentalServiceChangesDetails("Charge details")
             .build();
 
         tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);

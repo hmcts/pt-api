@@ -241,8 +241,8 @@ public class ApplicationMapper {
             .currentTenancyReplaceOriginalTenancy(tenancyDetails.getCurrentTenancyReplaceOriginalTenancy())
             .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
             .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
-            .additionalRentalVaryingServiceChargesDetails(
-                marketRentCase.getAdditionalRentalVaryingServiceChargesDetails())
+            .varyingAdditionalRentalServiceChangesDetails(
+                marketRentCase.getVaryingAdditionalRentalServiceChangesDetails())
             .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
             .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())
             .build();
@@ -347,7 +347,7 @@ public class ApplicationMapper {
             .findFirst()
             .orElse(null);
     }
-  
+
     private static <T, R> R get(T source, Function<T, R> getter) {
         return source == null ? null : getter.apply(source);
     }

@@ -1,0 +1,2 @@
+ALTER TABLE market_rent_case
+  RENAME COLUMN additional_rental_varying_service_charges_details TO varying_additional_rental_service_charges_details;
