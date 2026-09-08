@@ -6,16 +6,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EventId {
-    // Test Events
     CREATE_TEST_CASE("create-test-case", "Create Test Case"),
     CHANGE_TEST_CASE_STATE("change-test-case-state", "Change Test Case State"),
 
-    // Citizen Events
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+    CITIZEN_UPLOAD_DOCUMENT("citizen-upload-document", "Citizen Upload Document"),
+    CITIZEN_DELETE_DOCUMENT("citizen-delete-document", "Citizen Delete Document"),
 
-    // Manage Case Events
     CREATE_DRAFT_CASE("create-draft-case", "Case: Create Draft Case"),
     DELETE_DRAFT_CASE("delete-draft-case", "Case: Delete Draft Case"),
     SYSTEM_DISCARD_DRAFT_CASE("system-discard-draft-case", "Case: Discard Draft Case"),
