@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -75,6 +76,7 @@ class IdamAuthenticationFilterTest {
     @Test
     void doFilterInternalShouldSetAuthenticationAndContinueChainWhenTokenValid() throws Exception {
         User user = mock(User.class);
+        when(user.getUserDetails()).thenReturn(UserInfo.builder().roles(emptyList()).build());
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(BEARER_TOKEN);
         when(idamAuthenticator.validateAuthToken(BEARER_TOKEN)).thenReturn(user);
 

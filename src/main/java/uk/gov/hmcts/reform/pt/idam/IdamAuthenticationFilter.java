@@ -9,20 +9,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
 public class IdamAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> FILTER_PATHS = List.of("/ccd", "/callbacks");
+    private static final List<String> FILTER_PATHS = List.of("/ccd", "/callbacks", "/testing-support");
 
     private final IdamAuthenticator idamAuthenticator;
 
@@ -44,8 +45,15 @@ public class IdamAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             User user = idamAuthenticator.validateAuthToken(authToken);
+
+            List<SimpleGrantedAuthority> authorities = Optional.ofNullable(user.getUserDetails().getRoles())
+                .orElseGet(List::of)
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+
             Authentication authentication =
-                new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                new UsernamePasswordAuthenticationToken(user, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (InvalidAuthTokenException ex) {
