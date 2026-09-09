@@ -45,15 +45,8 @@ public class IdamAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             User user = idamAuthenticator.validateAuthToken(authToken);
-
-            List<SimpleGrantedAuthority> authorities = Optional.ofNullable(user.getUserDetails().getRoles())
-                .orElseGet(List::of)
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
             Authentication authentication =
-                new UsernamePasswordAuthenticationToken(user, null, authorities);
+                new UsernamePasswordAuthenticationToken(user, null, authorities(user));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (InvalidAuthTokenException ex) {
@@ -62,4 +55,12 @@ public class IdamAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
+    private static List<SimpleGrantedAuthority> authorities(User user) {
+        return Optional.ofNullable(user.getUserDetails())
+            .map(UserInfo::getRoles)
+            .orElseGet(List::of)
+            .stream()
+            .map(SimpleGrantedAuthority::new)
+            .toList();
+    }
 }

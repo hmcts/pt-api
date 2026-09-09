@@ -14,10 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
 
-import static java.util.Collections.emptyList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,6 +31,8 @@ import static org.mockito.Mockito.when;
 class IdamAuthenticationFilterTest {
 
     private static final String BEARER_TOKEN = "Bearer valid-token";
+    private static final String SYSTEM_USER_ROLE = "pt-system-update";
+    private static final String CITIZEN_ROLE = "citizen";
 
     @Mock
     private IdamAuthenticator idamAuthenticator;
@@ -54,7 +58,8 @@ class IdamAuthenticationFilterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/ccd", "/ccd/cases", "/callbacks", "/callbacks/mid-event"})
+    @ValueSource(strings = {"/ccd", "/ccd/cases", "/callbacks", "/callbacks/mid-event",
+        "/testing-support", "/testing-support/cases/1234567890123456"})
     void shouldFilterForSpecificRequestPaths(String requestURI) {
         when(request.getRequestURI()).thenReturn(requestURI);
 
@@ -76,7 +81,8 @@ class IdamAuthenticationFilterTest {
     @Test
     void doFilterInternalShouldSetAuthenticationAndContinueChainWhenTokenValid() throws Exception {
         User user = mock(User.class);
-        when(user.getUserDetails()).thenReturn(UserInfo.builder().roles(emptyList()).build());
+        when(user.getUserDetails())
+            .thenReturn(UserInfo.builder().roles(List.of(SYSTEM_USER_ROLE, CITIZEN_ROLE)).build());
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(BEARER_TOKEN);
         when(idamAuthenticator.validateAuthToken(BEARER_TOKEN)).thenReturn(user);
 
@@ -85,6 +91,38 @@ class IdamAuthenticationFilterTest {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertThat(auth).isNotNull();
         assertThat(auth.getPrincipal()).isSameAs(user);
+        assertThat(auth.getAuthorities())
+            .extracting(GrantedAuthority::getAuthority)
+            .containsExactlyInAnyOrder(SYSTEM_USER_ROLE, CITIZEN_ROLE);
+        verify(filterChain).doFilter(request, response);
+        verify(response, never()).setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void doFilterInternalShouldGrantNoAuthoritiesWhenRolesAreNull() throws Exception {
+        User user = mock(User.class);
+        when(user.getUserDetails()).thenReturn(UserInfo.builder().build());
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(BEARER_TOKEN);
+        when(idamAuthenticator.validateAuthToken(BEARER_TOKEN)).thenReturn(user);
+
+        underTest.doFilterInternal(request, response, filterChain);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        assertThat(auth.getAuthorities()).isEmpty();
+        verify(filterChain).doFilter(request, response);
+        verify(response, never()).setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void doFilterInternalShouldGrantNoAuthoritiesWhenUserDetailsAreNull() throws Exception {
+        User user = mock(User.class);
+        when(user.getUserDetails()).thenReturn(null);
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(BEARER_TOKEN);
+        when(idamAuthenticator.validateAuthToken(BEARER_TOKEN)).thenReturn(user);
+
+        underTest.doFilterInternal(request, response, filterChain);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertThat(auth.getAuthorities()).isEmpty();
         verify(filterChain).doFilter(request, response);
         verify(response, never()).setStatus(HttpStatus.UNAUTHORIZED.value());
