@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +29,6 @@ public class NoticeOfRentIncreaseDetails {
         label = "Landlord notice proposing new rent",
         access = {CitizenAccess.class}
     )
-    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument landlordNoticeProposingNewRentDocument;
 
     @CCD(
@@ -49,7 +47,6 @@ public class NoticeOfRentIncreaseDetails {
         label = "Notice for not legally valid document",
         access = {CitizenAccess.class}
     )
-    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument noticeNotLegallyValidDocument;
 
     @CCD(
@@ -62,6 +59,5 @@ public class NoticeOfRentIncreaseDetails {
         label = "Rent increase to cause hardship document",
         access = {CitizenAccess.class}
     )
-    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument rentIncreaseToCauseHardshipDocument;
 }
