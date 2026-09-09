@@ -277,7 +277,7 @@ public class ApplicationMapper {
         return TenancyAgreementDto.builder()
             .copyOfTenancyAgreement(tenancyDetails.getCopyOfTenancyAgreement())
             .noTenancyAgreementReason(tenancyDetails.getNoTenancyAgreementReason())
-            .tenancyAgreementEvidence(
+            .tenancyAgreementDocument(
                 findDocumentOfType(DocumentType.TENANCY_AGREEMENT, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))

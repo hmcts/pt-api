@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class TenancyAgreementDetails {
         label = "Tenancy agreement document",
         access = {CitizenAccess.class}
     )
+    @JsonDeserialize(using = UploadedDocumentDeserializer.class)
     private UploadedDocument tenancyAgreementDocument;
 }
