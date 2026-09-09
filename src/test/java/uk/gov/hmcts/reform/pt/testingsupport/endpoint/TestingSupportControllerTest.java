@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.TestPropertySource;
@@ -25,6 +24,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,7 +48,6 @@ class TestingSupportControllerTest {
         @SuppressWarnings("PMD.SignatureDeclareThrowsException")
         SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
             return http
-                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .build();
         }
@@ -68,7 +67,7 @@ class TestingSupportControllerTest {
     void shouldDeleteCaseAndReturnNoContentForSystemUser() throws Exception {
         doNothing().when(ptCaseService).deleteCase(CASE_REFERENCE);
 
-        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE))
+        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE).with(csrf()))
             .andExpect(status().isNoContent());
 
         verify(ptCaseService).deleteCase(CASE_REFERENCE);
@@ -79,7 +78,7 @@ class TestingSupportControllerTest {
     void shouldReturnNotFoundWhenCaseDoesNotExist() throws Exception {
         doThrow(new CaseNotFoundException(CASE_REFERENCE)).when(ptCaseService).deleteCase(CASE_REFERENCE);
 
-        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE))
+        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE).with(csrf()))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("No case found with reference " + CASE_REFERENCE));
 
@@ -89,7 +88,7 @@ class TestingSupportControllerTest {
     @Test
     @WithMockUser(authorities = CITIZEN_ROLE)
     void shouldReturnForbiddenForNonSystemUser() throws Exception {
-        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE))
+        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE).with(csrf()))
             .andExpect(status().isForbidden());
 
         verify(ptCaseService, never()).deleteCase(anyLong());
@@ -97,7 +96,7 @@ class TestingSupportControllerTest {
 
     @Test
     void shouldReturnForbiddenWhenUnauthenticated() throws Exception {
-        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE))
+        mockMvc.perform(delete("/testing-support/cases/{caseReference}", CASE_REFERENCE).with(csrf()))
             .andExpect(status().isForbidden());
 
         verify(ptCaseService, never()).deleteCase(anyLong());
