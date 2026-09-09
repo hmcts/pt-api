@@ -705,7 +705,7 @@ public class ApplicationMapperTest {
             .utilitiesCostYearly(new BigDecimal("720.00"))
             .utilitiesFrequencyAndCostDetails("Utilities details")
             .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .varyingAdditionalRentalServiceChangesDetails("Service charge details")
+            .varyingAdditionalRentalServiceChargesDetails("Service charge details")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()

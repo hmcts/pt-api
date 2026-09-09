@@ -242,7 +242,7 @@ public class ApplicationMapper {
             .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
             .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
             .varyingAdditionalRentalServiceChargesDetails(
-                marketRentCase.getVaryingAdditionalRentalServiceChangesDetails())
+                marketRentCase.getVaryingAdditionalRentalServiceChargesDetails())
             .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
             .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())
             .build();
