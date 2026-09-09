@@ -741,7 +741,7 @@ public class ApplicationMapperTest {
         assertThat(result.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
         assertThat(result.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
         assertThat(result.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
-        assertThat(result.getVaryingAdditionalRentalServiceChangesDetails()).isEqualTo("Service charge details");
+        assertThat(result.getVaryingAdditionalRentalServiceChargesDetails()).isEqualTo("Service charge details");
     }
 
     @Test

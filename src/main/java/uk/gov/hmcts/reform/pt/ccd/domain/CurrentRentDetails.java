@@ -173,7 +173,7 @@ public class CurrentRentDetails {
         label = "Additional charges vary details",
         access = {CitizenAccess.class}
     )
-    private String varyingAdditionalRentalServiceChangesDetails;
+    private String varyingAdditionalRentalServiceChargesDetails;
 
     @CCD(
         label = "Any other charges",

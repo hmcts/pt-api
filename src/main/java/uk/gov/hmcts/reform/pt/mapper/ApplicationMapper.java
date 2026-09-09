@@ -241,7 +241,7 @@ public class ApplicationMapper {
             .currentTenancyReplaceOriginalTenancy(tenancyDetails.getCurrentTenancyReplaceOriginalTenancy())
             .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
             .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
-            .varyingAdditionalRentalServiceChangesDetails(
+            .varyingAdditionalRentalServiceChargesDetails(
                 marketRentCase.getVaryingAdditionalRentalServiceChangesDetails())
             .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
             .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())

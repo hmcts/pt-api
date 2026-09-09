@@ -90,7 +90,7 @@ public class TenancyDetailsService {
             tenancyDetails::setAdditionalServicesProvidedInTenancy
         );
         setIfNotNull(
-            details.getVaryingAdditionalRentalServiceChangesDetails(),
+            details.getVaryingAdditionalRentalServiceChargesDetails(),
             tenancyDetails::setAdditionalServicesProvidedInTenancyDetails
         );
 
