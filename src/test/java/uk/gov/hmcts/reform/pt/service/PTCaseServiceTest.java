@@ -673,6 +673,22 @@ class PTCaseServiceTest {
     }
 
     @Test
+    @DisplayName("Should upsert tenancy agreement documents without touching the case party")
+    void shouldUpdateTenancyAgreementDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
+        PTCase ptCase = PTCase.builder().tenancyAgreementDetails(tenancyAgreementDetails).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("Should never delete a document while updating the case")
     void updateShouldNeverDeleteDocuments() {
         long caseReference = 1234567890123456L;
