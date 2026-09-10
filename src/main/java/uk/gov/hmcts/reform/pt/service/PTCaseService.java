@@ -106,6 +106,11 @@ public class PTCaseService {
         if (noticeOfRentIncreaseDetails != null) {
             documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
         }
+
+        TenancyAgreementDetails tenancyAgreementDetails = ptCase.getTenancyAgreementDetails();
+        if (tenancyAgreementDetails != null) {
+            documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+        }
     }
 
     @Transactional
