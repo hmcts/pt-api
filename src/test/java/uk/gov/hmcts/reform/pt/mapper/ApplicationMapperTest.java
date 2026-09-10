@@ -120,8 +120,8 @@ public class ApplicationMapperTest {
         assertThat(tenancyAgreementDetails).isNotNull();
         assertThat(tenancyAgreementDetails.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
         assertThat(tenancyAgreementDetails.getNoTenancyAgreementReason()).isEqualTo("No agreement reason");
-        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence()).isNotNull();
-        assertThat(tenancyAgreementDetails.getTenancyAgreementEvidence().getUrl())
+        assertThat(tenancyAgreementDetails.getTenancyAgreementDocument()).isNotNull();
+        assertThat(tenancyAgreementDetails.getTenancyAgreementDocument().getUrl())
             .isEqualTo("http://dm-store/doc/tenancy-agreement");
     }
 
@@ -869,13 +869,13 @@ public class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
         assertThat(result.getNoTenancyAgreementReason()).isEqualTo("Reason");
-        assertThat(result.getTenancyAgreementEvidence()).isNotNull();
-        assertThat(result.getTenancyAgreementEvidence().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
-        assertThat(result.getTenancyAgreementEvidence().getBinaryUrl())
+        assertThat(result.getTenancyAgreementDocument()).isNotNull();
+        assertThat(result.getTenancyAgreementDocument().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
             .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
-        assertThat(result.getTenancyAgreementEvidence().getFilename()).isEqualTo("tenancy-agreement.pdf");
-        assertThat(result.getTenancyAgreementEvidence().getContentType()).isEqualTo("application/pdf");
-        assertThat(result.getTenancyAgreementEvidence().getSize()).isEqualTo(2048L);
+        assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
     @Test
@@ -918,7 +918,7 @@ public class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
         assertThat(result.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
-        assertThat(result.getTenancyAgreementEvidence()).isNull();
+        assertThat(result.getTenancyAgreementDocument()).isNull();
     }
 
     @Test
