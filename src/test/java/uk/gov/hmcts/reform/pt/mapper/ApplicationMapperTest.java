@@ -705,7 +705,7 @@ public class ApplicationMapperTest {
             .utilitiesCostYearly(new BigDecimal("720.00"))
             .utilitiesFrequencyAndCostDetails("Utilities details")
             .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .additionalRentalVaryingServiceChargesDetails("Service charge details")
+            .varyingAdditionalRentalServiceChargesDetails("Service charge details")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -741,7 +741,7 @@ public class ApplicationMapperTest {
         assertThat(result.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
         assertThat(result.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
         assertThat(result.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
-        assertThat(result.getAdditionalRentalVaryingServiceChargesDetails()).isEqualTo("Service charge details");
+        assertThat(result.getVaryingAdditionalRentalServiceChargesDetails()).isEqualTo("Service charge details");
     }
 
     @Test

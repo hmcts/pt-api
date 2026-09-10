@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UploadedDocumentDeserializerTest {
+class CaseDocumentBindingTest {
 
     private final ObjectMapper mapper = new ObjectMapper()
         .registerModule(new ParameterNamesModule())
@@ -29,7 +29,7 @@ class UploadedDocumentDeserializerTest {
     }
 
     @Test
-    @DisplayName("Should read back a document held in a @JsonUnwrapped slice")
+    @DisplayName("Should read back a document held in a slice")
     void shouldRoundTripADocumentInsideAnUnwrappedSlice() throws Exception {
         PTCase original = PTCase.builder()
             .propertyDetails(PropertyDetails.builder()

@@ -42,7 +42,7 @@ public class CurrentRentsDetailsDto {
     private LocalDateTime originalTenancyStartDate;
 
     private YesOrNo additionalRentalServiceChargesVary;
-    private String additionalRentalVaryingServiceChargesDetails;
+    private String varyingAdditionalRentalServiceChargesDetails;
 
     private YesOrNo anyOtherHouseholdManagementCharges;
     private String otherHouseholdManagementChargesDetails;
