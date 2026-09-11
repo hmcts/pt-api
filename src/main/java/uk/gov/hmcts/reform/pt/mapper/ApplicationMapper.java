@@ -240,6 +240,7 @@ public class ApplicationMapper {
             .utilitiesCostYearly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostYearly))
             .utilitiesPaidFrequencyAndCostDetails(
                 get(marketRentCase, MarketRentCaseEntity::getUtilitiesFrequencyAndCostDetails))
+            .rentInclusiveOfUtilityCharges(get(marketRentCase, MarketRentCaseEntity::getRentInclusiveOfUtilityCharges))
             .currentTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyStartDate))
             .currentTenancyEndDate(get(tenancyDetails, TenancyDetailsEntity::getTenancyEndDate))
             .currentTenancyReplaceOriginalTenancy(

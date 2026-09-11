@@ -137,6 +137,12 @@ public class CurrentRentDetails {
     private String utilitiesPaidFrequencyAndCostDetails;
 
     @CCD(
+        label = "Does rent include utility charges",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo rentInclusiveOfUtilityCharges;
+
+    @CCD(
         label = "Current tenancy start date",
         access = {CitizenAccess.class}
     )

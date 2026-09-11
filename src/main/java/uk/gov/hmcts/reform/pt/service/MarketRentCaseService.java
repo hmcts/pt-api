@@ -81,6 +81,10 @@ public class MarketRentCaseService {
             marketRentCase::setUtilitiesFrequencyAndCostDetails
         );
         setIfNotNull(
+            details.getRentInclusiveOfUtilityCharges(),
+            marketRentCase::setRentInclusiveOfUtilityCharges
+        );
+        setIfNotNull(
             details.getAnyOtherHouseholdManagementCharges(),
             marketRentCase::setOtherHouseholdManagementCharges
         );

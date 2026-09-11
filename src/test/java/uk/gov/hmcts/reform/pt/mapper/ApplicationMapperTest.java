@@ -704,6 +704,7 @@ public class ApplicationMapperTest {
             .utilitiesCostMonthly(new BigDecimal("60.00"))
             .utilitiesCostYearly(new BigDecimal("720.00"))
             .utilitiesFrequencyAndCostDetails("Utilities details")
+            .rentInclusiveOfUtilityCharges(YesOrNo.YES)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
             .varyingAdditionalRentalServiceChargesDetails("Service charge details")
             .build();
@@ -736,6 +737,7 @@ public class ApplicationMapperTest {
         assertThat(result.getUtilitiesCostMonthly()).isEqualTo(new BigDecimal("60.00"));
         assertThat(result.getUtilitiesCostYearly()).isEqualTo(new BigDecimal("720.00"));
         assertThat(result.getUtilitiesPaidFrequencyAndCostDetails()).isEqualTo("Utilities details");
+        assertThat(result.getRentInclusiveOfUtilityCharges()).isEqualTo(YesOrNo.YES);
         assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
         assertThat(result.getCurrentTenancyEndDate()).isEqualTo(endDate);
         assertThat(result.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
