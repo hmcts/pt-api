@@ -211,40 +211,48 @@ public class ApplicationMapper {
         TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
 
-        if (tenancyDetails == null || marketRentCase == null) {
+        if (tenancyDetails == null && marketRentCase == null) {
             return null;
         }
 
         return CurrentRentsDetailsDto.builder()
-            .tribunalPreviouslyDeterminedTenancyRent(tenancyDetails.getTribunalPreviouslyDeterminedTenancyRent())
-            .previousTribunalCaseReference(tenancyDetails.getPreviousTribunalCaseReference())
-            .rentPaymentFrequency(marketRentCase.getRentPaymentFrequency())
-            .rentCostWeekly(marketRentCase.getRentCostWeekly())
-            .rentCostFortnightly(marketRentCase.getRentCostFortnightly())
-            .rentCostMonthly(marketRentCase.getRentCostMonthly())
-            .rentCostYearly(marketRentCase.getRentCostYearly())
-            .rentIncludesCouncilTax(marketRentCase.getRentIncludesCouncilTax())
-            .councilTaxFrequency(marketRentCase.getCouncilTaxFrequency())
-            .councilTaxCostWeekly(marketRentCase.getCouncilTaxCostWeekly())
-            .councilTaxCostFortnightly(marketRentCase.getCouncilTaxCostFortnightly())
-            .councilTaxCostMonthly(marketRentCase.getCouncilTaxCostMonthly())
-            .councilTaxCostYearly(marketRentCase.getCouncilTaxCostYearly())
-            .councilTaxFrequencyAndCostDetails(marketRentCase.getCouncilTaxFrequencyAndCostDetails())
-            .utilitiesPaidFrequency(marketRentCase.getUtilitiesPaidFrequency())
-            .utilitiesCostWeekly(marketRentCase.getUtilitiesCostWeekly())
-            .utilitiesCostFortnightly(marketRentCase.getUtilitiesCostFortnightly())
-            .utilitiesCostMonthly(marketRentCase.getUtilitiesCostMonthly())
-            .utilitiesCostYearly(marketRentCase.getUtilitiesCostYearly())
-            .utilitiesPaidFrequencyAndCostDetails(marketRentCase.getUtilitiesFrequencyAndCostDetails())
-            .currentTenancyStartDate(tenancyDetails.getCurrentTenancyStartDate())
-            .currentTenancyEndDate(tenancyDetails.getTenancyEndDate())
-            .currentTenancyReplaceOriginalTenancy(tenancyDetails.getCurrentTenancyReplaceOriginalTenancy())
-            .originalTenancyStartDate(tenancyDetails.getOriginalTenancyStartDate())
-            .additionalRentalServiceChargesVary(marketRentCase.getAdditionalRentalServiceChargesVary())
+            .tribunalPreviouslyDeterminedTenancyRent(
+                get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
+            .previousTribunalCaseReference(
+                get(tenancyDetails, TenancyDetailsEntity::getPreviousTribunalCaseReference))
+            .rentPaymentFrequency(get(marketRentCase, MarketRentCaseEntity::getRentPaymentFrequency))
+            .rentCostWeekly(get(marketRentCase, MarketRentCaseEntity::getRentCostWeekly))
+            .rentCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getRentCostFortnightly))
+            .rentCostMonthly(get(marketRentCase, MarketRentCaseEntity::getRentCostMonthly))
+            .rentCostYearly(get(marketRentCase, MarketRentCaseEntity::getRentCostYearly))
+            .rentIncludesCouncilTax(get(marketRentCase, MarketRentCaseEntity::getRentIncludesCouncilTax))
+            .councilTaxFrequency(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequency))
+            .councilTaxCostWeekly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostWeekly))
+            .councilTaxCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostFortnightly))
+            .councilTaxCostMonthly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostMonthly))
+            .councilTaxCostYearly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostYearly))
+            .councilTaxFrequencyAndCostDetails(
+                get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequencyAndCostDetails))
+            .utilitiesPaidFrequency(get(marketRentCase, MarketRentCaseEntity::getUtilitiesPaidFrequency))
+            .utilitiesCostWeekly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostWeekly))
+            .utilitiesCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostFortnightly))
+            .utilitiesCostMonthly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostMonthly))
+            .utilitiesCostYearly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostYearly))
+            .utilitiesPaidFrequencyAndCostDetails(
+                get(marketRentCase, MarketRentCaseEntity::getUtilitiesFrequencyAndCostDetails))
+            .currentTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyStartDate))
+            .currentTenancyEndDate(get(tenancyDetails, TenancyDetailsEntity::getTenancyEndDate))
+            .currentTenancyReplaceOriginalTenancy(
+                get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyReplaceOriginalTenancy))
+            .originalTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getOriginalTenancyStartDate))
+            .additionalRentalServiceChargesVary(
+                get(marketRentCase, MarketRentCaseEntity::getAdditionalRentalServiceChargesVary))
             .varyingAdditionalRentalServiceChargesDetails(
-                marketRentCase.getVaryingAdditionalRentalServiceChargesDetails())
-            .anyOtherHouseholdManagementCharges(marketRentCase.getOtherHouseholdManagementCharges())
-            .otherHouseholdManagementChargesDetails(marketRentCase.getOtherHouseholdManagementChargesDetails())
+                get(marketRentCase, MarketRentCaseEntity::getVaryingAdditionalRentalServiceChargesDetails))
+            .anyOtherHouseholdManagementCharges(
+                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
+            .otherHouseholdManagementChargesDetails(
+                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
             .build();
     }
 
@@ -255,16 +263,19 @@ public class ApplicationMapper {
         }
 
         return MarketRentDto.builder()
-            .applicantSuggestedMonthlyMarketRent(marketRentCase.getApplicantSuggestedMonthlyMarketRent())
-            .applicantSuggestedMonthlyMarketRentReasons(marketRentCase.getApplicantSuggestedMonthlyMarketRentReasons())
+            .applicantSuggestedMonthlyMarketRent(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRent))
+            .applicantSuggestedMonthlyMarketRentReasons(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRentReasons))
             .suggestedMarketRentEvidence(
                 findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
                     .orElse(null))
             .additionalPropertyInfoToConsiderWhenDetermining(
-                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRent())
+                get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
-                marketRentCase.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
+                get(marketRentCase,
+                    MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails))
             .build();
     }
 
@@ -275,8 +286,8 @@ public class ApplicationMapper {
         }
 
         return TenancyAgreementDto.builder()
-            .copyOfTenancyAgreement(tenancyDetails.getCopyOfTenancyAgreement())
-            .noTenancyAgreementReason(tenancyDetails.getNoTenancyAgreementReason())
+            .copyOfTenancyAgreement(get(tenancyDetails, TenancyDetailsEntity::getCopyOfTenancyAgreement))
+            .noTenancyAgreementReason(get(tenancyDetails, TenancyDetailsEntity::getNoTenancyAgreementReason))
             .tenancyAgreementEvidence(
                 findDocumentOfType(DocumentType.TENANCY_AGREEMENT, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)

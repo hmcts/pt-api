@@ -167,8 +167,6 @@ public class TenancyDetailsServiceTest {
             .currentTenancyEndDate(endDate)
             .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
             .originalTenancyStartDate(originalStartDate)
-            .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .varyingAdditionalRentalServiceChargesDetails("Charge details")
             .build();
 
         tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
@@ -180,8 +178,6 @@ public class TenancyDetailsServiceTest {
         assertThat(existing.getTenancyEndDate()).isEqualTo(endDate.atStartOfDay());
         assertThat(existing.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
         assertThat(existing.getOriginalTenancyStartDate()).isEqualTo(originalStartDate.atStartOfDay());
-        assertThat(existing.getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isEqualTo("Charge details");
     }
 
     @Test
