@@ -49,6 +49,7 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
+        marketRentCase.setPtCase(ptCaseEntity);
         setIfNotNull(details.getRentPaymentFrequency(), marketRentCase::setRentPaymentFrequency);
         setIfNotNull(toBigDecimal(details.getRentCostWeekly()), marketRentCase::setRentCostWeekly);
         setIfNotNull(toBigDecimal(details.getRentCostFortnightly()), marketRentCase::setRentCostFortnightly);
@@ -63,7 +64,6 @@ public class MarketRentCaseService {
         );
         setIfNotNull(toBigDecimal(details.getCouncilTaxCostMonthly()), marketRentCase::setCouncilTaxCostMonthly);
         setIfNotNull(toBigDecimal(details.getCouncilTaxCostYearly()), marketRentCase::setCouncilTaxCostYearly);
-
         setIfNotNull(
             details.getCouncilTaxFrequencyAndCostDetails(),
             marketRentCase::setCouncilTaxFrequencyAndCostDetails
@@ -88,6 +88,14 @@ public class MarketRentCaseService {
             details.getOtherHouseholdManagementChargesDetails(),
             marketRentCase::setOtherHouseholdManagementChargesDetails
         );
+        setIfNotNull(
+            details.getAdditionalRentalServiceChargesVary(),
+            marketRentCase::setAdditionalRentalServiceChargesVary
+        );
+        setIfNotNull(
+            details.getVaryingAdditionalRentalServiceChargesDetails(),
+            marketRentCase::setVaryingAdditionalRentalServiceChargesDetails
+        );
 
         marketRentCaseRepository.save(marketRentCase);
     }
@@ -98,6 +106,8 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
+
+        marketRentCase.setPtCase(ptCaseEntity);
         setIfNotNull(
             toBigDecimal(details.getApplicantSuggestedMonthlyMarketRent()),
             marketRentCase::setApplicantSuggestedMonthlyMarketRent

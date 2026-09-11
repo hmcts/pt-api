@@ -745,21 +745,52 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldReturnNullWhenTenancyDetailsIsNullForCurrentRentDetails() {
+    public void shouldMapCurrentRentDetailsWhenTenancyDetailsIsNull() {
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .rentPaymentFrequency(Frequency.MONTHLY)
+            .rentCostMonthly(new BigDecimal("400.00"))
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(Collections.emptyList())
-            .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
+            .marketRentCases(List.of(marketRentCase))
             .build();
 
         CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
 
-        assertThat(result).isNull();
+        assertThat(result).isNotNull();
+        assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getRentCostMonthly()).isEqualTo(new BigDecimal("400.00"));
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isNull();
+        assertThat(result.getCurrentTenancyStartDate()).isNull();
     }
 
     @Test
-    public void shouldReturnNullWhenMarketRentCaseIsNullForCurrentRentDetails() {
+    public void shouldMapCurrentRentDetailsWhenMarketRentCaseIsNull() {
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
+            .currentTenancyStartDate(startDate)
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(result.getRentPaymentFrequency()).isNull();
+        assertThat(result.getRentCostMonthly()).isNull();
+    }
+
+    @Test
+    public void shouldReturnNullWhenNoCurrentRentEntitiesExist() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
             .marketRentCases(Collections.emptyList())
             .build();
 

@@ -73,6 +73,7 @@ public class TenancyDetailsService {
             // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
             .orElse(new TenancyDetailsEntity());
 
+        tenancyDetails.setPtCase(ptCaseEntity);
         setIfNotNull(
             details.getTribunalPreviouslyDeterminedTenancyRent(),
             tenancyDetails::setTribunalPreviouslyDeterminedTenancyRent
@@ -85,14 +86,6 @@ public class TenancyDetailsService {
             tenancyDetails::setCurrentTenancyReplaceOriginalTenancy
         );
         setIfNotNull(details.getOriginalTenancyStartDate(), tenancyDetails::setOriginalTenancyStartDate);
-        setIfNotNull(
-            details.getAdditionalRentalServiceChargesVary(),
-            tenancyDetails::setAdditionalServicesProvidedInTenancy
-        );
-        setIfNotNull(
-            details.getVaryingAdditionalRentalServiceChargesDetails(),
-            tenancyDetails::setAdditionalServicesProvidedInTenancyDetails
-        );
 
         tenancyDetailsRepository.save(tenancyDetails);
     }
@@ -104,6 +97,7 @@ public class TenancyDetailsService {
             // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
             .orElse(new TenancyDetailsEntity());
 
+        tenancyDetails.setPtCase(ptCaseEntity);
         setIfNotNull(details.getCopyOfTenancyAgreement(), tenancyDetails::setCopyOfTenancyAgreement);
         setIfNotNull(details.getNoTenancyAgreementReason(), tenancyDetails::setNoTenancyAgreementReason);
 

@@ -120,6 +120,8 @@ class MarketRentCaseServiceTest {
             .utilitiesPaidFrequencyAndCostDetails("Utilities breakdown")
             .anyOtherHouseholdManagementCharges(YesOrNo.YES)
             .otherHouseholdManagementChargesDetails("Other charges")
+            .additionalRentalServiceChargesVary(YesOrNo.YES)
+            .varyingAdditionalRentalServiceChargesDetails("Charge variations")
             .build();
 
         marketRentCaseService.updateWithCurrentRentDetails(ptCase, details);
@@ -145,6 +147,8 @@ class MarketRentCaseServiceTest {
         assertThat(existing.getUtilitiesFrequencyAndCostDetails()).isEqualTo("Utilities breakdown");
         assertThat(existing.getOtherHouseholdManagementCharges()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getOtherHouseholdManagementChargesDetails()).isEqualTo("Other charges");
+        assertThat(existing.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getVaryingAdditionalRentalServiceChargesDetails()).isEqualTo("Charge variations");
     }
 
     @Test
