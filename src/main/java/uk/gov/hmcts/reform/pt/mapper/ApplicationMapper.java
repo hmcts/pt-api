@@ -216,8 +216,10 @@ public class ApplicationMapper {
         }
 
         return CurrentRentsDetailsDto.builder()
-            .tribunalPreviouslyDeterminedTenancyRent(get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
-            .previousTribunalCaseReference(get(tenancyDetails, TenancyDetailsEntity::getPreviousTribunalCaseReference))
+            .tribunalPreviouslyDeterminedTenancyRent(
+                get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
+            .previousTribunalCaseReference(
+                get(tenancyDetails, TenancyDetailsEntity::getPreviousTribunalCaseReference))
             .rentPaymentFrequency(get(marketRentCase, MarketRentCaseEntity::getRentPaymentFrequency))
             .rentCostWeekly(get(marketRentCase, MarketRentCaseEntity::getRentCostWeekly))
             .rentCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getRentCostFortnightly))
@@ -229,22 +231,28 @@ public class ApplicationMapper {
             .councilTaxCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostFortnightly))
             .councilTaxCostMonthly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostMonthly))
             .councilTaxCostYearly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostYearly))
-            .councilTaxFrequencyAndCostDetails(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequencyAndCostDetails))
+            .councilTaxFrequencyAndCostDetails(
+                get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequencyAndCostDetails))
             .utilitiesPaidFrequency(get(marketRentCase, MarketRentCaseEntity::getUtilitiesPaidFrequency))
             .utilitiesCostWeekly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostWeekly))
             .utilitiesCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostFortnightly))
             .utilitiesCostMonthly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostMonthly))
             .utilitiesCostYearly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostYearly))
-            .utilitiesPaidFrequencyAndCostDetails(get(marketRentCase, MarketRentCaseEntity::getUtilitiesFrequencyAndCostDetails))
+            .utilitiesPaidFrequencyAndCostDetails(
+                get(marketRentCase, MarketRentCaseEntity::getUtilitiesFrequencyAndCostDetails))
             .currentTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyStartDate))
             .currentTenancyEndDate(get(tenancyDetails, TenancyDetailsEntity::getTenancyEndDate))
-            .currentTenancyReplaceOriginalTenancy(get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyReplaceOriginalTenancy))
+            .currentTenancyReplaceOriginalTenancy(
+                get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyReplaceOriginalTenancy))
             .originalTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getOriginalTenancyStartDate))
-            .additionalRentalServiceChargesVary(get(marketRentCase, MarketRentCaseEntity::getAdditionalRentalServiceChargesVary))
+            .additionalRentalServiceChargesVary(
+                get(marketRentCase, MarketRentCaseEntity::getAdditionalRentalServiceChargesVary))
             .varyingAdditionalRentalServiceChargesDetails(
                 get(marketRentCase, MarketRentCaseEntity::getVaryingAdditionalRentalServiceChargesDetails))
-            .anyOtherHouseholdManagementCharges(get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
-            .otherHouseholdManagementChargesDetails(get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
+            .anyOtherHouseholdManagementCharges(
+                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
+            .otherHouseholdManagementChargesDetails(
+                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
             .build();
     }
 
@@ -255,8 +263,10 @@ public class ApplicationMapper {
         }
 
         return MarketRentDto.builder()
-            .applicantSuggestedMonthlyMarketRent(get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRent))
-            .applicantSuggestedMonthlyMarketRentReasons(get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRentReasons))
+            .applicantSuggestedMonthlyMarketRent(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRent))
+            .applicantSuggestedMonthlyMarketRentReasons(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRentReasons))
             .suggestedMarketRentEvidence(
                 findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
@@ -264,7 +274,8 @@ public class ApplicationMapper {
             .additionalPropertyInfoToConsiderWhenDetermining(
                 get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
-                get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails))
+                get(marketRentCase,
+                    MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails))
             .build();
     }
 
