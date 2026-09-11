@@ -6,6 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
 import uk.gov.hmcts.reform.pt.functional.config.Endpoints;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
+import uk.gov.hmcts.reform.pt.functional.testutils.JsonAssertUtils;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
 import uk.gov.hmcts.reform.pt.functional.testutils.ServiceAuthenticationGenerator;
 
@@ -13,6 +14,7 @@ import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.annotations.Step;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.citizenUser;
 import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.systemUser;
@@ -121,11 +123,35 @@ public class ApiSteps {
         request = request.pathParam(pathParam, value);
     }
 
+    @Step("the request contains the query parameter {0} as {1}")
+    public void theRequestContainsTheQueryParameter(String queryParam, String value) {
+        request = request.queryParam(queryParam, value);
+    }
+
+    @Step("the request contains an Idempotency-Key header")
+    public void theRequestContainsIdempotencyKeyHeader() {
+        String idempotencyKey = UUID.randomUUID().toString();
+        request = request.header("Idempotency-Key", idempotencyKey);
+    }
+
+    @Step("the request contains a request body")
+    public void theRequestContainsBody(Object body) {
+        request = request.body(body);
+    }
+
     @Step("the response body contains {0} as a string: {1}")
     public void theResponseBodyContainsAString(String attribute, String value) {
         if (response == null) {
             throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
         }
         response.then().assertThat().body(attribute, Matchers.equalTo(value));
+    }
+
+    @Step("the response body matches the expected response")
+    public void theResponseBodyMatchesTheExpectedResponse(String expectedPath) {
+        JsonAssertUtils.assertEqualsIgnoreFields(
+            expectedPath,
+            SerenityRest.lastResponse().getBody().asString()
+        );
     }
 }

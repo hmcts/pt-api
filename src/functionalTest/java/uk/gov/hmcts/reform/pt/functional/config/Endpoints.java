@@ -4,8 +4,8 @@ public enum Endpoints {
 
     Applications("/applications"),
     ReturnApplication("/applications/{caseReference}"),
-    StartEventCallback("/callbacks/about-to-start"),
-    SubmitEventCallback("/ccd-persistence/cases");
+    SubmitEventCallback("/ccd-persistence/cases"),
+    DeleteTestCase("/testing-support/cases/{caseReference}");
 
     private final String resource;
 

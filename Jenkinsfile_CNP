@@ -119,10 +119,12 @@ def setPreviewEnvVars() {
   // TODO: Update URL to include XUI when available
   env.TEST_E2E_URL_WEB = "https://pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.ENVIRONMENT= "preview"
+  env.ENABLE_TESTING_SUPPORT = "true"
 }
 
 def setAatEnvVars() {
   env.ENVIRONMENT= "aat"
+  env.ENABLE_TESTING_SUPPORT = "true"
 }
 
 def setDemoEnvVars() {
