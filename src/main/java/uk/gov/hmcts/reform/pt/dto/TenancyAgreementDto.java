@@ -9,5 +9,5 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 public class TenancyAgreementDto {
     private YesOrNo copyOfTenancyAgreement;
     private String noTenancyAgreementReason;
-    private DocumentDto tenancyAgreementEvidence;
+    private DocumentDto tenancyAgreementDocument;
 }
