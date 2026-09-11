@@ -118,6 +118,7 @@ class MarketRentCaseServiceTest {
             .utilitiesPaidCostMonthly(80d)
             .utilitiesPaidCostYearly(960d)
             .utilitiesPaidFrequencyAndCostDetails("Utilities breakdown")
+            .rentInclusiveOfUtilityCharges(YesOrNo.YES)
             .anyOtherHouseholdManagementCharges(YesOrNo.YES)
             .otherHouseholdManagementChargesDetails("Other charges")
             .additionalRentalServiceChargesVary(YesOrNo.YES)
@@ -145,6 +146,7 @@ class MarketRentCaseServiceTest {
         assertThat(existing.getUtilitiesCostMonthly()).isEqualTo(BigDecimal.valueOf(80d));
         assertThat(existing.getUtilitiesCostYearly()).isEqualTo(BigDecimal.valueOf(960d));
         assertThat(existing.getUtilitiesFrequencyAndCostDetails()).isEqualTo("Utilities breakdown");
+        assertThat(existing.getRentInclusiveOfUtilityCharges()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getOtherHouseholdManagementCharges()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getOtherHouseholdManagementChargesDetails()).isEqualTo("Other charges");
         assertThat(existing.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);

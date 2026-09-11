@@ -35,6 +35,7 @@ public class CurrentRentsDetailsDto {
     private BigDecimal utilitiesCostMonthly;
     private BigDecimal utilitiesCostYearly;
     private String utilitiesPaidFrequencyAndCostDetails;
+    private YesOrNo rentInclusiveOfUtilityCharges;
 
     private LocalDateTime currentTenancyStartDate;
     private LocalDateTime currentTenancyEndDate;
