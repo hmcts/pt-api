@@ -71,7 +71,8 @@ class IdamAuthenticatorTest {
     @Test
     void shouldReturnUserWhenTokenIsValid() {
         String token = BEARER_PREFIX + "valid-token";
-        when(idamUserInfoApi.getUserInfo(token)).thenReturn(mock(UserInfo.class));
+        UserInfo mockUserInfo = mock(UserInfo.class);
+        when(idamUserInfoApi.getUserInfo(token)).thenReturn(mockUserInfo);
 
         User user = underTest.validateAuthToken(token);
 

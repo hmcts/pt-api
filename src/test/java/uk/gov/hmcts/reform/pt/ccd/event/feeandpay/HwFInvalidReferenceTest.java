@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class HwFInvalidReferenceTest extends BaseEventTest {
+class HwFInvalidReferenceTest extends BaseEventTest {
 
     @BeforeEach
     void setUp() {

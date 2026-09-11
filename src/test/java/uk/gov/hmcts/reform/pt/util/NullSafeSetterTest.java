@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.pt.util;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NullSafeSetterTest {
+class NullSafeSetterTest {
     @Test
     @DisplayName("Should invoke setter when value is not null")
     void setIfNotNullWhenValuePresent() {
@@ -30,9 +28,7 @@ public class NullSafeSetterTest {
         assertThat(target.getValue()).isEqualTo("initial");
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
+    @Data
     @AllArgsConstructor
     private static final class StringHolder {
         private String value;

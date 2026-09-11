@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ApplicationControllerExceptionHandlerTest {
+class ApplicationControllerExceptionHandlerTest {
 
     private ApplicationControllerExceptionHandler underTest;
 
