@@ -5,7 +5,7 @@ properties([
   pipelineTriggers([cron('H 07 * * 1-5')])
 ])
 
-@Library("Infrastructure@2.5.4")
+@Library("Infrastructure@2.8.0")
 
 def type = "java"
 def product = "pt"
@@ -13,6 +13,7 @@ def component = "api"
 
 withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#pt-tech')
+  env.FORTIFY_SCAN_RUNNER = 'library'
   enableFortifyScan('pt-kv1-aat')
 
    afterAlways('fortify-scan') {
