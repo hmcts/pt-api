@@ -600,8 +600,9 @@ class ApplicationMapperTest {
             .utilitiesCostMonthly(new BigDecimal("60.00"))
             .utilitiesCostYearly(new BigDecimal("720.00"))
             .utilitiesFrequencyAndCostDetails("Utilities details")
+            .rentInclusiveOfUtilityCharges(YesOrNo.YES)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .additionalRentalVaryingServiceChargesDetails("Service charge details")
+            .varyingAdditionalRentalServiceChargesDetails("Service charge details")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -617,21 +618,51 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldReturnNullWhenTenancyDetailsIsNullForCurrentRentDetails() {
+    void shouldMapCurrentRentDetailsWhenTenancyDetailsIsNull() {
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+            .rentPaymentFrequency(Frequency.MONTHLY)
+            .rentCostMonthly(new BigDecimal("400.00"))
+            .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(Collections.emptyList())
-            .marketRentCases(List.of(MarketRentCaseEntity.builder().build()))
+            .marketRentCases(List.of(marketRentCase))
             .build();
 
         CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
 
-        assertThat(result).isNull();
+        assertThat(result).isNotNull();
+        assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(result.getRentCostMonthly()).isEqualTo(new BigDecimal("400.00"));
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isNull();
+        assertThat(result.getCurrentTenancyStartDate()).isNull();
     }
 
     @Test
-    void shouldReturnNullWhenMarketRentCaseIsNullForCurrentRentDetails() {
+    public void shouldMapCurrentRentDetailsWhenMarketRentCaseIsNull() {
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+            .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
+            .currentTenancyStartDate(startDate)
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(result.getRentPaymentFrequency()).isNull();
+        assertThat(result.getRentCostMonthly()).isNull();
+    }
+
+    @Test
+    void shouldReturnNullWhenNoCurrentRentEntitiesExist() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
             .marketRentCases(Collections.emptyList())
             .build();
 
@@ -741,13 +772,13 @@ class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.YES);
         assertThat(result.getNoTenancyAgreementReason()).isEqualTo("Reason");
-        assertThat(result.getTenancyAgreementEvidence()).isNotNull();
-        assertThat(result.getTenancyAgreementEvidence().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
-        assertThat(result.getTenancyAgreementEvidence().getBinaryUrl())
+        assertThat(result.getTenancyAgreementDocument()).isNotNull();
+        assertThat(result.getTenancyAgreementDocument().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
             .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
-        assertThat(result.getTenancyAgreementEvidence().getFilename()).isEqualTo("tenancy-agreement.pdf");
-        assertThat(result.getTenancyAgreementEvidence().getContentType()).isEqualTo("application/pdf");
-        assertThat(result.getTenancyAgreementEvidence().getSize()).isEqualTo(2048L);
+        assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
     @Test
@@ -790,7 +821,7 @@ class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getCopyOfTenancyAgreement()).isEqualTo(YesOrNo.NO);
         assertThat(result.getNoTenancyAgreementReason()).isEqualTo("No agreement available");
-        assertThat(result.getTenancyAgreementEvidence()).isNull();
+        assertThat(result.getTenancyAgreementDocument()).isNull();
     }
 
     @Test
@@ -1063,7 +1094,7 @@ class ApplicationMapperTest {
                 TenancyAgreementDto.builder()
                     .copyOfTenancyAgreement(YesOrNo.YES)
                     .noTenancyAgreementReason("No agreement reason")
-                    .tenancyAgreementEvidence(
+                    .tenancyAgreementDocument(
                         DocumentDto.builder()
                             .url("http://dm-store/doc/tenancy-agreement")
                             .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
@@ -1169,12 +1200,13 @@ class ApplicationMapperTest {
             .utilitiesCostMonthly(new BigDecimal("60.00"))
             .utilitiesCostYearly(new BigDecimal("720.00"))
             .utilitiesPaidFrequencyAndCostDetails("Utilities details")
+            .rentInclusiveOfUtilityCharges(YesOrNo.YES)
             .currentTenancyStartDate(startDate)
             .currentTenancyEndDate(endDate)
             .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
             .originalTenancyStartDate(originalStartDate)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .additionalRentalVaryingServiceChargesDetails("Service charge details")
+            .varyingAdditionalRentalServiceChargesDetails("Service charge details")
             .build();
     }
 }

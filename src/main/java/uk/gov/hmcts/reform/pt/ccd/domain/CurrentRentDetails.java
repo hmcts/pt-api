@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -137,18 +137,24 @@ public class CurrentRentDetails {
     private String utilitiesPaidFrequencyAndCostDetails;
 
     @CCD(
+        label = "Does rent include utility charges",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo rentInclusiveOfUtilityCharges;
+
+    @CCD(
         label = "Current tenancy start date",
         access = {CitizenAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime currentTenancyStartDate;
+    private LocalDate currentTenancyStartDate;
 
     @CCD(
         label = "Current tenancy end date",
         access = {CitizenAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime currentTenancyEndDate;
+    private LocalDate currentTenancyEndDate;
 
     @CCD(
         label = "Does current tenancy replace original tenancy",
@@ -161,7 +167,7 @@ public class CurrentRentDetails {
         access = {CitizenAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime originalTenancyStartDate;
+    private LocalDate originalTenancyStartDate;
 
     @CCD(
         label = "Additional charges vary",
@@ -173,7 +179,7 @@ public class CurrentRentDetails {
         label = "Additional charges vary details",
         access = {CitizenAccess.class}
     )
-    private String additionalRentalVaryingServiceChargesDetails;
+    private String varyingAdditionalRentalServiceChargesDetails;
 
     @CCD(
         label = "Any other charges",

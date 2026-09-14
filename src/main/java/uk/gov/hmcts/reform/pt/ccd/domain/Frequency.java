@@ -18,7 +18,10 @@ public enum Frequency implements HasLabel {
     MONTHLY("Monthly"),
 
     @JsonProperty("yearly")
-    YEARLY("Yearly");
+    YEARLY("Yearly"),
+
+    @JsonProperty("other")
+    OTHER("Other");
 
     private final String label;
 }
