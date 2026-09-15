@@ -638,7 +638,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldMapCurrentRentDetailsWhenMarketRentCaseIsNull() {
+    void shouldMapCurrentRentDetailsWhenMarketRentCaseIsNull() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)

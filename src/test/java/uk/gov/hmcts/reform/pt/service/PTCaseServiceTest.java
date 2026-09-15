@@ -208,7 +208,6 @@ class PTCaseServiceTest {
             .extracting(PTCaseEntity::getHearingRequested, PTCaseEntity::getLandlordType)
             .containsExactly(YesOrNo.YES, LandlordRepresentativeType.LETTING_AGENT);
 
-        // todo here
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
