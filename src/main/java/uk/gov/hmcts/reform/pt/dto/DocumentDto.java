@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class DocumentDto {
+    private Long id;
     private String url;
     private String binaryUrl;
     private String filename;

@@ -41,6 +41,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -459,6 +460,7 @@ class PTCaseServiceTest {
     void updateContactPreferencesSuccess() {
         CasePartyEntity caseParty = CasePartyEntity.builder().build();
         ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
+            .textUpdates(YesOrNo.YES)
             .phoneNumberForCalls("01234567890")
             .textUpdatesPhoneNumber("07123456789")
             .build();
@@ -607,14 +609,16 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should preserve phone numbers when null in contact preferences")
-    void updateContactPreferencesPreservesPhoneNumbersWhenNull() {
+    @DisplayName("Should remove mobile phone number when text updates is NO")
+    void updateContactPreferencesRemovesMobilePhoneNumberWhenTextUpdatesNo() {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .phoneNumber("01234567890")
             .mobilePhoneNumber("07123456789")
             .build();
         ApplicantContactPreferences preferences = ApplicantContactPreferences.builder()
-            .textUpdates(YesOrNo.YES)
+            .phoneNumberForCalls("09876543210")
+            .textUpdates(YesOrNo.NO)
+            .textUpdatesPhoneNumber("07123456789")
             .build();
         PTCase ptCase = PTCase.builder()
             .applicantContactPreferences(preferences)
@@ -623,8 +627,8 @@ class PTCaseServiceTest {
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
         verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
-        assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
-        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
+        assertThat(caseParty.getPhoneNumber()).isEqualTo("09876543210");
+        assertThat(caseParty.getMobilePhoneNumber()).isNull();
         verify(casePartyRepository).save(caseParty);
     }
 
@@ -681,5 +685,73 @@ class PTCaseServiceTest {
         verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
         assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
         verify(ptCaseRepository).save(ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should upsert document fields without touching the case party")
+    void shouldUpdateDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        PropertyDetails propertyDetails = PropertyDetails.builder().build();
+        PTCase ptCase = PTCase.builder().propertyDetails(propertyDetails).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should upsert tenancy agreement documents without touching the case party")
+    void shouldUpdateTenancyAgreementDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
+        PTCase ptCase = PTCase.builder().tenancyAgreementDetails(tenancyAgreementDetails).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should never delete a document while updating the case")
+    void updateShouldNeverDeleteDocuments() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        ptCaseService.updateDocuments(caseReference, PTCase.builder()
+            .propertyDetails(PropertyDetails.builder().build())
+            .build());
+
+        verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should delete the document named by the control field, scoped to the case")
+    void shouldDeleteNamedDocument() {
+        long caseReference = 1234567890123456L;
+
+        ptCaseService.deleteDocument(caseReference, PTCase.builder().documentIdToDelete("42").build());
+
+        verify(documentService).deleteDocument(42L, caseReference);
+        verify(ptCaseRepository, never()).findByCaseReference(anyLong());
+    }
+
+    @Test
+    @DisplayName("Should reject a delete that names no document")
+    void shouldRejectDeleteWithoutDocumentId() {
+        PTCase ptCase = PTCase.builder().build();
+
+        assertThatThrownBy(() -> ptCaseService.deleteDocument(1234567890123456L, ptCase))
+            .isInstanceOf(IllegalArgumentException.class);
+
+        verify(documentService, never()).deleteDocument(anyLong(), anyLong());
     }
 }

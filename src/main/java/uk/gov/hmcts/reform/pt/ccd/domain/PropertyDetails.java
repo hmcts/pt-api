@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 
@@ -117,7 +118,7 @@ public class PropertyDetails {
         access = {CitizenAccess.class}
     )
     @Builder.Default
-    private List<UploadedDocument> roomsDocuments = new ArrayList<>();
+    private List<ListValue<UploadedDocument>> roomsDocuments = new ArrayList<>();
 
     @CCD(
         label = "Has furniture provided in tenancy",

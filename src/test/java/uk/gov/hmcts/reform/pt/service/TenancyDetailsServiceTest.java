@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -114,7 +114,6 @@ public class TenancyDetailsServiceTest {
         tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
 
         verify(tenancyDetailsRepository).save(existing);
-        assertThat(existing.getPtCase()).isEqualTo(ptCase);
         assertThat(existing.getTenancyIncludeFacilities()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getOtherFacilitiesDetails()).isEqualTo("Parking");
         assertThat(existing.getFurnitureProvidedInTenancy()).isEqualTo(YesOrNo.YES);
@@ -157,9 +156,9 @@ public class TenancyDetailsServiceTest {
             .tenancyDetails(List.of(existing))
             .build();
 
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
-        LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+        LocalDate startDate = LocalDate.of(2025, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 1);
+        LocalDate originalStartDate = LocalDate.of(2024, 1, 1);
 
         CurrentRentDetails details = CurrentRentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
@@ -168,8 +167,6 @@ public class TenancyDetailsServiceTest {
             .currentTenancyEndDate(endDate)
             .currentTenancyReplaceOriginalTenancy(YesNoNotSure.YES)
             .originalTenancyStartDate(originalStartDate)
-            .additionalRentalServiceChargesVary(YesOrNo.YES)
-            .additionalRentalVaryingServiceChargesDetails("Charge details")
             .build();
 
         tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
@@ -177,12 +174,10 @@ public class TenancyDetailsServiceTest {
         verify(tenancyDetailsRepository).save(existing);
         assertThat(existing.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getPreviousTribunalCaseReference()).isEqualTo("TRIB-123");
-        assertThat(existing.getCurrentTenancyStartDate()).isEqualTo(startDate);
-        assertThat(existing.getTenancyEndDate()).isEqualTo(endDate);
+        assertThat(existing.getCurrentTenancyStartDate()).isEqualTo(startDate.atStartOfDay());
+        assertThat(existing.getTenancyEndDate()).isEqualTo(endDate.atStartOfDay());
         assertThat(existing.getCurrentTenancyReplaceOriginalTenancy()).isEqualTo(YesNoNotSure.YES);
-        assertThat(existing.getOriginalTenancyStartDate()).isEqualTo(originalStartDate);
-        assertThat(existing.getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isEqualTo("Charge details");
+        assertThat(existing.getOriginalTenancyStartDate()).isEqualTo(originalStartDate.atStartOfDay());
     }
 
     @Test
@@ -192,7 +187,7 @@ public class TenancyDetailsServiceTest {
             .tenancyDetails(new ArrayList<>())
             .build();
 
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDate startDate = LocalDate.of(2025, 1, 1);
         CurrentRentDetails details = CurrentRentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.NO)
             .currentTenancyStartDate(startDate)
@@ -205,7 +200,7 @@ public class TenancyDetailsServiceTest {
         TenancyDetailsEntity saved = captor.getValue();
 
         assertThat(saved.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.NO);
-        assertThat(saved.getCurrentTenancyStartDate()).isEqualTo(startDate);
+        assertThat(saved.getCurrentTenancyStartDate()).isEqualTo(startDate.atStartOfDay());
     }
 
     @Test

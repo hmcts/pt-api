@@ -103,6 +103,37 @@ public class PTCaseService {
     }
 
     @Transactional
+    public void updateDocuments(long caseReference, PTCase ptCase) {
+        PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        PropertyDetails propertyDetails = ptCase.getPropertyDetails();
+        if (propertyDetails != null) {
+            documentService.updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
+        }
+
+        NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails = ptCase.getNoticeOfRentIncreaseDetails();
+        if (noticeOfRentIncreaseDetails != null) {
+            documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
+        }
+
+        TenancyAgreementDetails tenancyAgreementDetails = ptCase.getTenancyAgreementDetails();
+        if (tenancyAgreementDetails != null) {
+            documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
+        }
+    }
+
+    @Transactional
+    public void deleteDocument(long caseReference, PTCase ptCase) {
+        String documentId = ptCase.getDocumentIdToDelete();
+        if (documentId == null || documentId.isBlank()) {
+            throw new IllegalArgumentException("No document id supplied for deletion");
+        }
+
+        documentService.deleteDocument(Long.parseLong(documentId), caseReference);
+    }
+
+    @Transactional
     public void updateContactPreferences(PTCase ptCase, CasePartyEntity caseParty) {
         ApplicantContactPreferences contactPreferenceData = ptCase.getApplicantContactPreferences();
         if (contactPreferenceData == null) {
@@ -111,8 +142,11 @@ public class PTCaseService {
 
         contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
 
-        setIfNotNull(contactPreferenceData.getPhoneNumberForCalls(), caseParty::setPhoneNumber);
-        setIfNotNull(contactPreferenceData.getTextUpdatesPhoneNumber(), caseParty::setMobilePhoneNumber);
+        caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
+        caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdates().toBoolean()
+                                           ? contactPreferenceData.getTextUpdatesPhoneNumber()
+                                           : null);
+
         casePartyRepository.save(caseParty);
     }
 

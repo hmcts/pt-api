@@ -8,13 +8,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum YesNoNotSure implements HasLabel {
-    @JsonProperty("yes")
+    @JsonProperty("Yes")
     YES("Yes"),
 
-    @JsonProperty("no")
+    @JsonProperty("No")
     NO("No"),
 
-    @JsonProperty("notSure")
+    @JsonProperty("NotSure")
     NOT_SURE("I’m not sure");
 
     private final String label;

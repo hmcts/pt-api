@@ -133,7 +133,7 @@ public class MarketRentCaseEntity extends AuditableEntity {
     private YesOrNo additionalRentalServiceChargesVary;
 
     @Column(length = 500)
-    private String additionalRentalVaryingServiceChargesDetails;
+    private String varyingAdditionalRentalServiceChargesDetails;
 
     @Column(length = 5000)
     private String applicantSuggestedMonthlyMarketRentReasons;
