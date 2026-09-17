@@ -49,9 +49,9 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForPropertyDetails(PropertyDetails details, PTCaseEntity ptCaseEntity) {
-        updateSingleDocument(
+        updateMultipleDocuments(
             DocumentType.PROPERTY_FLOOR_PLAN,
-            details.getFloorPlanDocument(),
+            details.getFloorPlanDocuments(),
             ptCaseEntity
         );
         updateSingleDocument(
