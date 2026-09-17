@@ -296,7 +296,7 @@ class DocumentServiceTest {
             .build();
 
         PropertyDetails details = PropertyDetails.builder()
-            .floorPlanDocument(floorPlanDoc)
+            .floorPlanDocuments(List.of(new ListValue<>("1", floorPlanDoc)))
             .outsidePropertyDocument(outsidePropertyDoc)
             .repairsEvidenceDocument(repairsDoc)
             .roomsDocuments(List.of(new ListValue<>("1", roomDoc)))
