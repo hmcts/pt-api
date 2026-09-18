@@ -95,13 +95,13 @@ public class DocumentService {
         UploadedDocument uploadedDocument,
         PTCaseEntity ptCaseEntity
     ) {
-        Optional<DocumentEntity> existing = getDocumentsOfTypeForCase(documentType, ptCaseEntity)
-            .stream()
-            .findFirst();
-
         if (uploadedDocument == null) {
             return;
         }
+
+        Optional<DocumentEntity> existing = getDocumentsOfTypeForCase(documentType, ptCaseEntity)
+            .stream()
+            .findFirst();
 
         DocumentEntity documentEntity = existing.orElseGet(DocumentEntity::new);
         saveDocument(documentEntity, uploadedDocument, documentType, ptCaseEntity);
