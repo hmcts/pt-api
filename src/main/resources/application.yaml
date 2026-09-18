@@ -11,6 +11,9 @@ security:
     - "/swagger-ui/**"
     - "/v3/api-docs/**"
 
+testing-support:
+  enabled: ${ENABLE_TESTING_SUPPORT:false}
+
 # If you use a database then uncomment the `group:, readiness: and include: "db"` lines in the health probes and uncomment the datasource section
 management:
   endpoint:

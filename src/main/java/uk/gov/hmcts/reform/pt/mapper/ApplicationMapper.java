@@ -171,10 +171,11 @@ public class ApplicationMapper {
             .otherMethodRentingDetails(get(marketRentCase, MarketRentCaseEntity::getOtherMethodOfRentDetails))
             .propertyFloorPlanAvailable(get(marketRentCase, MarketRentCaseEntity::getPropertyFloorPlanAvailable))
             .floorPlanManualDetails(get(marketRentCase, MarketRentCaseEntity::getFloorplanManualDetails))
-            .floorPlanDocument(
-                findDocumentOfType(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity)
+            .floorPlanDocuments(
+                findDocumentsOfType(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity)
+                    .stream()
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                    .toList())
             .indoorFeatures(get(marketRentCase, MarketRentCaseEntity::getPropertyIndoorFeatures))
             .otherFacilitiesAvailable(get(tenancyDetails, TenancyDetailsEntity::getTenancyIncludeFacilities))
             .otherFacilitiesDetails(get(tenancyDetails, TenancyDetailsEntity::getOtherFacilitiesDetails))

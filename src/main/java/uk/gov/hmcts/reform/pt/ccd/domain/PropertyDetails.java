@@ -84,10 +84,11 @@ public class PropertyDetails {
     private String floorPlanManualDetails;
 
     @CCD(
-        label = "Floor plan document",
+        label = "Floor plan documents",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument floorPlanDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> floorPlanDocuments = new ArrayList<>();
 
     @CCD(
         label = "Indoor features of the property",
