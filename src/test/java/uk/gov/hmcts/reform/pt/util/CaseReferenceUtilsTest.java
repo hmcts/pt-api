@@ -1,33 +1,19 @@
 package uk.gov.hmcts.reform.pt.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CaseReferenceUtilsTest {
-
-    @Test
-    void shouldReturnTrueForValid16DigitCaseReference() {
-        long caseReference = 1234567890123456L;
-
-        boolean result = CaseReferenceUtils.isValidCaseReference(caseReference);
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void shouldReturnTrueForMinimumValidCaseReference() {
-        long caseReference = 1_000_000_000_000_000L;
-
-        boolean result = CaseReferenceUtils.isValidCaseReference(caseReference);
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void shouldReturnTrueForMaximumValidCaseReference() {
-        long caseReference = 9_999_999_999_999_999L;
-
+class CaseReferenceUtilsTest {
+    @ValueSource(longs = {
+        1234567890123456L,        // valid 16-digit case reference
+        1_000_000_000_000_000L,   // minimum valid case reference
+        9_999_999_999_999_999L    // maximum valid case reference
+    })
+    @ParameterizedTest(name = "shouldReturnTrueForValidCaseReference: {0}")
+    void shouldReturnTrueForValidCaseReference(long caseReference) {
         boolean result = CaseReferenceUtils.isValidCaseReference(caseReference);
 
         assertThat(result).isTrue();

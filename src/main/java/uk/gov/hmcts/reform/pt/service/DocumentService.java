@@ -30,17 +30,17 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForNoticeOfRentChange(NoticeOfRentIncreaseDetails details, PTCaseEntity ptCaseEntity) {
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.NEW_RENT_INCREASE_NOTICE,
             details.getLandlordNoticeProposingNewRentDocument(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE,
             details.getNoticeNotLegallyValidDocument(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.HARDSHIP_EVIDENCE,
             details.getRentIncreaseToCauseHardshipDocument(),
             ptCaseEntity
@@ -49,22 +49,22 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForPropertyDetails(PropertyDetails details, PTCaseEntity ptCaseEntity) {
-        updateMultipleDocuments(
+        this.updateMultipleDocuments(
             DocumentType.PROPERTY_FLOOR_PLAN,
             details.getFloorPlanDocuments(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.OUTSIDE_PROPERTY,
             details.getOutsidePropertyDocument(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.TENANT_REPAIRS_EVIDENCE,
             details.getRepairsEvidenceDocument(),
             ptCaseEntity
         );
-        updateMultipleDocuments(
+        this.updateMultipleDocuments(
             DocumentType.PROPERTY_ROOMS,
             details.getRoomsDocuments(),
             ptCaseEntity
@@ -73,7 +73,7 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
             ptCaseEntity
@@ -82,7 +82,7 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForTenancyAgreementDetails(TenancyAgreementDetails details, PTCaseEntity ptCaseEntity) {
-        updateSingleDocument(
+        this.updateSingleDocument(
             DocumentType.TENANCY_AGREEMENT,
             details.getTenancyAgreementDocument(),
             ptCaseEntity
@@ -95,13 +95,13 @@ public class DocumentService {
         UploadedDocument uploadedDocument,
         PTCaseEntity ptCaseEntity
     ) {
-        Optional<DocumentEntity> existing = getDocumentsOfTypeForCase(documentType, ptCaseEntity)
-            .stream()
-            .findFirst();
-
         if (uploadedDocument == null) {
             return;
         }
+
+        Optional<DocumentEntity> existing = getDocumentsOfTypeForCase(documentType, ptCaseEntity)
+            .stream()
+            .findFirst();
 
         DocumentEntity documentEntity = existing.orElseGet(DocumentEntity::new);
         saveDocument(documentEntity, uploadedDocument, documentType, ptCaseEntity);

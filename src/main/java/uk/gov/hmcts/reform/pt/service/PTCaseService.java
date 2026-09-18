@@ -91,15 +91,15 @@ public class PTCaseService {
         setIfNotNull(ptCase.getEmail(), applicantCaseParty::setEmailAddress);
         casePartyRepository.save(applicantCaseParty);
 
-        updateContactPreferences(ptCase, applicantCaseParty);
-        updateTenantDetails(ptCase, applicantCaseParty);
-        updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
-        updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
-        updatePropertyDetails(ptCase, ptCaseEntity, applicantCaseParty);
-        updateCurrentRentDetails(ptCase, ptCaseEntity);
-        updateMarketRentDetails(ptCase, ptCaseEntity);
-        updateTenancyAgreementDetails(ptCase, ptCaseEntity);
-        updateLandlordDetails(ptCase, ptCaseEntity);
+        this.updateContactPreferences(ptCase, applicantCaseParty);
+        this.updateTenantDetails(ptCase, applicantCaseParty);
+        this.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
+        this.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
+        this.updatePropertyDetails(ptCase, ptCaseEntity, applicantCaseParty);
+        this.updateCurrentRentDetails(ptCase, ptCaseEntity);
+        this.updateMarketRentDetails(ptCase, ptCaseEntity);
+        this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
+        this.updateLandlordDetails(ptCase, ptCaseEntity);
     }
 
     @Transactional

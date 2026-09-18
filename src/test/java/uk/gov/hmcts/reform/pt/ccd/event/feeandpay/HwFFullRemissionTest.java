@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class HwFFullRemissionTest extends BaseEventTest {
+class HwFFullRemissionTest extends BaseEventTest {
 
     @BeforeEach
     void setUp() {

@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -131,7 +132,7 @@ class CasePartyServiceTest {
 
         verify(addressService).deleteAddressesForParty(existingRep);
         verify(casePartyRepository).delete(existingRep);
-        verify(casePartyRepository, org.mockito.Mockito.times(2)).save(any(CasePartyEntity.class));
+        verify(casePartyRepository, times(2)).save(any(CasePartyEntity.class));
     }
 
     @Test
@@ -189,7 +190,7 @@ class CasePartyServiceTest {
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(casePartyRepository, org.mockito.Mockito.times(3)).save(any(CasePartyEntity.class));
+        verify(casePartyRepository, times(3)).save(any(CasePartyEntity.class));
     }
 
     @Test
