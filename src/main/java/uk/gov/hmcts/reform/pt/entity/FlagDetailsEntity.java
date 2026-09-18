@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -13,6 +16,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.ccd.sdk.type.FlagVisibility;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
 @Entity
@@ -21,8 +25,8 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "flag_ref_data")
-public class FlagReferenceDataEntity extends AuditableEntity {
+@Table(name = "flag_details")
+public class FlagDetailsEntity extends AuditableEntity {
     @Column(length = 100)
     private String flagCode;
 
@@ -36,8 +40,9 @@ public class FlagReferenceDataEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo availableExternally;
 
-    @Column(length = 10)
-    private String visibility;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private FlagVisibility visibility;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
