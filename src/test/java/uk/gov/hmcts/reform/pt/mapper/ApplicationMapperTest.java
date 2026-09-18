@@ -559,9 +559,9 @@ class ApplicationMapperTest {
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
 
         assertThat(result).isNotNull();
-        assertThat(result.getFloorPlanDocument()).isNotNull();
-        assertThat(result.getFloorPlanDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
-        assertThat(result.getFloorPlanDocument().getFilename()).isEqualTo("floor-plan.pdf");
+        assertThat(result.getFloorPlanDocuments()).hasSize(1);
+        assertThat(result.getFloorPlanDocuments().getFirst().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
+        assertThat(result.getFloorPlanDocuments().getFirst().getFilename()).isEqualTo("floor-plan.pdf");
         assertThat(result.getAddressLine1()).isNull();
         assertThat(result.getPropertyType()).isNull();
     }

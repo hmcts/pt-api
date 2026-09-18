@@ -22,7 +22,7 @@ public class PropertyDetailsDto {
     private String otherMethodRentingDetails;
     private YesOrNo propertyFloorPlanAvailable;
     private String floorPlanManualDetails;
-    private DocumentDto floorPlanDocument;
+    private List<DocumentDto> floorPlanDocuments;
     private String indoorFeatures;
     private YesOrNo otherFacilitiesAvailable;
     private String otherFacilitiesDetails;
