@@ -12,6 +12,7 @@ public enum EventId {
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),
     CITIZEN_UPDATE_APPLICATION("citizen-update-application", "Citizen Update Application"),
     CITIZEN_SUBMIT_APPLICATION("citizen-submit-application", "Citizen Submit Application"),
+    CITIZEN_DELETE_APPLICATION("citizen-delete-application", "Citizen Delete Application"),
     CITIZEN_UPLOAD_DOCUMENT("citizen-upload-document", "Citizen Upload Document"),
     CITIZEN_DELETE_DOCUMENT("citizen-delete-document", "Citizen Delete Document"),
 

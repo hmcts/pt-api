@@ -69,6 +69,14 @@ public class PTCaseService {
     }
 
     @Transactional
+    public void deleteApplication(long caseReference) {
+        documentService.findAllForCase(caseReference)
+            .forEach(document -> documentService.deleteDocument(document.getId(), caseReference));
+
+        deleteCase(caseReference);
+    }
+
+    @Transactional
     public void deleteCase(long caseReference) {
         PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
