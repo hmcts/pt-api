@@ -113,12 +113,12 @@ public class MarketRentCaseService {
 
         marketRentCase.setPtCase(ptCaseEntity);
         setIfNotNull(
-            toBigDecimal(details.getApplicantSuggestedMonthlyMarketRent()),
-            marketRentCase::setApplicantSuggestedMonthlyMarketRent
+            toBigDecimal(details.getApplicantSuggestedMarketRent()),
+            marketRentCase::setApplicantSuggestedMarketRent
         );
         setIfNotNull(
-            details.getApplicantSuggestedMonthlyMarketRentReasons(),
-            marketRentCase::setApplicantSuggestedMonthlyMarketRentReasons
+            details.getApplicantSuggestedMarketRentReasons(),
+            marketRentCase::setApplicantSuggestedMarketRentReasons
         );
         setIfNotNull(
             details.getAdditionalInfoToConsiderWhenDeterminingRent(),

@@ -109,8 +109,8 @@ public class ApplicationMapperTest {
 
         MarketRentDto marketRentDetails = result.getMarketRentDetails();
         assertThat(marketRentDetails).isNotNull();
-        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1200.00"));
-        assertThat(marketRentDetails.getApplicantSuggestedMonthlyMarketRentReasons())
+        assertThat(marketRentDetails.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1200.00"));
+        assertThat(marketRentDetails.getApplicantSuggestedMarketRentReasons())
             .isEqualTo("Market rate for the area");
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(marketRentDetails.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
@@ -813,8 +813,8 @@ public class ApplicationMapperTest {
             .build();
 
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
-            .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
             .build();
@@ -827,8 +827,8 @@ public class ApplicationMapperTest {
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
-        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
-        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons())
+        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentReasons())
             .isEqualTo("Similar properties in the area rent for this amount");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
@@ -845,8 +845,8 @@ public class ApplicationMapperTest {
     @Test
     public void shouldMapMarketRentDetailsWithoutEvidenceDocument() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
-            .applicantSuggestedMonthlyMarketRentReasons("Reasons")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Reasons")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
@@ -858,8 +858,8 @@ public class ApplicationMapperTest {
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
-        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
-        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reasons");
+        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
         assertThat(result.getSuggestedMarketRentEvidence()).isNull();
@@ -1092,8 +1092,8 @@ public class ApplicationMapperTest {
     private static List<MarketRentCaseEntity> marketRentCases() {
         return List.of(MarketRentCaseEntity.builder()
                            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
-                           .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
-                           .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+                           .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
+                           .applicantSuggestedMarketRentReasons("Market rate for the area")
                            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
                            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
                            .build());
