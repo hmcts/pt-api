@@ -184,8 +184,8 @@ class MarketRentCaseServiceTest {
             .build();
 
         MarketRentDetails details = MarketRentDetails.builder()
-            .applicantSuggestedMonthlyMarketRent(1200d)
-            .applicantSuggestedMonthlyMarketRentReasons("Market rate for area")
+            .applicantSuggestedMarketRent(1200d)
+            .applicantSuggestedMarketRentReasons("Market rate for area")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
             .build();
@@ -193,8 +193,8 @@ class MarketRentCaseServiceTest {
         marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
 
         verify(marketRentCaseRepository).save(existing);
-        assertThat(existing.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(BigDecimal.valueOf(1200d));
-        assertThat(existing.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Market rate for area");
+        assertThat(existing.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(1200d));
+        assertThat(existing.getApplicantSuggestedMarketRentReasons()).isEqualTo("Market rate for area");
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
             .isEqualTo("Renovated");
@@ -208,8 +208,8 @@ class MarketRentCaseServiceTest {
             .build();
 
         MarketRentDetails details = MarketRentDetails.builder()
-            .applicantSuggestedMonthlyMarketRent(950d)
-            .applicantSuggestedMonthlyMarketRentReasons("Reason for rate")
+            .applicantSuggestedMarketRent(950d)
+            .applicantSuggestedMarketRentReasons("Reason for rate")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
@@ -219,8 +219,8 @@ class MarketRentCaseServiceTest {
         verify(marketRentCaseRepository).save(captor.capture());
         MarketRentCaseEntity saved = captor.getValue();
 
-        assertThat(saved.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(BigDecimal.valueOf(950d));
-        assertThat(saved.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reason for rate");
+        assertThat(saved.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(950d));
+        assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();
     }

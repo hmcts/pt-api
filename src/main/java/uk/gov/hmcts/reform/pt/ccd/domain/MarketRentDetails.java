@@ -14,16 +14,16 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @AllArgsConstructor
 public class MarketRentDetails {
     @CCD(
-        label = "Applicant's suggested monthly market rent",
+        label = "Applicant's suggested market rent",
         access = {CitizenAccess.class}
     )
-    private Double applicantSuggestedMonthlyMarketRent;
+    private Double applicantSuggestedMarketRent;
 
     @CCD(
-        label = "Applicant's suggested monthly market rent reasons",
+        label = "Applicant's suggested market rent reasons",
         access = {CitizenAccess.class}
     )
-    private String applicantSuggestedMonthlyMarketRentReasons;
+    private String applicantSuggestedMarketRentReasons;
 
     @CCD(
         label = "Evidence supporting proposed rent",

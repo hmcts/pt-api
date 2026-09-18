@@ -265,10 +265,10 @@ public class ApplicationMapper {
         }
 
         return MarketRentDto.builder()
-            .applicantSuggestedMonthlyMarketRent(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRent))
-            .applicantSuggestedMonthlyMarketRentReasons(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRentReasons))
+            .applicantSuggestedMarketRent(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
+            .applicantSuggestedMarketRentReasons(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
                 findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
