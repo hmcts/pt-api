@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 public class MarketRentDto {
-    private BigDecimal applicantSuggestedMonthlyMarketRent;
-    private String applicantSuggestedMonthlyMarketRentReasons;
+    private BigDecimal applicantSuggestedMarketRent;
+    private String applicantSuggestedMarketRentReasons;
 
     private DocumentDto suggestedMarketRentEvidence;
 
