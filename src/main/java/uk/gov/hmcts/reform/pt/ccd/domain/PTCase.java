@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.pt.ccd.domain;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.TTL;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SystemUserAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -113,4 +115,10 @@ public class PTCase {
         access = {CitizenAccess.class}
     )
     private LandlordDetails landlordDetails;
+
+    @CCD(
+        label = "Time to live",
+        access = {SystemUserAccess.class}
+    )
+    private TTL ttl;
 }

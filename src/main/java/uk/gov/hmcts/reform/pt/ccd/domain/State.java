@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.ClaimantAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.GlobalSearchAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.InternalCaseFlagAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.RasValidationAccess;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SystemUserAccess;
 
 /**
  * All possible PT case states.
@@ -95,7 +96,19 @@ public enum State implements HasLabel {
         access = {CaseworkerReadAccess.class, ClaimantAccess.class, RasValidationAccess.class,
             GlobalSearchAccess.class}
     )
-    CASE_STAYED("Case Stayed");
+    CASE_STAYED("Case Stayed"),
+
+    /**
+     * Holding state for cases awaiting removal by ccd-case-disposer. The constant name is the CCD
+     * state id and must stay exactly "PendingDisposal". The SDK pins it as
+     * RetainAndDisposePolicy.DISPOSAL_STATE_ID and selects candidates by that literal.
+     */
+    @SuppressWarnings("checkstyle:ConstantName")
+    @CCD(
+        label = "Pending Disposal",
+        access = {SystemUserAccess.class, CaseworkerReadAccess.class}
+    )
+    PendingDisposal("Pending Disposal");
 
     private final String label;
 }

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -124,6 +125,21 @@ class PTCaseServiceTest {
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
         verify(caseApplicationRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("Should delete every document held for the case, from CDAM as well as the database")
+    void deleteDocumentsForCaseDeletesEveryDocument() {
+        long caseReference = 1234567890123456L;
+        DocumentEntity first = DocumentEntity.builder().id(1L).build();
+        DocumentEntity second = DocumentEntity.builder().id(2L).build();
+
+        when(documentService.findAllForCase(caseReference)).thenReturn(List.of(first, second));
+
+        ptCaseService.deleteDocumentsForCase(caseReference);
+
+        verify(documentService).deleteDocument(1L, caseReference);
+        verify(documentService).deleteDocument(2L, caseReference);
     }
 
     @Test
