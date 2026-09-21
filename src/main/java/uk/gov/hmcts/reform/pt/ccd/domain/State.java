@@ -103,7 +103,6 @@ public enum State implements HasLabel {
      * state id and must stay exactly "PendingDisposal". The SDK pins it as
      * RetainAndDisposePolicy.DISPOSAL_STATE_ID and selects candidates by that literal.
      */
-    @SuppressWarnings("checkstyle:ConstantName")
     @CCD(
         label = "Pending Disposal",
         access = {SystemUserAccess.class, CaseworkerReadAccess.class}
