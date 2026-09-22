@@ -106,6 +106,10 @@ flyway:
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:5062}
+  client:
+    id: ${IDAM_CLIENT_ID:pt-api}
+    secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+    redirect_uri: ${IDAM_CLIENT_REDIRECT_URI:http://localhost:3000/oauth2/callback}
   s2s-auth:
     url: ${IDAM_S2S_AUTH_URL:http://localhost:4502}
     totp_secret: ${PT_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
