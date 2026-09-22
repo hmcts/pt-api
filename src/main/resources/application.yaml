@@ -20,8 +20,8 @@ ccd:
       # off | dry_run | live. dry_run logs what would be removed without removing it.
       mode: ${RETAIN_AND_DISPOSE_MODE:live}
       system-user:
-        username: ${IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
-        password: ${IDAM_SYSTEM_USER_PASSWORD:password}
+        username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
+        password: ${PT_IDAM_SYSTEM_PASSWORD:password}
 
 # If you use a database then uncomment the `group:, readiness: and include: "db"` lines in the health probes and uncomment the datasource section
 management:
