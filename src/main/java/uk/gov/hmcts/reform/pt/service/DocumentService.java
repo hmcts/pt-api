@@ -56,7 +56,7 @@ public class DocumentService {
         );
         updateMultipleDocuments(
             DocumentType.OUTSIDE_PROPERTY,
-            details.getOutsidePropertyDocument(),
+            details.getOutsidePropertyDocuments(),
             ptCaseEntity
         );
         updateSingleDocument(
