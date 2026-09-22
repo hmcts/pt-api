@@ -1,0 +1,5 @@
+ALTER TABLE market_rent_case
+  RENAME COLUMN applicant_suggested_monthly_market_rent TO applicant_suggested_market_rent;
+
+ALTER TABLE market_rent_case
+  RENAME COLUMN applicant_suggested_monthly_market_rent_reasons TO applicant_suggested_market_rent_reasons;

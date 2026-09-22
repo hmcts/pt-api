@@ -126,7 +126,7 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentInclusiveOfUtilityCharges;
 
-    private BigDecimal applicantSuggestedMonthlyMarketRent;
+    private BigDecimal applicantSuggestedMarketRent;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -136,7 +136,7 @@ public class MarketRentCaseEntity extends AuditableEntity {
     private String varyingAdditionalRentalServiceChargesDetails;
 
     @Column(length = 5000)
-    private String applicantSuggestedMonthlyMarketRentReasons;
+    private String applicantSuggestedMarketRentReasons;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

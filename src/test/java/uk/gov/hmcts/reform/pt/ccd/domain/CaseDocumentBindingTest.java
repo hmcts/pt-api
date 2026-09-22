@@ -33,21 +33,21 @@ class CaseDocumentBindingTest {
     void shouldRoundTripADocumentInsideAnUnwrappedSlice() throws Exception {
         PTCase original = PTCase.builder()
             .propertyDetails(PropertyDetails.builder()
-                .floorPlanDocument(uploadedDocument(DocumentType.PROPERTY_FLOOR_PLAN))
+                .outsidePropertyDocument(uploadedDocument(DocumentType.OUTSIDE_PROPERTY))
                 .build())
             .build();
 
         PTCase result = mapper.readValue(mapper.writeValueAsString(original), PTCase.class);
 
-        UploadedDocument floorPlan = result.getPropertyDetails().getFloorPlanDocument();
-        assertThat(floorPlan).isNotNull();
-        assertThat(floorPlan.getDocumentType()).isEqualTo(DocumentType.PROPERTY_FLOOR_PLAN);
-        assertThat(floorPlan.getContentType()).isEqualTo("application/pdf");
-        assertThat(floorPlan.getSizeInBytes()).isEqualTo(1024L);
+        UploadedDocument outsideProperty = result.getPropertyDetails().getOutsidePropertyDocument();
+        assertThat(outsideProperty).isNotNull();
+        assertThat(outsideProperty.getDocumentType()).isEqualTo(DocumentType.OUTSIDE_PROPERTY);
+        assertThat(outsideProperty.getContentType()).isEqualTo("application/pdf");
+        assertThat(outsideProperty.getSizeInBytes()).isEqualTo(1024L);
         // The one that regresses without the deserialiser: Jackson applies the slice's prefix
         // transformer recursively, drops every unprefixed nested field, and leaves an empty object.
-        assertThat(floorPlan.getDocument()).isNotNull();
-        assertThat(floorPlan.getDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
+        assertThat(outsideProperty.getDocument()).isNotNull();
+        assertThat(outsideProperty.getDocument().getUrl()).isEqualTo("http://cdam/cases/documents/abc");
     }
 
     @Test
