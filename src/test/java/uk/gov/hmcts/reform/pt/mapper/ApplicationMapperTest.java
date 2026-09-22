@@ -869,11 +869,44 @@ public class ApplicationMapperTest {
     public void shouldReturnNullWhenMarketRentCaseIsNullForMarketRentDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCases(Collections.emptyList())
+            .documents(Collections.emptyList())
             .build();
 
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapMarketRentDocumentsWhenNoMarketRentCaseExists() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
+            .url("http://dm-store/doc/proposed-rent")
+            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+            .fileName("proposed-rent.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(Collections.emptyList())
+            .documents(List.of(document))
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMarketRent()).isNull();
+        assertThat(result.getApplicantSuggestedMarketRentReasons()).isNull();
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isNull();
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
+        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/proposed-rent/binary");
+        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -958,11 +991,42 @@ public class ApplicationMapperTest {
     public void shouldReturnNullWhenTenancyDetailsIsNullForTenancyAgreement() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(Collections.emptyList())
+            .documents(Collections.emptyList())
             .build();
 
         TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapTenancyAgreementDocumentsWhenNoTenancyDetailsExists() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/doc/tenancy-agreement")
+            .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+            .fileName("tenancy-agreement.pdf")
+            .contentType("application/pdf")
+            .size(2048L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .documents(List.of(document))
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isNull();
+        assertThat(result.getNoTenancyAgreementReason()).isNull();
+        assertThat(result.getTenancyAgreementDocument()).isNotNull();
+        assertThat(result.getTenancyAgreementDocument().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
+        assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
     @Test
