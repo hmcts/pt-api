@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -116,6 +117,7 @@ public class PTCase {
     )
     private LandlordDetails landlordDetails;
 
+    @JsonProperty("TTL")
     @CCD(
         label = "Time to live",
         access = {SystemUserAccess.class}
