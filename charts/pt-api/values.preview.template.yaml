@@ -18,6 +18,10 @@ java:
          - name: app-insights-connection-string
          - name: pt-api-s2s-secret
            alias: PT_API_S2S_SECRET
+         - name: idam-system-user-name
+           alias: PT_IDAM_SYSTEM_USERNAME
+         - name: idam-system-user-password
+           alias: PT_IDAM_SYSTEM_PASSWORD
   environment:
     PT_DB_HOST: "{{ .Release.Name }}-postgresql"
     PT_DB_USER_NAME: "{{ .Values.postgresql.auth.username}}"
