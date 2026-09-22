@@ -15,8 +15,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "case_subtype")
-public class CaseSubtypeEntity extends ReferenceDataEnOnlyEntity {
+@Table(name = "hearing_subchannel")
+public class HearingSubchannelEntity extends ReferenceDataEnCyEntity {
     @Column(name = "parentcategory", length = 64)
     private String parentCategory;
 

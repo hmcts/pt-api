@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity.reference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -23,8 +24,10 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Table(name = "auto_list_change_reasons")
 public class AutoListChangeReasonsEntity {
     @Id
-    private Long key;
+    @Column(length = 64)
+    private String key;
 
+    @Column(length = 128)
     private String valueEn;
 
     @Enumerated(EnumType.STRING)

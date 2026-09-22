@@ -26,7 +26,7 @@ class CaseTypeRepositoryTest extends AbstractRepositoryTest<CaseTypeRepository> 
             .build();
         repository.save(caseType);
 
-        Optional<CaseTypeEntity> result = repository.findFirstByApplicationTypeName(applicationType);
+        Optional<CaseTypeEntity> result = repository.findFirstByValueEn(applicationType);
 
         assertThat(result).isPresent();
         assertThat(result.get().getApplicationTypeName()).isEqualTo(applicationType);

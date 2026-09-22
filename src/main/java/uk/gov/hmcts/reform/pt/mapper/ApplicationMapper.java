@@ -50,7 +50,7 @@ public class ApplicationMapper {
                     : "")
             .applicationType(
                 entity.getCaseType() != null
-                    ? entity.getCaseType().getApplicationTypeName()
+                    ? entity.getCaseType().getValueEn()
                     : null)
             .tenancyType(
                 !ptCase.getTenancyDetails().isEmpty()

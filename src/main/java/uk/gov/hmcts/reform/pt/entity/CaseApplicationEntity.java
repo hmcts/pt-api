@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

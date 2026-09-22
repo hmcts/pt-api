@@ -17,8 +17,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Table(name = "entity_role_code")
 public class EntityRoleCodeEntity extends ReferenceDataEnCyEntity {
-    private String roleName;
+    @Column(name = "parentkey", length = 64)
     private String parentKey;
+
+    @Column(name = "parentcategory", length = 64)
     private String parentCategory;
 
     @Column(length = 100)

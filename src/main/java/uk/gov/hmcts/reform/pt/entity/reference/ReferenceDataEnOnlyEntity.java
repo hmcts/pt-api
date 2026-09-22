@@ -25,8 +25,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public abstract class ReferenceDataEnOnlyEntity {
     @Id
+    @Column(length = 64)
     private String key;
 
+    @Column(length = 128)
     private String valueEn;
 
     @Enumerated(EnumType.STRING)

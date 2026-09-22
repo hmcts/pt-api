@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity.reference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -23,9 +24,13 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Table(name = "interpreter_language")
 public class InterpreterLanguageEntity {
     @Id
+    @Column(length = 64)
     private String key;
 
+    @Column(length = 128)
     private String valueEn;
+
+    @Column(length = 128)
     private String valueCy;
 
     @Enumerated(EnumType.STRING)
