@@ -19,6 +19,7 @@ ccd:
     retain-and-dispose:
       # off | dry_run | live. dry_run logs what would be removed without removing it.
       mode: ${RETAIN_AND_DISPOSE_MODE:live}
+      cron: "*/10 * * * *" # remove after testing in preview
       system-user:
         username: ${IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
         password: ${IDAM_SYSTEM_USER_PASSWORD:password}
