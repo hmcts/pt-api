@@ -260,7 +260,7 @@ public class ApplicationMapper {
 
     public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
-        if (marketRentCase == null) {
+        if (marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
@@ -283,7 +283,7 @@ public class ApplicationMapper {
 
     public static TenancyAgreementDto mapTenancyAgreement(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
-        if (tenancyDetails == null) {
+        if (tenancyDetails == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
