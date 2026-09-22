@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -128,7 +128,8 @@ class CaseApplicationServiceTest {
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
             .caseType(CaseTypeEntity.builder()
-                          .applicationTypeName(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
+                          .key(ApplicationType.CHALLENGE_EXCESSIVE_RENT.toString())
+                          .valueEn(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .build();
     }
 }

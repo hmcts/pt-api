@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -1160,7 +1160,7 @@ public class ApplicationMapperTest {
             .caseParty(caseParty)
             .caseType(
                 applicationType != null
-                    ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
+                    ? CaseTypeEntity.builder().key(applicationType.toString()).valueEn(applicationType).build()
                     : null)
             .createdDate(CREATED_DATE)
             .build();

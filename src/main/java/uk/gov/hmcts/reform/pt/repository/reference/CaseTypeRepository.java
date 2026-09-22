@@ -6,6 +6,6 @@ import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 
 import java.util.Optional;
 
-public interface CaseTypeRepository extends JpaRepository<CaseTypeEntity, Long> {
+public interface CaseTypeRepository extends JpaRepository<CaseTypeEntity, String> {
     Optional<CaseTypeEntity> findFirstByValueEn(ApplicationType valueEn);
 }
