@@ -109,10 +109,11 @@ public class PropertyDetails {
     private String otherFacilitiesDetails;
 
     @CCD(
-        label = "Outside property document",
+        label = "Outside property documents",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument outsidePropertyDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> outsidePropertyDocument = new ArrayList<>();
 
     @CCD(
         label = "Property rooms documents",

@@ -54,7 +54,7 @@ public class DocumentService {
             details.getFloorPlanDocuments(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        updateMultipleDocuments(
             DocumentType.OUTSIDE_PROPERTY,
             details.getOutsidePropertyDocument(),
             ptCaseEntity
