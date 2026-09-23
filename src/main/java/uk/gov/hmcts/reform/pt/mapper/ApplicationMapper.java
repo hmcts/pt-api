@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.pt.mapper;
 
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
-import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class ApplicationMapper {
-    public static ApplicationDto toDto(CaseApplicationEntity entity) {
+    public static EnrichedApplicationDto toDto(CaseApplicationEntity entity) {
         CasePartyEntity caseParty = entity.getCaseParty();
         if (caseParty == null) {
             throw new CasePartyNotFoundException("Case party not found for application: " + entity.getId());
@@ -42,7 +42,7 @@ public class ApplicationMapper {
             throw new CaseNotFoundException("Case not found for application: " + entity.getId());
         }
 
-        return ApplicationDto.builder()
+        return EnrichedApplicationDto.builder()
             .caseReference(ptCase.getCaseReference())
             .postcode(
                 !ptCase.getAddresses().isEmpty()

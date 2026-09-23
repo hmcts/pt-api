@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
@@ -79,7 +80,7 @@ public class ApplicationControllerTest {
 
     @Test
     void shouldGetApplicationByCaseReference() throws Exception {
-        ApplicationDto application = ApplicationDto.builder()
+        EnrichedApplicationDto application = EnrichedApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
             .build();
 
