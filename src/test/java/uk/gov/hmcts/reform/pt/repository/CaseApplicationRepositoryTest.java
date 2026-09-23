@@ -53,6 +53,8 @@ public class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseAp
 
         saveApplication(caseReference, idamId);
 
+        insertCcdCase(caseReference, "AWAITING_SUBMISSION_TO_HMCTS");
+
         Optional<CaseApplicationEntity> result = repository.findByPartyIdamIdAndCaseReference(caseReference, idamId);
 
         assertThat(result).isPresent();
@@ -78,6 +80,18 @@ public class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseAp
         assertThat(summary.getCaseReference()).isEqualTo(activeReference);
         assertThat(summary.getId()).isNotNull();
         assertThat(summary.getCreatedDate()).isNotNull();
+    }
+
+    @Test
+    void findByPartyIdamIdAndCaseReference_returnsEmpty_whenPendingDisposal() {
+        UUID idamId = UUID.randomUUID();
+        long caseReference = 1234567890123456L;
+        saveApplication(caseReference, idamId);
+        insertCcdCase(caseReference, "PendingDisposal");
+
+        Optional<CaseApplicationEntity> result = repository.findByPartyIdamIdAndCaseReference(caseReference, idamId);
+
+        assertThat(result).isEmpty();
     }
 
     private void saveApplication(long caseReference, UUID idamId) {
