@@ -262,15 +262,15 @@ public class ApplicationMapper {
 
     public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
-        if (marketRentCase == null) {
+        if (marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
         return MarketRentDto.builder()
-            .applicantSuggestedMonthlyMarketRent(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRent))
-            .applicantSuggestedMonthlyMarketRentReasons(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMonthlyMarketRentReasons))
+            .applicantSuggestedMarketRent(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
+            .applicantSuggestedMarketRentReasons(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
                 findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
                     .map(ApplicationMapper::mapDocument)
@@ -285,7 +285,7 @@ public class ApplicationMapper {
 
     public static TenancyAgreementDto mapTenancyAgreement(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
-        if (tenancyDetails == null) {
+        if (tenancyDetails == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 

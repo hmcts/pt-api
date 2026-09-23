@@ -683,8 +683,8 @@ class ApplicationMapperTest {
             .build();
 
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
-            .applicantSuggestedMonthlyMarketRentReasons("Similar properties in the area rent for this amount")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
             .build();
@@ -697,8 +697,8 @@ class ApplicationMapperTest {
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
-        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
-        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons())
+        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentReasons())
             .isEqualTo("Similar properties in the area rent for this amount");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
@@ -715,8 +715,8 @@ class ApplicationMapperTest {
     @Test
     void shouldMapMarketRentDetailsWithoutEvidenceDocument() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .applicantSuggestedMonthlyMarketRent(new BigDecimal("1500.00"))
-            .applicantSuggestedMonthlyMarketRentReasons("Reasons")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Reasons")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
@@ -728,8 +728,8 @@ class ApplicationMapperTest {
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
-        assertThat(result.getApplicantSuggestedMonthlyMarketRent()).isEqualTo(new BigDecimal("1500.00"));
-        assertThat(result.getApplicantSuggestedMonthlyMarketRentReasons()).isEqualTo("Reasons");
+        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
         assertThat(result.getSuggestedMarketRentEvidence()).isNull();
@@ -739,11 +739,44 @@ class ApplicationMapperTest {
     void shouldReturnNullWhenMarketRentCaseIsNullForMarketRentDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCases(Collections.emptyList())
+            .documents(Collections.emptyList())
             .build();
 
         MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapMarketRentDocumentsWhenNoMarketRentCaseExists() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
+            .url("http://dm-store/doc/proposed-rent")
+            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+            .fileName("proposed-rent.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(Collections.emptyList())
+            .documents(List.of(document))
+            .build();
+
+        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getApplicantSuggestedMarketRent()).isNull();
+        assertThat(result.getApplicantSuggestedMarketRentReasons()).isNull();
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isNull();
+        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
+        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/proposed-rent/binary");
+        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -828,11 +861,42 @@ class ApplicationMapperTest {
     void shouldReturnNullWhenTenancyDetailsIsNullForTenancyAgreement() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .tenancyDetails(Collections.emptyList())
+            .documents(Collections.emptyList())
             .build();
 
         TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    public void shouldMapTenancyAgreementDocumentsWhenNoTenancyDetailsExists() {
+        DocumentEntity document = DocumentEntity.builder()
+            .documentType(DocumentType.TENANCY_AGREEMENT)
+            .url("http://dm-store/doc/tenancy-agreement")
+            .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
+            .fileName("tenancy-agreement.pdf")
+            .contentType("application/pdf")
+            .size(2048L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .tenancyDetails(Collections.emptyList())
+            .documents(List.of(document))
+            .build();
+
+        TenancyAgreementDto result = ApplicationMapper.mapTenancyAgreement(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCopyOfTenancyAgreement()).isNull();
+        assertThat(result.getNoTenancyAgreementReason()).isNull();
+        assertThat(result.getTenancyAgreementDocument()).isNotNull();
+        assertThat(result.getTenancyAgreementDocument().getUrl()).isEqualTo("http://dm-store/doc/tenancy-agreement");
+        assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
+        assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
     @Test
@@ -954,8 +1018,8 @@ class ApplicationMapperTest {
     private static List<MarketRentCaseEntity> marketRentCases() {
         return List.of(MarketRentCaseEntity.builder()
                            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
-                           .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
-                           .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+                           .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
+                           .applicantSuggestedMarketRentReasons("Market rate for the area")
                            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
                            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
                            .build());
