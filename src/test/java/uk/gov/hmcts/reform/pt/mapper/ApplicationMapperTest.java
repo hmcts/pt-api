@@ -1150,8 +1150,8 @@ class ApplicationMapperTest {
             .currentRentsDetails(CurrentRentsDetailsDto.builder().build())
             .marketRentDetails(
                 MarketRentDto.builder()
-                    .applicantSuggestedMonthlyMarketRent(new BigDecimal("1200.00"))
-                    .applicantSuggestedMonthlyMarketRentReasons("Market rate for the area")
+                    .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
+                    .applicantSuggestedMarketRentReasons("Market rate for the area")
                     .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
                     .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
                     .build())
