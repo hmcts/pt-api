@@ -4,3 +4,4 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CASE_TYPE_SUFFIX: "staging"
+    RETAIN_AND_DISPOSE_MODE: "live"

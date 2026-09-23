@@ -18,8 +18,7 @@ ccd:
   decentralised-runtime:
     retain-and-dispose:
       # off | dry_run | live. dry_run logs what would be removed without removing it.
-      mode: ${RETAIN_AND_DISPOSE_MODE:live}
-      cron: "0 */10 * * * *" # remove after testing in preview
+      mode: ${RETAIN_AND_DISPOSE_MODE:off}
       system-user:
         username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
         password: ${PT_IDAM_SYSTEM_PASSWORD:password}
