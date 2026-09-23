@@ -34,7 +34,8 @@ public enum UserRole implements HasRole {
     LEADERSHIP_JUDGE("leadership-judge", Set.of(R), RAS),
     CIRCUIT_JUDGE("circuit-judge", Set.of(R), RAS),
     JUDGE("judge", Set.of(R), RAS),
-    SUPER_USER("caseworker-pt-superuser", CRU, IDAM);
+    SUPER_USER("caseworker-pt-superuser", CRU, IDAM),
+    SYSTEM_USER("pt-system-update", CRU, IDAM);
 
     @JsonValue
     private final String role;
