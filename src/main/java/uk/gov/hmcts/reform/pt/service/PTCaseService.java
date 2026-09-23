@@ -127,6 +127,11 @@ public class PTCaseService {
         if (tenancyAgreementDetails != null) {
             documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
         }
+
+        MarketRentDetails marketRentDetails = ptCase.getMarketRentDetails();
+        if (marketRentDetails != null) {
+            documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        }
     }
 
     @Transactional

@@ -736,6 +736,38 @@ class PTCaseServiceTest {
     }
 
     @Test
+    @DisplayName("Should upsert notice of rent increase documents without touching the case party")
+    void shouldUpdateNoticeOfRentIncreaseDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        NoticeOfRentIncreaseDetails noticeOfRentIncreaseDetails = NoticeOfRentIncreaseDetails.builder().build();
+        PTCase ptCase = PTCase.builder().noticeOfRentIncreaseDetails(noticeOfRentIncreaseDetails).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should upsert market rent documents without touching the case party")
+    void shouldUpdateMarketRentDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
+        PTCase ptCase = PTCase.builder().marketRentDetails(marketRentDetails).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("Should never delete a document while updating the case")
     void updateShouldNeverDeleteDocuments() {
         long caseReference = 1234567890123456L;
