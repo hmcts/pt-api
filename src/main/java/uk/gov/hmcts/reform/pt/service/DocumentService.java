@@ -59,9 +59,9 @@ public class DocumentService {
             details.getOutsidePropertyDocument(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        updateMultipleDocuments(
             DocumentType.TENANT_REPAIRS_EVIDENCE,
-            details.getRepairsEvidenceDocument(),
+            details.getRepairsEvidenceDocuments(),
             ptCaseEntity
         );
         updateMultipleDocuments(

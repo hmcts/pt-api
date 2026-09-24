@@ -201,10 +201,11 @@ public class ApplicationMapper {
             .tenantRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantRepairsDetails))
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
-            .repairsEvidenceDocument(
-                findDocumentOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
+            .repairsEvidenceDocuments(
+                findDocumentsOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
+                    .stream()
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                    .toList())
             .build();
     }
 

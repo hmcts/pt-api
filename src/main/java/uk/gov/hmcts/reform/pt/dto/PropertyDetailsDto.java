@@ -37,5 +37,5 @@ public class PropertyDetailsDto {
     private String landlordRepairsDetails;
     private String tenantRepairsDetails;
     private YesNoNotSure anyTenantsMadePropertyRepairs;
-    private DocumentDto repairsEvidenceDocument;
+    private List<DocumentDto> repairsEvidenceDocuments;
 }

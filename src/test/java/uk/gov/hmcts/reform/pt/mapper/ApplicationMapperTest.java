@@ -559,7 +559,7 @@ public class ApplicationMapperTest {
                 .size(2000L)
                 .build()
         );
-        assertThat(result.getRepairsEvidenceDocument()).isEqualTo(
+        assertThat(result.getRepairsEvidenceDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/repairs")
                 .binaryUrl("http://dm-store/doc/repairs/binary")
