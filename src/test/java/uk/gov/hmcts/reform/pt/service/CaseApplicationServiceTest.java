@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
@@ -17,8 +19,12 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
+import uk.gov.hmcts.reform.pt.mapper.ApplicationSummaryMapper;
+import uk.gov.hmcts.reform.pt.mapper.ApplicationSummaryMapperImpl;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
+import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,24 +46,60 @@ class CaseApplicationServiceTest {
     @Mock
     private CaseApplicationRepository applicationRepository;
 
+    @Spy
+    private ApplicationSummaryMapper applicationSummaryMapper = new ApplicationSummaryMapperImpl();
+
     @InjectMocks
     private CaseApplicationService applicationService;
+
+    /**
+     * Stand-in for the projection Spring Data proxies from the native query result.
+     */
+    private record Summary(
+        Long id,
+        long caseReference,
+        LocalDateTime createdDate,
+        LocalDateTime submittedDate
+    ) implements ApplicationSummary {
+        @Override
+        public Long getId() {
+            return id;
+        }
+
+        @Override
+        public long getCaseReference() {
+            return caseReference;
+        }
+
+        @Override
+        public LocalDateTime getCreatedDate() {
+            return createdDate;
+        }
+
+        @Override
+        public LocalDateTime getSubmittedDate() {
+            return submittedDate;
+        }
+    }
 
     @Test
     @DisplayName("Should get applications for a user")
     void getApplicationsForUser() {
         UUID userId = UUID.randomUUID();
-        CaseApplicationEntity entity = createCaseApplication(CASE_REFERENCE, userId);
+        LocalDateTime created = LocalDateTime.of(2026, 1, 2, 3, 4);
+        LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
 
-        when(applicationRepository.findAllByCasePartyAccessIdamId(userId))
-            .thenReturn(List.of(entity));
+        when(applicationRepository.findActiveByCasePartyAccessIdamId(userId))
+            .thenReturn(List.of(new Summary(1L, CASE_REFERENCE, created, submitted)));
 
         List<ApplicationDto> result = applicationService.getCasesForUser(userId);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().getCaseReference()).isEqualTo(CASE_REFERENCE);
+        assertThat(result.getFirst().getCreatedDate()).isEqualTo(created);
+        assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
 
-        verify(applicationRepository).findAllByCasePartyAccessIdamId(userId);
+        verify(applicationRepository).findActiveByCasePartyAccessIdamId(userId);
         verifyNoMoreInteractions(applicationRepository);
     }
 
@@ -70,7 +112,7 @@ class CaseApplicationServiceTest {
         when(applicationRepository.findByPartyIdamIdAndCaseReference(CASE_REFERENCE, userId))
             .thenReturn(Optional.of(entity));
 
-        ApplicationDto result = applicationService.getCaseByCaseReference(CASE_REFERENCE, userId);
+        EnrichedApplicationDto result = applicationService.getCaseByCaseReference(CASE_REFERENCE, userId);
 
         assertThat(result.getCaseReference()).isEqualTo(CASE_REFERENCE);
         assertThat(result.getTenancyType()).isEqualTo(ASSURED_PERIODIC_TENANCY);

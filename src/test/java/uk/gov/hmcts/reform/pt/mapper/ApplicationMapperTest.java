@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
-import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
@@ -67,7 +67,7 @@ public class ApplicationMapperTest {
         UUID userId = UUID.randomUUID();
         CaseApplicationEntity entity = fullEntity(userId);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getCaseReference()).isEqualTo(CASE_REFERENCE);
         assertThat(result.getPostcode()).isEqualTo(POSTCODE);
@@ -269,7 +269,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getPostcode()).isEqualTo("");
     }
@@ -284,7 +284,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getApplicationType()).isNull();
     }
@@ -299,7 +299,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toDto(entity);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
     }
