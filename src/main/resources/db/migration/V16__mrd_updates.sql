@@ -77,12 +77,6 @@ ALTER TABLE case_party_flag
   ADD COLUMN paths TEXT;
 
 ALTER TABLE case_party_flag
-  ALTER COLUMN id DROP IDENTITY IF EXISTS;
-
-ALTER TABLE case_party_flag
-  ALTER COLUMN id TYPE UUID USING gen_random_uuid();
-
-ALTER TABLE case_party_flag
   ALTER COLUMN status SET NOT NULL,
   ALTER COLUMN paths SET NOT NULL;
 
