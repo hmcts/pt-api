@@ -142,6 +142,9 @@ ALTER TABLE flag_details
 ALTER TABLE case_application
   DROP CONSTRAINT IF EXISTS case_application_case_type_id_fkey;
 
+ALTER TABLE case_application
+  DROP COLUMN IF EXISTS case_type_id;
+
 ALTER TABLE case_type
   DROP COLUMN last_modified_by;
 
@@ -528,6 +531,3 @@ ALTER TABLE pt_case
 CREATE INDEX pt_case_case_type_key_idx
   ON pt_case(case_type_key);
 
-ALTER TABLE case_application
-  ADD FOREIGN KEY (case_type_id)
-  REFERENCES case_type ("key");

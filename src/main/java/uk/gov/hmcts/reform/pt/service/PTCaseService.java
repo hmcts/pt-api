@@ -51,8 +51,11 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
+        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
+            .caseType(caseType)
             .build();
         ptCaseRepository.save(ptCaseEntity);
 
@@ -60,10 +63,8 @@ public class PTCaseService {
 
         CasePartyEntity caseParty = casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
 
-        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
         CaseApplicationEntity application = CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(caseType)
             .build();
         caseApplicationRepository.save(application);
     }

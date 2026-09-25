@@ -107,6 +107,9 @@ class CaseApplicationServiceTest {
     private CaseApplicationEntity createCaseApplication(long caseReference, UUID userId) {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
+            .caseType(CaseTypeEntity.builder()
+                          .key(ApplicationType.CHALLENGE_EXCESSIVE_RENT.toString())
+                          .valueEn(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .addresses(List.of(AddressEntity.builder().postcode("AB12 3CD").build()))
             .tenancyDetails(List.of(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build()))
             .build();
@@ -127,9 +130,6 @@ class CaseApplicationServiceTest {
 
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(CaseTypeEntity.builder()
-                          .key(ApplicationType.CHALLENGE_EXCESSIVE_RENT.toString())
-                          .valueEn(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .build();
     }
 }
