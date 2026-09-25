@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
 
-public class CaseworkerReadAccessTest {
+class CaseworkerReadAccessTest {
 
     @Test
     void shouldGrantReadAccessToPtCaseWorkerOnly() {

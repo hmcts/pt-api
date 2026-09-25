@@ -18,23 +18,24 @@ import java.util.Locale;
 public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
 
     private static final Logger logger = LoggerFactory.getLogger(HighLevelDataSetupApp.class);
+    private static final String PUBLIC = "PUBLIC";
 
     private static final CcdRoleConfig[] CCD_ROLES = {
-        new CcdRoleConfig("caseworker-pt", "PUBLIC"),
-        new CcdRoleConfig("caseworker-pt-solicitor", "PUBLIC"),
-        new CcdRoleConfig("caseworker-ras-validation", "PUBLIC"),
-        new CcdRoleConfig("citizen", "PUBLIC"),
-        new CcdRoleConfig("caseworker", "PUBLIC"),
-        new CcdRoleConfig("GS_profile", "PUBLIC"),
-        new CcdRoleConfig("ctsc", "PUBLIC"),
-        new CcdRoleConfig("hearing-centre-admin", "PUBLIC"),
-        new CcdRoleConfig("wlu-admin", "PUBLIC"),
-        new CcdRoleConfig("judge", "PUBLIC"),
-        new CcdRoleConfig("fee-paid-judge", "PUBLIC"),
-        new CcdRoleConfig("circuit-judge", "PUBLIC"),
-        new CcdRoleConfig("leadership-judge", "PUBLIC"),
-        new CcdRoleConfig("pt-system-update", "PUBLIC"),
-        new CcdRoleConfig("caseworker-pt-superuser", "PUBLIC")
+        new CcdRoleConfig("caseworker-pt", PUBLIC),
+        new CcdRoleConfig("caseworker-pt-solicitor", PUBLIC),
+        new CcdRoleConfig("caseworker-ras-validation", PUBLIC),
+        new CcdRoleConfig("citizen", PUBLIC),
+        new CcdRoleConfig("caseworker", PUBLIC),
+        new CcdRoleConfig("GS_profile", PUBLIC),
+        new CcdRoleConfig("ctsc", PUBLIC),
+        new CcdRoleConfig("hearing-centre-admin", PUBLIC),
+        new CcdRoleConfig("wlu-admin", PUBLIC),
+        new CcdRoleConfig("judge", PUBLIC),
+        new CcdRoleConfig("fee-paid-judge", PUBLIC),
+        new CcdRoleConfig("circuit-judge", PUBLIC),
+        new CcdRoleConfig("leadership-judge", PUBLIC),
+        new CcdRoleConfig("pt-system-update", PUBLIC),
+        new CcdRoleConfig("caseworker-pt-superuser", PUBLIC)
     };
 
     private final CcdEnvironment environment;

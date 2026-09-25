@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NullSafeSetterTest {
+class NullSafeSetterTest {
     @Test
     @DisplayName("Should invoke setter when value is not null")
     void setIfNotNullWhenValuePresent() {

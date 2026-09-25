@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CasePartyRoleRepositoryTest extends AbstractRepositoryTest<CasePartyRoleRepository> {
+class CasePartyRoleRepositoryTest extends AbstractRepositoryTest<CasePartyRoleRepository> {
 
     @Autowired
     protected CasePartyRoleRepositoryTest(CasePartyRoleRepository repository) {
@@ -19,7 +19,7 @@ public class CasePartyRoleRepositoryTest extends AbstractRepositoryTest<CasePart
 
     @Test
     @DisplayName("Should return case party role for role name")
-    public void findFirstByRoleNameReturnsCasePartyRole() {
+    void findFirstByRoleNameReturnsCasePartyRole() {
         PartyRole roleName = PartyRole.APPLICANT;
         CasePartyRoleEntity role = CasePartyRoleEntity.builder()
             .roleName(roleName)
