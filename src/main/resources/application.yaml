@@ -14,6 +14,15 @@ security:
 testing-support:
   enabled: ${ENABLE_TESTING_SUPPORT:false}
 
+ccd:
+  decentralised-runtime:
+    retain-and-dispose:
+      # off | dry_run | live. dry_run logs what would be removed without removing it.
+      mode: ${RETAIN_AND_DISPOSE_MODE:off}
+      system-user:
+        username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
+        password: ${PT_IDAM_SYSTEM_PASSWORD:password}
+
 # If you use a database then uncomment the `group:, readiness: and include: "db"` lines in the health probes and uncomment the datasource section
 management:
   endpoint:
@@ -96,6 +105,10 @@ flyway:
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:5062}
+  client:
+    id: ${IDAM_CLIENT_ID:pt-api}
+    secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
+    redirect_uri: ${IDAM_CLIENT_REDIRECT_URI:http://localhost:3000/oauth2/callback}
   s2s-auth:
     url: ${IDAM_S2S_AUTH_URL:http://localhost:4502}
     totp_secret: ${PT_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
