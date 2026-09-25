@@ -49,7 +49,7 @@ ALTER TABLE case_hearing
 
 -- Case party table
 ALTER TABLE case_party
-  ADD COLUMN entity_role_code_key TEXT;
+  ADD COLUMN entity_role_code_key VARCHAR(64);
 
 -- Case party flag table
 ALTER TABLE flag_ref_data
