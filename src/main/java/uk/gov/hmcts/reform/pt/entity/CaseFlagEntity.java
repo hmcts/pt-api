@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,8 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -21,39 +25,24 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "case_flag")
-public class CaseFlagEntity extends AuditableEntity {
-    @Column(length = 100)
+public class CaseFlagEntity {
+    @Id
+    private UUID id;
+
+    @Column(length = 16)
     private String flagCode;
 
-    @Column(length = 100)
     private String subTypeKey;
-
-    @Column(length = 100)
     private String subTypeValue;
-
-    @Column(length = 100)
     private String subTypeValueCy;
-
-    @Column(length = 100)
     private String otherDescription;
-
-    @Column(length = 100)
     private String otherDescriptionCy;
-
-    @Column(length = 100)
     private String flagComment;
-
-    @Column(length = 100)
     private String flagCommentCy;
-
-    @Column(length = 100)
     private String flagUpdateComment;
-
-    @Column(length = 100)
     private String flagUpdateCommentCy;
-
-    @Column(length = 100)
-    private String flagPath;
+    private String path;
+    private String status;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -62,4 +51,15 @@ public class CaseFlagEntity extends AuditableEntity {
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedDate;
+
+    @Column(length = 100)
+    private String lastModifiedBy;
 }

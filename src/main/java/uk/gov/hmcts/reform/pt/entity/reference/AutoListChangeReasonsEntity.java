@@ -1,11 +1,11 @@
-package uk.gov.hmcts.reform.pt.entity;
+package uk.gov.hmcts.reform.pt.entity.reference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,25 +21,16 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "flag_ref_data")
-public class FlagReferenceDataEntity extends AuditableEntity {
-    @Column(length = 100)
-    private String flagCode;
+@Table(name = "auto_list_change_reasons")
+public class AutoListChangeReasonsEntity {
+    @Id
+    @Column(length = 64)
+    private String key;
 
-    @Column(length = 100)
-    private String name;
-
-    @Column(length = 100)
-    private String nameCy;
+    @Column(length = 128)
+    private String valueEn;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo availableExternally;
-
-    @Column(length = 10)
-    private String visibility;
-
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo hearingRelevant;
+    private YesOrNo active;
 }

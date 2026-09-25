@@ -23,6 +23,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseSubtypeEntity;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,6 +151,10 @@ public class PTCaseEntity extends AuditableEntity {
     private List<PropertyInspectionEntity> propertyInspections = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_type_id")
+    @JoinColumn(name = "case_type_key")
     private CaseTypeEntity caseType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_subtype_key")
+    private CaseSubtypeEntity caseSubtype;
 }

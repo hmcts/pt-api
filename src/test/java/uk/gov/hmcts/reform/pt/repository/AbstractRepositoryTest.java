@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Container;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-abstract class AbstractRepositoryTest<T extends JpaRepository<?, Long>> {
+abstract class AbstractRepositoryTest<T extends JpaRepository<?, ?>> {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
 
