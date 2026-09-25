@@ -126,7 +126,9 @@ ALTER TABLE flag_details
 
 ALTER TABLE flag_details
   ADD COLUMN case_flag_id UUID,
-  ADD COLUMN case_party_flag_id UUID;
+  ADD COLUMN case_party_flag_id UUID,
+  ADD COLUMN value_en TEXT,
+  ADD COLUMN value_cy TEXT;
 
 ALTER TABLE flag_details
   ALTER COLUMN flag_code SET NOT NULL,

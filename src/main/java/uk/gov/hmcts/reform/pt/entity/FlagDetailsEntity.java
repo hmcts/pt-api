@@ -36,6 +36,9 @@ public class FlagDetailsEntity {
     @Column(length = 16)
     private String flagCode;
 
+    private String valueEn;
+    private String valueCy;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo availableExternally;
