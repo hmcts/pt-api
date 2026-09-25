@@ -550,7 +550,7 @@ public class ApplicationMapperTest {
                 .size(1000L)
                 .build()
         );
-        assertThat(result.getOutsidePropertyDocument()).isEqualTo(
+        assertThat(result.getOutsidePropertyDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/outside")
                 .binaryUrl("http://dm-store/doc/outside/binary")

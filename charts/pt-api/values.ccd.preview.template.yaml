@@ -148,11 +148,13 @@ ccd:
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: http://${SERVICE_NAME}-ccd-definition-store/elastic-support/global-search/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: http://${SERVICE_NAME}-ccd-definition-store/elastic-support/case-types
         ALLOW_CONFIG_MUTATIONS: true
+        SESSION_KEYS: '${SESSION_KEYS}'
       keyVaults:
         ccd:
           secrets:
             - microservicekey-ccd-admin
             - ccd-admin-web-oauth2-client-secret
+            - session-keys
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
@@ -213,6 +215,7 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+          - appinsights-connection-string-mc
 ccd-case-document-am-api:
   enabled: true
   java:
