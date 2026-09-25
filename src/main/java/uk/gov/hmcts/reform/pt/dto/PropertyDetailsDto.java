@@ -26,7 +26,7 @@ public class PropertyDetailsDto {
     private String indoorFeatures;
     private YesOrNo otherFacilitiesAvailable;
     private String otherFacilitiesDetails;
-    private DocumentDto outsidePropertyDocument;
+    private List<DocumentDto> outsidePropertyDocuments;
     private List<DocumentDto> propertyRoomsDocuments;
     private YesOrNo furnitureProvidedInTenancy;
     private String furnitureProvidedInTenancyDetails;
