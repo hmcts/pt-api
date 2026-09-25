@@ -140,9 +140,6 @@ ALTER TABLE flag_details
 ALTER TABLE case_application
   DROP CONSTRAINT IF EXISTS case_application_case_type_id_fkey;
 
-ALTER TABLE case_application
-  ALTER COLUMN case_type_id TYPE VARCHAR(64); -- todo drop this?
-
 ALTER TABLE case_type
   DROP COLUMN last_modified_by;
 
