@@ -26,7 +26,7 @@ public class PropertyDetailsDto {
     private String indoorFeatures;
     private YesOrNo otherFacilitiesAvailable;
     private String otherFacilitiesDetails;
-    private DocumentDto outsidePropertyDocument;
+    private List<DocumentDto> outsidePropertyDocuments;
     private List<DocumentDto> propertyRoomsDocuments;
     private YesOrNo furnitureProvidedInTenancy;
     private String furnitureProvidedInTenancyDetails;
@@ -37,5 +37,5 @@ public class PropertyDetailsDto {
     private String landlordRepairsDetails;
     private String tenantRepairsDetails;
     private YesNoNotSure anyTenantsMadePropertyRepairs;
-    private DocumentDto repairsEvidenceDocument;
+    private List<DocumentDto> repairsEvidenceDocuments;
 }

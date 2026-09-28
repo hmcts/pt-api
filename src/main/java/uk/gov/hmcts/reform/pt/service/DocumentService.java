@@ -54,14 +54,14 @@ public class DocumentService {
             details.getFloorPlanDocuments(),
             ptCaseEntity
         );
-        this.updateSingleDocument(
+        this.updateMultipleDocuments(
             DocumentType.OUTSIDE_PROPERTY,
-            details.getOutsidePropertyDocument(),
+            details.getOutsidePropertyDocuments(),
             ptCaseEntity
         );
-        this.updateSingleDocument(
+        this.updateMultipleDocuments(
             DocumentType.TENANT_REPAIRS_EVIDENCE,
-            details.getRepairsEvidenceDocument(),
+            details.getRepairsEvidenceDocuments(),
             ptCaseEntity
         );
         this.updateMultipleDocuments(

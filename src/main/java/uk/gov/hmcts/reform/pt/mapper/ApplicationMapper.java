@@ -179,10 +179,11 @@ public class ApplicationMapper {
             .indoorFeatures(get(marketRentCase, MarketRentCaseEntity::getPropertyIndoorFeatures))
             .otherFacilitiesAvailable(get(tenancyDetails, TenancyDetailsEntity::getTenancyIncludeFacilities))
             .otherFacilitiesDetails(get(tenancyDetails, TenancyDetailsEntity::getOtherFacilitiesDetails))
-            .outsidePropertyDocument(
-                findDocumentOfType(DocumentType.OUTSIDE_PROPERTY, ptCaseEntity)
+            .outsidePropertyDocuments(
+                findDocumentsOfType(DocumentType.OUTSIDE_PROPERTY, ptCaseEntity)
+                    .stream()
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                    .toList())
             .propertyRoomsDocuments(
                 findDocumentsOfType(DocumentType.PROPERTY_ROOMS, ptCaseEntity)
                     .stream()
@@ -203,10 +204,11 @@ public class ApplicationMapper {
             .tenantRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantRepairsDetails))
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
-            .repairsEvidenceDocument(
-                findDocumentOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
+            .repairsEvidenceDocuments(
+                findDocumentsOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
+                    .stream()
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                    .toList())
             .build();
     }
 

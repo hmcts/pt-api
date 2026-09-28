@@ -109,10 +109,11 @@ public class PropertyDetails {
     private String otherFacilitiesDetails;
 
     @CCD(
-        label = "Outside property document",
+        label = "Outside property documents",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument outsidePropertyDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> outsidePropertyDocuments = new ArrayList<>();
 
     @CCD(
         label = "Property rooms documents",
@@ -176,8 +177,9 @@ public class PropertyDetails {
     private YesNoNotSure anyTenantsMadePropertyRepairs;
 
     @CCD(
-        label = "Have any tenants made property repairs details",
+        label = "Repairs evidence documents",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument repairsEvidenceDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> repairsEvidenceDocuments = new ArrayList<>();
 }

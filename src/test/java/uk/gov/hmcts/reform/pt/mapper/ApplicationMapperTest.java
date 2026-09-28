@@ -1146,6 +1146,8 @@ class ApplicationMapperTest {
                     .propertyType(PropertyType.TERRACED_HOUSE)
                     .floorPlanDocuments(List.of())
                     .propertyRoomsDocuments(List.of())
+                    .outsidePropertyDocuments(List.of())
+                    .repairsEvidenceDocuments(List.of())
                     .build())
             .currentRentsDetails(CurrentRentsDetailsDto.builder().build())
             .marketRentDetails(
@@ -1196,14 +1198,15 @@ class ApplicationMapperTest {
             .indoorFeatures("Indoor features")
             .otherFacilitiesAvailable(YesOrNo.YES)
             .otherFacilitiesDetails("Parking and garden")
-            .outsidePropertyDocument(
-                DocumentDto.builder()
-                    .url("http://dm-store/doc/outside")
-                    .binaryUrl("http://dm-store/doc/outside/binary")
-                    .filename("outside.pdf")
-                    .contentType("application/pdf")
-                    .size(2000L)
-                    .build())
+            .outsidePropertyDocuments(
+                List.of(
+                    DocumentDto.builder()
+                        .url("http://dm-store/doc/outside")
+                        .binaryUrl("http://dm-store/doc/outside/binary")
+                        .filename("outside.pdf")
+                        .contentType("application/pdf")
+                        .size(2000L)
+                        .build()))
             .propertyRoomsDocuments(List.of(
                 DocumentDto.builder()
                     .url("http://dm-store/doc/room1")
@@ -1229,14 +1232,15 @@ class ApplicationMapperTest {
             .landlordRepairsDetails("Roof leak")
             .tenantRepairsDetails("Painted wall")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
-            .repairsEvidenceDocument(
-                DocumentDto.builder()
-                    .url("http://dm-store/doc/repairs")
-                    .binaryUrl("http://dm-store/doc/repairs/binary")
-                    .filename("repairs.pdf")
-                    .contentType("application/pdf")
-                    .size(4000L)
-                    .build())
+            .repairsEvidenceDocuments(
+                List.of(
+                    DocumentDto.builder()
+                        .url("http://dm-store/doc/repairs")
+                        .binaryUrl("http://dm-store/doc/repairs/binary")
+                        .filename("repairs.pdf")
+                        .contentType("application/pdf")
+                        .size(4000L)
+                        .build()))
             .build();
     }
 
