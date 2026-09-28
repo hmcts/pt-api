@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
@@ -19,8 +18,6 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
-import uk.gov.hmcts.reform.pt.mapper.ApplicationSummaryMapper;
-import uk.gov.hmcts.reform.pt.mapper.ApplicationSummaryMapperImpl;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 
@@ -45,9 +42,6 @@ class CaseApplicationServiceTest {
 
     @Mock
     private CaseApplicationRepository applicationRepository;
-
-    @Spy
-    private ApplicationSummaryMapper applicationSummaryMapper = new ApplicationSummaryMapperImpl();
 
     @InjectMocks
     private CaseApplicationService applicationService;
