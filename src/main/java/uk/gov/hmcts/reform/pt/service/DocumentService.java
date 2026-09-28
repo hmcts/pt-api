@@ -54,14 +54,14 @@ public class DocumentService {
             details.getFloorPlanDocuments(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        updateMultipleDocuments(
             DocumentType.OUTSIDE_PROPERTY,
-            details.getOutsidePropertyDocument(),
+            details.getOutsidePropertyDocuments(),
             ptCaseEntity
         );
-        updateSingleDocument(
+        updateMultipleDocuments(
             DocumentType.TENANT_REPAIRS_EVIDENCE,
-            details.getRepairsEvidenceDocument(),
+            details.getRepairsEvidenceDocuments(),
             ptCaseEntity
         );
         updateMultipleDocuments(
@@ -132,6 +132,10 @@ public class DocumentService {
 
             saveDocument(documentEntity, uploadedDocument, documentType, ptCaseEntity);
         }
+    }
+
+    public List<DocumentEntity> findAllForCase(long caseReference) {
+        return documentRepository.findAllByPtCaseCaseReference(caseReference);
     }
 
     @Transactional

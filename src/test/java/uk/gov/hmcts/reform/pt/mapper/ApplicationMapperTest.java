@@ -550,7 +550,7 @@ public class ApplicationMapperTest {
                 .size(1000L)
                 .build()
         );
-        assertThat(result.getOutsidePropertyDocument()).isEqualTo(
+        assertThat(result.getOutsidePropertyDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/outside")
                 .binaryUrl("http://dm-store/doc/outside/binary")
@@ -559,7 +559,7 @@ public class ApplicationMapperTest {
                 .size(2000L)
                 .build()
         );
-        assertThat(result.getRepairsEvidenceDocument()).isEqualTo(
+        assertThat(result.getRepairsEvidenceDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/repairs")
                 .binaryUrl("http://dm-store/doc/repairs/binary")
