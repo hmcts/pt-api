@@ -1,0 +1,26 @@
+{
+  "case_details_before": {},
+  "case_details": {
+    "id": "${caseId}",
+    "jurisdiction": "PT",
+    "case_type_id": "${caseTypeId}",
+    "state": "PendingDisposal",
+    "security_classification": "PUBLIC",
+    "case_data": {
+      "applicantFirstName": "Test",
+      "applicantLastName": "Applicant",
+      "email": "test.applicant@example.com",
+      "postcode": "BH1 3BP",
+      "applicationType": "challengeRentIncrease",
+      "tenancyType": "assuredPeriodicTenancy"
+    }
+  },
+  "event_details": {
+    "case_type": "${caseTypeId}",
+    "event_name": "citizen-delete-application",
+    "event_id": "citizen-delete-application"
+  },
+  "internal_case_id": "${caseId}",
+  "start_revision": 1,
+  "merge_revision": 1
+}
