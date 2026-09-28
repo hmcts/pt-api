@@ -177,7 +177,7 @@ CREATE TABLE actual_cancellation_reason (
   value_en VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE actual_part_heard_reason (
@@ -185,7 +185,7 @@ CREATE TABLE actual_part_heard_reason (
   value_en VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE auto_list_change_reasons (
@@ -199,7 +199,7 @@ CREATE TABLE case_management_cancellation_reason (
   value_en VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE case_subtype (
@@ -209,7 +209,7 @@ CREATE TABLE case_subtype (
   parentkey VARCHAR(64),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE change_reasons (
@@ -217,7 +217,7 @@ CREATE TABLE change_reasons (
   value_en VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE custody_status (
@@ -225,7 +225,7 @@ CREATE TABLE custody_status (
   value_en VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE entity_role_code (
@@ -236,7 +236,7 @@ CREATE TABLE entity_role_code (
   parentcategory VARCHAR(64),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_date TIMESTAMP,
   last_modified_by VARCHAR(100)
 );
 
@@ -246,7 +246,7 @@ CREATE TABLE facilities (
   value_cy VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_date TIMESTAMP,
   hearing_venue_id BIGINT NOT NULL
 );
 
@@ -256,7 +256,7 @@ CREATE TABLE hearing_channel (
   value_cy VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE hearing_judge (
@@ -281,7 +281,7 @@ CREATE TABLE hearing_priority (
   value_cy VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE hearing_subchannel (
@@ -292,7 +292,7 @@ CREATE TABLE hearing_subchannel (
   parentkey VARCHAR(64),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE hearing_type (
@@ -302,7 +302,7 @@ CREATE TABLE hearing_type (
   lov_order BIGINT,
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE hearing_venue (
@@ -324,7 +324,7 @@ CREATE TABLE judge_type (
   lov_order BIGINT,
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE listing_status (
@@ -339,7 +339,7 @@ CREATE TABLE party_relationship_type (
   value_cy VARCHAR(128),
   active YES_NO,
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  last_modified_date TIMESTAMP
 );
 
 CREATE TABLE sign_language (
@@ -355,6 +355,121 @@ CREATE TABLE unavailable_type (
   value_cy VARCHAR(128),
   active YES_NO
 );
+
+-- Last modified date not null to nullable
+ALTER TABLE address
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE application_event
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE application_fee
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE application_retention
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE application_statement_of_truth
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE application_status
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_application
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_event
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_event
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_flag
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_hearing
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_mediation
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_note
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_notification
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_order
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_access
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_attribute_assertion
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_contact_preference
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_event
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_representative
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_type
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_state
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_subtype
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_task
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_type
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE decision_appeal
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE document
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE entity_role_code
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE fee_help_with_fees
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE flag_details
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE hardship_consideration
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE non_rent_case
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE notice_of_rent_change
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE property_inspection
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE pt_case
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE representative
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE representative_type
+  ALTER COLUMN last_modified_date DROP NOT NULL;
 
 -- Foreign keys
 ALTER TABLE case_hearing

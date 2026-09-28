@@ -57,7 +57,6 @@ public class CaseFlagEntity {
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 
     @Column(length = 100)

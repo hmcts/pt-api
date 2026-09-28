@@ -40,7 +40,6 @@ public abstract class ReferenceDataEnOnlyEntity {
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 }
 

@@ -38,6 +38,5 @@ public class CaseTypeEntity {
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 }
