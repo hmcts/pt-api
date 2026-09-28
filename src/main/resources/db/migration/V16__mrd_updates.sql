@@ -381,9 +381,6 @@ ALTER TABLE case_application
 ALTER TABLE case_event
   ALTER COLUMN last_modified_date DROP NOT NULL;
 
-ALTER TABLE case_event
-  ALTER COLUMN last_modified_date DROP NOT NULL;
-
 ALTER TABLE case_flag
   ALTER COLUMN last_modified_date DROP NOT NULL;
 
@@ -469,6 +466,21 @@ ALTER TABLE representative
   ALTER COLUMN last_modified_date DROP NOT NULL;
 
 ALTER TABLE representative_type
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_flag
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_evidence
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE case_party_role
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE market_rent_case
+  ALTER COLUMN last_modified_date DROP NOT NULL;
+
+ALTER TABLE tenancy_details
   ALTER COLUMN last_modified_date DROP NOT NULL;
 
 -- Foreign keys
