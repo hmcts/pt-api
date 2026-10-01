@@ -136,3 +136,7 @@ case_document_am:
 
 send-letter:
   url: ${SEND_LETTER_URL:http://localhost:8485}
+
+notify:
+  api-url: ${NOTIFY_URL:https://api.notifications.service.gov.uk}
+  api-key: ${PT_NOTIFY_API_KEY:AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}
