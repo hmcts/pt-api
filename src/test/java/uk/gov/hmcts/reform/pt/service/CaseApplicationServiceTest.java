@@ -82,7 +82,8 @@ class CaseApplicationServiceTest {
     @Test
     @DisplayName("Should throw InvalidCaseReferenceException when case reference is zero")
     void getApplicationByCaseReferenceInvalidCaseReference() {
-        assertThatThrownBy(() -> applicationService.getCaseByCaseReference(0L, UUID.randomUUID()))
+        UUID userId = UUID.randomUUID();
+        assertThatThrownBy(() -> applicationService.getCaseByCaseReference(0L, userId))
             .isInstanceOf(InvalidCaseReferenceException.class)
             .hasMessage("Invalid case reference: 0");
 

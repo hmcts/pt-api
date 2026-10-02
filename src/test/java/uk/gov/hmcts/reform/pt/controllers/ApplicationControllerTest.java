@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ApplicationController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ApplicationControllerTest {
+class ApplicationControllerTest {
 
     private static final String AUTH = "Bearer token";
     private static final String S2S = "Bearer s2s";

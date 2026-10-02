@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicationRepository> {
+class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicationRepository> {
 
     private final PTCaseRepository ptCaseRepository;
     private final CasePartyRepository casePartyRepository;
