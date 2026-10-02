@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.Map;
-import java.util.Random;
 
 @Slf4j
 @RestController
@@ -42,6 +41,8 @@ public class TestingSupportController {
     private final PTCaseService ptCaseService;
     private final PTCaseRepository ptCaseRepository;
     private final NotificationService notificationService;
+
+    private static final long TEST_NOTIFICATION_CASE_REFERENCE = 1234123412341234L;
 
     @DeleteMapping("/cases/{caseReference}")
     @PreAuthorize("hasAuthority('pt-system-update')")
@@ -87,10 +88,12 @@ public class TestingSupportController {
     public ResponseEntity<NotificationResponse> notifyTest(
         @RequestBody NotificationTestRequest request
     ) {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .caseReference(new Random().nextLong())
-            .build();
-        ptCaseRepository.save(ptCase);
+        PTCaseEntity ptCase = ptCaseRepository.findByCaseReference(TEST_NOTIFICATION_CASE_REFERENCE).orElseGet(() -> {
+            PTCaseEntity newPtCase = PTCaseEntity.builder()
+                .caseReference(TEST_NOTIFICATION_CASE_REFERENCE)
+                .build();
+            return ptCaseRepository.save(newPtCase);
+        });
 
         NotificationRequest notifyRequest = NotificationRequest.builder()
             .template(EmailTemplate.TEST_TEMPLATE)
