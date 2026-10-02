@@ -35,6 +35,6 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ccd-case-document-am-api.enabled
   - name: ccd-case-disposer
-    version: 0.2.38
+    version: 0.2.40
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ccd-case-disposer.enabled
