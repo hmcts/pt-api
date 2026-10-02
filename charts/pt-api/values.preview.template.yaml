@@ -35,6 +35,8 @@ java:
     SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
     RETAIN_AND_DISPOSE_MODE: "live"
     NOTIFY_URL: "https://api.notifications.service.gov.uk"
+    DB_SCHEDULER_EXECUTOR_ENABLED: true
+    DB_SCHEDULER_THREADS: "2"
   secrets:
     PT_DB_PASSWORD:
       secretRef: "{{ .Values.global.postgresSecret }}"
