@@ -66,6 +66,11 @@ spring:
   jpa:
     properties:
       dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        # Load lazy associations for up to this many owners per query instead of one at a time.
+        # ApplicationMapper walks caseParty and ptCase and then several of their collections, so
+        # without this each one costs a separate select per case.
+        default_batch_fetch_size: 25
 #      hibernate:
 #        dialect: org.hibernate.dialect.PostgreSQLDialect
 #        format_sql: true
