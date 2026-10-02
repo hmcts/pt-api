@@ -136,3 +136,20 @@ case_document_am:
 
 send-letter:
   url: ${SEND_LETTER_URL:http://localhost:8485}
+
+db-scheduler:
+  enabled: false # This disables the autoconfiguration of DB Scheduler. Always off.
+  executor-enabled: ${DB_SCHEDULER_EXECUTOR_ENABLED:true}
+  polling-interval-seconds: ${DB_SCHEDULER_POLLING_INTERVAL_SECONDS:10}
+  threads: ${DB_SCHEDULER_THREADS:10}
+
+notify:
+  api-url: ${NOTIFY_URL:https://api.notifications.service.gov.uk}
+  api-key: ${PT_NOTIFY_API_KEY:AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}
+  send-email:
+    max-retries: ${NOTIFY_SEND_EMAIL_MAX_RETRIES:5}
+    backoff-delay-seconds: ${NOTIFY_SEND_EMAIL_BACKOFF_DELAY_SECONDS:300s}
+  check-status:
+    max-retries: ${NOTIFY_CHECK_STATUS_MAX_RETRIES:5}
+    task-delay-seconds: ${NOTIFY_CHECK_STATUS_DELAY_SECONDS:60s}
+    backoff-delay-seconds: ${NOTIFY_CHECK_STATUS_BACKOFF_DELAY_SECONDS:3600s}
