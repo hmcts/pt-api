@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
 import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
@@ -70,7 +71,7 @@ public class ApplicationController {
     @ApiResponse(responseCode = "403", description = "Invalid Service Authorization")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     @ApiResponse(responseCode = "503", description = "Service temporarily unavailable")
-    public ResponseEntity<ApplicationDto> getCaseByCaseReference(
+    public ResponseEntity<EnrichedApplicationDto> getCaseByCaseReference(
         @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
