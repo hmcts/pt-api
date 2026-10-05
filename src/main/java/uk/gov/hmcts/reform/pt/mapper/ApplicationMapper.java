@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
+import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
@@ -34,7 +36,15 @@ import java.util.function.Function;
 
 @UtilityClass
 public class ApplicationMapper {
-    public static ApplicationDto toDto(CaseApplicationEntity entity) {
+    public static ApplicationDto toDto(ApplicationSummary summary) {
+        return ApplicationDto.builder()
+            .caseReference(summary.getCaseReference())
+            .createdDate(summary.getCreatedDate())
+            .submittedOn(summary.getSubmittedDate())
+            .build();
+    }
+
+    public static EnrichedApplicationDto toEnrichedDto(CaseApplicationEntity entity) {
         CasePartyEntity caseParty = entity.getCaseParty();
         if (caseParty == null) {
             throw new CasePartyNotFoundException("Case party not found for application: " + entity.getId());
@@ -44,7 +54,7 @@ public class ApplicationMapper {
             throw new CaseNotFoundException("Case not found for application: " + entity.getId());
         }
 
-        return ApplicationDto.builder()
+        return EnrichedApplicationDto.builder()
             .caseReference(ptCase.getCaseReference())
             .postcode(
                 !ptCase.getAddresses().isEmpty()

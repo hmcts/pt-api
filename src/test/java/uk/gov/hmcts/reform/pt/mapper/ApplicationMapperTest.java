@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
-import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
@@ -66,7 +66,7 @@ class ApplicationMapperTest {
         UUID userId = UUID.randomUUID();
         CaseApplicationEntity entity = fullEntity(userId);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result)
             .usingRecursiveComparison()
@@ -79,7 +79,7 @@ class ApplicationMapperTest {
             .caseParty(null)
             .build();
 
-        assertThatThrownBy(() -> ApplicationMapper.toDto(entity))
+        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
             .isInstanceOf(CasePartyNotFoundException.class)
             .hasMessageContaining("Case party not found for application");
     }
@@ -96,7 +96,7 @@ class ApplicationMapperTest {
             .caseParty(caseParty)
             .build();
 
-        assertThatThrownBy(() -> ApplicationMapper.toDto(entity))
+        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
             .isInstanceOf(CaseNotFoundException.class)
             .hasMessageContaining("Case not found for application");
     }
@@ -217,7 +217,7 @@ class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getPostcode()).isEmpty();
     }
@@ -232,7 +232,7 @@ class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getApplicationType()).isNull();
     }
@@ -247,7 +247,7 @@ class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
     }

@@ -134,6 +134,10 @@ public class DocumentService {
         }
     }
 
+    public List<DocumentEntity> findAllForCase(long caseReference) {
+        return documentRepository.findAllByPtCaseCaseReference(caseReference);
+    }
+
     @Transactional
     public boolean deleteDocument(long documentId, long caseReference) {
         Optional<DocumentEntity> document =

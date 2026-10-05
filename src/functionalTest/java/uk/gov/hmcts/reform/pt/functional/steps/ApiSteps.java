@@ -147,6 +147,15 @@ public class ApiSteps {
         response.then().assertThat().body(attribute, Matchers.equalTo(value));
     }
 
+    @Step("the response body does not contain the case reference {0}")
+    public void theResponseBodyDoesNotContainCaseReference(Long caseReference) {
+        if (response == null) {
+            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
+        }
+        response.then().assertThat()
+            .body("caseReference", Matchers.not(Matchers.hasItem(caseReference)));
+    }
+
     @Step("the response body matches the expected response")
     public void theResponseBodyMatchesTheExpectedResponse(String expectedPath) {
         JsonAssertUtils.assertEqualsIgnoreFields(
