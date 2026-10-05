@@ -1107,8 +1107,8 @@ class ApplicationMapperTest {
         return entityWithCaseType(caseParty, APPLICATION_TYPE);
     }
 
-    private static ApplicationDto expectedDto(UUID userId) {
-        return ApplicationDto.builder()
+    private static EnrichedApplicationDto expectedDto(UUID userId) {
+        return EnrichedApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
             .postcode(POSTCODE)
             .applicationType(APPLICATION_TYPE)
