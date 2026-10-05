@@ -71,7 +71,7 @@ public class NotificationService {
             .ptCase(request.getPtCase())
             .type(NotificationType.EMAIL)
             .status(NotificationStatus.PENDING_SCHEDULE)
-            .recipientEmail(request.getEmailAddress())
+            .recipient(request.getEmailAddress())
             .build();
 
         try {

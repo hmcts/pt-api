@@ -40,7 +40,7 @@ public class CaseNotificationEntity extends AuditableEntity {
     private NotificationStatus status;
 
     @Column(length = 100, nullable = false)
-    private String recipientEmail;
+    private String recipient;
 
     private UUID providerNotificationId;
 

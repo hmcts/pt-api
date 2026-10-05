@@ -72,7 +72,7 @@ class NotificationServiceTest {
             .ptCase(ptCase)
             .type(NotificationType.EMAIL)
             .status(NotificationStatus.PENDING_SCHEDULE)
-            .recipientEmail("user@example.com")
+            .recipient("user@example.com")
             .build();
 
         when(caseNotificationRepository.save(any(CaseNotificationEntity.class))).thenReturn(savedNotification);
@@ -91,7 +91,7 @@ class NotificationServiceTest {
         assertThat(captured.getPtCase()).isEqualTo(ptCase);
         assertThat(captured.getType()).isEqualTo(NotificationType.EMAIL);
         assertThat(captured.getStatus()).isEqualTo(NotificationStatus.PENDING_SCHEDULE);
-        assertThat(captured.getRecipientEmail()).isEqualTo("user@example.com");
+        assertThat(captured.getRecipient()).isEqualTo("user@example.com");
 
         verify(schedulerClient).scheduleIfNotExists(schedulableInstanceCaptor.capture());
         SchedulableInstance<SendEmailTaskData> instance = schedulableInstanceCaptor.getValue();
@@ -117,7 +117,7 @@ class NotificationServiceTest {
             .ptCase(ptCase)
             .type(NotificationType.EMAIL)
             .status(NotificationStatus.PENDING_SCHEDULE)
-            .recipientEmail("user@example.com")
+            .recipient("user@example.com")
             .build();
 
         when(caseNotificationRepository.save(any(CaseNotificationEntity.class))).thenReturn(savedNotification);

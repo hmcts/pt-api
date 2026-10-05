@@ -22,7 +22,7 @@ CREATE INDEX priority_execution_time_idx ON scheduled_tasks (priority DESC, exec
 -- Case notification table
 ALTER TABLE case_notification
   ADD COLUMN provider_notification_id UUID,
-  ADD COLUMN recipient_email VARCHAR(100),
+  ADD COLUMN recipient VARCHAR(100),
   ADD COLUMN submitted_date TIMESTAMP;
 
 ALTER TABLE case_notification
