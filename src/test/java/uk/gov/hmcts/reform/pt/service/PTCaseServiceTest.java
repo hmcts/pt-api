@@ -247,12 +247,15 @@ class PTCaseServiceTest {
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07777777777");
         assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
         assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
-        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
         assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
+        verify(marketRentCaseService).updateWithHearingPropertyInspectionDetails(
+            ptCaseEntity,
+            hearingInspectionDetails
+        );
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
@@ -438,6 +441,7 @@ class PTCaseServiceTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
             .hearingRequested(YesOrNo.YES)
+            .reasonHearingRequested("Inspection needed")
             .agreeToDecisionWithoutInspection(YesOrNo.NO)
             .noDecisionWithoutInspectionReason("Inspection needed")
             .build();
@@ -447,7 +451,10 @@ class PTCaseServiceTest {
 
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
-        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        verify(marketRentCaseService).updateWithHearingPropertyInspectionDetails(
+            ptCaseEntity,
+            hearingInspectionDetails
+        );
         verify(ptCaseRepository).save(ptCaseEntity);
         verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
     }
@@ -529,6 +536,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
+        verify(marketRentCaseService, never()).updateWithHearingPropertyInspectionDetails(any(), any());
         verify(ptCaseRepository, never()).save(any());
         verify(propertyInspectionService, never()).updatePropertyInspection(any(), any());
     }
@@ -667,23 +675,6 @@ class PTCaseServiceTest {
         verify(casePartyRepository).save(caseParty);
     }
 
-    @Test
-    @DisplayName("Should preserve hearing requested when null in hearingInspectionDetails")
-    void updateHearingOrPropertyInspectionDetailsPreservesHearingRequestedWhenNull() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .hearingRequested(YesOrNo.YES)
-            .build();
-        HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder().build();
-        PTCase ptCase = PTCase.builder()
-            .hearingInspectionDetails(hearingInspectionDetails)
-            .build();
-
-        ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
-
-        assertThat(ptCaseEntity.getHearingRequested()).isEqualTo(YesOrNo.YES);
-        verify(ptCaseRepository).save(ptCaseEntity);
-        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
-    }
 
     @Test
     @DisplayName("Should preserve landlord type when representativeType is null in landlordDetails")

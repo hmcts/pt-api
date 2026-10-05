@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
@@ -223,5 +224,49 @@ class MarketRentCaseServiceTest {
         assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should update existing MarketRentCaseEntity with hearing details")
+    void updateWithHearingPropertyInspectionDetailsWhenExists() {
+        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(List.of(existing))
+            .build();
+
+        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .reasonHearingRequested("Need a hearing")
+            .build();
+
+        marketRentCaseService.updateWithHearingPropertyInspectionDetails(ptCase, details);
+
+        verify(marketRentCaseRepository).save(existing);
+        assertThat(existing.getPtCase()).isEqualTo(ptCase);
+        assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
+    }
+
+    @Test
+    @DisplayName("Should create and save new MarketRentCaseEntity with hearing details when list is empty")
+    void updateWithHearingPropertyInspectionDetailsWhenEmpty() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(new ArrayList<>())
+            .build();
+
+        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.NO)
+            .reasonHearingRequested("Written representation preferred")
+            .build();
+
+        marketRentCaseService.updateWithHearingPropertyInspectionDetails(ptCase, details);
+
+        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
+        verify(marketRentCaseRepository).save(captor.capture());
+        MarketRentCaseEntity saved = captor.getValue();
+
+        assertThat(saved.getPtCase()).isEqualTo(ptCase);
+        assertThat(saved.getHearingRequested()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getReasonHearingRequested()).isEqualTo("Written representation preferred");
     }
 }
