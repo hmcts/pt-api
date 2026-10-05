@@ -26,4 +26,4 @@ ALTER TABLE case_notification
   ADD COLUMN submitted_date TIMESTAMP;
 
 ALTER TABLE case_notification
-  ALTER COLUMN recipient_email SET NOT NULL;
+  ALTER COLUMN recipient SET NOT NULL;
