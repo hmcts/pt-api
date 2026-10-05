@@ -158,3 +158,5 @@ notify:
     max-retries: ${NOTIFY_CHECK_STATUS_MAX_RETRIES:5}
     task-delay-seconds: ${NOTIFY_CHECK_STATUS_DELAY_SECONDS:60s}
     backoff-delay-seconds: ${NOTIFY_CHECK_STATUS_BACKOFF_DELAY_SECONDS:3600s}
+  templates:
+    test-template: 5f740c1e-2ec5-411d-9291-edc5c6b35060
