@@ -177,8 +177,9 @@ public class PropertyDetails {
     private YesNoNotSure anyTenantsMadePropertyRepairs;
 
     @CCD(
-        label = "Have any tenants made property repairs details",
+        label = "Repairs evidence documents",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument repairsEvidenceDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> repairsEvidenceDocuments = new ArrayList<>();
 }

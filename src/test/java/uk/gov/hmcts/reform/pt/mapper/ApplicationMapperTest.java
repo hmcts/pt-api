@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
-import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
@@ -67,7 +67,7 @@ public class ApplicationMapperTest {
         UUID userId = UUID.randomUUID();
         CaseApplicationEntity entity = fullEntity(userId);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getCaseReference()).isEqualTo(CASE_REFERENCE);
         assertThat(result.getPostcode()).isEqualTo(POSTCODE);
@@ -131,7 +131,7 @@ public class ApplicationMapperTest {
             .caseParty(null)
             .build();
 
-        assertThatThrownBy(() -> ApplicationMapper.toDto(entity))
+        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
             .isInstanceOf(CasePartyNotFoundException.class)
             .hasMessageContaining("Case party not found for application");
     }
@@ -148,7 +148,7 @@ public class ApplicationMapperTest {
             .caseParty(caseParty)
             .build();
 
-        assertThatThrownBy(() -> ApplicationMapper.toDto(entity))
+        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
             .isInstanceOf(CaseNotFoundException.class)
             .hasMessageContaining("Case not found for application");
     }
@@ -269,7 +269,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entity(caseParty);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getPostcode()).isEqualTo("");
     }
@@ -284,7 +284,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entity(caseParty);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getApplicationType()).isNull();
     }
@@ -299,7 +299,7 @@ public class ApplicationMapperTest {
         );
         CaseApplicationEntity entity = entity(caseParty);
 
-        ApplicationDto result = ApplicationMapper.toDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
     }
@@ -559,7 +559,7 @@ public class ApplicationMapperTest {
                 .size(2000L)
                 .build()
         );
-        assertThat(result.getRepairsEvidenceDocument()).isEqualTo(
+        assertThat(result.getRepairsEvidenceDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/repairs")
                 .binaryUrl("http://dm-store/doc/repairs/binary")
