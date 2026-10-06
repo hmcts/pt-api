@@ -16,7 +16,7 @@ public class CaseTypeService {
     @Transactional
     public CaseTypeEntity getCaseTypeOrCreateIfNotExists(ApplicationType applicationType) {
         return caseTypeRepository.findFirstByValueEn(applicationType)
-            .orElseGet(() -> createCaseType(applicationType));
+            .orElseGet(() -> this.createCaseType(applicationType));
     }
 
     @Transactional
