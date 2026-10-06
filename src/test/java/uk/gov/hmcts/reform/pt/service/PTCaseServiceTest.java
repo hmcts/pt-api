@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -88,6 +91,9 @@ class PTCaseServiceTest {
 
     @Mock
     private AddressService addressService;
+
+    @Mock
+    private DocumentUploadValidator documentUploadValidator;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -779,6 +785,27 @@ class PTCaseServiceTest {
             .build());
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should validate the documents against what the case held before the update")
+    void updateDocumentsReturnsUploadLimitErrors() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        Map<Long, String> before = Map.of(1L, "http://dm-store/documents/1");
+        when(documentUploadValidator.snapshot(caseReference)).thenReturn(before);
+        when(documentUploadValidator.errors(caseReference, before)).thenReturn(List.of("totalTooLarge"));
+
+        List<String> errors = ptCaseService.updateDocuments(caseReference, PTCase.builder()
+            .propertyDetails(PropertyDetails.builder().build())
+            .build());
+
+        assertThat(errors).containsExactly("totalTooLarge");
+        InOrder inOrder = inOrder(documentUploadValidator, documentService);
+        inOrder.verify(documentUploadValidator).snapshot(caseReference);
+        inOrder.verify(documentService).updateDocumentsForPropertyDetails(any(), any());
+        inOrder.verify(documentUploadValidator).errors(caseReference, before);
     }
 
     @Test
