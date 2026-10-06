@@ -8,7 +8,6 @@ import com.github.kagkarlsson.scheduler.task.TaskInstance;
 import com.github.kagkarlsson.scheduler.task.helper.CustomTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,6 @@ public class SendEmailTaskComponent {
     private final Duration sendingBackoffDelay;
     private final Duration statusCheckTaskDelay;
 
-    @Autowired
     public SendEmailTaskComponent(
         NotificationService notificationService,
         NotificationClient notificationClient,
@@ -81,7 +79,6 @@ public class SendEmailTaskComponent {
                     return new CompletionHandler.OnCompleteRemove<>();
                 }
 
-                CaseNotificationEntity caseNotification = notificationOpt.get();
 
                 try {
                     final String templateId = taskData.getTemplateId();
@@ -129,6 +126,7 @@ public class SendEmailTaskComponent {
                     log.error("NotificationClient error sending email: {}", e.getMessage(), e);
 
                     if (isPermanentFailure(e)) {
+                        CaseNotificationEntity caseNotification = notificationOpt.get();
                         notificationService.updateNotificationStatus(
                             caseNotification.getId(),
                             NotificationStatus.PERMANENT_FAILURE.toString()

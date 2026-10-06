@@ -6,7 +6,6 @@ import com.github.kagkarlsson.scheduler.task.TaskDescriptor;
 import com.github.kagkarlsson.scheduler.task.helper.CustomTask;
 import com.github.kagkarlsson.scheduler.task.helper.Tasks;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,6 @@ public class VerifyEmailTaskComponent {
     private final int maxRetriesCheckEmail;
     private final Duration statusCheckBackoffDelay;
 
-    @Autowired
     public VerifyEmailTaskComponent(
         NotificationService notificationService,
         NotificationClient notificationClient,

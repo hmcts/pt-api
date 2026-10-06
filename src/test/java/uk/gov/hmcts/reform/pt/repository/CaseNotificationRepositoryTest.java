@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.CaseNotificationEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.notify.model.NotificationStatus;
@@ -18,7 +17,6 @@ class CaseNotificationRepositoryTest extends AbstractRepositoryTest<CaseNotifica
 
     private static final String TEST_USER_EMAIL = "user@example.com";
 
-    @Autowired
     protected CaseNotificationRepositoryTest(
         CaseNotificationRepository repository,
         PTCaseRepository ptCaseRepository
