@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
+import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+@UtilityClass
 public class ApplicationMapper {
     public static ApplicationDto toDto(ApplicationSummary summary) {
         return ApplicationDto.builder()

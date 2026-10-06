@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicationRepository> {
+class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicationRepository> {
 
     @PersistenceContext
     private EntityManager entityManager;
