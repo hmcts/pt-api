@@ -149,7 +149,7 @@ db-scheduler:
   threads: ${DB_SCHEDULER_THREADS:10}
 
 notify:
-  api-url: ${NOTIFY_URL:https://api.notifications.service.gov.uk}
+  api-url: ${NOTIFY_URL:}
   api-key: ${PT_NOTIFY_API_KEY:AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}
   send-email:
     max-retries: ${NOTIFY_SEND_EMAIL_MAX_RETRIES:5}
