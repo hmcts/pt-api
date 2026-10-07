@@ -40,7 +40,7 @@ public class CasePartyFlagEntity {
     private String flagCommentCy;
     private String flagUpdateComment;
     private String status;
-    private String paths;
+    private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_id")
