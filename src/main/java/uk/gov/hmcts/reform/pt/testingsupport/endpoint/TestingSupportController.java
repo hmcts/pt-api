@@ -85,6 +85,7 @@ public class TestingSupportController {
     )
     @ApiResponse(responseCode = "200", description = "Notification scheduled successfully")
     @ApiResponse(responseCode = "401", description = "Missing or invalid access token")
+    @ApiResponse(responseCode = "403", description = "Caller does not have the correct roles assigned")
     public ResponseEntity<NotificationResponse> notifyTest(
         @RequestBody NotificationTestRequest request
     ) {
