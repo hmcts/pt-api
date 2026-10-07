@@ -5,3 +5,5 @@ DROP TABLE IF EXISTS case_event;
 DROP TABLE IF EXISTS case_state;
 DROP TABLE IF EXISTS case_task;
 DROP TABLE IF EXISTS case_note;
+DROP TABLE IF EXISTS flag_ref_data;
+DROP TABLE IF EXISTS case_flag;
