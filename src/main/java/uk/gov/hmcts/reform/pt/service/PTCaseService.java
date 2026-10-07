@@ -180,7 +180,9 @@ public class PTCaseService {
             return;
         }
 
-        setIfNotNull(hearingOrPropertyInspectionDetails.getHearingRequested(), ptCaseEntity::setHearingRequested);
+        marketRentCaseService.updateWithHearingPropertyInspectionDetails(
+            ptCaseEntity,
+            hearingOrPropertyInspectionDetails);
         ptCaseRepository.save(ptCaseEntity);
 
         propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
