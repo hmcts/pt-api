@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -110,7 +111,6 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
-
         marketRentCase.setPtCase(ptCaseEntity);
         setIfNotNull(
             toBigDecimal(details.getApplicantSuggestedMarketRent()),
@@ -128,6 +128,20 @@ public class MarketRentCaseService {
             details.getAdditionalInfoToConsiderWhenDeterminingRentDetails(),
             marketRentCase::setAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails
         );
+
+        marketRentCaseRepository.save(marketRentCase);
+    }
+
+    @Transactional
+    public void updateWithHearingPropertyInspectionDetails(PTCaseEntity ptCaseEntity,
+                                                           HearingPropertyInspectionDetails details) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
+            .findFirst()
+            .orElse(new MarketRentCaseEntity());
+
+        marketRentCase.setPtCase(ptCaseEntity);
+        setIfNotNull(details.getHearingRequested(), marketRentCase::setHearingRequested);
+        setIfNotNull(details.getReasonHearingRequested(), marketRentCase::setReasonHearingRequested);
 
         marketRentCaseRepository.save(marketRentCase);
     }
