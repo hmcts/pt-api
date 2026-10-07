@@ -31,7 +31,7 @@ public class CasePartyService {
 
     @Transactional
     public CasePartyEntity createApplicantCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
-        CasePartyRoleEntity casePartyRole = getOrCreateCasePartyRole(PartyRole.APPLICANT);
+        CasePartyRoleEntity casePartyRole = this.getOrCreateCasePartyRole(PartyRole.APPLICANT);
 
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())
@@ -62,25 +62,25 @@ public class CasePartyService {
         if (landlord == null) {
             return;
         }
-        updatePartyDetails(ptCaseEntity, landlord, PartyRole.LANDLORD);
+        this.updatePartyDetails(ptCaseEntity, landlord, PartyRole.LANDLORD);
 
         PartyDetails lettingAgent = landlordDetails.getLettingAgentPartyDetails();
         PartyDetails representative = landlordDetails.getRepresentativePartyDetails();
 
         switch (landlordDetails.getRepresentativeType()) {
             case LETTING_AGENT -> {
-                updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
+                this.updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
                 getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)
                     .ifPresent(this::removeParty);
             }
             case REPRESENTATIVE -> {
-                updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
+                this.updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
                 getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD)
                     .ifPresent(this::removeParty);
             }
             case LETTING_AGENT_AND_REPRESENTATIVE -> {
-                updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
-                updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
+                this.updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
+                this.updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
             }
             case NO_LETTING_AGENT_OR_REPRESENTATIVE, NOT_SURE -> {
                 getPartyForCaseByRole(ptCaseEntity, PartyRole.LETTING_AGENT)
@@ -100,7 +100,7 @@ public class CasePartyService {
         CasePartyEntity caseParty = getPartyForCaseByRole(ptCaseEntity, role)
             .orElse(new CasePartyEntity());
         caseParty.setPtCase(ptCaseEntity);
-        caseParty.setRole(getOrCreateCasePartyRole(role));
+        caseParty.setRole(this.getOrCreateCasePartyRole(role));
         setIfNotNull(partyDetails.getFirstName(), caseParty::setFirstName);
         setIfNotNull(partyDetails.getLastName(), caseParty::setLastName);
         setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);

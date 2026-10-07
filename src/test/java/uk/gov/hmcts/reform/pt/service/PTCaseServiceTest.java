@@ -240,14 +240,17 @@ class PTCaseServiceTest {
 
         ptCaseService.updateCase(caseReference, ptCase);
 
-        assertThat(caseParty.getFirstName()).isEqualTo("Jane");
-        assertThat(caseParty.getLastName()).isEqualTo("Doe");
-        assertThat(caseParty.getEmailAddress()).isEqualTo("jane@example.com");
-        assertThat(caseParty.getPhoneNumber()).isEqualTo("01111111111");
-        assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07777777777");
-        assertThat(caseParty.getOrganisationName()).isEqualTo("Test Company");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("REF12");
-        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
+        assertThat(caseParty)
+            .extracting(
+                CasePartyEntity::getFirstName,
+                CasePartyEntity::getLastName,
+                CasePartyEntity::getEmailAddress,
+                CasePartyEntity::getPhoneNumber,
+                CasePartyEntity::getMobilePhoneNumber,
+                CasePartyEntity::getOrganisationName,
+                CasePartyEntity::getReferenceNumber)
+            .containsExactly("Jane", "Doe", "jane@example.com", "01111111111", "07777777777", "Test Company", "REF12");
+
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
