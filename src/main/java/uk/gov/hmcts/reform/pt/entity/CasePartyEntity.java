@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -89,9 +92,9 @@ public class CasePartyEntity extends AuditableEntity {
     @Builder.Default
     private List<CasePartyRepresentativeEntity> representatives = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_party_role_id")
-    private CasePartyRoleEntity role;
+    @Column(name = "party_role", length = 100)
+    @Enumerated(EnumType.STRING)
+    private PartyRole casePartyRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_type_id")

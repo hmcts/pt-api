@@ -7,3 +7,11 @@ DROP TABLE IF EXISTS case_task;
 DROP TABLE IF EXISTS case_note;
 DROP TABLE IF EXISTS flag_ref_data;
 DROP TABLE IF EXISTS case_flag;
+
+ALTER TABLE case_party ADD COLUMN party_role VARCHAR(100);
+UPDATE case_party cp
+  SET party_role = cpr.role_name
+  FROM case_party_role cpr
+  WHERE cp.case_party_role_id = cpr.id;
+ALTER TABLE case_party DROP COLUMN case_party_role_id;
+DROP TABLE IF EXISTS case_party_role;

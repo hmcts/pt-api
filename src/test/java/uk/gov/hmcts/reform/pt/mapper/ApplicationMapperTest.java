@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -920,9 +919,9 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapLandlordDetails() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
+        PartyRole landlordRole = PartyRole.LANDLORD;
+        PartyRole agentRole = PartyRole.LETTING_AGENT;
+        PartyRole repRole = PartyRole.LANDLORD_REPRESENTATIVE;
 
         AddressEntity landlordAddress = AddressEntity.builder()
             .addressLine1("1 Landlord Way")
@@ -939,21 +938,21 @@ class ApplicationMapperTest {
             .emailAddress("landlord@example.com")
             .phoneNumber("0123456789")
             .referenceNumber("LL01")
-            .role(landlordRole)
+            .casePartyRole(landlordRole)
             .addresses(List.of(landlordAddress))
             .build();
 
         CasePartyEntity agentParty = CasePartyEntity.builder()
             .firstName("Agent")
             .lastName("Smith")
-            .role(agentRole)
+            .casePartyRole(agentRole)
             .addresses(Collections.emptyList())
             .build();
 
         CasePartyEntity repParty = CasePartyEntity.builder()
             .firstName("Rep")
             .lastName("Jones")
-            .role(repRole)
+            .casePartyRole(repRole)
             .addresses(Collections.emptyList())
             .build();
 

@@ -9,11 +9,9 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
-import uk.gov.hmcts.reform.pt.repository.CasePartyRoleRepository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -26,19 +24,16 @@ public class CasePartyService {
 
     private final CasePartyRepository casePartyRepository;
     private final CasePartyAccessRepository casePartyAccessRepository;
-    private final CasePartyRoleRepository casePartyRoleRepository;
     private final AddressService addressService;
 
     @Transactional
     public CasePartyEntity createApplicantCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
-        CasePartyRoleEntity casePartyRole = this.getOrCreateCasePartyRole(PartyRole.APPLICANT);
-
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .firstName(ptCase.getApplicantFirstName())
             .lastName(ptCase.getApplicantLastName())
             .emailAddress(ptCase.getEmail())
             .ptCase(ptCaseEntity)
-            .role(casePartyRole)
+            .casePartyRole(PartyRole.APPLICANT)
             .build();
         casePartyRepository.save(caseParty);
 
@@ -100,7 +95,7 @@ public class CasePartyService {
         CasePartyEntity caseParty = getPartyForCaseByRole(ptCaseEntity, role)
             .orElse(new CasePartyEntity());
         caseParty.setPtCase(ptCaseEntity);
-        caseParty.setRole(this.getOrCreateCasePartyRole(role));
+        caseParty.setCasePartyRole(role);
         setIfNotNull(partyDetails.getFirstName(), caseParty::setFirstName);
         setIfNotNull(partyDetails.getLastName(), caseParty::setLastName);
         setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);
@@ -113,12 +108,6 @@ public class CasePartyService {
     }
 
     @Transactional
-    public CasePartyRoleEntity getOrCreateCasePartyRole(PartyRole roleName) {
-        return casePartyRoleRepository.findFirstByRoleName(roleName)
-            .orElseGet(() -> casePartyRoleRepository.save(CasePartyRoleEntity.builder().roleName(roleName).build()));
-    }
-
-    @Transactional
     public void removeParty(CasePartyEntity casePartyEntity) {
         addressService.deleteAddressesForParty(casePartyEntity);
         casePartyRepository.delete(casePartyEntity);
@@ -126,7 +115,7 @@ public class CasePartyService {
 
     public Optional<CasePartyEntity> getPartyForCaseByRole(PTCaseEntity ptCaseEntity, PartyRole roleName) {
         return ptCaseEntity.getParties().stream()
-            .filter(caseParty -> caseParty.getRole().getRoleName() == roleName)
+            .filter(caseParty -> caseParty.getCasePartyRole() == roleName)
             .findFirst();
     }
 }

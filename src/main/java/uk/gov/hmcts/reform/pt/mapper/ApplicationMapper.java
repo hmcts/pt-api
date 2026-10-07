@@ -370,7 +370,7 @@ public class ApplicationMapper {
 
     private static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
         return ptCaseEntity.getParties().stream()
-            .filter(party -> party.getRole() != null && party.getRole().getRoleName() == role)
+            .filter(party -> party.getCasePartyRole() == role)
             .findFirst()
             .orElse(null);
     }
