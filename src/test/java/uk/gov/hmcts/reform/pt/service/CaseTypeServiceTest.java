@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
-import uk.gov.hmcts.reform.pt.repository.CaseTypeRepository;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.repository.reference.CaseTypeRepository;
 
 import java.util.Optional;
 
@@ -31,14 +31,14 @@ class CaseTypeServiceTest {
     @DisplayName("Should return existing CaseTypeEntity if it exists")
     void getCaseTypeOrCreateIfNotExistsWhenExists() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        CaseTypeEntity existingCaseType = CaseTypeEntity.builder().applicationTypeName(applicationType).build();
-        when(caseTypeRepository.findFirstByApplicationTypeName(applicationType))
+        CaseTypeEntity existingCaseType = CaseTypeEntity.builder().valueEn(applicationType).build();
+        when(caseTypeRepository.findFirstByValueEn(applicationType))
             .thenReturn(Optional.of(existingCaseType));
 
         CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType);
 
         assertThat(result).isEqualTo(existingCaseType);
-        verify(caseTypeRepository).findFirstByApplicationTypeName(applicationType);
+        verify(caseTypeRepository).findFirstByValueEn(applicationType);
         verify(caseTypeRepository, never()).save(any());
     }
 
@@ -46,15 +46,15 @@ class CaseTypeServiceTest {
     @DisplayName("Should create new CaseTypeEntity if it does not exist")
     void getCaseTypeOrCreateIfNotExistsWhenNotExists() {
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
-        when(caseTypeRepository.findFirstByApplicationTypeName(applicationType))
+        when(caseTypeRepository.findFirstByValueEn(applicationType))
             .thenReturn(Optional.empty());
         when(caseTypeRepository.save(any(CaseTypeEntity.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
         CaseTypeEntity result = caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType);
 
-        assertThat(result.getApplicationTypeName()).isEqualTo(applicationType);
-        verify(caseTypeRepository).findFirstByApplicationTypeName(applicationType);
+        assertThat(result.getValueEn()).isEqualTo(applicationType);
+        verify(caseTypeRepository).findFirstByValueEn(applicationType);
         verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 
@@ -67,7 +67,8 @@ class CaseTypeServiceTest {
 
         CaseTypeEntity result = caseTypeService.createCaseType(applicationType);
 
-        assertThat(result.getApplicationTypeName()).isEqualTo(applicationType);
+        assertThat(result.getKey()).isEqualTo(applicationType.toString());
+        assertThat(result.getValueEn()).isEqualTo(applicationType);
         verify(caseTypeRepository).save(any(CaseTypeEntity.class));
     }
 }

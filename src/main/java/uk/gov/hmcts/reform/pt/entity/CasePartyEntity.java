@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.pt.entity.reference.EntityRoleCodeEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public class CasePartyEntity extends AuditableEntity {
 
     @Column(length = 5)
     private String referenceNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_role_code_key")
+    private EntityRoleCodeEntity entityRoleCode;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference

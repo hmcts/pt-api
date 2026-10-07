@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
@@ -51,8 +51,11 @@ public class PTCaseService {
         UUID userId,
         PTCase ptCase
     ) {
+        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
+            .caseType(caseType)
             .build();
         ptCaseRepository.save(ptCaseEntity);
 
@@ -60,10 +63,8 @@ public class PTCaseService {
 
         CasePartyEntity caseParty = casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
 
-        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
         CaseApplicationEntity application = CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(caseType)
             .build();
         caseApplicationRepository.save(application);
     }

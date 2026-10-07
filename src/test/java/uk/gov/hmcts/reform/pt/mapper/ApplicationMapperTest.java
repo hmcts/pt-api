@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
+import uk.gov.hmcts.reform.pt.entity.reference.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -215,7 +215,7 @@ class ApplicationMapperTest {
             Collections.emptyList(),
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -225,12 +225,12 @@ class ApplicationMapperTest {
     @Test
     void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
         CasePartyEntity caseParty = caseParty(
-            ptCase(addresses(POSTCODE), Collections.emptyList()),
+            ptCase(addresses(POSTCODE), Collections.emptyList(), null),
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -245,7 +245,7 @@ class ApplicationMapperTest {
             Collections.emptyList(),
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -1025,9 +1025,17 @@ class ApplicationMapperTest {
                            .build());
     }
 
-    private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
+    private static PTCaseEntity ptCase(
+        List<AddressEntity> addresses,
+        List<TenancyDetailsEntity> tenancyDetails,
+        ApplicationType applicationType
+    ) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
+            .caseType(
+                applicationType != null
+                    ? CaseTypeEntity.builder().key(applicationType.toString()).valueEn(applicationType).build()
+                    : null)
             .hearingRequested(YesOrNo.YES)
             .propertyInspections(List.of(
                 PropertyInspectionEntity.builder()
@@ -1049,6 +1057,10 @@ class ApplicationMapperTest {
                     .build()
             ))
             .build();
+    }
+
+    private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
+        return ptCase(addresses, tenancyDetails, APPLICATION_TYPE);
     }
 
     private static CasePartyEntity caseParty(
@@ -1078,16 +1090,9 @@ class ApplicationMapperTest {
                            .build());
     }
 
-    private static CaseApplicationEntity entityWithCaseType(
-        CasePartyEntity caseParty,
-        ApplicationType applicationType
-    ) {
+    private static CaseApplicationEntity entity(CasePartyEntity caseParty) {
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(
-                applicationType != null
-                    ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
-                    : null)
             .createdDate(CREATED_DATE)
             .build();
     }
@@ -1104,7 +1109,7 @@ class ApplicationMapperTest {
             contactPreferences(YesOrNo.YES),
             partyAddresses
         );
-        return entityWithCaseType(caseParty, APPLICATION_TYPE);
+        return entity(caseParty);
     }
 
     private static EnrichedApplicationDto expectedDto(UUID userId) {
