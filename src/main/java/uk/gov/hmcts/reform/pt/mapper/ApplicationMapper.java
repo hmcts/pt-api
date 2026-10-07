@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -112,19 +111,17 @@ public class ApplicationMapper {
     }
 
     public static HearingInspectionDetailsDto mapHearingInspectionDetails(PTCaseEntity ptCaseEntity) {
-        PropertyInspectionEntity propertyInspectionEntity = ptCaseEntity.getPropertyInspections().stream()
-            .findFirst()
-            .orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
 
         return HearingInspectionDetailsDto.builder()
             .hearingRequested(ptCaseEntity.getHearingRequested())
             .agreeToDecisionWithoutInspection(
-                propertyInspectionEntity != null
-                    ? propertyInspectionEntity.getAgreeToDecisionWithoutInspection()
+                marketRentCase != null
+                    ? marketRentCase.getAgreeToDecisionWithoutInspection()
                     : null)
             .noDecisionWithoutInspectionReason(
-                propertyInspectionEntity != null
-                    ? propertyInspectionEntity.getNoDecisionWithoutInspectionReason()
+                marketRentCase != null
+                    ? marketRentCase.getNoDecisionWithoutInspectionReason()
                     : null)
             .build();
     }

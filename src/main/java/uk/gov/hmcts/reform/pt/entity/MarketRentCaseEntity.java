@@ -146,6 +146,13 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(name = "additional_prop_info_to_consider_when_determining_rent_details", length = 500)
     private String additionalPropertyInfoToConsiderWhenDeterminingRentDetails;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo agreeToDecisionWithoutInspection;
+
+    @Column(length = 500)
+    private String noDecisionWithoutInspectionReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")
     @JsonBackReference

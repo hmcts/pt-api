@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
@@ -165,8 +164,8 @@ class ApplicationMapperTest {
     void shouldMapHearingInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .hearingRequested(YesOrNo.NO)
-            .propertyInspections(List.of(
-                PropertyInspectionEntity.builder()
+            .marketRentCases(List.of(
+                MarketRentCaseEntity.builder()
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Some reason")
                     .build()
@@ -181,10 +180,10 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapHearingInspectionDetailsWhenNoPropertyInspections() {
+    void shouldMapHearingInspectionDetailsWhenNoMarketRentCase() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .hearingRequested(YesOrNo.YES)
-            .propertyInspections(Collections.emptyList())
+            .marketRentCases(Collections.emptyList())
             .build();
 
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
@@ -1021,6 +1020,8 @@ class ApplicationMapperTest {
                            .applicantSuggestedMarketRentReasons("Market rate for the area")
                            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
                            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
+                           .agreeToDecisionWithoutInspection(YesOrNo.YES)
+                           .noDecisionWithoutInspectionReason("Inspection reason")
                            .build());
     }
 
@@ -1028,12 +1029,6 @@ class ApplicationMapperTest {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .hearingRequested(YesOrNo.YES)
-            .propertyInspections(List.of(
-                PropertyInspectionEntity.builder()
-                    .agreeToDecisionWithoutInspection(YesOrNo.YES)
-                    .noDecisionWithoutInspectionReason("Inspection reason")
-                    .build()
-            ))
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .marketRentCases(marketRentCases())

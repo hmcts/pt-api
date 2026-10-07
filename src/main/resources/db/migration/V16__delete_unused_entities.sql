@@ -22,3 +22,19 @@ DROP TABLE IF EXISTS hearing_inspection;
 DROP TABLE IF EXISTS case_hearing;
 DROP TABLE IF EXISTS case_mediation;
 DROP TABLE IF EXISTS case_order;
+
+ALTER TABLE market_rent_case
+  ADD COLUMN agree_to_decision_without_inspection YES_NO,
+  ADD COLUMN no_decision_without_inspection_reason VARCHAR(500);
+UPDATE market_rent_case mrc
+  SET agree_to_decision_without_inspection = pi.agree_to_decision_without_inspection,
+      no_decision_without_inspection_reason = pi.no_decision_without_inspection_reason
+  FROM property_inspection pi
+  WHERE mrc.pt_case_id = pi.pt_case_id;
+INSERT INTO market_rent_case (pt_case_id, agree_to_decision_without_inspection, no_decision_without_inspection_reason)
+  SELECT DISTINCT ON (pi.pt_case_id)
+    pi.pt_case_id, pi.agree_to_decision_without_inspection, pi.no_decision_without_inspection_reason
+  FROM property_inspection pi
+  WHERE NOT EXISTS (SELECT 1 FROM market_rent_case mrc WHERE mrc.pt_case_id = pi.pt_case_id)
+  ORDER BY pi.pt_case_id, pi.id;
+DROP TABLE IF EXISTS property_inspection;

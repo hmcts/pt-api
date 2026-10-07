@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -127,6 +128,27 @@ public class MarketRentCaseService {
         setIfNotNull(
             details.getAdditionalInfoToConsiderWhenDeterminingRentDetails(),
             marketRentCase::setAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails
+        );
+
+        marketRentCaseRepository.save(marketRentCase);
+    }
+
+    @Transactional
+    public void updateWithPropertyInspectionDetails(
+        PTCaseEntity ptCaseEntity, HearingPropertyInspectionDetails inspectionDetails
+    ) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
+            .findFirst()
+            .orElse(new MarketRentCaseEntity());
+
+        marketRentCase.setPtCase(ptCaseEntity);
+        setIfNotNull(
+            inspectionDetails.getAgreeToDecisionWithoutInspection(),
+            marketRentCase::setAgreeToDecisionWithoutInspection
+        );
+        setIfNotNull(
+            inspectionDetails.getNoDecisionWithoutInspectionReason(),
+            marketRentCase::setNoDecisionWithoutInspectionReason
         );
 
         marketRentCaseRepository.save(marketRentCase);

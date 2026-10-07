@@ -98,11 +98,6 @@ public class PTCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<PropertyInspectionEntity> propertyInspections = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")
     private CaseTypeEntity caseType;

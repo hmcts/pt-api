@@ -39,7 +39,6 @@ public class PTCaseService {
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
     private final ContactPreferencesService contactPreferencesService;
-    private final PropertyInspectionService propertyInspectionService;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
@@ -183,7 +182,7 @@ public class PTCaseService {
         setIfNotNull(hearingOrPropertyInspectionDetails.getHearingRequested(), ptCaseEntity::setHearingRequested);
         ptCaseRepository.save(ptCaseEntity);
 
-        propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCaseEntity, hearingOrPropertyInspectionDetails);
     }
 
     @Transactional
