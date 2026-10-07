@@ -20,3 +20,4 @@ DROP TABLE IF EXISTS decision_appeal;
 DROP TABLE IF EXISTS hearing_decision;
 DROP TABLE IF EXISTS hearing_inspection;
 DROP TABLE IF EXISTS case_hearing;
+DROP TABLE IF EXISTS case_mediation;
