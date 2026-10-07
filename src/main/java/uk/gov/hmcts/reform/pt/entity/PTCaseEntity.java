@@ -55,11 +55,6 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseTaskEntity> tasks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<CaseNoteEntity> notes = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
