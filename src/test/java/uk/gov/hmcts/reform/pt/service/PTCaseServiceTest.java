@@ -72,9 +72,6 @@ class PTCaseServiceTest {
     private CasePartyRepository casePartyRepository;
 
     @Mock
-    private ContactPreferencesService contactPreferencesService;
-
-    @Mock
     private NoticeOfRentChangeService noticeOfRentChangeService;
 
     @Mock
@@ -254,7 +251,7 @@ class PTCaseServiceTest {
 
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
-        verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
 
         verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
@@ -490,7 +487,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
         verify(casePartyRepository).save(caseParty);
@@ -506,7 +503,6 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService, never()).updateContactPreferences(any(), any());
         verify(casePartyRepository, never()).save(any());
     }
 
@@ -646,7 +642,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.NO);
         assertThat(caseParty.getPhoneNumber()).isEqualTo("09876543210");
         assertThat(caseParty.getMobilePhoneNumber()).isNull();
         verify(casePartyRepository).save(caseParty);

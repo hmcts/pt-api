@@ -53,3 +53,15 @@ CREATE INDEX case_party_idam_id_idx ON case_party (idam_id);
 DROP TABLE IF EXISTS case_party_access;
 
 ALTER TABLE application_statement_of_truth DROP COLUMN IF EXISTS pt_case_id;
+
+ALTER TABLE case_party ADD COLUMN contact_by_text YES_NO;
+UPDATE case_party cp
+  SET contact_by_text = cpcp.contact_by_text
+  FROM (
+    SELECT DISTINCT ON (case_party_id) case_party_id, contact_by_text
+    FROM case_party_contact_preference
+    WHERE case_party_id IS NOT NULL
+    ORDER BY case_party_id, id
+  ) cpcp
+  WHERE cp.id = cpcp.case_party_id;
+DROP TABLE IF EXISTS case_party_contact_preference;

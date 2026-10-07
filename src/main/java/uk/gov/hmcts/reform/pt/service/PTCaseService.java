@@ -38,7 +38,6 @@ public class PTCaseService {
     private final PTCaseRepository ptCaseRepository;
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
-    private final ContactPreferencesService contactPreferencesService;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
@@ -150,8 +149,7 @@ public class PTCaseService {
             return;
         }
 
-        contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
-
+        setIfNotNull(contactPreferenceData.getTextUpdates(), caseParty::setContactByText);
         caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
         caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdates().toBoolean()
                                            ? contactPreferenceData.getTextUpdatesPhoneNumber()

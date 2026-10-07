@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -84,17 +83,10 @@ public class ApplicationMapper {
     }
 
     public static ContactPreferencesDto mapContactPreferences(CasePartyEntity caseParty) {
-        CasePartyContactPreferenceEntity contactPreferences = caseParty.getContactPreferences().stream()
-            .findFirst()
-            .orElse(null);
-
         return ContactPreferencesDto.builder()
             .phoneNumber(caseParty.getPhoneNumber())
             .mobilePhoneNumber(caseParty.getMobilePhoneNumber())
-            .contactByText(
-                contactPreferences != null
-                    ? contactPreferences.getContactByText()
-                    : null)
+            .contactByText(caseParty.getContactByText())
             .build();
     }
 

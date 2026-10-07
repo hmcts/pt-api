@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
@@ -86,7 +85,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             null,
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = CaseApplicationEntity.builder()
@@ -103,7 +102,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             null,
             null,
-            contactPreferences(YesOrNo.YES),
+            YesOrNo.YES,
             Collections.emptyList()
         );
 
@@ -119,7 +118,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             null,
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
 
@@ -135,7 +134,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             null,
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
 
@@ -209,7 +208,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             ptCase,
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
@@ -224,7 +223,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
@@ -239,7 +238,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
@@ -1047,7 +1046,7 @@ class ApplicationMapperTest {
     private static CasePartyEntity caseParty(
         PTCaseEntity ptCase,
         UUID idamId,
-        List<CasePartyContactPreferenceEntity> contactPreferences,
+        YesOrNo contactByText,
         List<AddressEntity> addresses
     ) {
         return CasePartyEntity.builder()
@@ -1060,15 +1059,9 @@ class ApplicationMapperTest {
             .mobilePhoneNumber(MOBILE_NUMBER)
             .ptCase(ptCase)
             .idamId(idamId)
-            .contactPreferences(contactPreferences)
+            .contactByText(contactByText)
             .addresses(addresses)
             .build();
-    }
-
-    private static List<CasePartyContactPreferenceEntity> contactPreferences(YesOrNo text) {
-        return List.of(CasePartyContactPreferenceEntity.builder()
-                           .contactByText(text)
-                           .build());
     }
 
     private static CaseApplicationEntity entityWithCaseType(
@@ -1091,7 +1084,7 @@ class ApplicationMapperTest {
         CasePartyEntity caseParty = caseParty(
             ptCase,
             userId,
-            contactPreferences(YesOrNo.YES),
+            YesOrNo.YES,
             partyAddresses
         );
         return entityWithCaseType(caseParty, APPLICATION_TYPE);
