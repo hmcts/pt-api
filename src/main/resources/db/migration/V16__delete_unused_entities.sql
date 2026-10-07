@@ -51,3 +51,5 @@ UPDATE case_party cp
   WHERE cp.id = cpa.case_party_id;
 CREATE INDEX case_party_idam_id_idx ON case_party (idam_id);
 DROP TABLE IF EXISTS case_party_access;
+
+ALTER TABLE application_statement_of_truth DROP COLUMN IF EXISTS pt_case_id;
