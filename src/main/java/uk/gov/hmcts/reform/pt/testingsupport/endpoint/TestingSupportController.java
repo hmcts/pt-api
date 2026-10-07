@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.controllers.advice.ErrorResponse;
@@ -87,6 +88,10 @@ public class TestingSupportController {
     @ApiResponse(responseCode = "401", description = "Missing or invalid access token")
     @ApiResponse(responseCode = "403", description = "Caller does not have the correct roles assigned")
     public ResponseEntity<NotificationResponse> notifyTest(
+        @Parameter(description = "Bearer token for user authentication", required = true)
+        @RequestHeader("Authorization") String authorization,
+        @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
+        @RequestHeader("ServiceAuthorization") String s2sToken,
         @RequestBody NotificationTestRequest request
     ) {
         PTCaseEntity ptCase = ptCaseRepository.findByCaseReference(TEST_NOTIFICATION_CASE_REFERENCE).orElseGet(() -> {

@@ -53,6 +53,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TestingSupportControllerTest {
 
     private static final long CASE_REFERENCE = 1234567890123456L;
+    private static final String AUTH = "Bearer token";
+    private static final String S2S = "Bearer s2s";
     private static final String SYSTEM_USER_ROLE = "pt-system-update";
     private static final String CITIZEN_ROLE = "citizen";
 
@@ -145,6 +147,8 @@ class TestingSupportControllerTest {
             """;
 
         mockMvc.perform(post("/testing-support/notify-test")
+                .header("Authorization", AUTH)
+                .header("ServiceAuthorization", S2S)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson)
                 .with(csrf()))
@@ -188,6 +192,8 @@ class TestingSupportControllerTest {
             """;
 
         mockMvc.perform(post("/testing-support/notify-test")
+                .header("Authorization", AUTH)
+                .header("ServiceAuthorization", S2S)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson)
                 .with(csrf()))
@@ -206,5 +212,39 @@ class TestingSupportControllerTest {
         assertThat(capturedRequest.getEmailAddress()).isEqualTo("existing@example.com");
         assertThat(capturedRequest.getPersonalisation()).isEqualTo(Map.of("testReference", "REF-456"));
         assertThat(capturedRequest.getPtCase()).isEqualTo(existingPtCase);
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenAuthorizationHeaderIsMissing() throws Exception {
+        String requestJson = """
+            {
+                "emailAddress": "test@example.com",
+                "testReference": "REF-123"
+            }
+            """;
+
+        mockMvc.perform(post("/testing-support/notify-test")
+                .header("ServiceAuthorization", S2S)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)
+                .with(csrf()))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenServiceAuthorizationHeaderIsMissing() throws Exception {
+        String requestJson = """
+            {
+                "emailAddress": "test@example.com",
+                "testReference": "REF-123"
+            }
+            """;
+
+        mockMvc.perform(post("/testing-support/notify-test")
+                .header("Authorization", AUTH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson)
+                .with(csrf()))
+            .andExpect(status().isBadRequest());
     }
 }
