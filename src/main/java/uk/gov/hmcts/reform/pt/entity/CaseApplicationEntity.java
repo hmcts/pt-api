@@ -88,9 +88,4 @@ public class CaseApplicationEntity extends AuditableEntity {
     @JsonManagedReference
     @Builder.Default
     private List<MarketRentCaseEntity> marketRentCases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<NonRentCaseEntity> nonRentCases = new ArrayList<>();
 }

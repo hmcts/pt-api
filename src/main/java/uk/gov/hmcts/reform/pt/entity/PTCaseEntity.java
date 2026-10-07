@@ -126,11 +126,6 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<NonRentCaseEntity> nonRentCases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<NoticeOfRentChangeEntity> noticeOfRentChanges = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
