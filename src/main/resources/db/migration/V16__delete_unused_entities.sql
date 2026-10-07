@@ -15,3 +15,8 @@ UPDATE case_party cp
   WHERE cp.case_party_role_id = cpr.id;
 ALTER TABLE case_party DROP COLUMN case_party_role_id;
 DROP TABLE IF EXISTS case_party_role;
+
+DROP TABLE IF EXISTS decision_appeal;
+DROP TABLE IF EXISTS hearing_decision;
+DROP TABLE IF EXISTS hearing_inspection;
+DROP TABLE IF EXISTS case_hearing;

@@ -72,11 +72,6 @@ public class CaseApplicationEntity extends AuditableEntity {
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseHearingEntity> hearings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<CaseMediationEntity> mediations = new ArrayList<>();
 
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
