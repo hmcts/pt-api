@@ -69,10 +69,7 @@ public class ApplicationMapper {
                     : null)
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
-            .applicantIdamUserId(
-                !caseParty.getAccess().isEmpty()
-                    ? caseParty.getAccess().getFirst().getIdamId()
-                    : null)
+            .applicantIdamUserId(caseParty.getIdamId())
             .email(caseParty.getEmailAddress())
             .applicantContactPreferences(mapContactPreferences(caseParty))
             .tenantDetails(mapTenantDetails(caseParty))

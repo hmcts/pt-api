@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
@@ -86,7 +85,7 @@ class ApplicationMapperTest {
     void shouldThrowCaseNotFoundExceptionWhenPtCaseIsNull() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -103,7 +102,7 @@ class ApplicationMapperTest {
     void shouldMapContactPreferences() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
+            null,
             contactPreferences(YesOrNo.YES),
             Collections.emptyList()
         );
@@ -119,7 +118,7 @@ class ApplicationMapperTest {
     void shouldMapContactPreferencesWhenNoPreferences() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -135,7 +134,7 @@ class ApplicationMapperTest {
     void shouldMapTenantDetails() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -209,7 +208,7 @@ class ApplicationMapperTest {
         PTCaseEntity ptCase = ptCase(Collections.emptyList(), Collections.emptyList());
         CasePartyEntity caseParty = caseParty(
             ptCase,
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -224,7 +223,7 @@ class ApplicationMapperTest {
     void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -239,7 +238,7 @@ class ApplicationMapperTest {
     void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
-            Collections.emptyList(),
+            null,
             Collections.emptyList(),
             Collections.emptyList()
         );
@@ -1047,7 +1046,7 @@ class ApplicationMapperTest {
 
     private static CasePartyEntity caseParty(
         PTCaseEntity ptCase,
-        List<CasePartyAccessEntity> access,
+        UUID idamId,
         List<CasePartyContactPreferenceEntity> contactPreferences,
         List<AddressEntity> addresses
     ) {
@@ -1060,7 +1059,7 @@ class ApplicationMapperTest {
             .phoneNumber(PHONE_NUMBER)
             .mobilePhoneNumber(MOBILE_NUMBER)
             .ptCase(ptCase)
-            .access(access)
+            .idamId(idamId)
             .contactPreferences(contactPreferences)
             .addresses(addresses)
             .build();
@@ -1089,12 +1088,9 @@ class ApplicationMapperTest {
     private static CaseApplicationEntity fullEntity(UUID userId) {
         List<AddressEntity> partyAddresses = addresses(POSTCODE);
         PTCaseEntity ptCase = ptCase(partyAddresses, tenancyDetails(TENANCY_TYPE));
-        List<CasePartyAccessEntity> access = List.of(
-            CasePartyAccessEntity.builder().idamId(userId).build()
-        );
         CasePartyEntity caseParty = caseParty(
             ptCase,
-            access,
+            userId,
             contactPreferences(YesOrNo.YES),
             partyAddresses
         );

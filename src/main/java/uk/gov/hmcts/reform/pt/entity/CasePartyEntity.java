@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Setter
@@ -57,10 +58,7 @@ public class CasePartyEntity extends AuditableEntity {
     @Column(length = 5)
     private String referenceNumber;
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyAccessEntity> access = new ArrayList<>();
+    private UUID idamId;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference

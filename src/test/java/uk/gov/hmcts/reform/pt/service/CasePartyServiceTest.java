@@ -11,10 +11,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
 import java.util.ArrayList;
@@ -34,9 +32,6 @@ class CasePartyServiceTest {
 
     @Mock
     private CasePartyRepository casePartyRepository;
-
-    @Mock
-    private CasePartyAccessRepository casePartyAccessRepository;
 
     @Mock
     private AddressService addressService;
@@ -64,10 +59,10 @@ class CasePartyServiceTest {
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
         assertThat(result.getPtCase().getCaseReference()).isEqualTo(caseReference);
         assertThat(result.getCasePartyRole()).isEqualTo(PartyRole.APPLICANT);
+        assertThat(result.getIdamId()).isEqualTo(idamId);
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
         verify(addressService).updateAddress(any(PartyDetails.class), eq(result), eq(ptCaseEntity));
-        verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
     }
 
     @Test

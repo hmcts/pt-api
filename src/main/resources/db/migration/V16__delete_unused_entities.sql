@@ -38,3 +38,16 @@ INSERT INTO market_rent_case (pt_case_id, agree_to_decision_without_inspection, 
   WHERE NOT EXISTS (SELECT 1 FROM market_rent_case mrc WHERE mrc.pt_case_id = pi.pt_case_id)
   ORDER BY pi.pt_case_id, pi.id;
 DROP TABLE IF EXISTS property_inspection;
+
+ALTER TABLE case_party ADD COLUMN idam_id UUID;
+UPDATE case_party cp
+  SET idam_id = cpa.idam_id
+  FROM (
+    SELECT DISTINCT ON (case_party_id) case_party_id, idam_id
+    FROM case_party_access
+    WHERE idam_id IS NOT NULL
+    ORDER BY case_party_id, id
+  ) cpa
+  WHERE cp.id = cpa.case_party_id;
+CREATE INDEX case_party_idam_id_idx ON case_party (idam_id);
+DROP TABLE IF EXISTS case_party_access;

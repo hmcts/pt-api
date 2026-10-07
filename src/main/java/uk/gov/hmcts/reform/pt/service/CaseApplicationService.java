@@ -20,7 +20,7 @@ public class CaseApplicationService {
     private final CaseApplicationRepository applicationRepository;
 
     public List<ApplicationDto> getCasesForUser(UUID userId) {
-        return applicationRepository.findActiveByCasePartyAccessIdamId(userId).stream()
+        return applicationRepository.findActiveByCasePartyIdamId(userId).stream()
             .map(ApplicationMapper::toDto)
             .toList();
     }

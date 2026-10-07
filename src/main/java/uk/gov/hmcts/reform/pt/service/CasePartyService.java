@@ -7,10 +7,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 
 import java.util.Optional;
@@ -23,7 +21,6 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 public class CasePartyService {
 
     private final CasePartyRepository casePartyRepository;
-    private final CasePartyAccessRepository casePartyAccessRepository;
     private final AddressService addressService;
 
     @Transactional
@@ -34,6 +31,7 @@ public class CasePartyService {
             .emailAddress(ptCase.getEmail())
             .ptCase(ptCaseEntity)
             .casePartyRole(PartyRole.APPLICANT)
+            .idamId(idamId)
             .build();
         casePartyRepository.save(caseParty);
 
@@ -41,12 +39,6 @@ public class CasePartyService {
             .postcode(ptCase.getPostcode())
             .build();
         addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);
-
-        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
-            .idamId(idamId)
-            .party(caseParty)
-            .build();
-        casePartyAccessRepository.save(access);
 
         return caseParty;
     }
