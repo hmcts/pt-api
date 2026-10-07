@@ -74,11 +74,11 @@ ALTER TABLE case_party_flag
   ADD COLUMN flag_comment_cy TEXT,
   ADD COLUMN flag_update_comment TEXT,
   ADD COLUMN status TEXT,
-  ADD COLUMN paths TEXT;
+  ADD COLUMN path TEXT;
 
 ALTER TABLE case_party_flag
   ALTER COLUMN status SET NOT NULL,
-  ALTER COLUMN paths SET NOT NULL;
+  ALTER COLUMN path SET NOT NULL;
 
 -- Case flag table
 ALTER TABLE case_flag
