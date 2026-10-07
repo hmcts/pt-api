@@ -21,3 +21,4 @@ DROP TABLE IF EXISTS hearing_decision;
 DROP TABLE IF EXISTS hearing_inspection;
 DROP TABLE IF EXISTS case_hearing;
 DROP TABLE IF EXISTS case_mediation;
+DROP TABLE IF EXISTS case_order;

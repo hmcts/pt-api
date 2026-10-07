@@ -74,11 +74,6 @@ public class PTCaseEntity extends AuditableEntity {
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<CaseOrderEntity> orders = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
     @OrderBy("id")
     @Builder.Default
     private List<DocumentEntity> documents = new ArrayList<>();
