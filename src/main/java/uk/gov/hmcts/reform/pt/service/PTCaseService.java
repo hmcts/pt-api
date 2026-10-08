@@ -177,7 +177,6 @@ public class PTCaseService {
             return;
         }
 
-        setIfNotNull(hearingOrPropertyInspectionDetails.getHearingRequested(), ptCaseEntity::setHearingRequested);
         ptCaseRepository.save(ptCaseEntity);
 
         marketRentCaseService.updateWithPropertyInspectionDetails(ptCaseEntity, hearingOrPropertyInspectionDetails);

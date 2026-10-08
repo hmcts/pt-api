@@ -111,7 +111,6 @@ public class MarketRentCaseService {
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
-
         marketRentCase.setPtCase(ptCaseEntity);
         setIfNotNull(
             toBigDecimal(details.getApplicantSuggestedMarketRent()),
@@ -150,6 +149,8 @@ public class MarketRentCaseService {
             inspectionDetails.getNoDecisionWithoutInspectionReason(),
             marketRentCase::setNoDecisionWithoutInspectionReason
         );
+        setIfNotNull(inspectionDetails.getHearingRequested(), marketRentCase::setHearingRequested);
+        setIfNotNull(inspectionDetails.getReasonHearingRequested(), marketRentCase::setReasonHearingRequested);
 
         marketRentCaseRepository.save(marketRentCase);
     }

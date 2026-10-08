@@ -103,7 +103,8 @@ public class ApplicationMapper {
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
 
         return HearingInspectionDetailsDto.builder()
-            .hearingRequested(ptCaseEntity.getHearingRequested())
+            .hearingRequested(get(marketRentCase, MarketRentCaseEntity::getHearingRequested))
+            .reasonHearingRequested(get(marketRentCase, MarketRentCaseEntity::getReasonHearingRequested))
             .agreeToDecisionWithoutInspection(
                 marketRentCase != null
                     ? marketRentCase.getAgreeToDecisionWithoutInspection()
@@ -334,11 +335,11 @@ public class ApplicationMapper {
             .emailAddress(entity.getEmailAddress())
             .phoneNumber(entity.getPhoneNumber())
             .dxNumber(entity.getReferenceNumber())
-            .addressLine1(address != null ? address.getAddressLine1() : null)
-            .addressLine2(address != null ? address.getAddressLine2() : null)
-            .postTown(address != null ? address.getPostTown() : null)
-            .county(address != null ? address.getCounty() : null)
-            .postcode(address != null ? address.getPostcode() : null)
+            .addressLine1(get(address, AddressEntity::getAddressLine1))
+            .addressLine2(get(address, AddressEntity::getAddressLine2))
+            .postTown(get(address, AddressEntity::getPostTown))
+            .county(get(address, AddressEntity::getCounty))
+            .postcode(get(address, AddressEntity::getPostcode))
             .build();
     }
 

@@ -161,9 +161,10 @@ class ApplicationMapperTest {
     @Test
     void shouldMapHearingInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .hearingRequested(YesOrNo.NO)
             .marketRentCases(List.of(
                 MarketRentCaseEntity.builder()
+                    .hearingRequested(YesOrNo.NO)
+                    .reasonHearingRequested("Some reason")
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Some reason")
                     .build()
@@ -173,20 +174,40 @@ class ApplicationMapperTest {
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
 
         assertThat(result.getHearingRequested()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getReasonHearingRequested()).isEqualTo("Some reason");
         assertThat(result.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
         assertThat(result.getNoDecisionWithoutInspectionReason()).isEqualTo("Some reason");
     }
 
     @Test
-    void shouldMapHearingInspectionDetailsWhenNoMarketRentCase() {
+    void shouldMapHearingInspectionDetailsWhenNoInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .hearingRequested(YesOrNo.YES)
-            .marketRentCases(Collections.emptyList())
+            .marketRentCases(List.of(
+                MarketRentCaseEntity.builder()
+                    .hearingRequested(YesOrNo.YES)
+                    .reasonHearingRequested("Hearing reason")
+                    .build()
+            ))
             .build();
 
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
 
         assertThat(result.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getReasonHearingRequested()).isEqualTo("Hearing reason");
+        assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
+        assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
+    }
+
+    @Test
+    public void shouldMapHearingInspectionDetailsWhenNoMarketRentCases() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCases(Collections.emptyList())
+            .build();
+
+        HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
+
+        assertThat(result.getHearingRequested()).isNull();
+        assertThat(result.getReasonHearingRequested()).isNull();
         assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
         assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
     }
@@ -198,6 +219,7 @@ class ApplicationMapperTest {
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
 
         assertThat(result.getHearingRequested()).isNull();
+        assertThat(result.getReasonHearingRequested()).isNull();
         assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
         assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
     }
@@ -1018,6 +1040,8 @@ class ApplicationMapperTest {
                            .applicantSuggestedMarketRentReasons("Market rate for the area")
                            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
                            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
+                           .hearingRequested(YesOrNo.YES)
+                           .reasonHearingRequested("Hearing reason")
                            .agreeToDecisionWithoutInspection(YesOrNo.YES)
                            .noDecisionWithoutInspectionReason("Inspection reason")
                            .build());
@@ -1026,7 +1050,6 @@ class ApplicationMapperTest {
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .hearingRequested(YesOrNo.YES)
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .marketRentCases(marketRentCases())
@@ -1117,6 +1140,7 @@ class ApplicationMapperTest {
             .hearingInspectionDetails(
                 HearingInspectionDetailsDto.builder()
                     .hearingRequested(YesOrNo.YES)
+                    .reasonHearingRequested("Hearing reason")
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Inspection reason")
                     .build())

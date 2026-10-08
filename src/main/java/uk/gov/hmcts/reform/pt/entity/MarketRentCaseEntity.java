@@ -153,6 +153,13 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 500)
     private String noDecisionWithoutInspectionReason;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo hearingRequested;
+
+    @Column(length = 500)
+    private String reasonHearingRequested;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")
     @JsonBackReference
