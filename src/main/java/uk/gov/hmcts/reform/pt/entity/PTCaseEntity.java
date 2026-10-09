@@ -50,37 +50,7 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseTaskEntity> tasks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseNoteEntity> notes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<AddressEntity> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseEventEntity> events = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseStateEntity> states = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseFlagEntity> flags = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<ApplicationStatementOfTruthEntity> statementsOfTruth = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -90,22 +60,7 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CaseHearingEntity> hearings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseMediationEntity> mediations = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<CaseNotificationEntity> notifications = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseOrderEntity> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -121,11 +76,6 @@ public class PTCaseEntity extends AuditableEntity {
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<NonRentCaseEntity> nonRentCases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<NoticeOfRentChangeEntity> noticeOfRentChanges = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
@@ -137,11 +87,6 @@ public class PTCaseEntity extends AuditableEntity {
     @JsonManagedReference
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<PropertyInspectionEntity> propertyInspections = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_type_id")

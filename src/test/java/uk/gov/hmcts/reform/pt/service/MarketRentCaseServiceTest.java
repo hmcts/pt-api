@@ -227,39 +227,19 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with hearing details")
-    void updateWithHearingPropertyInspectionDetailsWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCases(List.of(existing))
-            .build();
-
-        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
-            .hearingRequested(YesOrNo.YES)
-            .reasonHearingRequested("Need a hearing")
-            .build();
-
-        marketRentCaseService.updateWithHearingPropertyInspectionDetails(ptCase, details);
-
-        verify(marketRentCaseRepository).save(existing);
-        assertThat(existing.getPtCase()).isEqualTo(ptCase);
-        assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
-    }
-
-    @Test
-    @DisplayName("Should create and save new MarketRentCaseEntity with hearing details when list is empty")
-    void updateWithHearingPropertyInspectionDetailsWhenEmpty() {
+    @DisplayName("Should create new MarketRentCaseEntity with hearing and property inspection details when none exist")
+    void updateWithPropertyInspectionDetailsCreatesNew() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .marketRentCases(new ArrayList<>())
             .build();
-
         HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
             .hearingRequested(YesOrNo.NO)
             .reasonHearingRequested("Written representation preferred")
+            .agreeToDecisionWithoutInspection(YesOrNo.YES)
+            .noDecisionWithoutInspectionReason("No inspection required")
             .build();
 
-        marketRentCaseService.updateWithHearingPropertyInspectionDetails(ptCase, details);
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
 
         ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
         verify(marketRentCaseRepository).save(captor.capture());
@@ -268,5 +248,34 @@ class MarketRentCaseServiceTest {
         assertThat(saved.getPtCase()).isEqualTo(ptCase);
         assertThat(saved.getHearingRequested()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getReasonHearingRequested()).isEqualTo("Written representation preferred");
+        assertThat(saved.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(saved.getNoDecisionWithoutInspectionReason()).isEqualTo("No inspection required");
+    }
+
+    @Test
+    @DisplayName("Should update existing MarketRentCaseEntity with hearing and property inspection details")
+    void updateWithPropertyInspectionDetailsWhenExists() {
+        MarketRentCaseEntity existing = MarketRentCaseEntity.builder()
+            .agreeToDecisionWithoutInspection(YesOrNo.NO)
+            .noDecisionWithoutInspectionReason("Old reason")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(List.of(existing))
+            .build();
+        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .reasonHearingRequested("Need a hearing")
+            .agreeToDecisionWithoutInspection(YesOrNo.YES)
+            .noDecisionWithoutInspectionReason("Updated reason")
+            .build();
+
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
+
+        verify(marketRentCaseRepository).save(existing);
+        assertThat(existing.getPtCase()).isEqualTo(ptCase);
+        assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
+        assertThat(existing.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getNoDecisionWithoutInspectionReason()).isEqualTo("Updated reason");
     }
 }

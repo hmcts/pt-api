@@ -148,6 +148,13 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo agreeToDecisionWithoutInspection;
+
+    @Column(length = 500)
+    private String noDecisionWithoutInspectionReason;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo hearingRequested;
 
     @Column(length = 500)

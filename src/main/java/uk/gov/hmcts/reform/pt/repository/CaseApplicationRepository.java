@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface CaseApplicationRepository extends JpaRepository<CaseApplicationEntity, Long> {
 
-    List<CaseApplicationEntity> findAllByCasePartyAccessIdamId(UUID idamId);
+    List<CaseApplicationEntity> findAllByCasePartyIdamId(UUID idamId);
 
     @Query(value = """
         SELECT DISTINCT
@@ -22,21 +22,19 @@ public interface CaseApplicationRepository extends JpaRepository<CaseApplication
             ca.submitted_date AS submittedDate
         FROM case_application ca
         JOIN case_party cp ON cp.id = ca.case_party_id
-        JOIN case_party_access cpa ON cpa.case_party_id = cp.id
         JOIN pt_case pc ON pc.id = cp.pt_case_id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
-        WHERE cpa.idam_id = :idamId
+        WHERE cp.idam_id = :idamId
         AND cd.state <> 'PendingDisposal'
         """, nativeQuery = true)
-    List<ApplicationSummary> findActiveByCasePartyAccessIdamId(@Param("idamId") UUID idamId);
+    List<ApplicationSummary> findActiveByCasePartyIdamId(@Param("idamId") UUID idamId);
 
     @Query(value = """
         SELECT ca.* FROM case_application ca
         JOIN case_party cp ON cp.id = ca.case_party_id
-        JOIN case_party_access cpa ON cpa.case_party_id = cp.id
         JOIN pt_case pc ON pc.id = cp.pt_case_id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
-        WHERE cpa.idam_id = :idamId
+        WHERE cp.idam_id = :idamId
         AND pc.case_reference = :caseReference
         AND cd.state <> 'PendingDisposal'
         """, nativeQuery = true)

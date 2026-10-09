@@ -18,13 +18,11 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -70,10 +68,7 @@ public class ApplicationMapper {
                     : null)
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
-            .applicantIdamUserId(
-                !caseParty.getAccess().isEmpty()
-                    ? caseParty.getAccess().getFirst().getIdamId()
-                    : null)
+            .applicantIdamUserId(caseParty.getIdamId())
             .email(caseParty.getEmailAddress())
             .applicantContactPreferences(mapContactPreferences(caseParty))
             .tenantDetails(mapTenantDetails(caseParty))
@@ -88,14 +83,10 @@ public class ApplicationMapper {
     }
 
     public static ContactPreferencesDto mapContactPreferences(CasePartyEntity caseParty) {
-        CasePartyContactPreferenceEntity contactPreferences = caseParty.getContactPreferences().stream()
-            .findFirst()
-            .orElse(null);
-
         return ContactPreferencesDto.builder()
             .phoneNumber(caseParty.getPhoneNumber())
             .mobilePhoneNumber(caseParty.getMobilePhoneNumber())
-            .contactByText(get(contactPreferences, CasePartyContactPreferenceEntity::getContactByText))
+            .contactByText(caseParty.getContactByText())
             .build();
     }
 
@@ -109,18 +100,19 @@ public class ApplicationMapper {
     }
 
     public static HearingInspectionDetailsDto mapHearingInspectionDetails(PTCaseEntity ptCaseEntity) {
-        PropertyInspectionEntity propertyInspectionEntity = ptCaseEntity.getPropertyInspections().stream()
-            .findFirst()
-            .orElse(null);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
 
         return HearingInspectionDetailsDto.builder()
             .hearingRequested(get(marketRentCase, MarketRentCaseEntity::getHearingRequested))
             .reasonHearingRequested(get(marketRentCase, MarketRentCaseEntity::getReasonHearingRequested))
             .agreeToDecisionWithoutInspection(
-                get(propertyInspectionEntity, PropertyInspectionEntity::getAgreeToDecisionWithoutInspection))
+                marketRentCase != null
+                    ? marketRentCase.getAgreeToDecisionWithoutInspection()
+                    : null)
             .noDecisionWithoutInspectionReason(
-                get(propertyInspectionEntity, PropertyInspectionEntity::getNoDecisionWithoutInspectionReason))
+                marketRentCase != null
+                    ? marketRentCase.getNoDecisionWithoutInspectionReason()
+                    : null)
             .build();
     }
 
@@ -365,7 +357,7 @@ public class ApplicationMapper {
 
     private static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
         return ptCaseEntity.getParties().stream()
-            .filter(party -> party.getRole() != null && party.getRole().getRoleName() == role)
+            .filter(party -> party.getCasePartyRole() == role)
             .findFirst()
             .orElse(null);
     }

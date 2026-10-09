@@ -23,16 +23,12 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyContactPreferenceEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.entity.PropertyInspectionEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
@@ -88,8 +84,8 @@ class ApplicationMapperTest {
     void shouldThrowCaseNotFoundExceptionWhenPtCaseIsNull() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = CaseApplicationEntity.builder()
@@ -105,8 +101,8 @@ class ApplicationMapperTest {
     void shouldMapContactPreferences() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
-            contactPreferences(YesOrNo.YES),
+            null,
+            YesOrNo.YES,
             Collections.emptyList()
         );
 
@@ -121,8 +117,8 @@ class ApplicationMapperTest {
     void shouldMapContactPreferencesWhenNoPreferences() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
 
@@ -137,8 +133,8 @@ class ApplicationMapperTest {
     void shouldMapTenantDetails() {
         CasePartyEntity caseParty = caseParty(
             null,
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
 
@@ -169,10 +165,6 @@ class ApplicationMapperTest {
                 MarketRentCaseEntity.builder()
                     .hearingRequested(YesOrNo.NO)
                     .reasonHearingRequested("Some reason")
-                    .build()
-            ))
-            .propertyInspections(List.of(
-                PropertyInspectionEntity.builder()
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Some reason")
                     .build()
@@ -188,7 +180,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapHearingInspectionDetailsWhenNoPropertyInspections() {
+    void shouldMapHearingInspectionDetailsWhenNoInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCases(List.of(
                 MarketRentCaseEntity.builder()
@@ -196,7 +188,6 @@ class ApplicationMapperTest {
                     .reasonHearingRequested("Hearing reason")
                     .build()
             ))
-            .propertyInspections(Collections.emptyList())
             .build();
 
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
@@ -211,20 +202,14 @@ class ApplicationMapperTest {
     public void shouldMapHearingInspectionDetailsWhenNoMarketRentCases() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCases(Collections.emptyList())
-            .propertyInspections(List.of(
-                PropertyInspectionEntity.builder()
-                    .agreeToDecisionWithoutInspection(YesOrNo.YES)
-                    .noDecisionWithoutInspectionReason("Some reason")
-                    .build()
-            ))
             .build();
 
         HearingInspectionDetailsDto result = ApplicationMapper.mapHearingInspectionDetails(ptCaseEntity);
 
         assertThat(result.getHearingRequested()).isNull();
         assertThat(result.getReasonHearingRequested()).isNull();
-        assertThat(result.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
-        assertThat(result.getNoDecisionWithoutInspectionReason()).isEqualTo("Some reason");
+        assertThat(result.getAgreeToDecisionWithoutInspection()).isNull();
+        assertThat(result.getNoDecisionWithoutInspectionReason()).isNull();
     }
 
     @Test
@@ -244,8 +229,8 @@ class ApplicationMapperTest {
         PTCaseEntity ptCase = ptCase(Collections.emptyList(), Collections.emptyList());
         CasePartyEntity caseParty = caseParty(
             ptCase,
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
@@ -259,8 +244,8 @@ class ApplicationMapperTest {
     void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
@@ -274,8 +259,8 @@ class ApplicationMapperTest {
     void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
         CasePartyEntity caseParty = caseParty(
             ptCase(addresses(POSTCODE), Collections.emptyList()),
-            Collections.emptyList(),
-            Collections.emptyList(),
+            null,
+            null,
             Collections.emptyList()
         );
         CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
@@ -953,9 +938,9 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapLandlordDetails() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
+        PartyRole landlordRole = PartyRole.LANDLORD;
+        PartyRole agentRole = PartyRole.LETTING_AGENT;
+        PartyRole repRole = PartyRole.LANDLORD_REPRESENTATIVE;
 
         AddressEntity landlordAddress = AddressEntity.builder()
             .addressLine1("1 Landlord Way")
@@ -972,21 +957,21 @@ class ApplicationMapperTest {
             .emailAddress("landlord@example.com")
             .phoneNumber("0123456789")
             .referenceNumber("LL01")
-            .role(landlordRole)
+            .casePartyRole(landlordRole)
             .addresses(List.of(landlordAddress))
             .build();
 
         CasePartyEntity agentParty = CasePartyEntity.builder()
             .firstName("Agent")
             .lastName("Smith")
-            .role(agentRole)
+            .casePartyRole(agentRole)
             .addresses(Collections.emptyList())
             .build();
 
         CasePartyEntity repParty = CasePartyEntity.builder()
             .firstName("Rep")
             .lastName("Jones")
-            .role(repRole)
+            .casePartyRole(repRole)
             .addresses(Collections.emptyList())
             .build();
 
@@ -1057,18 +1042,14 @@ class ApplicationMapperTest {
                            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
                            .hearingRequested(YesOrNo.YES)
                            .reasonHearingRequested("Hearing reason")
+                           .agreeToDecisionWithoutInspection(YesOrNo.YES)
+                           .noDecisionWithoutInspectionReason("Inspection reason")
                            .build());
     }
 
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .propertyInspections(List.of(
-                PropertyInspectionEntity.builder()
-                    .agreeToDecisionWithoutInspection(YesOrNo.YES)
-                    .noDecisionWithoutInspectionReason("Inspection reason")
-                    .build()
-            ))
             .addresses(addresses)
             .tenancyDetails(tenancyDetails)
             .marketRentCases(marketRentCases())
@@ -1087,8 +1068,8 @@ class ApplicationMapperTest {
 
     private static CasePartyEntity caseParty(
         PTCaseEntity ptCase,
-        List<CasePartyAccessEntity> access,
-        List<CasePartyContactPreferenceEntity> contactPreferences,
+        UUID idamId,
+        YesOrNo contactByText,
         List<AddressEntity> addresses
     ) {
         return CasePartyEntity.builder()
@@ -1100,16 +1081,10 @@ class ApplicationMapperTest {
             .phoneNumber(PHONE_NUMBER)
             .mobilePhoneNumber(MOBILE_NUMBER)
             .ptCase(ptCase)
-            .access(access)
-            .contactPreferences(contactPreferences)
+            .idamId(idamId)
+            .contactByText(contactByText)
             .addresses(addresses)
             .build();
-    }
-
-    private static List<CasePartyContactPreferenceEntity> contactPreferences(YesOrNo text) {
-        return List.of(CasePartyContactPreferenceEntity.builder()
-                           .contactByText(text)
-                           .build());
     }
 
     private static CaseApplicationEntity entityWithCaseType(
@@ -1129,13 +1104,10 @@ class ApplicationMapperTest {
     private static CaseApplicationEntity fullEntity(UUID userId) {
         List<AddressEntity> partyAddresses = addresses(POSTCODE);
         PTCaseEntity ptCase = ptCase(partyAddresses, tenancyDetails(TENANCY_TYPE));
-        List<CasePartyAccessEntity> access = List.of(
-            CasePartyAccessEntity.builder().idamId(userId).build()
-        );
         CasePartyEntity caseParty = caseParty(
             ptCase,
-            access,
-            contactPreferences(YesOrNo.YES),
+            userId,
+            YesOrNo.YES,
             partyAddresses
         );
         return entityWithCaseType(caseParty, APPLICATION_TYPE);

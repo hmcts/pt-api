@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,10 +19,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Setter
@@ -54,10 +61,7 @@ public class CasePartyEntity extends AuditableEntity {
     @Column(length = 5)
     private String referenceNumber;
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyAccessEntity> access = new ArrayList<>();
+    private UUID idamId;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -69,10 +73,9 @@ public class CasePartyEntity extends AuditableEntity {
     @Builder.Default
     private List<CasePartyAttributeEntity> attributeAssertions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyContactPreferenceEntity> contactPreferences = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo contactByText;
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -89,9 +92,9 @@ public class CasePartyEntity extends AuditableEntity {
     @Builder.Default
     private List<CasePartyRepresentativeEntity> representatives = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_party_role_id")
-    private CasePartyRoleEntity role;
+    @Column(name = "party_role", length = 100)
+    @Enumerated(EnumType.STRING)
+    private PartyRole casePartyRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_type_id")

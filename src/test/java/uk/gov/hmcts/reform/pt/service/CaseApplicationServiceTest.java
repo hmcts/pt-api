@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -83,7 +82,7 @@ class CaseApplicationServiceTest {
         LocalDateTime created = LocalDateTime.of(2026, 1, 2, 3, 4);
         LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
 
-        when(applicationRepository.findActiveByCasePartyAccessIdamId(userId))
+        when(applicationRepository.findActiveByCasePartyIdamId(userId))
             .thenReturn(List.of(new Summary(1L, CASE_REFERENCE, created, submitted)));
 
         List<ApplicationDto> result = applicationService.getCasesForUser(userId);
@@ -93,7 +92,7 @@ class CaseApplicationServiceTest {
         assertThat(result.getFirst().getCreatedDate()).isEqualTo(created);
         assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
 
-        verify(applicationRepository).findActiveByCasePartyAccessIdamId(userId);
+        verify(applicationRepository).findActiveByCasePartyIdamId(userId);
         verifyNoMoreInteractions(applicationRepository);
     }
 
@@ -153,14 +152,8 @@ class CaseApplicationServiceTest {
             .lastName("LastName")
             .emailAddress("test@test.com")
             .ptCase(ptCase)
-            .build();
-
-        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
             .idamId(userId)
-            .party(caseParty)
             .build();
-
-        caseParty.setAccess(List.of(access));
 
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
