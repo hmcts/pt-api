@@ -11,13 +11,9 @@ import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyRoleEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.repository.CasePartyAccessRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
-import uk.gov.hmcts.reform.pt.repository.CasePartyRoleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +26,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CasePartyServiceTest {
 
     @Mock
     private CasePartyRepository casePartyRepository;
-
-    @Mock
-    private CasePartyAccessRepository casePartyAccessRepository;
-
-    @Mock
-    private CasePartyRoleRepository casePartyRoleRepository;
 
     @Mock
     private AddressService addressService;
@@ -62,9 +51,6 @@ class CasePartyServiceTest {
         UUID idamId = UUID.randomUUID();
         long caseReference = 1234L;
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
-        CasePartyRoleEntity roleEntity = CasePartyRoleEntity.builder().roleName(PartyRole.APPLICANT).build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.APPLICANT)).thenReturn(Optional.of(roleEntity));
 
         CasePartyEntity result = casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, idamId);
 
@@ -72,24 +58,11 @@ class CasePartyServiceTest {
         assertThat(result.getLastName()).isEqualTo("Doe");
         assertThat(result.getEmailAddress()).isEqualTo("john.doe@example.com");
         assertThat(result.getPtCase().getCaseReference()).isEqualTo(caseReference);
-        assertThat(result.getRole()).isEqualTo(roleEntity);
+        assertThat(result.getCasePartyRole()).isEqualTo(PartyRole.APPLICANT);
+        assertThat(result.getIdamId()).isEqualTo(idamId);
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
         verify(addressService).updateAddress(any(PartyDetails.class), eq(result), eq(ptCaseEntity));
-        verify(casePartyAccessRepository).save(any(CasePartyAccessEntity.class));
-    }
-
-    @Test
-    @DisplayName("Should create new CasePartyRoleEntity when role not found")
-    void getOrCreateCasePartyRoleWhenNotFound() {
-        CasePartyRoleEntity savedRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.empty());
-        when(casePartyRoleRepository.save(any(CasePartyRoleEntity.class))).thenReturn(savedRole);
-
-        CasePartyRoleEntity result = casePartyService.getOrCreateCasePartyRole(PartyRole.LANDLORD);
-
-        assertThat(result).isEqualTo(savedRole);
-        verify(casePartyRoleRepository).save(any(CasePartyRoleEntity.class));
     }
 
     @Test
@@ -107,18 +80,11 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should update landlord and letting agent when representative type is LETTING_AGENT")
     void updateWithLandlordDetailsLettingAgent() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity lettingAgentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
-
-        CasePartyEntity existingRep = CasePartyEntity.builder().role(repRole).build();
+        CasePartyEntity existingRep = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(new ArrayList<>(List.of(existingRep)))
             .build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LETTING_AGENT))
-            .thenReturn(Optional.of(lettingAgentRole));
 
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
         PartyDetails lettingAgentParty = PartyDetails.builder().firstName("Agent").build();
@@ -138,17 +104,10 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should update landlord and representative when representative type is REPRESENTATIVE")
     void updateWithLandlordDetailsRepresentative() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
-
-        CasePartyEntity existingLandlord = CasePartyEntity.builder().role(landlordRole).build();
+        CasePartyEntity existingLandlord = CasePartyEntity.builder().casePartyRole(PartyRole.LANDLORD).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(new ArrayList<>(List.of(existingLandlord)))
             .build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD_REPRESENTATIVE))
-            .thenReturn(Optional.of(repRole));
 
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
         PartyDetails repParty = PartyDetails.builder().firstName("Rep").build();
@@ -167,15 +126,6 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should update both when representative type is LETTING_AGENT_AND_REPRESENTATIVE")
     void updateWithLandlordDetailsBoth() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity lettingAgentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LETTING_AGENT))
-            .thenReturn(Optional.of(lettingAgentRole));
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD_REPRESENTATIVE))
-            .thenReturn(Optional.of(repRole));
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(new ArrayList<>()).build();
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
@@ -196,17 +146,12 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should remove agent and rep when representative type is NO_LETTING_AGENT_OR_REPRESENTATIVE")
     void updateWithLandlordDetailsNone() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
-
-        CasePartyEntity existingAgent = CasePartyEntity.builder().role(agentRole).build();
-        CasePartyEntity existingRep = CasePartyEntity.builder().role(repRole).build();
+        CasePartyEntity existingAgent = CasePartyEntity.builder().casePartyRole(PartyRole.LETTING_AGENT).build();
+        CasePartyEntity existingRep = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(new ArrayList<>(List.of(existingAgent, existingRep)))
             .build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
 
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
@@ -223,17 +168,12 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should remove agent and rep when representative type is NOT_SURE")
     void updateWithLandlordDetailsNotSure() {
-        CasePartyRoleEntity landlordRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyRoleEntity agentRole = CasePartyRoleEntity.builder().roleName(PartyRole.LETTING_AGENT).build();
-        CasePartyRoleEntity repRole = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD_REPRESENTATIVE).build();
-
-        CasePartyEntity existingAgent = CasePartyEntity.builder().role(agentRole).build();
-        CasePartyEntity existingRep = CasePartyEntity.builder().role(repRole).build();
+        CasePartyEntity existingAgent = CasePartyEntity.builder().casePartyRole(PartyRole.LETTING_AGENT).build();
+        CasePartyEntity existingRep = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(new ArrayList<>(List.of(existingAgent, existingRep)))
             .build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(landlordRole));
 
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
@@ -260,13 +200,10 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should update existing party details when party exists for role")
     void updatePartyDetailsWhenPartyExists() {
-        CasePartyRoleEntity role = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyEntity existing = CasePartyEntity.builder().role(role).build();
+        CasePartyEntity existing = CasePartyEntity.builder().casePartyRole(PartyRole.LANDLORD).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(List.of(existing))
             .build();
-
-        when(casePartyRoleRepository.findFirstByRoleName(PartyRole.LANDLORD)).thenReturn(Optional.of(role));
 
         PartyDetails partyDetails = PartyDetails.builder()
             .firstName("Jane")
@@ -303,8 +240,7 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should return party when matching role exists")
     void getPartyForCaseByRoleFound() {
-        CasePartyRoleEntity role = CasePartyRoleEntity.builder().roleName(PartyRole.APPLICANT).build();
-        CasePartyEntity party = CasePartyEntity.builder().role(role).build();
+        CasePartyEntity party = CasePartyEntity.builder().casePartyRole(PartyRole.APPLICANT).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(List.of(party)).build();
 
         Optional<CasePartyEntity> result = casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT);
@@ -315,8 +251,7 @@ class CasePartyServiceTest {
     @Test
     @DisplayName("Should return empty when matching role not found")
     void getPartyForCaseByRoleNotFound() {
-        CasePartyRoleEntity role = CasePartyRoleEntity.builder().roleName(PartyRole.LANDLORD).build();
-        CasePartyEntity party = CasePartyEntity.builder().role(role).build();
+        CasePartyEntity party = CasePartyEntity.builder().casePartyRole(PartyRole.LANDLORD).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(List.of(party)).build();
 
         Optional<CasePartyEntity> result = casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT);
