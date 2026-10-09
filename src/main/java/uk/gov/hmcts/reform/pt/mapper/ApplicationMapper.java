@@ -147,10 +147,11 @@ public class ApplicationMapper {
                     .orElse(null))
             .rentIncreaseToCauseHardship(
                 get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardship))
-            .rentIncreaseToCauseHardshipDocument(
-                findDocumentOfType(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity)
+            .rentIncreaseHardshipDocuments(
+                findDocumentsOfType(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity)
+                    .stream()
                     .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                    .toList())
             .build();
     }
 

@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -59,5 +63,6 @@ public class NoticeOfRentIncreaseDetails {
         label = "Rent increase to cause hardship document",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument rentIncreaseToCauseHardshipDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> rentIncreaseHardshipDocuments = new ArrayList<>();
 }
