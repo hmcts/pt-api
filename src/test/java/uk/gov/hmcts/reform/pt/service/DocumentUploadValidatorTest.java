@@ -15,8 +15,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pt.service.DocumentUploadValidator.REMOVE_FILE_FIRST;
-import static uk.gov.hmcts.reform.pt.service.DocumentUploadValidator.TOTAL_TOO_LARGE;
+import static uk.gov.hmcts.reform.pt.service.document.DocumentValidationErrors.REMOVE_FILE_FIRST;
+import static uk.gov.hmcts.reform.pt.service.document.DocumentValidationErrors.TOTAL_TOO_LARGE;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUploadValidatorTest {
@@ -62,7 +62,7 @@ class DocumentUploadValidatorTest {
             document(2L, "b", DocumentType.TENANT_REPAIRS_EVIDENCE, 100 * MB)
         ));
 
-        assertThat(validator.errors(CASE_REFERENCE, Map.of(1L, "a"))).containsExactly(TOTAL_TOO_LARGE);
+        assertThat(validator.errors(CASE_REFERENCE, Map.of(1L, "a"))).containsExactly(TOTAL_TOO_LARGE.value());
     }
 
     @Test
@@ -83,7 +83,7 @@ class DocumentUploadValidatorTest {
             document(1L, "replacement", DocumentType.TENANCY_AGREEMENT, MB)
         ));
 
-        assertThat(validator.errors(CASE_REFERENCE, Map.of(1L, "original"))).containsExactly(REMOVE_FILE_FIRST);
+        assertThat(validator.errors(CASE_REFERENCE, Map.of(1L, "original"))).containsExactly(REMOVE_FILE_FIRST.value());
     }
 
     private static DocumentEntity document(long id, String url, DocumentType type, long size) {

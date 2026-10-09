@@ -17,13 +17,11 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingLong;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static uk.gov.hmcts.reform.pt.service.document.DocumentValidationErrors.REMOVE_FILE_FIRST;
+import static uk.gov.hmcts.reform.pt.service.document.DocumentValidationErrors.TOTAL_TOO_LARGE;
 
 @Component
 public class DocumentUploadValidator {
-
-    public static final String REMOVE_FILE_FIRST = "removeFileFirst";
-    public static final String TOTAL_TOO_LARGE = "totalTooLarge";
-
     private final DocumentRepository documentRepository;
     private final long maxTotalBytes;
 
@@ -48,7 +46,7 @@ public class DocumentUploadValidator {
             .anyMatch(doc -> urlsBefore.containsKey(doc.getId())
                 && !Objects.equals(urlsBefore.get(doc.getId()), doc.getUrl()));
         if (replacedExisting) {
-            errors.add(REMOVE_FILE_FIRST);
+            errors.add(REMOVE_FILE_FIRST.value());
         }
 
         Set<DocumentType> changedTypes = documents.stream()
@@ -64,7 +62,7 @@ public class DocumentUploadValidator {
             .values().stream()
             .anyMatch(total -> total > maxTotalBytes);
         if (overLimit) {
-            errors.add(TOTAL_TOO_LARGE);
+            errors.add(TOTAL_TOO_LARGE.value());
         }
 
         return errors;
