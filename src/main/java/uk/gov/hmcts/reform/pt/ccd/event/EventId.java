@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EventId {
     CREATE_TEST_CASE("create-test-case", "Create Test Case"),
+    UPDATE_TEST_CASE("update-test-case", "Update Test Case"),
     CHANGE_TEST_CASE_STATE("change-test-case-state", "Change Test Case State"),
 
     CITIZEN_CREATE_APPLICATION("citizen-create-application", "Citizen Create Application"),

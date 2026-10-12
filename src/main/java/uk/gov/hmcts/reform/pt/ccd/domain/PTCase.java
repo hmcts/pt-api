@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.TTL;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CaseworkerAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SystemUserAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
 
+import java.util.List;
+
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.reform.pt.ccd.common.CcdConstants.HINT_SELECT_ALL_THAT_APPLY;
 
 @Builder
 @Data
@@ -123,4 +128,22 @@ public class PTCase {
         access = {SystemUserAccess.class}
     )
     private TTL ttl;
+
+    @CCD(
+        label = "What information do you need to request from the applicant?",
+        hint = HINT_SELECT_ALL_THAT_APPLY,
+        access = {CaseworkerAccess.class},
+        typeOverride = FieldType.MultiSelectList,
+        typeParameterOverride = "VettingInformationType"
+    )
+    private List<VettingInformationType> vettingInfoRequested;
+
+    @CCD(
+        label = "Enter the other documents or information you want to request",
+        hint = "The text you enter here will appear on the email to the applicant. "
+            + "You can preview the email on the next page.",
+        typeOverride = FieldType.TextArea,
+        access = {CaseworkerAccess.class}
+    )
+    private String vettingInfoOther;
 }
