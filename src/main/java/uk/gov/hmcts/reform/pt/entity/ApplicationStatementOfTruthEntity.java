@@ -51,9 +51,4 @@ public class ApplicationStatementOfTruthEntity extends AuditableEntity {
     @JoinColumn(name = "case_application_id")
     @JsonBackReference
     private CaseApplicationEntity caseApplication;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
-    @JsonBackReference
-    private PTCaseEntity ptCase;
 }

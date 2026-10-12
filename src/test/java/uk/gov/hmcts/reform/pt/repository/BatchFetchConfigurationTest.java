@@ -7,7 +7,6 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
@@ -46,7 +45,7 @@ public class BatchFetchConfigurationTest extends AbstractRepositoryTest<CaseAppl
         entityManager.flush();
         entityManager.clear();
 
-        List<CaseApplicationEntity> applications = repository.findAllByCasePartyAccessIdamId(idamId);
+        List<CaseApplicationEntity> applications = repository.findAllByCasePartyIdamId(idamId);
         assertThat(applications).hasSize(APPLICATION_COUNT);
 
         Statistics statistics = entityManager.getEntityManagerFactory()
@@ -63,9 +62,7 @@ public class BatchFetchConfigurationTest extends AbstractRepositoryTest<CaseAppl
 
     private void saveApplication(long caseReference, UUID idamId) {
         PTCaseEntity ptCase = PTCaseEntity.builder().caseReference(caseReference).build();
-        CasePartyEntity caseParty = CasePartyEntity.builder().ptCase(ptCase).build();
-        caseParty.setAccess(List.of(
-            CasePartyAccessEntity.builder().idamId(idamId).party(caseParty).build()));
+        CasePartyEntity caseParty = CasePartyEntity.builder().ptCase(ptCase).idamId(idamId).build();
         CaseApplicationEntity caseApplication = CaseApplicationEntity.builder().caseParty(caseParty).build();
 
         ptCaseRepository.save(ptCase);

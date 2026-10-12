@@ -12,8 +12,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CitizenUploadDocumentTest extends BaseEventTest {
@@ -34,7 +37,18 @@ class CitizenUploadDocumentTest extends BaseEventTest {
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
         verify(ptCaseService).updateDocuments(TEST_CASE_REFERENCE, caseData);
-        assertThat(result).isEqualTo(SubmitResponse.<State>builder().build());
+        assertThat(result.getErrors()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should reject the upload with the errors the case update reports")
+    void submitShouldReturnUploadLimitErrors() {
+        PTCase caseData = getTestPTCase();
+        when(ptCaseService.updateDocuments(TEST_CASE_REFERENCE, caseData)).thenReturn(List.of("removeFileFirst"));
+
+        SubmitResponse<State> result = callSubmitHandler(caseData);
+
+        assertThat(result.getErrors()).containsExactly("removeFileFirst");
     }
 
     @Test

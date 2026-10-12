@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,12 +75,6 @@ class PTCaseServiceTest {
     private CasePartyRepository casePartyRepository;
 
     @Mock
-    private ContactPreferencesService contactPreferencesService;
-
-    @Mock
-    private PropertyInspectionService propertyInspectionService;
-
-    @Mock
     private NoticeOfRentChangeService noticeOfRentChangeService;
 
     @Mock
@@ -88,6 +85,9 @@ class PTCaseServiceTest {
 
     @Mock
     private AddressService addressService;
+
+    @Mock
+    private DocumentUploadValidator documentUploadValidator;
 
     @Captor
     private ArgumentCaptor<PTCaseEntity> ptCaseEntityCaptor;
@@ -253,13 +253,9 @@ class PTCaseServiceTest {
 
         verify(casePartyRepository, times(3)).save(caseParty);
         verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
-        verify(contactPreferencesService).updateContactPreferences(caseParty, ptCase.getApplicantContactPreferences());
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
-        verify(marketRentCaseService).updateWithHearingPropertyInspectionDetails(
-            ptCaseEntity,
-            hearingInspectionDetails
-        );
-        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+        verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
@@ -454,12 +450,8 @@ class PTCaseServiceTest {
 
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
-        verify(marketRentCaseService).updateWithHearingPropertyInspectionDetails(
-            ptCaseEntity,
-            hearingInspectionDetails
-        );
         verify(ptCaseRepository).save(ptCaseEntity);
-        verify(propertyInspectionService).updatePropertyInspection(ptCaseEntity, hearingInspectionDetails);
+        verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
     }
 
     @Test
@@ -496,7 +488,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         assertThat(caseParty.getPhoneNumber()).isEqualTo("01234567890");
         assertThat(caseParty.getMobilePhoneNumber()).isEqualTo("07123456789");
         verify(casePartyRepository).save(caseParty);
@@ -512,7 +504,6 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService, never()).updateContactPreferences(any(), any());
         verify(casePartyRepository, never()).save(any());
     }
 
@@ -539,9 +530,8 @@ class PTCaseServiceTest {
 
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
-        verify(marketRentCaseService, never()).updateWithHearingPropertyInspectionDetails(any(), any());
         verify(ptCaseRepository, never()).save(any());
-        verify(propertyInspectionService, never()).updatePropertyInspection(any(), any());
+        verify(marketRentCaseService, never()).updateWithPropertyInspectionDetails(any(), any());
     }
 
     @Test
@@ -653,7 +643,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updateContactPreferences(ptCase, caseParty);
 
-        verify(contactPreferencesService).updateContactPreferences(caseParty, preferences);
+        assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.NO);
         assertThat(caseParty.getPhoneNumber()).isEqualTo("09876543210");
         assertThat(caseParty.getMobilePhoneNumber()).isNull();
         verify(casePartyRepository).save(caseParty);
@@ -773,6 +763,27 @@ class PTCaseServiceTest {
             .build());
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should validate the documents against what the case held before the update")
+    void updateDocumentsReturnsUploadLimitErrors() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+        Map<Long, String> before = Map.of(1L, "http://dm-store/documents/1");
+        when(documentUploadValidator.snapshot(caseReference)).thenReturn(before);
+        when(documentUploadValidator.errors(caseReference, before)).thenReturn(List.of("totalTooLarge"));
+
+        List<String> errors = ptCaseService.updateDocuments(caseReference, PTCase.builder()
+            .propertyDetails(PropertyDetails.builder().build())
+            .build());
+
+        assertThat(errors).containsExactly("totalTooLarge");
+        InOrder inOrder = inOrder(documentUploadValidator, documentService);
+        inOrder.verify(documentUploadValidator).snapshot(caseReference);
+        inOrder.verify(documentService).updateDocumentsForPropertyDetails(any(), any());
+        inOrder.verify(documentUploadValidator).errors(caseReference, before);
     }
 
     @Test

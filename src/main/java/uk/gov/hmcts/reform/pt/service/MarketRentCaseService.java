@@ -133,15 +133,24 @@ public class MarketRentCaseService {
     }
 
     @Transactional
-    public void updateWithHearingPropertyInspectionDetails(PTCaseEntity ptCaseEntity,
-                                                           HearingPropertyInspectionDetails details) {
+    public void updateWithPropertyInspectionDetails(
+        PTCaseEntity ptCaseEntity, HearingPropertyInspectionDetails inspectionDetails
+    ) {
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
             .findFirst()
             .orElse(new MarketRentCaseEntity());
 
         marketRentCase.setPtCase(ptCaseEntity);
-        setIfNotNull(details.getHearingRequested(), marketRentCase::setHearingRequested);
-        setIfNotNull(details.getReasonHearingRequested(), marketRentCase::setReasonHearingRequested);
+        setIfNotNull(
+            inspectionDetails.getAgreeToDecisionWithoutInspection(),
+            marketRentCase::setAgreeToDecisionWithoutInspection
+        );
+        setIfNotNull(
+            inspectionDetails.getNoDecisionWithoutInspectionReason(),
+            marketRentCase::setNoDecisionWithoutInspectionReason
+        );
+        setIfNotNull(inspectionDetails.getHearingRequested(), marketRentCase::setHearingRequested);
+        setIfNotNull(inspectionDetails.getReasonHearingRequested(), marketRentCase::setReasonHearingRequested);
 
         marketRentCaseRepository.save(marketRentCase);
     }

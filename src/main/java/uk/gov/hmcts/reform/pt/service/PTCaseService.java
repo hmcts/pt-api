@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
@@ -38,12 +40,11 @@ public class PTCaseService {
     private final PTCaseRepository ptCaseRepository;
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
-    private final ContactPreferencesService contactPreferencesService;
-    private final PropertyInspectionService propertyInspectionService;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
     private final AddressService addressService;
+    private final DocumentUploadValidator documentUploadValidator;
 
     @Transactional
     public void createCase(
@@ -109,9 +110,11 @@ public class PTCaseService {
     }
 
     @Transactional
-    public void updateDocuments(long caseReference, PTCase ptCase) {
+    public List<String> updateDocuments(long caseReference, PTCase ptCase) {
         PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        final Map<Long, String> urlsBefore = documentUploadValidator.snapshot(caseReference);
 
         PropertyDetails propertyDetails = ptCase.getPropertyDetails();
         if (propertyDetails != null) {
@@ -132,6 +135,8 @@ public class PTCaseService {
         if (marketRentDetails != null) {
             documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
         }
+
+        return documentUploadValidator.errors(caseReference, urlsBefore);
     }
 
     @Transactional
@@ -151,8 +156,7 @@ public class PTCaseService {
             return;
         }
 
-        contactPreferencesService.updateContactPreferences(caseParty, contactPreferenceData);
-
+        setIfNotNull(contactPreferenceData.getTextUpdates(), caseParty::setContactByText);
         caseParty.setPhoneNumber(contactPreferenceData.getPhoneNumberForCalls());
         caseParty.setMobilePhoneNumber(contactPreferenceData.getTextUpdates().toBoolean()
                                            ? contactPreferenceData.getTextUpdatesPhoneNumber()
@@ -180,12 +184,9 @@ public class PTCaseService {
             return;
         }
 
-        marketRentCaseService.updateWithHearingPropertyInspectionDetails(
-            ptCaseEntity,
-            hearingOrPropertyInspectionDetails);
         ptCaseRepository.save(ptCaseEntity);
 
-        propertyInspectionService.updatePropertyInspection(ptCaseEntity, hearingOrPropertyInspectionDetails);
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCaseEntity, hearingOrPropertyInspectionDetails);
     }
 
     @Transactional

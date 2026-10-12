@@ -5,7 +5,6 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAccessEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
@@ -36,14 +35,14 @@ class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicati
     }
 
     @Test
-    void findAllByCasePartyAccessIdamId_returnsList() {
+    void findAllByCasePartyIdamId_returnsList() {
         UUID idamId = UUID.randomUUID();
         saveApplication(1234567890123456L, idamId);
 
-        List<CaseApplicationEntity> result = repository.findAllByCasePartyAccessIdamId(idamId);
+        List<CaseApplicationEntity> result = repository.findAllByCasePartyIdamId(idamId);
 
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getCaseParty().getAccess().getFirst().getIdamId()).isEqualTo(idamId);
+        assertThat(result.getFirst().getCaseParty().getIdamId()).isEqualTo(idamId);
     }
 
     @Test
@@ -62,7 +61,7 @@ class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicati
     }
 
     @Test
-    void findActiveByCasePartyAccessIdamId_bindsProjectionAndExcludesPendingDisposal() {
+    void findActiveByCasePartyIdamId_bindsProjectionAndExcludesPendingDisposal() {
         UUID idamId = UUID.randomUUID();
         long activeReference = 1234567890123456L;
         long disposingReference = 9876543210987654L;
@@ -73,7 +72,7 @@ class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicati
         insertCcdCase(activeReference, "AWAITING_SUBMISSION_TO_HMCTS");
         insertCcdCase(disposingReference, "PendingDisposal");
 
-        List<ApplicationSummary> result = repository.findActiveByCasePartyAccessIdamId(idamId);
+        List<ApplicationSummary> result = repository.findActiveByCasePartyIdamId(idamId);
 
         assertThat(result).hasSize(1);
         ApplicationSummary summary = result.getFirst();
@@ -122,14 +121,8 @@ class CaseApplicationRepositoryTest extends AbstractRepositoryTest<CaseApplicati
 
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .ptCase(ptCase)
-            .build();
-
-        CasePartyAccessEntity access = CasePartyAccessEntity.builder()
             .idamId(userId)
-            .party(caseParty)
             .build();
-
-        caseParty.setAccess(List.of(access));
 
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)

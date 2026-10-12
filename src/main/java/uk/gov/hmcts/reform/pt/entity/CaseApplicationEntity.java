@@ -62,32 +62,12 @@ public class CaseApplicationEntity extends AuditableEntity {
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<ApplicationRetentionEntity> applicationRetentions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<ApplicationStatementOfTruthEntity> statementsOfTruth = new ArrayList<>();
 
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<ApplicationStatusEntity> applicationStatuses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<CaseEvidenceEntity> evidence = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseHearingEntity> hearings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseMediationEntity> mediations = new ArrayList<>();
 
     @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -98,9 +78,4 @@ public class CaseApplicationEntity extends AuditableEntity {
     @JsonManagedReference
     @Builder.Default
     private List<MarketRentCaseEntity> marketRentCases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caseApplication", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<NonRentCaseEntity> nonRentCases = new ArrayList<>();
 }
