@@ -105,6 +105,7 @@ class PTCaseViewTest {
         assertThat(result.getPropertyDetails()).isNull();
     }
 
+    @SuppressWarnings("unchecked")
     private PTCase getCase(
         LandlordRepresentativeType representativeType,
         Optional<CasePartyEntity> applicant,
