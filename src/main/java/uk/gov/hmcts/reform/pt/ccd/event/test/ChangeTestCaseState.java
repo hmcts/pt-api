@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.ccd.event.test;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DecentralisedConfigBuilder;
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CHANGE_TEST_CASE_STATE;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnBooleanProperty(prefix = "testing-support", name = "enabled")
 public class ChangeTestCaseState implements CCDConfig<PTCase, State, UserRole> {
 
     private final PTCaseService ptCaseService;
@@ -39,3 +41,4 @@ public class ChangeTestCaseState implements CCDConfig<PTCase, State, UserRole> {
         return SubmitResponse.<State>builder().state(eventPayload.caseData().getTargetState()).build();
     }
 }
+
