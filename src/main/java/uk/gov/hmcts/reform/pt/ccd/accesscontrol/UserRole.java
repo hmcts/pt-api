@@ -1,10 +1,9 @@
-package uk.gov.hmcts.reform.pt.ccd.domain;
+package uk.gov.hmcts.reform.pt.ccd.accesscontrol;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRolesForAccessProfiles;
 
 /**
  * Access profiles used in the CCD definition when granting permissions on the case type,

@@ -24,7 +24,7 @@ public class RoleToAccessProfiles implements CCDConfig<PTCase, State, UserRolesF
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PT_SOLICITOR)
             .accessProfiles("caseworker-pt-solicitor").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
-            .accessProfiles("caseworker-pt-superuser").build();
+            .accessProfiles("caseworker-pt-superuser", "GS_profile").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SYSTEM_USER)
             .accessProfiles("pt-system-update").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_VALIDATOR)
@@ -43,8 +43,6 @@ public class RoleToAccessProfiles implements CCDConfig<PTCase, State, UserRolesF
             .accessProfiles("circuit-judge").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.JUDGE)
             .accessProfiles("judge").build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.GS_PROFILE)
-            .accessProfiles("GS_profile").build();
     }
 }
 

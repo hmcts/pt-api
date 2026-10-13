@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 
 import static java.util.Arrays.stream;
 
@@ -25,7 +24,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
 
     CITIZEN("idam:citizen", "CRU"),
 
-    PT_CASE_WORKER("idam:caseworker-pt", "R"),
+    PT_CASE_WORKER("idam:caseworker-pt", "CRU"),
     PT_SOLICITOR("idam:caseworker-pt-solicitor", "CRU"),
 
     SUPER_USER("idam:caseworker-pt-superuser", "CRU"),
