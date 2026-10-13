@@ -30,11 +30,9 @@ public class RoleToAccessProfiles implements CCDConfig<PTCase, State, UserRolesF
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_VALIDATOR)
             .accessProfiles("caseworker-ras-validation").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CTSC_ADMIN)
-            .accessProfiles("ctsc").build();
+            .accessProfiles("GS_profile").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HEARING_CENTRE_ADMIN)
             .accessProfiles("hearing-centre-admin").build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.WLU_ADMIN)
-            .accessProfiles("wlu-admin").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_JUDGE)
             .accessProfiles("fee-paid-judge").build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.LEADERSHIP_JUDGE)

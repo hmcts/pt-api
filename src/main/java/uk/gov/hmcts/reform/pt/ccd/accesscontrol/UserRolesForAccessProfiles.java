@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 
-import static java.util.Arrays.stream;
-
 /**
  * Roles a user holds, either IDAM roles (e.g. citizen, caseworker-pt) or AM role
  * assignments (e.g. [DEFENDANT] on a case, judge across the service).
@@ -34,7 +32,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
 
     CTSC_ADMIN("ctsc", "CRU"),
     HEARING_CENTRE_ADMIN("hearing-centre-admin", "CRU"),
-    WLU_ADMIN("wlu-admin", "CRU"),
 
     FEE_PAID_JUDGE("fee-paid-judge", "R"),
     LEADERSHIP_JUDGE("leadership-judge", "R"),
@@ -46,10 +43,4 @@ public enum UserRolesForAccessProfiles implements HasRole {
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
-
-    public static String[] toRoles(UserRolesForAccessProfiles... profiles) {
-        return stream(profiles)
-            .map(UserRolesForAccessProfiles::getRole)
-            .toArray(String[]::new);
-    }
 }
