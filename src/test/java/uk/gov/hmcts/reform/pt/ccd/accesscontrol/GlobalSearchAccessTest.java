@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.GS_PROFILE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRolesForAccessProfiles.GS_PROFILE;
 
 class GlobalSearchAccessTest {
 

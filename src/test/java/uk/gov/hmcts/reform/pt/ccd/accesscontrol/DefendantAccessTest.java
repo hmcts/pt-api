@@ -14,13 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DefendantAccessTest {
     @Test
     void getGrants_ReturnsMultiMap() {
-        // given
         DefendantAccess defendantAccess = new DefendantAccess();
 
-        // when
         SetMultimap<HasRole, Permission> grants = defendantAccess.getGrants();
 
-        // then
         assertThat(grants.get(UserRole.DEFENDANT_SOLICITOR)).isEqualTo(Permission.CRU);
         assertThat(grants.get(UserRole.DEFENDANT)).isEqualTo(Permission.CRU);
     }

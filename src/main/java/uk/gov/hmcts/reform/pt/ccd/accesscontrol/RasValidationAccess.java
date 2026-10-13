@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.RAS_VALIDATOR;
 
 public class RasValidationAccess implements HasAccessControl {
 
-
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
