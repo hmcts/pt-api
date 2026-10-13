@@ -36,9 +36,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     FEE_PAID_JUDGE("fee-paid-judge", "R"),
     LEADERSHIP_JUDGE("leadership-judge", "R"),
     CIRCUIT_JUDGE("circuit-judge", "R"),
-    JUDGE("judge", "R"),
-
-    GS_PROFILE("GS_profile", "R");
+    JUDGE("judge", "R");
 
     @JsonValue
     private final String role;
