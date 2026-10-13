@@ -41,4 +41,3 @@ public class ChangeTestCaseState implements CCDConfig<PTCase, State, UserRole> {
         return SubmitResponse.<State>builder().state(eventPayload.caseData().getTargetState()).build();
     }
 }
-
