@@ -56,6 +56,9 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentIncreaseToCauseHardship;
 
+    @Column(length = 100)
+    private String hardshipDetails;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo noticeLegallyValid;
