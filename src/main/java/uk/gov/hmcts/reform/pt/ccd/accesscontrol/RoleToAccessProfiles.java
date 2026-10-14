@@ -6,41 +6,57 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT_SOLICITOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.GS_PROFILE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_SOLICITOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RAS_VALIDATOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SUPER_USER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SYSTEM_USER;
+
 @Component
 public class RoleToAccessProfiles implements CCDConfig<PTCase, State, UserRolesForAccessProfiles> {
 
     @Override
     public void configure(ConfigBuilder<PTCase, State, UserRolesForAccessProfiles> configBuilder) {
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CREATOR)
-            .accessProfiles("[CREATOR]").build();
+            .accessProfiles(CREATOR.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.DEFENDANT)
-            .accessProfiles("[DEFENDANT]").build();
+            .accessProfiles(DEFENDANT.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.DEFENDANT_SOLICITOR)
-            .accessProfiles("[DEFENDANTSOLICITOR]").build();
+            .accessProfiles(DEFENDANT_SOLICITOR.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CITIZEN)
-            .accessProfiles("citizen").build();
+            .accessProfiles(CITIZEN.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PT_CASE_WORKER)
-            .accessProfiles("caseworker-pt").build();
+            .accessProfiles(PT_CASE_WORKER.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PT_SOLICITOR)
-            .accessProfiles("caseworker-pt-solicitor").build();
+            .accessProfiles(PT_SOLICITOR.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
-            .accessProfiles("caseworker-pt-superuser", "GS_profile").build();
+            .accessProfiles(SUPER_USER.getRole(), GS_PROFILE.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SYSTEM_USER)
-            .accessProfiles("pt-system-update").build();
+            .accessProfiles(SYSTEM_USER.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_VALIDATOR)
-            .accessProfiles("caseworker-ras-validation").build();
+            .accessProfiles(RAS_VALIDATOR.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CTSC_ADMIN)
-            .accessProfiles("GS_profile").build();
+            .accessProfiles(GS_PROFILE.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HEARING_CENTRE_ADMIN)
-            .accessProfiles("hearing-centre-admin").build();
+            .accessProfiles(HEARING_CENTRE_ADMIN.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_JUDGE)
-            .accessProfiles("fee-paid-judge").build();
+            .accessProfiles(FEE_PAID_JUDGE.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.LEADERSHIP_JUDGE)
-            .accessProfiles("leadership-judge").build();
+            .accessProfiles(LEADERSHIP_JUDGE.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CIRCUIT_JUDGE)
-            .accessProfiles("circuit-judge").build();
+            .accessProfiles(CIRCUIT_JUDGE.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.JUDGE)
-            .accessProfiles("judge").build();
+            .accessProfiles(JUDGE.getRole()).build();
     }
 }
 
