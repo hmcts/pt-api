@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -233,7 +232,7 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -241,14 +240,16 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldDefaultApplicationTypeToNullWhenCaseTypeIsNull() {
+    void shouldDefaultApplicationTypeToNullWhenNoMarketRentCase() {
+        PTCaseEntity ptCase = ptCase(addresses(POSTCODE), Collections.emptyList());
+        ptCase.setMarketRentCases(Collections.emptyList());
         CasePartyEntity caseParty = caseParty(
-            ptCase(addresses(POSTCODE), Collections.emptyList()),
+            ptCase,
             null,
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, null);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -263,7 +264,7 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entityWithCaseType(caseParty, APPLICATION_TYPE);
+        CaseApplicationEntity entity = entity(caseParty);
 
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
 
@@ -1035,6 +1036,7 @@ class ApplicationMapperTest {
 
     private static List<MarketRentCaseEntity> marketRentCases() {
         return List.of(MarketRentCaseEntity.builder()
+                           .marketRentCaseType(APPLICATION_TYPE)
                            .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
                            .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                            .applicantSuggestedMarketRentReasons("Market rate for the area")
@@ -1087,16 +1089,9 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static CaseApplicationEntity entityWithCaseType(
-        CasePartyEntity caseParty,
-        ApplicationType applicationType
-    ) {
+    private static CaseApplicationEntity entity(CasePartyEntity caseParty) {
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(
-                applicationType != null
-                    ? CaseTypeEntity.builder().applicationTypeName(applicationType).build()
-                    : null)
             .createdDate(CREATED_DATE)
             .build();
     }
@@ -1110,7 +1105,7 @@ class ApplicationMapperTest {
             YesOrNo.YES,
             partyAddresses
         );
-        return entityWithCaseType(caseParty, APPLICATION_TYPE);
+        return entity(caseParty);
     }
 
     private static EnrichedApplicationDto expectedDto(UUID userId) {

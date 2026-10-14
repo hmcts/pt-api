@@ -19,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
@@ -159,6 +160,10 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Column(length = 500)
     private String reasonHearingRequested;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 100)
+    private ApplicationType marketRentCaseType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_application_id")

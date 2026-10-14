@@ -59,8 +59,8 @@ public class ApplicationMapper {
                     ? ptCase.getAddresses().getFirst().getPostcode()
                     : "")
             .applicationType(
-                entity.getCaseType() != null
-                    ? entity.getCaseType().getApplicationTypeName()
+                !ptCase.getMarketRentCases().isEmpty()
+                    ? ptCase.getMarketRentCases().getFirst().getMarketRentCaseType()
                     : null)
             .tenancyType(
                 !ptCase.getTenancyDetails().isEmpty()

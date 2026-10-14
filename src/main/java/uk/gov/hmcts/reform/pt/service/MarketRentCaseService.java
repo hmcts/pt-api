@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
@@ -151,6 +152,18 @@ public class MarketRentCaseService {
         );
         setIfNotNull(inspectionDetails.getHearingRequested(), marketRentCase::setHearingRequested);
         setIfNotNull(inspectionDetails.getReasonHearingRequested(), marketRentCase::setReasonHearingRequested);
+
+        marketRentCaseRepository.save(marketRentCase);
+    }
+
+    @Transactional
+    public void updateWithApplicationType(PTCaseEntity ptCaseEntity, ApplicationType applicationType) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
+            .findFirst()
+            .orElse(new MarketRentCaseEntity());
+
+        marketRentCase.setPtCase(ptCaseEntity);
+        setIfNotNull(applicationType, marketRentCase::setMarketRentCaseType);
 
         marketRentCaseRepository.save(marketRentCase);
     }

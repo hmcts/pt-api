@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
@@ -277,5 +278,37 @@ class MarketRentCaseServiceTest {
         assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
         assertThat(existing.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getNoDecisionWithoutInspectionReason()).isEqualTo("Updated reason");
+    }
+
+    @Test
+    @DisplayName("Should create new MarketRentCaseEntity with application type when none exist")
+    void updateWithApplicationTypeCreatesNew() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(new ArrayList<>())
+            .build();
+
+        marketRentCaseService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_RENT_INCREASE);
+
+        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
+        verify(marketRentCaseRepository).save(captor.capture());
+        MarketRentCaseEntity saved = captor.getValue();
+
+        assertThat(saved.getPtCase()).isEqualTo(ptCase);
+        assertThat(saved.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
+    }
+
+    @Test
+    @DisplayName("Should update existing MarketRentCaseEntity with application type")
+    void updateWithApplicationTypeWhenExists() {
+        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(List.of(existing))
+            .build();
+
+        marketRentCaseService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_EXCESSIVE_RENT);
+
+        verify(marketRentCaseRepository).save(existing);
+        assertThat(existing.getPtCase()).isEqualTo(ptCase);
+        assertThat(existing.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_EXCESSIVE_RENT);
     }
 }

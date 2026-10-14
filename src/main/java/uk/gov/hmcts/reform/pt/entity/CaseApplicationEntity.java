@@ -42,10 +42,6 @@ public class CaseApplicationEntity extends AuditableEntity {
     private String dxNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_type_id")
-    private CaseTypeEntity caseType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_party_id")
     private CasePartyEntity caseParty;
 

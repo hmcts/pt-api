@@ -6,13 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -157,8 +155,6 @@ class CaseApplicationServiceTest {
 
         return CaseApplicationEntity.builder()
             .caseParty(caseParty)
-            .caseType(CaseTypeEntity.builder()
-                          .applicationTypeName(ApplicationType.CHALLENGE_EXCESSIVE_RENT).build())
             .build();
     }
 }

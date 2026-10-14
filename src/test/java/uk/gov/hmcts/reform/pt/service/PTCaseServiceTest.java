@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -66,9 +65,6 @@ class PTCaseServiceTest {
     private TenancyDetailsService tenancyDetailsService;
 
     @Mock
-    private CaseTypeService caseTypeService;
-
-    @Mock
     private CaseApplicationRepository caseApplicationRepository;
 
     @Mock
@@ -102,8 +98,6 @@ class PTCaseServiceTest {
 
         when(casePartyService.createApplicantCaseParty(any(), any(), any()))
             .thenReturn(CasePartyEntity.builder().build());
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
-            .thenReturn(CaseTypeEntity.builder().build());
         when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(
             eq(ASSURED_PERIODIC_TENANCY),
             any(PTCaseEntity.class))
@@ -124,6 +118,7 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
+        verify(marketRentCaseService).updateWithApplicationType(savedEntity, applicationType);
         verify(caseApplicationRepository).save(any());
     }
 
