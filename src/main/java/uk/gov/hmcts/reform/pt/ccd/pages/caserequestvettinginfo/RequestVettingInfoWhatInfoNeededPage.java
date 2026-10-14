@@ -17,8 +17,8 @@ public class RequestVettingInfoWhatInfoNeededPage extends CcdPage implements Ccd
     private static final String MAIN_QUESTION = "What information do you need to request from the applicant?";
     private static final String OTHER_QUESTION = "Enter the other documents or information you want to request";
     private static final String OTHER_QUESTION_HINT =
-        "The text you enter here will appear on the email to the applicant. " +
-            "You can preview the email on the next page.";
+        "The text you enter here will appear on the email to the applicant. "
+            + "You can preview the email on the next page.";
     private static final String OTHER_CONDITION = "vettingInfoRequested CONTAINS \"OTHER\"";
 
     @Override

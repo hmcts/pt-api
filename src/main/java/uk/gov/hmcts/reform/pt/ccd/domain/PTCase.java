@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
-import static uk.gov.hmcts.reform.pt.ccd.common.CcdConstants.HINT_SELECT_ALL_THAT_APPLY;
 
 @Builder
 @Data
