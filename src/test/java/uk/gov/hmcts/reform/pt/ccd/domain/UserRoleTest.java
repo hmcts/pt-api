@@ -28,6 +28,7 @@ class UserRoleTest {
         assertThat(permissions).contains("C");
         assertThat(permissions).contains("R");
         assertThat(permissions).contains("U");
+        assertThat(permissions).doesNotContain("D");
     }
 
     @Test
