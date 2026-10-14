@@ -35,3 +35,5 @@ CREATE INDEX notice_of_rent_change_market_rent_case_id_idx
   ON notice_of_rent_change (market_rent_case_id);
 
 ALTER TABLE notice_of_rent_change DROP COLUMN pt_case_id;
+
+DROP TABLE IF EXISTS case_evidence;
