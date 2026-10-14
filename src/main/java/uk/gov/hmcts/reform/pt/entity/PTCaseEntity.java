@@ -37,9 +37,6 @@ public class PTCaseEntity extends AuditableEntity {
     @Column(length = 100)
     private String legislativeCountry;
 
-    @Column(length = 100)
-    private String status;
-
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LandlordRepresentativeType landlordType;
