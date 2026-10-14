@@ -9,15 +9,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
+import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.NoticeOfRentChangeRepository;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class NoticeOfRentChangeServiceTest {
@@ -25,15 +26,18 @@ class NoticeOfRentChangeServiceTest {
     @Mock
     private NoticeOfRentChangeRepository noticeOfRentChangeRepository;
 
+    @Mock
+    private MarketRentCaseService marketRentCaseService;
+
     @InjectMocks
     private NoticeOfRentChangeService noticeOfRentChangeService;
 
     @Test
     @DisplayName("Should create new notice of rent change entity when none exists")
     void updateNoticeOfRentChangeDetailsCreatesNew() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(Collections.emptyList())
-            .build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
 
         NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
@@ -50,7 +54,8 @@ class NoticeOfRentChangeServiceTest {
         verify(noticeOfRentChangeRepository).save(captor.capture());
         NoticeOfRentChangeEntity saved = captor.getValue();
 
-        assertThat(saved.getPtCase()).isEqualTo(ptCaseEntity);
+        assertThat(saved.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(marketRentCase.getNoticeOfRentChanges()).containsExactly(saved);
         assertThat(saved.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Lost paper copy");
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
@@ -69,9 +74,11 @@ class NoticeOfRentChangeServiceTest {
             .rentIncreaseToCauseHardship(YesOrNo.NO)
             .build();
 
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .noticeOfRentChanges(List.of(existing))
             .build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
 
         NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
@@ -84,7 +91,7 @@ class NoticeOfRentChangeServiceTest {
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(details, ptCaseEntity);
 
         verify(noticeOfRentChangeRepository).save(existing);
-        assertThat(existing.getPtCase()).isEqualTo(ptCaseEntity);
+        assertThat(existing.getMarketRentCase()).isEqualTo(marketRentCase);
         assertThat(existing.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("New reason");
         assertThat(existing.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);

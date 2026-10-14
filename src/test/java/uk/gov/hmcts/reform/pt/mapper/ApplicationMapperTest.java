@@ -308,7 +308,9 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(List.of(noticeOfRentChange))
+            .marketRentCase(MarketRentCaseEntity.builder()
+                .noticeOfRentChanges(List.of(noticeOfRentChange))
+                .build())
             .documents(List.of(rentNoticeDoc, invalidNoticeDoc, hardshipDoc))
             .build();
 
@@ -352,7 +354,6 @@ class ApplicationMapperTest {
     @Test
     void shouldMapNoticeOfRentChangeDetailsWhenNoNoticeOfRentChanges() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(Collections.emptyList())
             .build();
 
         NoticeOfRentIncreaseDto result = ApplicationMapper.mapNoticeOfRentChangeDetails(ptCaseEntity);
@@ -377,7 +378,9 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(List.of(noticeOfRentChange))
+            .marketRentCase(MarketRentCaseEntity.builder()
+                .noticeOfRentChanges(List.of(noticeOfRentChange))
+                .build())
             .documents(Collections.emptyList())
             .build();
 
@@ -831,7 +834,6 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .noticeOfRentChanges(Collections.emptyList())
             .documents(List.of(notice))
             .build();
 

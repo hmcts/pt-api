@@ -182,6 +182,11 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<TenancyDetailsEntity> tenancyDetails = new ArrayList<>();
 
+    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @Builder.Default
+    private List<NoticeOfRentChangeEntity> noticeOfRentChanges = new ArrayList<>();
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id", unique = true)
     @JsonBackReference

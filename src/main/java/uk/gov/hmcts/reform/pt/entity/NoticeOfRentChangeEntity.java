@@ -64,9 +64,9 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     private String noticeNotLegallyValidDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @JoinColumn(name = "market_rent_case_id")
     @JsonBackReference
-    private PTCaseEntity ptCase;
+    private MarketRentCaseEntity marketRentCase;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "document_id")
