@@ -471,8 +471,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(tenancyDetails))
-            .marketRentCase(marketRentCase)
+            .marketRentCase(withTenancyDetails(marketRentCase, List.of(tenancyDetails)))
             .documents(List.of(floorPlanDoc, outsidePropertyDoc, roomDoc1, roomDoc2, repairsDoc))
             .build();
 
@@ -490,7 +489,6 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenTenancyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .marketRentCase(MarketRentCaseEntity.builder().build())
             .build();
         CasePartyEntity party = CasePartyEntity.builder()
@@ -507,7 +505,9 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+            .marketRentCase(MarketRentCaseEntity.builder()
+                .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+                .build())
             .build();
         CasePartyEntity party = CasePartyEntity.builder()
             .addresses(List.of(AddressEntity.builder().build()))
@@ -523,8 +523,9 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenAddressIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .marketRentCase(MarketRentCaseEntity.builder()
+                .tenancyDetails(List.of(TenancyDetailsEntity.builder().build()))
+                .build())
             .build();
         CasePartyEntity party = CasePartyEntity.builder()
             .addresses(Collections.emptyList())
@@ -540,7 +541,6 @@ class ApplicationMapperTest {
     @Test
     void shouldReturnNullWhenNoPropertyEntitiesAndNoDocumentsExist() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .documents(Collections.emptyList())
             .build();
         CasePartyEntity party = CasePartyEntity.builder()
@@ -564,7 +564,6 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .documents(List.of(floorPlan))
             .build();
         CasePartyEntity party = CasePartyEntity.builder()
@@ -621,8 +620,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(tenancyDetails))
-            .marketRentCase(marketRentCase)
+            .marketRentCase(withTenancyDetails(marketRentCase, List.of(tenancyDetails)))
             .build();
 
         CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
@@ -639,7 +637,6 @@ class ApplicationMapperTest {
             .rentCostMonthly(new BigDecimal("400.00"))
             .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .marketRentCase(marketRentCase)
             .build();
 
@@ -661,7 +658,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(List.of(tenancyDetails)).build())
             .build();
 
         CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
@@ -676,7 +673,6 @@ class ApplicationMapperTest {
     @Test
     void shouldReturnNullWhenNoCurrentRentEntitiesExist() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .build();
 
         CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
@@ -807,7 +803,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(List.of(tenancyDetails)).build())
             .documents(List.of(document))
             .build();
 
@@ -856,7 +852,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(List.of(tenancyDetails))
+            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(List.of(tenancyDetails)).build())
             .documents(Collections.emptyList())
             .build();
 
@@ -871,7 +867,6 @@ class ApplicationMapperTest {
     @Test
     void shouldReturnNullWhenTenancyDetailsIsNullForTenancyAgreement() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .documents(Collections.emptyList())
             .build();
 
@@ -892,7 +887,6 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .tenancyDetails(Collections.emptyList())
             .documents(List.of(document))
             .build();
 
@@ -1026,6 +1020,14 @@ class ApplicationMapperTest {
                            .build());
     }
 
+    private static MarketRentCaseEntity withTenancyDetails(
+        MarketRentCaseEntity marketRentCase,
+        List<TenancyDetailsEntity> tenancyDetails
+    ) {
+        marketRentCase.setTenancyDetails(tenancyDetails);
+        return marketRentCase;
+    }
+
     private static MarketRentCaseEntity marketRentCase() {
         return MarketRentCaseEntity.builder()
             .marketRentCaseType(APPLICATION_TYPE)
@@ -1045,8 +1047,7 @@ class ApplicationMapperTest {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .addresses(addresses)
-            .tenancyDetails(tenancyDetails)
-            .marketRentCase(marketRentCase())
+            .marketRentCase(withTenancyDetails(marketRentCase(), tenancyDetails))
             .documents(List.of(
                 DocumentEntity.builder()
                     .documentType(DocumentType.TENANCY_AGREEMENT)

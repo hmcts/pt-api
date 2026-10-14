@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
+import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
@@ -18,10 +19,11 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 public class TenancyDetailsService {
 
     private final TenancyDetailsRepository tenancyDetailsRepository;
+    private final MarketRentCaseService marketRentCaseService;
 
     @Transactional
     public TenancyDetailsEntity getTenancyDetailsOrCreateIfNotExists(TenancyType tenancyType, PTCaseEntity ptCase) {
-        return tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(
+        return tenancyDetailsRepository.findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
             tenancyType,
             ptCase.getCaseReference()
             ).orElseGet(() -> createTenancyDetails(tenancyType, ptCase));
@@ -29,21 +31,18 @@ public class TenancyDetailsService {
 
     @Transactional
     public TenancyDetailsEntity createTenancyDetails(TenancyType tenancyType, PTCaseEntity ptCase) {
+        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCase);
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tenancyType(tenancyType)
-            .ptCase(ptCase)
+            .marketRentCase(marketRentCase)
             .build();
+        marketRentCase.getTenancyDetails().add(tenancyDetails);
         return tenancyDetailsRepository.save(tenancyDetails);
     }
 
     @Transactional
     public void updateWithPropertyDetails(PTCaseEntity ptCaseEntity, PropertyDetails details) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream()
-            .findFirst()
-            // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
-            .orElse(new TenancyDetailsEntity());
-
-        tenancyDetails.setPtCase(ptCaseEntity);
+        TenancyDetailsEntity tenancyDetails = getOrCreateTenancyDetails(ptCaseEntity);
         setIfNotNull(details.getOtherFacilitiesAvailable(), tenancyDetails::setTenancyIncludeFacilities);
         setIfNotNull(details.getOtherFacilitiesDetails(), tenancyDetails::setOtherFacilitiesDetails);
         setIfNotNull(details.getFurnitureProvidedInTenancy(), tenancyDetails::setFurnitureProvidedInTenancy);
@@ -68,12 +67,7 @@ public class TenancyDetailsService {
 
     @Transactional
     public void updateWithCurrentRentDetails(PTCaseEntity ptCaseEntity, CurrentRentDetails details) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream()
-            .findFirst()
-            // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
-            .orElse(new TenancyDetailsEntity());
-
-        tenancyDetails.setPtCase(ptCaseEntity);
+        TenancyDetailsEntity tenancyDetails = getOrCreateTenancyDetails(ptCaseEntity);
         setIfNotNull(
             details.getTribunalPreviouslyDeterminedTenancyRent(),
             tenancyDetails::setTribunalPreviouslyDeterminedTenancyRent
@@ -92,15 +86,23 @@ public class TenancyDetailsService {
 
     @Transactional
     public void updateWithTenancyAgreementDetails(PTCaseEntity ptCaseEntity, TenancyAgreementDetails details) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream()
-            .findFirst()
-            // shouldn't ever reach orElse since there a pt case is created with a tenancy details entity
-            .orElse(new TenancyDetailsEntity());
-
-        tenancyDetails.setPtCase(ptCaseEntity);
+        TenancyDetailsEntity tenancyDetails = getOrCreateTenancyDetails(ptCaseEntity);
         setIfNotNull(details.getCopyOfTenancyAgreement(), tenancyDetails::setCopyOfTenancyAgreement);
         setIfNotNull(details.getNoTenancyAgreementReason(), tenancyDetails::setNoTenancyAgreementReason);
 
         tenancyDetailsRepository.save(tenancyDetails);
+    }
+
+    private TenancyDetailsEntity getOrCreateTenancyDetails(PTCaseEntity ptCaseEntity) {
+        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity);
+        return marketRentCase.getTenancyDetails().stream()
+            .findFirst()
+            .orElseGet(() -> {
+                TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
+                    .marketRentCase(marketRentCase)
+                    .build();
+                marketRentCase.getTenancyDetails().add(tenancyDetails);
+                return tenancyDetails;
+            });
     }
 }

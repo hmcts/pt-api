@@ -59,10 +59,7 @@ public class ApplicationMapper {
                     ? ptCase.getAddresses().getFirst().getPostcode()
                     : "")
             .applicationType(get(ptCase.getMarketRentCase(), MarketRentCaseEntity::getMarketRentCaseType))
-            .tenancyType(
-                !ptCase.getTenancyDetails().isEmpty()
-                    ? ptCase.getTenancyDetails().getFirst().getTenancyType()
-                    : null)
+            .tenancyType(get(tenancyDetailsOf(ptCase), TenancyDetailsEntity::getTenancyType))
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
             .applicantIdamUserId(caseParty.getIdamId())
@@ -144,7 +141,7 @@ public class ApplicationMapper {
     }
 
     public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity, CasePartyEntity party) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
         AddressEntity address = party.getAddresses().stream().findFirst().orElse(null);
 
@@ -207,7 +204,7 @@ public class ApplicationMapper {
     }
 
     public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
         if (tenancyDetails == null && marketRentCase == null) {
@@ -280,7 +277,7 @@ public class ApplicationMapper {
     }
 
     public static TenancyAgreementDto mapTenancyAgreement(PTCaseEntity ptCaseEntity) {
-        TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
+        TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         if (tenancyDetails == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
@@ -357,6 +354,13 @@ public class ApplicationMapper {
             .filter(party -> party.getCasePartyRole() == role)
             .findFirst()
             .orElse(null);
+    }
+
+    private static TenancyDetailsEntity tenancyDetailsOf(PTCaseEntity ptCaseEntity) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
+        return marketRentCase != null
+            ? marketRentCase.getTenancyDetails().stream().findFirst().orElse(null)
+            : null;
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {

@@ -13,12 +13,12 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
+import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +34,9 @@ class TenancyDetailsServiceTest {
     @Mock
     private TenancyDetailsRepository tenancyDetailsRepository;
 
+    @Mock
+    private MarketRentCaseService marketRentCaseService;
+
     @InjectMocks
     private TenancyDetailsService tenancyDetailsService;
 
@@ -45,14 +48,16 @@ class TenancyDetailsServiceTest {
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
         TenancyDetailsEntity existingTenancyDetails = TenancyDetailsEntity.builder().tenancyType(tenancyType).build();
 
-        when(tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference))
+        when(tenancyDetailsRepository.findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
+            tenancyType, caseReference))
             .thenReturn(Optional.of(existingTenancyDetails));
 
         TenancyDetailsEntity result =
             tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, ptCase);
 
         assertThat(result).isEqualTo(existingTenancyDetails);
-        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference);
+        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
+            tenancyType, caseReference);
         verify(tenancyDetailsRepository, never()).save(any());
     }
 
@@ -63,8 +68,11 @@ class TenancyDetailsServiceTest {
         PTCaseEntity ptCase = PTCaseEntity.builder().caseReference(caseReference).build();
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
 
-        when(tenancyDetailsRepository.findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference))
+        when(tenancyDetailsRepository.findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
+            tenancyType, caseReference))
             .thenReturn(Optional.empty());
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
         when(tenancyDetailsRepository.save(any(TenancyDetailsEntity.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -72,7 +80,8 @@ class TenancyDetailsServiceTest {
             tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(tenancyType, ptCase);
 
         assertThat(result.getTenancyType()).isEqualTo(tenancyType);
-        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndPtCase_CaseReference(tenancyType, caseReference);
+        verify(tenancyDetailsRepository).findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
+            tenancyType, caseReference);
         verify(tenancyDetailsRepository).save(any(TenancyDetailsEntity.class));
     }
 
@@ -82,12 +91,16 @@ class TenancyDetailsServiceTest {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = PTCaseEntity.builder().caseReference(caseReference).build();
         TenancyType tenancyType = TenancyType.ASSURED_PERIODIC_TENANCY;
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
         when(tenancyDetailsRepository.save(any(TenancyDetailsEntity.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
         TenancyDetailsEntity result = tenancyDetailsService.createTenancyDetails(tenancyType, ptCase);
 
         assertThat(result.getTenancyType()).isEqualTo(tenancyType);
+        assertThat(result.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(marketRentCase.getTenancyDetails()).containsExactly(result);
         verify(tenancyDetailsRepository).save(any(TenancyDetailsEntity.class));
     }
 
@@ -95,9 +108,11 @@ class TenancyDetailsServiceTest {
     @DisplayName("Should update existing TenancyDetailsEntity with property details")
     void updateWithPropertyDetailsWhenExists() {
         TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .tenancyDetails(List.of(existing))
             .build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         PropertyDetails details = PropertyDetails.builder()
             .otherFacilitiesAvailable(YesOrNo.YES)
@@ -128,9 +143,9 @@ class TenancyDetailsServiceTest {
     @Test
     @DisplayName("Should create and save TenancyDetailsEntity with property details when list is empty")
     void updateWithPropertyDetailsWhenEmpty() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .tenancyDetails(new ArrayList<>())
-            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         PropertyDetails details = PropertyDetails.builder()
             .otherFacilitiesAvailable(YesOrNo.NO)
@@ -143,7 +158,8 @@ class TenancyDetailsServiceTest {
         verify(tenancyDetailsRepository).save(captor.capture());
         TenancyDetailsEntity saved = captor.getValue();
 
-        assertThat(saved.getPtCase()).isEqualTo(ptCase);
+        assertThat(saved.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(marketRentCase.getTenancyDetails()).containsExactly(saved);
         assertThat(saved.getTenancyIncludeFacilities()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getLandlordRepairsDetails()).isEqualTo("Roof leak");
     }
@@ -152,9 +168,11 @@ class TenancyDetailsServiceTest {
     @DisplayName("Should update existing TenancyDetailsEntity with current rent details")
     void updateWithCurrentRentDetailsWhenExists() {
         TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .tenancyDetails(List.of(existing))
             .build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         LocalDate startDate = LocalDate.of(2025, 1, 1);
         LocalDate endDate = LocalDate.of(2026, 1, 1);
@@ -183,9 +201,9 @@ class TenancyDetailsServiceTest {
     @Test
     @DisplayName("Should create and save TenancyDetailsEntity with current rent details when list is empty")
     void updateWithCurrentRentDetailsWhenEmpty() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .tenancyDetails(new ArrayList<>())
-            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         LocalDate startDate = LocalDate.of(2025, 1, 1);
         CurrentRentDetails details = CurrentRentDetails.builder()
@@ -207,9 +225,11 @@ class TenancyDetailsServiceTest {
     @DisplayName("Should update existing TenancyDetailsEntity with tenancy agreement details")
     void updateWithTenancyAgreementDetailsWhenExists() {
         TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .tenancyDetails(List.of(existing))
             .build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         TenancyAgreementDetails details = TenancyAgreementDetails.builder()
             .copyOfTenancyAgreement(YesOrNo.YES)
@@ -226,9 +246,9 @@ class TenancyDetailsServiceTest {
     @Test
     @DisplayName("Should create and save TenancyDetailsEntity with tenancy agreement details when list is empty")
     void updateWithTenancyAgreementDetailsWhenEmpty() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .tenancyDetails(new ArrayList<>())
-            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         TenancyAgreementDetails details = TenancyAgreementDetails.builder()
             .copyOfTenancyAgreement(YesOrNo.NO)

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.pt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,11 +10,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +30,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -170,6 +176,11 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @JoinColumn(name = "case_application_id")
     @JsonBackReference
     private CaseApplicationEntity caseApplication;
+
+    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @Builder.Default
+    private List<TenancyDetailsEntity> tenancyDetails = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id", unique = true)

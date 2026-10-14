@@ -13,3 +13,14 @@ DELETE FROM market_rent_case a
   USING market_rent_case b
   WHERE a.pt_case_id = b.pt_case_id AND a.id > b.id;
 ALTER TABLE market_rent_case ADD CONSTRAINT market_rent_case_pt_case_id_key UNIQUE (pt_case_id);
+
+ALTER TABLE tenancy_details ADD COLUMN market_rent_case_id BIGINT;
+
+ALTER TABLE tenancy_details
+  ADD FOREIGN KEY (market_rent_case_id)
+  REFERENCES market_rent_case (id);
+
+CREATE INDEX tenancy_details_market_rent_case_id_idx
+  ON tenancy_details (market_rent_case_id);
+
+ALTER TABLE tenancy_details DROP COLUMN pt_case_id;
