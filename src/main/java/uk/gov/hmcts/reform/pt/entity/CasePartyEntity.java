@@ -68,11 +68,6 @@ public class CasePartyEntity extends AuditableEntity {
     @Builder.Default
     private List<AddressEntity> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyAttributeEntity> attributeAssertions = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo contactByText;
