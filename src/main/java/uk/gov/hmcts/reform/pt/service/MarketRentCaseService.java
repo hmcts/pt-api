@@ -24,11 +24,7 @@ public class MarketRentCaseService {
 
     @Transactional
     public void updateWithPropertyDetails(PTCaseEntity ptCaseEntity, PropertyDetails propertyDetails) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
-            .findFirst()
-            .orElse(new MarketRentCaseEntity());
-
-        marketRentCase.setPtCase(ptCaseEntity);
+        MarketRentCaseEntity marketRentCase = getOrCreateMarketRentCase(ptCaseEntity);
         setIfNotNull(propertyDetails.getPropertyType(), marketRentCase::setTypeOfPropertyRenting);
         setIfNotNull(propertyDetails.getRentingFlatDetails(), marketRentCase::setRentingFlatDetails);
         setIfNotNull(propertyDetails.getRentingRoomDetails(), marketRentCase::setRentingRoomDetails);
@@ -47,11 +43,7 @@ public class MarketRentCaseService {
 
     @Transactional
     public void updateWithCurrentRentDetails(PTCaseEntity ptCaseEntity, CurrentRentDetails details) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
-            .findFirst()
-            .orElse(new MarketRentCaseEntity());
-
-        marketRentCase.setPtCase(ptCaseEntity);
+        MarketRentCaseEntity marketRentCase = getOrCreateMarketRentCase(ptCaseEntity);
         setIfNotNull(details.getRentPaymentFrequency(), marketRentCase::setRentPaymentFrequency);
         setIfNotNull(toBigDecimal(details.getRentCostWeekly()), marketRentCase::setRentCostWeekly);
         setIfNotNull(toBigDecimal(details.getRentCostFortnightly()), marketRentCase::setRentCostFortnightly);
@@ -108,11 +100,7 @@ public class MarketRentCaseService {
 
     @Transactional
     public void updateWithMarketRentDetails(PTCaseEntity ptCaseEntity, MarketRentDetails details) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
-            .findFirst()
-            .orElse(new MarketRentCaseEntity());
-
-        marketRentCase.setPtCase(ptCaseEntity);
+        MarketRentCaseEntity marketRentCase = getOrCreateMarketRentCase(ptCaseEntity);
         setIfNotNull(
             toBigDecimal(details.getApplicantSuggestedMarketRent()),
             marketRentCase::setApplicantSuggestedMarketRent
@@ -137,11 +125,7 @@ public class MarketRentCaseService {
     public void updateWithPropertyInspectionDetails(
         PTCaseEntity ptCaseEntity, HearingPropertyInspectionDetails inspectionDetails
     ) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
-            .findFirst()
-            .orElse(new MarketRentCaseEntity());
-
-        marketRentCase.setPtCase(ptCaseEntity);
+        MarketRentCaseEntity marketRentCase = getOrCreateMarketRentCase(ptCaseEntity);
         setIfNotNull(
             inspectionDetails.getAgreeToDecisionWithoutInspection(),
             marketRentCase::setAgreeToDecisionWithoutInspection
@@ -158,14 +142,20 @@ public class MarketRentCaseService {
 
     @Transactional
     public void updateWithApplicationType(PTCaseEntity ptCaseEntity, ApplicationType applicationType) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream()
-            .findFirst()
-            .orElse(new MarketRentCaseEntity());
-
-        marketRentCase.setPtCase(ptCaseEntity);
+        MarketRentCaseEntity marketRentCase = getOrCreateMarketRentCase(ptCaseEntity);
         setIfNotNull(applicationType, marketRentCase::setMarketRentCaseType);
 
         marketRentCaseRepository.save(marketRentCase);
+    }
+
+    private MarketRentCaseEntity getOrCreateMarketRentCase(PTCaseEntity ptCaseEntity) {
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
+        if (marketRentCase == null) {
+            marketRentCase = new MarketRentCaseEntity();
+            ptCaseEntity.setMarketRentCase(marketRentCase);
+        }
+        marketRentCase.setPtCase(ptCaseEntity);
+        return marketRentCase;
     }
 
     private BigDecimal toBigDecimal(Double value) {

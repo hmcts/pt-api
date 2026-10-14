@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
@@ -170,8 +171,8 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @JsonBackReference
     private CaseApplicationEntity caseApplication;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pt_case_id", unique = true)
     @JsonBackReference
     private PTCaseEntity ptCase;
 }

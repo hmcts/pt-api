@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
@@ -62,10 +63,9 @@ public class PTCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<DocumentEntity> documents = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<MarketRentCaseEntity> marketRentCases = new ArrayList<>();
+    private MarketRentCaseEntity marketRentCase;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

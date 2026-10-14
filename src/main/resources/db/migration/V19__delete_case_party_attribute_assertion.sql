@@ -8,3 +8,8 @@ ALTER TABLE case_application DROP COLUMN case_type_id;
 ALTER TABLE pt_case DROP COLUMN case_type_id;
 DROP TABLE IF EXISTS case_type;
 ALTER TABLE pt_case DROP COLUMN status;
+
+DELETE FROM market_rent_case a
+  USING market_rent_case b
+  WHERE a.pt_case_id = b.pt_case_id AND a.id > b.id;
+ALTER TABLE market_rent_case ADD CONSTRAINT market_rent_case_pt_case_id_key UNIQUE (pt_case_id);

@@ -58,10 +58,7 @@ public class ApplicationMapper {
                 !ptCase.getAddresses().isEmpty()
                     ? ptCase.getAddresses().getFirst().getPostcode()
                     : "")
-            .applicationType(
-                !ptCase.getMarketRentCases().isEmpty()
-                    ? ptCase.getMarketRentCases().getFirst().getMarketRentCaseType()
-                    : null)
+            .applicationType(get(ptCase.getMarketRentCase(), MarketRentCaseEntity::getMarketRentCaseType))
             .tenancyType(
                 !ptCase.getTenancyDetails().isEmpty()
                     ? ptCase.getTenancyDetails().getFirst().getTenancyType()
@@ -100,7 +97,7 @@ public class ApplicationMapper {
     }
 
     public static HearingInspectionDetailsDto mapHearingInspectionDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
         return HearingInspectionDetailsDto.builder()
             .hearingRequested(get(marketRentCase, MarketRentCaseEntity::getHearingRequested))
@@ -148,7 +145,7 @@ public class ApplicationMapper {
 
     public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity, CasePartyEntity party) {
         TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
         AddressEntity address = party.getAddresses().stream().findFirst().orElse(null);
 
         if (tenancyDetails == null && marketRentCase == null && address == null
@@ -211,7 +208,7 @@ public class ApplicationMapper {
 
     public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = ptCaseEntity.getTenancyDetails().stream().findFirst().orElse(null);
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
         if (tenancyDetails == null && marketRentCase == null) {
             return null;
@@ -260,7 +257,7 @@ public class ApplicationMapper {
     }
 
     public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCases().stream().findFirst().orElse(null);
+        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
         if (marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
