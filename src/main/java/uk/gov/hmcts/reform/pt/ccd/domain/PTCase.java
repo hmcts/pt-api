@@ -130,8 +130,6 @@ public class PTCase {
     private TTL ttl;
 
     @CCD(
-        label = "What information do you need to request from the applicant?",
-        hint = HINT_SELECT_ALL_THAT_APPLY,
         access = {CaseworkerAccess.class},
         typeOverride = FieldType.MultiSelectList,
         typeParameterOverride = "VettingInformationType"
@@ -139,9 +137,6 @@ public class PTCase {
     private List<VettingInformationType> vettingInfoRequested;
 
     @CCD(
-        label = "Enter the other documents or information you want to request",
-        hint = "The text you enter here will appear on the email to the applicant. "
-            + "You can preview the email on the next page.",
         typeOverride = FieldType.TextArea,
         access = {CaseworkerAccess.class}
     )
