@@ -75,11 +75,6 @@ public class CasePartyEntity extends AuditableEntity {
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
-    private List<CasePartyEventEntity> events = new ArrayList<>();
-
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
     private List<CasePartyFlagEntity> flags = new ArrayList<>();
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
