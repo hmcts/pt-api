@@ -21,7 +21,7 @@ public enum State implements HasLabel {
 
     @CCD(
         label = "Awaiting Submission to HMCTS",
-        access = {ClaimantAccess.class, RasValidationAccess.class, CaseworkerReadAccess.class },
+        access = {ClaimantAccess.class, RasValidationAccess.class, CaseworkerReadAccess.class},
         hint = "${caseTitleMarkdown}"
     )
     AWAITING_SUBMISSION_TO_HMCTS("Awaiting Submission to HMCTS"),

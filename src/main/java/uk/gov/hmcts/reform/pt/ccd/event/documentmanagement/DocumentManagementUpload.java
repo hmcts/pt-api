@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.EventPayload;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_JUDGMENT;
@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.pt.ccd.domain.State.CASE_STAYED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.CLOSED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.HEARING_READINESS;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.PREPARE_FOR_HEARING_CONDUCT_HEARING;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.DOCUMENT_MANAGEMENT_UPLOAD;
 
 @Component
