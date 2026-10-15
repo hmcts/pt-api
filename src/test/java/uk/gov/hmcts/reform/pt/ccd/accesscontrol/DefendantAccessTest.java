@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,13 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DefendantAccessTest {
     @Test
     void getGrants_ReturnsMultiMap() {
-        // given
         DefendantAccess defendantAccess = new DefendantAccess();
 
-        // when
         SetMultimap<HasRole, Permission> grants = defendantAccess.getGrants();
 
-        // then
         assertThat(grants.get(UserRole.DEFENDANT_SOLICITOR)).isEqualTo(Permission.CRU);
         assertThat(grants.get(UserRole.DEFENDANT)).isEqualTo(Permission.CRU);
     }

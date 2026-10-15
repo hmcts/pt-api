@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.AccessProfile.GS_PROFILE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.GS_PROFILE;
 
 class GlobalSearchAccessTest {
 
@@ -28,5 +28,4 @@ class GlobalSearchAccessTest {
         SetMultimap<HasRole, Permission> grants = underTest.getGrants();
         assertThat(grants.asMap()).contains(entry(GS_PROFILE, Set.of(R)));
     }
-
 }
