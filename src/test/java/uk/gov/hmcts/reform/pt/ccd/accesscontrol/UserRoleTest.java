@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.ccd.domain;
+package uk.gov.hmcts.reform.pt.ccd.accesscontrol;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
