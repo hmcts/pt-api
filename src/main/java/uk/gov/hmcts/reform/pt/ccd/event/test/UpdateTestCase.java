@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.EventPayload;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.pages.TestPageBuilder;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 

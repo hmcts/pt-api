@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.pt.repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -32,7 +31,6 @@ class DocumentRepositoryTest extends AbstractRepositoryTest<DocumentRepository> 
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .hearingRequested(YesOrNo.YES)
             .build();
         ptCaseRepository.save(ptCase);
 

@@ -20,6 +20,12 @@ public class HearingPropertyInspectionDetails {
     private YesOrNo hearingRequested;
 
     @CCD(
+        label = "Reason for requesting a hearing",
+        access = {CitizenAccess.class}
+    )
+    private String reasonHearingRequested;
+
+    @CCD(
         label = "Has the citizen agreed to a decision without a hearing?",
         access = {CitizenAccess.class}
     )

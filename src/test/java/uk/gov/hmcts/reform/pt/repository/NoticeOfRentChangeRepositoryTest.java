@@ -30,7 +30,6 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .hearingRequested(YesOrNo.YES)
             .build();
         ptCaseRepository.save(ptCase);
 

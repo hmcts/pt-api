@@ -10,13 +10,13 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.common.PageBuilder;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.pages.caserequestvettinginfo.CaseRequestVettingInformationConfigurer;
 import uk.gov.hmcts.reform.pt.util.AddressFormatter;
 import uk.gov.hmcts.reform.pt.util.CaseFormatter;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CASE_REQUEST_VETTING_INFORMATION;
 
 @Component

@@ -12,11 +12,10 @@ import uk.gov.hmcts.ccd.sdk.api.SearchCases;
 import uk.gov.hmcts.ccd.sdk.api.Tab.TabBuilder;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,17 +67,8 @@ class CaseTypeTest {
 
         caseType.configure(builder);
 
-        verify(builder).caseType(
-            eq("PT"),
-            eq("Property Tribunal"),
-            eq("Property Tribunal Case Type")
-        );
-
-        verify(builder).jurisdiction(
-            eq("PT"),
-            eq("Property Tribunal"),
-            eq("Property Tribunal Jurisdiction")
-        );
+        verify(builder).caseType("PT", "Property Tribunal", "Property Tribunal Case Type");
+        verify(builder).jurisdiction("PT", "Property Tribunal", "Property Tribunal Jurisdiction");
 
         verify(builder).searchInputFields();
         verify(builder).searchCasesFields();

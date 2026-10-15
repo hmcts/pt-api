@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.pt.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
+@UtilityClass
 public final class NullSafeSetter {
     public static <T> void setIfNotNull(T value, Consumer<T> setter) {
         if (value != null) {

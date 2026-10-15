@@ -6,7 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 
 import static java.lang.System.getenv;
 import static java.util.Optional.ofNullable;

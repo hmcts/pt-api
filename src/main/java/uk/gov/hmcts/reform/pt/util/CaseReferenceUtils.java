@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.pt.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class CaseReferenceUtils {
 
     public static boolean isValidCaseReference(long caseReference) {

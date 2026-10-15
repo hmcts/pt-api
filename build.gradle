@@ -5,7 +5,7 @@ import uk.gov.hmcts.rse.CftlibExec
 buildscript {
   ext {
     flywayVersion = '13.8.0'
-    serenityBddVersion = '5.3.9'
+    serenityBddVersion = '5.4.1'
   }
   dependencies {
     classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion")
@@ -22,7 +22,7 @@ plugins {
   id 'org.sonarqube' version '7.5.0.8588'
   id 'net.serenity-bdd.serenity-gradle-plugin' version "$serenityBddVersion"
   id 'hmcts.ccd.sdk' version '6.32.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.2408'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.2419'
   id 'io.freefair.lombok' version '9.5.0'
   id 'au.com.dius.pact' version '4.7.5'
 
@@ -265,6 +265,8 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '5.1.1'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.2.1-RELEASE'
+  implementation group: 'com.github.kagkarlsson', name: 'db-scheduler-spring-boot-starter', version: '16.12.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.3.0'
@@ -274,7 +276,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
   implementation group: 'ch.qos.logback', name: 'logback-core', version: logbackVersion
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.14'
 
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
 
@@ -301,6 +303,7 @@ dependencies {
   }
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.4'
+  integrationTestImplementation group: 'com.github.hmcts.rse-cft-lib', name: 'ccd-lib', version: '0.19.2435'
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: serenityBddVersion
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: serenityBddVersion

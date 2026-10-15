@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
+import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
@@ -223,5 +224,58 @@ class MarketRentCaseServiceTest {
         assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should create new MarketRentCaseEntity with hearing and property inspection details when none exist")
+    void updateWithPropertyInspectionDetailsCreatesNew() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(new ArrayList<>())
+            .build();
+        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.NO)
+            .reasonHearingRequested("Written representation preferred")
+            .agreeToDecisionWithoutInspection(YesOrNo.YES)
+            .noDecisionWithoutInspectionReason("No inspection required")
+            .build();
+
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
+
+        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
+        verify(marketRentCaseRepository).save(captor.capture());
+        MarketRentCaseEntity saved = captor.getValue();
+
+        assertThat(saved.getPtCase()).isEqualTo(ptCase);
+        assertThat(saved.getHearingRequested()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getReasonHearingRequested()).isEqualTo("Written representation preferred");
+        assertThat(saved.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(saved.getNoDecisionWithoutInspectionReason()).isEqualTo("No inspection required");
+    }
+
+    @Test
+    @DisplayName("Should update existing MarketRentCaseEntity with hearing and property inspection details")
+    void updateWithPropertyInspectionDetailsWhenExists() {
+        MarketRentCaseEntity existing = MarketRentCaseEntity.builder()
+            .agreeToDecisionWithoutInspection(YesOrNo.NO)
+            .noDecisionWithoutInspectionReason("Old reason")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .marketRentCases(List.of(existing))
+            .build();
+        HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
+            .hearingRequested(YesOrNo.YES)
+            .reasonHearingRequested("Need a hearing")
+            .agreeToDecisionWithoutInspection(YesOrNo.YES)
+            .noDecisionWithoutInspectionReason("Updated reason")
+            .build();
+
+        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
+
+        verify(marketRentCaseRepository).save(existing);
+        assertThat(existing.getPtCase()).isEqualTo(ptCase);
+        assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
+        assertThat(existing.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getNoDecisionWithoutInspectionReason()).isEqualTo("Updated reason");
     }
 }

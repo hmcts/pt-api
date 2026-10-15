@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.pt.ccd.pages;
 
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 
+@NoArgsConstructor
 public class TestPageBuilder {
     public static void createTestCase(Event.EventBuilder<PTCase, UserRole, State> eventBuilder) {
         eventBuilder

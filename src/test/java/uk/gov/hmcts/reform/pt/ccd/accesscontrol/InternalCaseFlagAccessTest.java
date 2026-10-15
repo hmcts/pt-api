@@ -8,13 +8,11 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CIRCUIT_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CTSC_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.FEE_PAID_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.LEADERSHIP_JUDGE;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.WLU_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
 
 class InternalCaseFlagAccessTest {
 
@@ -27,18 +25,13 @@ class InternalCaseFlagAccessTest {
 
     @Test
     void shouldGrantInternalCaseFlagAccess() {
-
-        // When
         SetMultimap<HasRole, Permission> grants = underTest.getGrants();
 
-        // Then
-        assertThat(grants.asMap()).contains(entry(CTSC_ADMIN, Permission.CRU));
         assertThat(grants.asMap()).contains(entry(HEARING_CENTRE_ADMIN, Permission.CRU));
-        assertThat(grants.asMap()).contains(entry(WLU_ADMIN, Permission.CRU));
         assertThat(grants.get(FEE_PAID_JUDGE)).contains(Permission.R);
         assertThat(grants.get(CIRCUIT_JUDGE)).contains(Permission.R);
         assertThat(grants.get(LEADERSHIP_JUDGE)).contains(Permission.R);
         assertThat(grants.get(JUDGE)).contains(Permission.R);
-        assertThat(grants.asMap().size()).isEqualTo(7);
+        assertThat(grants.asMap()).hasSize(5);
     }
 }

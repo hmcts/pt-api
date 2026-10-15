@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class FeePaymentSuccessTest extends BaseEventTest {
+class FeePaymentSuccessTest extends BaseEventTest {
 
     @BeforeEach
     void setUp() {

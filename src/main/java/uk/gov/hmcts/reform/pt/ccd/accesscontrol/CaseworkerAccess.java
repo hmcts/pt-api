@@ -6,7 +6,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
+
 
 public class CaseworkerAccess implements HasAccessControl {
 
