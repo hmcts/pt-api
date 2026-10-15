@@ -70,6 +70,7 @@ public class PartyAccessCodeLinkService {
         }
 
         party.setIdamId(idamUserId);
+        accessCode.setUsedAt(LocalDateTime.now(clock));
         caseRoleAssignmentService.assignCaseRole(caseReference, idamUserId, UserRole.DEFENDANT);
     }
 }

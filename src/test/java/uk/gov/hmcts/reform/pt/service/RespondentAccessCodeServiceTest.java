@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
+import uk.gov.hmcts.reform.pt.exception.AccessCodeAlreadyUsedException;
+import uk.gov.hmcts.reform.pt.exception.AccessCodeExpiredException;
 import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 import uk.gov.hmcts.reform.pt.util.AccessCodeGenerator;
 
@@ -19,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,26 +71,29 @@ class RespondentAccessCodeServiceTest {
         assertThat(returned).isEqualTo(PLAIN_CODE);
         assertThat(saved.getPtCase()).isSameAs(ptCase);
         assertThat(saved.getParty()).isSameAs(landlord);
-        assertThat(saved.getCode()).isNotEqualTo(PLAIN_CODE);
         assertThat(encoder.matches(PLAIN_CODE, saved.getCode())).isTrue();
         assertThat(saved.getExpiresAt()).isEqualTo(LocalDateTime.of(2026, 11, 11, 10, 0));
+        assertThat(saved.getUsedAt()).isNull();
     }
 
     @Test
-    void shouldOverwriteExistingCodeWhenReissuing() {
+    void shouldReplaceCodeButKeepOriginalExpiryWhenReissuing() {
+        LocalDateTime originalExpiry = LocalDateTime.of(2026, 10, 24, 10, 0);   // 10 days from NOW
+        String oldCode = "OLDCODE23456";
         PartyAccessCodeEntity existing = PartyAccessCodeEntity.builder()
             .id(99L).ptCase(ptCase).party(landlord)
-            .code("old-hash").expiresAt(LocalDateTime.of(2026, 1, 1, 0, 0))
+            .code(encoder.encode(oldCode)).expiresAt(originalExpiry)
             .build();
         when(generator.generate()).thenReturn(PLAIN_CODE);
         when(repository.findByPtCaseIdAndPartyId(10L, 1L)).thenReturn(Optional.of(existing));
 
-        service.createFor(ptCase, landlord);
+        String returned = service.createFor(ptCase, landlord);
 
         verify(repository).save(existing);
-        assertThat(existing.getId()).isEqualTo(99L);
+        assertThat(returned).isEqualTo(PLAIN_CODE);
+        assertThat(existing.getExpiresAt()).isEqualTo(originalExpiry);
         assertThat(encoder.matches(PLAIN_CODE, existing.getCode())).isTrue();
-        assertThat(existing.getExpiresAt()).isEqualTo(LocalDateTime.of(2026, 11, 11, 10, 0));
+        assertThat(encoder.matches(oldCode, existing.getCode())).isFalse();
     }
 
     @Test
@@ -98,6 +104,31 @@ class RespondentAccessCodeServiceTest {
         assertThatThrownBy(() -> service.createFor(ptCase, partyOnOtherCase))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("10");
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldRefuseReissueWhenCodePeriodHasEnded() {
+        PartyAccessCodeEntity expired = PartyAccessCodeEntity.builder()
+            .id(99L).ptCase(ptCase).party(landlord)
+            .code("old-hash").expiresAt(LocalDateTime.of(2026, 10, 1, 10, 0))  // before NOW
+            .build();
+        when(repository.findByPtCaseIdAndPartyId(10L, 1L)).thenReturn(Optional.of(expired));
+
+        assertThatThrownBy(() -> service.createFor(ptCase, landlord))
+            .isInstanceOf(AccessCodeExpiredException.class);
+
+        assertThat(expired.getCode()).isEqualTo("old-hash");
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldRefuseReissueWhenPartyAlreadyLinked() {
+        landlord.setIdamId(UUID.randomUUID());
+
+        assertThatThrownBy(() -> service.createFor(ptCase, landlord))
+            .isInstanceOf(AccessCodeAlreadyUsedException.class);
 
         verify(repository, never()).save(any());
     }

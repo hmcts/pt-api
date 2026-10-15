@@ -5,6 +5,7 @@ CREATE TABLE party_access_code (
     case_party_id BIGINT NOT NULL REFERENCES case_party (id),
     code VARCHAR(100) NOT NULL, -- code will not be stored in raw form, it will be hashed
     expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
 
     created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

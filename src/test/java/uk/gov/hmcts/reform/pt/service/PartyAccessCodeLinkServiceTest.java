@@ -108,17 +108,7 @@ class PartyAccessCodeLinkServiceTest {
         assertThatThrownBy(() -> service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID))
             .isInstanceOf(InvalidAccessCodeException.class);
 
-        verifyNotLinked();
-    }
-
-    @Test
-    void shouldRejectExpiredCode() {
-        givenStoredCode(accessCodeFor(landlord, NOW));   // expires exactly now
-
-        assertThatThrownBy(() -> service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID))
-            .isInstanceOf(AccessCodeExpiredException.class);
-
-        verifyNotLinked();
+        verifyNotLinked(accessCodeFor(landlord, NOW.plusDays(1)));
     }
 
     @Test
@@ -169,6 +159,27 @@ class PartyAccessCodeLinkServiceTest {
             .hasMessage("CCD down");
     }
 
+    @Test
+    void shouldLinkLandlordRecordUsageAndAssignCaseRole() {
+        PartyAccessCodeEntity accessCode = givenStoredCode(accessCodeFor(landlord, NOW.plusDays(1)));
+
+        service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID);
+
+        assertThat(landlord.getIdamId()).isEqualTo(USER_ID);
+        assertThat(accessCode.getUsedAt()).isEqualTo(NOW);
+        verify(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, UserRole.DEFENDANT);
+    }
+
+    @Test
+    void shouldRejectExpiredCode() {
+        PartyAccessCodeEntity accessCode = givenStoredCode(accessCodeFor(landlord, NOW));
+
+        assertThatThrownBy(() -> service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID))
+            .isInstanceOf(AccessCodeExpiredException.class);
+
+        verifyNotLinked(accessCode);
+    }
+
     private CasePartyEntity party(long id, PartyRole role, UUID idamId) {
         CasePartyEntity party = CasePartyEntity.builder()
             .id(id).ptCase(ptCase).casePartyRole(role).idamId(idamId)
@@ -183,13 +194,20 @@ class PartyAccessCodeLinkServiceTest {
             .build();
     }
 
-    private void givenStoredCode(PartyAccessCodeEntity accessCode) {
+    private PartyAccessCodeEntity givenStoredCode(PartyAccessCodeEntity accessCode) {
         when(repository.findAllByPtCaseCaseReference(CASE_REFERENCE)).thenReturn(List.of(accessCode));
         when(encoder.matches(ENTERED_CODE, STORED_HASH)).thenReturn(true);
+        return accessCode;
     }
 
     private void verifyNotLinked() {
         assertThat(landlord.getIdamId()).isNull();
+        verify(caseRoleAssignmentService, never()).assignCaseRole(anyLong(), any(), any());
+    }
+
+    private void verifyNotLinked(PartyAccessCodeEntity accessCode) {
+        assertThat(landlord.getIdamId()).isNull();
+        assertThat(accessCode.getUsedAt()).isNull();
         verify(caseRoleAssignmentService, never()).assignCaseRole(anyLong(), any(), any());
     }
 }
