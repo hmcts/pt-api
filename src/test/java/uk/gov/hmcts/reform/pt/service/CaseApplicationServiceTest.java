@@ -143,7 +143,7 @@ class CaseApplicationServiceTest {
             .caseReference(caseReference)
             .addresses(List.of(AddressEntity.builder().postcode("AB12 3CD").build()))
             .marketRentCase(MarketRentCaseEntity.builder()
-                .tenancyDetails(List.of(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build()))
+                .tenancyDetails(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build())
                 .build())
             .build();
 

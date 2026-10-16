@@ -36,7 +36,7 @@ public class TenancyDetailsService {
             .tenancyType(tenancyType)
             .marketRentCase(marketRentCase)
             .build();
-        marketRentCase.getTenancyDetails().add(tenancyDetails);
+        marketRentCase.setTenancyDetails(tenancyDetails);
         return tenancyDetailsRepository.save(tenancyDetails);
     }
 
@@ -95,14 +95,13 @@ public class TenancyDetailsService {
 
     private TenancyDetailsEntity getOrCreateTenancyDetails(PTCaseEntity ptCaseEntity) {
         MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity);
-        return marketRentCase.getTenancyDetails().stream()
-            .findFirst()
-            .orElseGet(() -> {
-                TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
-                    .marketRentCase(marketRentCase)
-                    .build();
-                marketRentCase.getTenancyDetails().add(tenancyDetails);
-                return tenancyDetails;
-            });
+        TenancyDetailsEntity tenancyDetails = marketRentCase.getTenancyDetails();
+        if (tenancyDetails == null) {
+            tenancyDetails = TenancyDetailsEntity.builder()
+                .marketRentCase(marketRentCase)
+                .build();
+            marketRentCase.setTenancyDetails(tenancyDetails);
+        }
+        return tenancyDetails;
     }
 }

@@ -352,10 +352,7 @@ public class ApplicationMapper {
     }
 
     private static TenancyDetailsEntity tenancyDetailsOf(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        return marketRentCase != null
-            ? marketRentCase.getTenancyDetails().stream().findFirst().orElse(null)
-            : null;
+        return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getTenancyDetails);
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {
