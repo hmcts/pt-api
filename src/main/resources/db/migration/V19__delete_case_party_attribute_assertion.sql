@@ -40,3 +40,26 @@ DROP TABLE IF EXISTS case_evidence;
 
 ALTER TABLE notice_of_rent_change ADD COLUMN hardship_details VARCHAR(100);
 DROP TABLE IF EXISTS hardship_consideration;
+
+ALTER TABLE market_rent_case ADD COLUMN language VARCHAR(100);
+ALTER TABLE pt_case ADD COLUMN dx_number VARCHAR(100);
+
+ALTER TABLE application_fee ADD COLUMN market_rent_case_id BIGINT;
+ALTER TABLE application_fee
+  ADD FOREIGN KEY (market_rent_case_id)
+  REFERENCES market_rent_case (id);
+CREATE INDEX application_fee_market_rent_case_id_idx
+  ON application_fee (market_rent_case_id);
+ALTER TABLE application_fee DROP COLUMN case_application_id;
+
+ALTER TABLE application_statement_of_truth ADD COLUMN market_rent_case_id BIGINT;
+ALTER TABLE application_statement_of_truth
+  ADD FOREIGN KEY (market_rent_case_id)
+  REFERENCES market_rent_case (id);
+CREATE INDEX application_statement_of_truth_market_rent_case_id_idx
+  ON application_statement_of_truth (market_rent_case_id);
+ALTER TABLE application_statement_of_truth DROP COLUMN case_application_id;
+
+ALTER TABLE document DROP COLUMN case_application_id;
+ALTER TABLE market_rent_case DROP COLUMN case_application_id;
+DROP TABLE IF EXISTS case_application;

@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
-import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,14 +40,10 @@ public class ApplicationMapper {
             .build();
     }
 
-    public static EnrichedApplicationDto toEnrichedDto(CaseApplicationEntity entity) {
-        CasePartyEntity caseParty = entity.getCaseParty();
-        if (caseParty == null) {
-            throw new CasePartyNotFoundException("Case party not found for application: " + entity.getId());
-        }
+    public static EnrichedApplicationDto toEnrichedDto(CasePartyEntity caseParty) {
         PTCaseEntity ptCase = caseParty.getPtCase();
         if (ptCase == null) {
-            throw new CaseNotFoundException("Case not found for application: " + entity.getId());
+            throw new CaseNotFoundException("Case not found for case party: " + caseParty.getId());
         }
 
         return EnrichedApplicationDto.builder()
@@ -72,7 +66,7 @@ public class ApplicationMapper {
             .currentRentsDetails(mapCurrentRentDetails(ptCase))
             .marketRentDetails(mapMarketRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
-            .createdDate(entity.getCreatedDate())
+            .createdDate(ptCase.getCreatedDate())
             .build();
     }
 

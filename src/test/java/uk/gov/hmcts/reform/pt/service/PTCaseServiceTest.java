@@ -25,13 +25,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
-import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
@@ -63,9 +61,6 @@ class PTCaseServiceTest {
 
     @Mock
     private TenancyDetailsService tenancyDetailsService;
-
-    @Mock
-    private CaseApplicationRepository caseApplicationRepository;
 
     @Mock
     private CasePartyRepository casePartyRepository;
@@ -119,7 +114,6 @@ class PTCaseServiceTest {
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
         verify(marketRentCaseService).updateWithApplicationType(savedEntity, applicationType);
-        verify(caseApplicationRepository).save(any());
     }
 
     @Test
@@ -138,18 +132,15 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete the case applications and the case when the case exists")
-    void deleteCaseDeletesApplicationsAndCase() {
+    @DisplayName("Should delete the case when the case exists")
+    void deleteCaseDeletesCase() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
-        List<CaseApplicationEntity> applications = List.of(CaseApplicationEntity.builder().build());
 
         when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
-        when(caseApplicationRepository.findAllByCaseReference(caseReference)).thenReturn(applications);
 
         ptCaseService.deleteCase(caseReference);
 
-        verify(caseApplicationRepository).deleteAll(applications);
         verify(ptCaseRepository).delete(ptCaseEntity);
     }
 
@@ -163,7 +154,6 @@ class PTCaseServiceTest {
         assertThatThrownBy(() -> ptCaseService.deleteCase(caseReference))
             .isInstanceOf(CaseNotFoundException.class);
 
-        verify(caseApplicationRepository, times(0)).deleteAll(any());
         verify(ptCaseRepository, times(0)).delete(any());
     }
 

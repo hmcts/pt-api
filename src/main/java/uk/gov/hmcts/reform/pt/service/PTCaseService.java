@@ -14,12 +14,10 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
@@ -36,7 +34,6 @@ public class PTCaseService {
     private final CasePartyService casePartyService;
     private final TenancyDetailsService tenancyDetailsService;
     private final PTCaseRepository ptCaseRepository;
-    private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
@@ -57,14 +54,9 @@ public class PTCaseService {
 
         tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), ptCaseEntity);
 
-        CasePartyEntity caseParty = casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
+        casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
 
         marketRentCaseService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
-
-        CaseApplicationEntity application = CaseApplicationEntity.builder()
-            .caseParty(caseParty)
-            .build();
-        caseApplicationRepository.save(application);
     }
 
     @Transactional
@@ -77,8 +69,6 @@ public class PTCaseService {
     public void deleteCase(long caseReference) {
         PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
-
-        caseApplicationRepository.deleteAll(caseApplicationRepository.findAllByCaseReference(caseReference));
 
         ptCaseRepository.delete(ptCaseEntity);
     }

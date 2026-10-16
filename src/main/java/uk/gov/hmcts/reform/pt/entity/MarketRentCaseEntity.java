@@ -9,7 +9,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -172,10 +171,18 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 100)
     private ApplicationType marketRentCaseType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_application_id")
-    @JsonBackReference
-    private CaseApplicationEntity caseApplication;
+    @Column(length = 100)
+    private String language;
+
+    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @Builder.Default
+    private List<ApplicationFeeEntity> applicationFees = new ArrayList<>();
+
+    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @Builder.Default
+    private List<ApplicationStatementOfTruthEntity> statementsOfTruth = new ArrayList<>();
 
     @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference

@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
-import uk.gov.hmcts.reform.pt.exception.CasePartyNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -59,24 +57,13 @@ class ApplicationMapperTest {
     @Test
     void shouldMapToDtoFromEntity() {
         UUID userId = UUID.randomUUID();
-        CaseApplicationEntity entity = fullEntity(userId);
+        CasePartyEntity caseParty = fullCaseParty(userId);
 
-        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
         assertThat(result)
             .usingRecursiveComparison()
             .isEqualTo(expectedDto(userId));
-    }
-
-    @Test
-    void shouldThrowCasePartyNotFoundExceptionWhenCasePartyIsNull() {
-        CaseApplicationEntity entity = CaseApplicationEntity.builder()
-            .caseParty(null)
-            .build();
-
-        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
-            .isInstanceOf(CasePartyNotFoundException.class)
-            .hasMessageContaining("Case party not found for application");
     }
 
     @Test
@@ -87,13 +74,9 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = CaseApplicationEntity.builder()
-            .caseParty(caseParty)
-            .build();
-
-        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(entity))
+        assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(caseParty))
             .isInstanceOf(CaseNotFoundException.class)
-            .hasMessageContaining("Case not found for application");
+            .hasMessageContaining("Case not found for case party");
     }
 
     @Test
@@ -231,9 +214,7 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entity(caseParty);
-
-        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
         assertThat(result.getPostcode()).isEmpty();
     }
@@ -248,9 +229,7 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entity(caseParty);
-
-        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
         assertThat(result.getApplicationType()).isNull();
     }
@@ -263,9 +242,7 @@ class ApplicationMapperTest {
             null,
             Collections.emptyList()
         );
-        CaseApplicationEntity entity = entity(caseParty);
-
-        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(entity);
+        EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
         assertThat(result.getApplicantIdamUserId()).isNull();
     }
@@ -1048,6 +1025,7 @@ class ApplicationMapperTest {
     private static PTCaseEntity ptCase(List<AddressEntity> addresses, List<TenancyDetailsEntity> tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
+            .createdDate(CREATED_DATE)
             .addresses(addresses)
             .marketRentCase(withTenancyDetails(marketRentCase(), tenancyDetails))
             .documents(List.of(
@@ -1084,23 +1062,15 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static CaseApplicationEntity entity(CasePartyEntity caseParty) {
-        return CaseApplicationEntity.builder()
-            .caseParty(caseParty)
-            .createdDate(CREATED_DATE)
-            .build();
-    }
-
-    private static CaseApplicationEntity fullEntity(UUID userId) {
+    private static CasePartyEntity fullCaseParty(UUID userId) {
         List<AddressEntity> partyAddresses = addresses(POSTCODE);
         PTCaseEntity ptCase = ptCase(partyAddresses, tenancyDetails(TENANCY_TYPE));
-        CasePartyEntity caseParty = caseParty(
+        return caseParty(
             ptCase,
             userId,
             YesOrNo.YES,
             partyAddresses
         );
-        return entity(caseParty);
     }
 
     private static EnrichedApplicationDto expectedDto(UUID userId) {

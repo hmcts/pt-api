@@ -56,9 +56,4 @@ public class DocumentEntity extends AuditableEntity {
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_application_id")
-    @JsonBackReference
-    private CaseApplicationEntity caseApplication;
 }

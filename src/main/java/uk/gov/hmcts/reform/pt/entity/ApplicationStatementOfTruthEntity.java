@@ -48,7 +48,7 @@ public class ApplicationStatementOfTruthEntity extends AuditableEntity {
     private String positionHeld;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_application_id")
+    @JoinColumn(name = "market_rent_case_id")
     @JsonBackReference
-    private CaseApplicationEntity caseApplication;
+    private MarketRentCaseEntity marketRentCase;
 }
