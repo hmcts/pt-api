@@ -9,9 +9,6 @@ ALTER TABLE pt_case DROP COLUMN case_type_id;
 DROP TABLE IF EXISTS case_type;
 ALTER TABLE pt_case DROP COLUMN status;
 
-DELETE FROM market_rent_case a
-  USING market_rent_case b
-  WHERE a.pt_case_id = b.pt_case_id AND a.id > b.id;
 ALTER TABLE market_rent_case ADD CONSTRAINT market_rent_case_pt_case_id_key UNIQUE (pt_case_id);
 
 ALTER TABLE tenancy_details ADD COLUMN market_rent_case_id BIGINT;
@@ -63,8 +60,8 @@ ALTER TABLE document DROP COLUMN case_application_id;
 ALTER TABLE market_rent_case DROP COLUMN case_application_id;
 DROP TABLE IF EXISTS case_application;
 
-DELETE FROM tenancy_details a
-  USING tenancy_details b
-  WHERE a.market_rent_case_id = b.market_rent_case_id AND a.id > b.id;
 ALTER TABLE tenancy_details
   ADD CONSTRAINT tenancy_details_market_rent_case_id_key UNIQUE (market_rent_case_id);
+
+ALTER TABLE notice_of_rent_change
+  ADD CONSTRAINT notice_of_rent_change_market_rent_case_id_key UNIQUE (market_rent_case_id);

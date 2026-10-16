@@ -20,13 +20,11 @@ public class NoticeOfRentChangeService {
     @Transactional
     public void updateNoticeOfRentChangeDetails(NoticeOfRentIncreaseDetails details, PTCaseEntity ptCaseEntity) {
         MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity);
-        NoticeOfRentChangeEntity entity = marketRentCase.getNoticeOfRentChanges().stream()
-            .findFirst()
-            .orElseGet(() -> {
-                NoticeOfRentChangeEntity noticeOfRentChange = new NoticeOfRentChangeEntity();
-                marketRentCase.getNoticeOfRentChanges().add(noticeOfRentChange);
-                return noticeOfRentChange;
-            });
+        NoticeOfRentChangeEntity entity = marketRentCase.getNoticeOfRentChange();
+        if (entity == null) {
+            entity = new NoticeOfRentChangeEntity();
+            marketRentCase.setNoticeOfRentChange(entity);
+        }
 
         setIfNotNull(
             details.getReceivedLandlordNoticeProposingNewRent(),

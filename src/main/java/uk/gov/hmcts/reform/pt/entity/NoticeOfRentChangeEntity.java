@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -66,8 +67,8 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Column(length = 500)
     private String noticeNotLegallyValidDetails;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_rent_case_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "market_rent_case_id", unique = true)
     @JsonBackReference
     private MarketRentCaseEntity marketRentCase;
 

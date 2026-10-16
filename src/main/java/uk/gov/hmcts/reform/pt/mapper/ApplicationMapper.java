@@ -105,10 +105,8 @@ public class ApplicationMapper {
     }
 
     public static NoticeOfRentIncreaseDto mapNoticeOfRentChangeDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        NoticeOfRentChangeEntity entity = marketRentCase != null
-            ? marketRentCase.getNoticeOfRentChanges().stream().findFirst().orElse(null)
-            : null;
+        NoticeOfRentChangeEntity entity =
+            get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getNoticeOfRentChange);
 
         return NoticeOfRentIncreaseDto.builder()
             .receivedLandlordNoticeProposingNewRent(

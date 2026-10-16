@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.NoticeOfRentChangeRepository;
 
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,7 @@ class NoticeOfRentChangeServiceTest {
         NoticeOfRentChangeEntity saved = captor.getValue();
 
         assertThat(saved.getMarketRentCase()).isEqualTo(marketRentCase);
-        assertThat(marketRentCase.getNoticeOfRentChanges()).containsExactly(saved);
+        assertThat(marketRentCase.getNoticeOfRentChange()).isEqualTo(saved);
         assertThat(saved.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Lost paper copy");
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
@@ -76,7 +75,7 @@ class NoticeOfRentChangeServiceTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .noticeOfRentChanges(List.of(existing))
+            .noticeOfRentChange(existing)
             .build();
         when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
 
