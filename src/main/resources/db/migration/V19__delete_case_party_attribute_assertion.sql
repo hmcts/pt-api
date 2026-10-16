@@ -42,7 +42,6 @@ ALTER TABLE notice_of_rent_change ADD COLUMN hardship_details VARCHAR(100);
 DROP TABLE IF EXISTS hardship_consideration;
 
 ALTER TABLE market_rent_case ADD COLUMN language VARCHAR(100);
-ALTER TABLE pt_case ADD COLUMN dx_number VARCHAR(100);
 
 ALTER TABLE application_fee ADD COLUMN market_rent_case_id BIGINT;
 ALTER TABLE application_fee

@@ -42,9 +42,6 @@ public class PTCaseEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LandlordRepresentativeType landlordType;
 
-    @Column(length = 100)
-    private String dxNumber;
-
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
