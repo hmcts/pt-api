@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.pt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
@@ -19,11 +21,11 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -44,9 +46,6 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Column(length = 100)
     private String status;
-
-    private LocalDateTime submittedDate;
-    private LocalDateTime issuedDate;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -160,13 +159,31 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 500)
     private String reasonHearingRequested;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_application_id")
-    @JsonBackReference
-    private CaseApplicationEntity caseApplication;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 100)
+    private ApplicationType marketRentCaseType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @Column(length = 100)
+    private String language;
+
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private ApplicationFeeEntity applicationFee;
+
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private ApplicationStatementOfTruthEntity statementOfTruth;
+
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private TenancyDetailsEntity tenancyDetails;
+
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private NoticeOfRentChangeEntity noticeOfRentChange;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pt_case_id", unique = true)
     @JsonBackReference
     private PTCaseEntity ptCase;
 }
