@@ -179,10 +179,9 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<ApplicationFeeEntity> applicationFees = new ArrayList<>();
 
-    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<ApplicationStatementOfTruthEntity> statementsOfTruth = new ArrayList<>();
+    private ApplicationStatementOfTruthEntity statementOfTruth;
 
     @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference

@@ -65,3 +65,6 @@ ALTER TABLE tenancy_details
 
 ALTER TABLE notice_of_rent_change
   ADD CONSTRAINT notice_of_rent_change_market_rent_case_id_key UNIQUE (market_rent_case_id);
+
+ALTER TABLE application_statement_of_truth
+  ADD CONSTRAINT application_statement_of_truth_market_rent_case_id_key UNIQUE (market_rent_case_id);
