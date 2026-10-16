@@ -8,14 +8,14 @@ import uk.gov.hmcts.ccd.sdk.api.EventPayload;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.UUID;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.reform.pt.ccd.domain.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
 
 @Component
