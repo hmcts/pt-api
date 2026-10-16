@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 
@@ -23,17 +22,14 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     private EntityManager entityManager;
 
     private final PTCaseRepository ptCaseRepository;
-    private final MarketRentCaseRepository marketRentCaseRepository;
 
     @Autowired
     protected CasePartyRepositoryTest(
         CasePartyRepository repository,
-        PTCaseRepository ptCaseRepository,
-        MarketRentCaseRepository marketRentCaseRepository
+        PTCaseRepository ptCaseRepository
     ) {
         super(repository);
         this.ptCaseRepository = ptCaseRepository;
-        this.marketRentCaseRepository = marketRentCaseRepository;
     }
 
     @Test
@@ -92,10 +88,8 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
 
         PTCaseEntity activeCase = saveCaseParty(activeReference, idamId);
         saveCaseParty(disposingReference, idamId);
-        marketRentCaseRepository.save(MarketRentCaseEntity.builder()
-            .ptCase(activeCase)
-            .submittedDate(submittedDate)
-            .build());
+        activeCase.setApplicationSubmittedDate(submittedDate);
+        ptCaseRepository.save(activeCase);
 
         insertCcdCase(activeReference, "AWAITING_SUBMISSION_TO_HMCTS");
         insertCcdCase(disposingReference, "PendingDisposal");

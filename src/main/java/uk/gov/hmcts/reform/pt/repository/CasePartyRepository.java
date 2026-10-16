@@ -18,13 +18,12 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
 
     @Query(value = """
         SELECT DISTINCT
-            pc.id             AS id,
-            pc.case_reference AS caseReference,
-            pc.created_date   AS createdDate,
-            mrc.submitted_date AS submittedDate
+            pc.id                         AS id,
+            pc.case_reference             AS caseReference,
+            pc.created_date               AS createdDate,
+            pc.application_submitted_date AS submittedDate
         FROM case_party cp
         JOIN pt_case pc ON pc.id = cp.pt_case_id
-        LEFT JOIN market_rent_case mrc ON mrc.pt_case_id = pc.id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
         WHERE cp.idam_id = :idamId
         AND cd.state <> 'PendingDisposal'

@@ -73,3 +73,10 @@ ALTER TABLE application_fee
   ADD CONSTRAINT application_fee_market_rent_case_id_key UNIQUE (market_rent_case_id);
 
 ALTER TABLE pt_case DROP COLUMN legislative_country;
+
+ALTER TABLE market_rent_case
+  DROP COLUMN submitted_date,
+  DROP COLUMN issued_date;
+ALTER TABLE pt_case
+  ADD COLUMN application_submitted_date TIMESTAMP,
+  ADD COLUMN case_issued_date TIMESTAMP;

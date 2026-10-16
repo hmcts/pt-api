@@ -21,6 +21,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class PTCaseEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LandlordRepresentativeType landlordType;
+
+    private LocalDateTime applicationSubmittedDate;
+    private LocalDateTime caseIssuedDate;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

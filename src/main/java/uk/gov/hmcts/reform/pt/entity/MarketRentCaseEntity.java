@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -47,9 +46,6 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Column(length = 100)
     private String status;
-
-    private LocalDateTime submittedDate;
-    private LocalDateTime issuedDate;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
