@@ -80,3 +80,5 @@ ALTER TABLE market_rent_case
 ALTER TABLE pt_case
   ADD COLUMN application_submitted_date TIMESTAMP,
   ADD COLUMN case_issued_date TIMESTAMP;
+
+ALTER TABLE case_party RENAME COLUMN reference_number TO reference_number_for_communications;

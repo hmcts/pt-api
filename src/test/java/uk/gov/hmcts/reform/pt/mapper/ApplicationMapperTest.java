@@ -922,7 +922,7 @@ class ApplicationMapperTest {
             .organisationName("Landlord Estates")
             .emailAddress("landlord@example.com")
             .phoneNumber("0123456789")
-            .referenceNumber("LL01")
+            .referenceNumberForCommunications("LL01")
             .casePartyRole(landlordRole)
             .addresses(List.of(landlordAddress))
             .build();
@@ -1051,7 +1051,7 @@ class ApplicationMapperTest {
             .firstName(FIRST_NAME)
             .lastName(LAST_NAME)
             .organisationName(COMPANY_NAME)
-            .referenceNumber(REFERENCE_NUMBER)
+            .referenceNumberForCommunications(REFERENCE_NUMBER)
             .emailAddress(EMAIL)
             .phoneNumber(PHONE_NUMBER)
             .mobilePhoneNumber(MOBILE_NUMBER)

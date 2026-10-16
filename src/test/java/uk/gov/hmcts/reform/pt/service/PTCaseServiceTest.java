@@ -233,7 +233,7 @@ class PTCaseServiceTest {
                 CasePartyEntity::getPhoneNumber,
                 CasePartyEntity::getMobilePhoneNumber,
                 CasePartyEntity::getOrganisationName,
-                CasePartyEntity::getReferenceNumber)
+                CasePartyEntity::getReferenceNumberForCommunications)
             .containsExactly("Jane", "Doe", "jane@example.com", "01111111111", "07777777777", "Test Company", "REF12");
 
         verify(casePartyRepository, times(3)).save(caseParty);
@@ -415,7 +415,7 @@ class PTCaseServiceTest {
         ptCaseService.updateTenantDetails(ptCase, caseParty);
 
         assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
+        assertThat(caseParty.getReferenceNumberForCommunications()).isEqualTo("12345");
         verify(casePartyRepository).save(caseParty);
     }
 
@@ -639,7 +639,7 @@ class PTCaseServiceTest {
     void updateTenantDetailsPreservesDetailsWhenNull() {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .organisationName("ExistingOrg")
-            .referenceNumber("EXISTING-REF")
+            .referenceNumberForCommunications("EXISTING-REF")
             .build();
         TenantDetails tenantDetails = TenantDetails.builder().build();
         PTCase ptCase = PTCase.builder()
@@ -649,7 +649,7 @@ class PTCaseServiceTest {
         ptCaseService.updateTenantDetails(ptCase, caseParty);
 
         assertThat(caseParty.getOrganisationName()).isEqualTo("ExistingOrg");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("EXISTING-REF");
+        assertThat(caseParty.getReferenceNumberForCommunications()).isEqualTo("EXISTING-REF");
         verify(casePartyRepository).save(caseParty);
     }
 

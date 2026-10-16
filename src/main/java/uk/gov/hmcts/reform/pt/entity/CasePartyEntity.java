@@ -59,7 +59,7 @@ public class CasePartyEntity extends AuditableEntity {
     private LocalDateTime dateOfBirth;
 
     @Column(length = 5)
-    private String referenceNumber;
+    private String referenceNumberForCommunications;
 
     private UUID idamId;
 

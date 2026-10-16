@@ -161,7 +161,10 @@ public class PTCaseService {
         }
 
         setIfNotNull(tenantDetails.getCompanyName(), caseParty::setOrganisationName);
-        setIfNotNull(tenantDetails.getReferenceNumberForCommunications(), caseParty::setReferenceNumber);
+        setIfNotNull(
+            tenantDetails.getReferenceNumberForCommunications(),
+            caseParty::setReferenceNumberForCommunications
+        );
         casePartyRepository.save(caseParty);
     }
 
