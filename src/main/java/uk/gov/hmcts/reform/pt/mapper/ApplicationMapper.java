@@ -26,8 +26,8 @@ import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 @UtilityClass
@@ -94,13 +94,9 @@ public class ApplicationMapper {
             .hearingRequested(get(marketRentCase, MarketRentCaseEntity::getHearingRequested))
             .reasonHearingRequested(get(marketRentCase, MarketRentCaseEntity::getReasonHearingRequested))
             .agreeToDecisionWithoutInspection(
-                marketRentCase != null
-                    ? marketRentCase.getAgreeToDecisionWithoutInspection()
-                    : null)
+                get(marketRentCase, MarketRentCaseEntity::getAgreeToDecisionWithoutInspection))
             .noDecisionWithoutInspectionReason(
-                marketRentCase != null
-                    ? marketRentCase.getNoDecisionWithoutInspectionReason()
-                    : null)
+                get(marketRentCase, MarketRentCaseEntity::getNoDecisionWithoutInspectionReason))
             .build();
     }
 
@@ -114,29 +110,23 @@ public class ApplicationMapper {
             .noUploadOfNoticeProposingNewRentReason(
                 get(entity, NoticeOfRentChangeEntity::getNoUploadOfNoticeProposingNewRentReason))
             .landlordNoticeProposingNewRentDocument(
-                findDocumentOfType(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity)
-                    .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                findDocumentOfTypeAndMap(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity))
             .noticeLegallyValid(get(entity, NoticeOfRentChangeEntity::getNoticeLegallyValid))
             .noticeNotLegallyValidDetails(
                 get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidDetails))
             .noticeNotLegallyValidDocument(
-                findDocumentOfType(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity)
-                    .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                findDocumentOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(
                 get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardship))
             .rentIncreaseToCauseHardshipDocument(
-                findDocumentOfType(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity)
-                    .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                findDocumentOfTypeAndMap(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity))
             .build();
     }
 
     public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity, CasePartyEntity party) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        AddressEntity address = party.getAddresses().stream().findFirst().orElse(null);
+        AddressEntity address = findFirstOrNull(party.getAddresses());
 
         if (tenancyDetails == null && marketRentCase == null && address == null
             && ptCaseEntity.getDocuments().isEmpty()) {
@@ -156,23 +146,14 @@ public class ApplicationMapper {
             .propertyFloorPlanAvailable(get(marketRentCase, MarketRentCaseEntity::getPropertyFloorPlanAvailable))
             .floorPlanManualDetails(get(marketRentCase, MarketRentCaseEntity::getFloorplanManualDetails))
             .floorPlanDocuments(
-                findDocumentsOfType(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity)
-                    .stream()
-                    .map(ApplicationMapper::mapDocument)
-                    .toList())
+                findDocumentsOfTypeAndMap(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity))
             .indoorFeatures(get(marketRentCase, MarketRentCaseEntity::getPropertyIndoorFeatures))
             .otherFacilitiesAvailable(get(tenancyDetails, TenancyDetailsEntity::getTenancyIncludeFacilities))
             .otherFacilitiesDetails(get(tenancyDetails, TenancyDetailsEntity::getOtherFacilitiesDetails))
             .outsidePropertyDocuments(
-                findDocumentsOfType(DocumentType.OUTSIDE_PROPERTY, ptCaseEntity)
-                    .stream()
-                    .map(ApplicationMapper::mapDocument)
-                    .toList())
+                findDocumentsOfTypeAndMap(DocumentType.OUTSIDE_PROPERTY, ptCaseEntity))
             .propertyRoomsDocuments(
-                findDocumentsOfType(DocumentType.PROPERTY_ROOMS, ptCaseEntity)
-                    .stream()
-                    .map(ApplicationMapper::mapDocument)
-                    .toList())
+                findDocumentsOfTypeAndMap(DocumentType.PROPERTY_ROOMS, ptCaseEntity))
             .furnitureProvidedInTenancy(
                 get(tenancyDetails, TenancyDetailsEntity::getFurnitureProvidedInTenancy))
             .furnitureProvidedInTenancyDetails(
@@ -189,10 +170,7 @@ public class ApplicationMapper {
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
             .repairsEvidenceDocuments(
-                findDocumentsOfType(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity)
-                    .stream()
-                    .map(ApplicationMapper::mapDocument)
-                    .toList())
+                findDocumentsOfTypeAndMap(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity))
             .build();
     }
 
@@ -258,9 +236,7 @@ public class ApplicationMapper {
             .applicantSuggestedMarketRentReasons(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
-                findDocumentOfType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity)
-                    .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                findDocumentOfTypeAndMap(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity))
             .additionalPropertyInfoToConsiderWhenDetermining(
                 get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
@@ -279,9 +255,7 @@ public class ApplicationMapper {
             .copyOfTenancyAgreement(get(tenancyDetails, TenancyDetailsEntity::getCopyOfTenancyAgreement))
             .noTenancyAgreementReason(get(tenancyDetails, TenancyDetailsEntity::getNoTenancyAgreementReason))
             .tenancyAgreementDocument(
-                findDocumentOfType(DocumentType.TENANCY_AGREEMENT, ptCaseEntity)
-                    .map(ApplicationMapper::mapDocument)
-                    .orElse(null))
+                findDocumentOfTypeAndMap(DocumentType.TENANCY_AGREEMENT, ptCaseEntity))
             .build();
     }
 
@@ -311,9 +285,7 @@ public class ApplicationMapper {
             return null;
         }
 
-        AddressEntity address = entity.getAddresses().stream()
-            .findFirst()
-            .orElse(null);
+        AddressEntity address = findFirstOrNull(entity.getAddresses());
 
         return PartyDto.builder()
             .firstName(entity.getFirstName())
@@ -330,15 +302,18 @@ public class ApplicationMapper {
             .build();
     }
 
-    private static Optional<DocumentEntity> findDocumentOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
+    private static DocumentDto findDocumentOfTypeAndMap(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
-            .findFirst();
+            .findFirst()
+            .map(ApplicationMapper::mapDocument)
+            .orElse(null);
     }
 
-    private static List<DocumentEntity> findDocumentsOfType(DocumentType type, PTCaseEntity ptCaseEntity) {
+    private static List<DocumentDto> findDocumentsOfTypeAndMap(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
+            .map(ApplicationMapper::mapDocument)
             .toList();
     }
 
@@ -355,5 +330,9 @@ public class ApplicationMapper {
 
     private static <T, R> R get(T source, Function<T, R> getter) {
         return source == null ? null : getter.apply(source);
+    }
+
+    private static <T> T findFirstOrNull(Collection<T> source) {
+        return source.stream().findFirst().orElse(null);
     }
 }

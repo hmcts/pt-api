@@ -22,7 +22,7 @@ plugins {
   id 'org.sonarqube' version '7.5.0.8588'
   id 'net.serenity-bdd.serenity-gradle-plugin' version "$serenityBddVersion"
   id 'hmcts.ccd.sdk' version '6.32.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.2419'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.2435'
   id 'io.freefair.lombok' version '9.5.0'
   id 'au.com.dius.pact' version '4.7.5'
 
@@ -294,7 +294,7 @@ dependencies {
   }
   testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-  implementation(group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.11') {
+  implementation(group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.12_CCD-8388') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
@@ -303,7 +303,7 @@ dependencies {
   }
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.4'
-  integrationTestImplementation group: 'com.github.hmcts.rse-cft-lib', name: 'ccd-lib', version: '0.19.2186'
+  integrationTestImplementation group: 'com.github.hmcts.rse-cft-lib', name: 'ccd-lib', version: '0.19.2435'
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: serenityBddVersion
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: serenityBddVersion

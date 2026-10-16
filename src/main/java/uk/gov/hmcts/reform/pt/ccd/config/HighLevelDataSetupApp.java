@@ -15,27 +15,39 @@ import javax.net.ssl.SSLException;
 import java.util.List;
 import java.util.Locale;
 
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.GS_PROFILE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_SOLICITOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RAS_VALIDATOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SUPER_USER;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SYSTEM_USER;
+
+
 public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
 
     private static final Logger logger = LoggerFactory.getLogger(HighLevelDataSetupApp.class);
     private static final String PUBLIC = "PUBLIC";
 
     private static final CcdRoleConfig[] CCD_ROLES = {
-        new CcdRoleConfig("caseworker-pt", PUBLIC),
-        new CcdRoleConfig("caseworker-pt-solicitor", PUBLIC),
-        new CcdRoleConfig("caseworker-ras-validation", PUBLIC),
-        new CcdRoleConfig("citizen", PUBLIC),
         new CcdRoleConfig("caseworker", PUBLIC),
-        new CcdRoleConfig("GS_profile", PUBLIC),
-        new CcdRoleConfig("ctsc", PUBLIC),
-        new CcdRoleConfig("hearing-centre-admin", PUBLIC),
-        new CcdRoleConfig("wlu-admin", PUBLIC),
-        new CcdRoleConfig("judge", PUBLIC),
-        new CcdRoleConfig("fee-paid-judge", PUBLIC),
-        new CcdRoleConfig("circuit-judge", PUBLIC),
-        new CcdRoleConfig("leadership-judge", PUBLIC),
-        new CcdRoleConfig("pt-system-update", PUBLIC),
-        new CcdRoleConfig("caseworker-pt-superuser", PUBLIC)
+        new CcdRoleConfig(PT_CASE_WORKER.getRole(), PUBLIC),
+        new CcdRoleConfig(PT_SOLICITOR.getRole(), PUBLIC),
+        new CcdRoleConfig(RAS_VALIDATOR.getRole(), PUBLIC),
+        new CcdRoleConfig(CITIZEN.getRole(), PUBLIC),
+        new CcdRoleConfig(GS_PROFILE.getRole(), PUBLIC),
+        new CcdRoleConfig(HEARING_CENTRE_ADMIN.getRole(), PUBLIC),
+        new CcdRoleConfig(JUDGE.getRole(), PUBLIC),
+        new CcdRoleConfig(FEE_PAID_JUDGE.getRole(), PUBLIC),
+        new CcdRoleConfig(CIRCUIT_JUDGE.getRole(), PUBLIC),
+        new CcdRoleConfig(LEADERSHIP_JUDGE.getRole(), PUBLIC),
+        new CcdRoleConfig(SYSTEM_USER.getRole(), PUBLIC),
+        new CcdRoleConfig(SUPER_USER.getRole(), PUBLIC)
     };
 
     private final CcdEnvironment environment;

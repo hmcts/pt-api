@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.ccd.event.test;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -10,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.ccd.domain.UserRole;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.pages.TestPageBuilder;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CREATE_TEST_CASE;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnBooleanProperty(prefix = "testing-support", name = "enabled")
 public class CreateTestCase implements CCDConfig<PTCase, State, UserRole> {
 
     private final PTCaseService ptCaseService;
