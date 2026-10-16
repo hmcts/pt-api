@@ -71,3 +71,5 @@ ALTER TABLE application_statement_of_truth
 
 ALTER TABLE application_fee
   ADD CONSTRAINT application_fee_market_rent_case_id_key UNIQUE (market_rent_case_id);
+
+ALTER TABLE pt_case DROP COLUMN legislative_country;
