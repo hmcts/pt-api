@@ -9,13 +9,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +27,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Setter
@@ -174,10 +170,9 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 100)
     private String language;
 
-    @OneToMany(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<ApplicationFeeEntity> applicationFees = new ArrayList<>();
+    private ApplicationFeeEntity applicationFee;
 
     @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference
