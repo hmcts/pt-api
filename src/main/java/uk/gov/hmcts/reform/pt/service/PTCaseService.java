@@ -266,4 +266,10 @@ public class PTCaseService {
         setIfNotNull(landlordDetails.getRepresentativeType(), ptCaseEntity::setLandlordType);
         ptCaseRepository.save(ptCaseEntity);
     }
+
+    @Transactional(readOnly = true)
+    public PTCaseEntity getCase(long caseReference) {
+        return ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+    }
 }

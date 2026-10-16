@@ -4,10 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.TTL;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CaseworkerAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SystemUserAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
+
+import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 
@@ -123,4 +127,17 @@ public class PTCase {
         access = {SystemUserAccess.class}
     )
     private TTL ttl;
+
+    @CCD(
+        access = {CaseworkerAccess.class},
+        typeOverride = FieldType.MultiSelectList,
+        typeParameterOverride = "VettingInformationType"
+    )
+    private List<VettingInformationType> vettingInfoRequested;
+
+    @CCD(
+        typeOverride = FieldType.TextArea,
+        access = {CaseworkerAccess.class}
+    )
+    private String vettingInfoOther;
 }

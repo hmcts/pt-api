@@ -807,4 +807,26 @@ class PTCaseServiceTest {
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
     }
+
+    @Test
+    @DisplayName("Should return PTCaseEntity when case exists")
+    void getCaseShouldReturnCaseEntityWhenFound() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        PTCaseEntity result = ptCaseService.getCase(caseReference);
+
+        assertThat(result).isEqualTo(ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should throw CaseNotFoundException when case does not exist")
+    void getCaseShouldThrowWhenNotFound() {
+        long caseReference = 1234567890123456L;
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ptCaseService.getCase(caseReference))
+            .isInstanceOf(CaseNotFoundException.class);
+    }
 }
