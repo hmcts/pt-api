@@ -232,7 +232,6 @@ repositories {
 }
 
 ext {
-  springFrameworkBootVersion = "3.5.16"
   lombokVersion = "1.18.48"
 }
 
@@ -272,9 +271,9 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.7'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
-  testImplementation "org.testcontainers:testcontainers:2.0.5"
-  testImplementation "org.testcontainers:junit-jupiter:2.0.5"
-  testImplementation "org.testcontainers:postgresql:2.0.5"
+  testImplementation 'org.testcontainers:testcontainers:2.0.5'
+  testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.5'
+  testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
 
   testImplementation "org.springframework.security:spring-security-test"
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
