@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
@@ -67,6 +68,11 @@ public class PTCaseService {
             .caseType(caseType)
             .build();
         caseApplicationRepository.save(application);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<PTCaseEntity> fetchCaseByCaseReference(long caseReference) {
+        return ptCaseRepository.findByCaseReference(caseReference);
     }
 
     @Transactional

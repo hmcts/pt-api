@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
 import uk.gov.hmcts.reform.pt.exception.AccessCodeAlreadyUsedException;
-import uk.gov.hmcts.reform.pt.exception.AccessCodeExpiredException;
 import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 import uk.gov.hmcts.reform.pt.util.AccessCodeGenerator;
 
@@ -43,25 +42,20 @@ public class RespondentAccessCodeService {
             throw new IllegalArgumentException("Party does not belong to case " + ptCase.getId());
         }
 
-        LocalDateTime now = LocalDateTime.now(clock);
-
         PartyAccessCodeEntity entity = repository
             .findByPtCaseIdAndPartyId(ptCase.getId(), respondent.getId())
             .orElseGet(() -> PartyAccessCodeEntity.builder()
                 .ptCase(ptCase)
                 .party(respondent)
-                .expiresAt(now.plus(validity))
                 .build());
 
-        if (entity.isExpired(now)) {
-            throw new AccessCodeExpiredException("Access code has expired");
-        }
         if (respondent.getIdamId() != null || entity.getUsedAt() != null) {
             throw new AccessCodeAlreadyUsedException("This access code has already been used");
         }
 
         String code = generator.generate();
         entity.setCode(encoder.encode(code));
+        entity.setExpiresAt(LocalDateTime.now(clock).plus(validity));
         repository.save(entity);
         return code;
     }

@@ -807,4 +807,29 @@ class PTCaseServiceTest {
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
     }
+
+    @Test
+    @DisplayName("Should return the case when one exists for the case reference")
+    void fetchCaseByCaseReferenceReturnsCase() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCase = PTCaseEntity.builder().id(10L).caseReference(caseReference).build();
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCase));
+
+        Optional<PTCaseEntity> result = ptCaseService.fetchCaseByCaseReference(caseReference);
+
+        assertThat(result).containsSame(ptCase);
+    }
+
+    @Test
+    @DisplayName("Should return an empty Optional when no case exists for the case reference")
+    void fetchCaseByCaseReferenceReturnsEmptyWhenNotFound() {
+        long caseReference = 1234567890123456L;
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        Optional<PTCaseEntity> result = ptCaseService.fetchCaseByCaseReference(caseReference);
+
+        assertThat(result).isEmpty();
+    }
 }

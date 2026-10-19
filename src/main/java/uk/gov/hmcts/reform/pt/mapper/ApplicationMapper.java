@@ -315,6 +315,13 @@ public class ApplicationMapper {
             .build();
     }
 
+    public static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
+        return ptCaseEntity.getParties().stream()
+            .filter(party -> party.getCasePartyRole() == role)
+            .findFirst()
+            .orElse(null);
+    }
+
     private static DocumentDto findDocumentOfTypeAndMap(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
@@ -328,13 +335,6 @@ public class ApplicationMapper {
             .filter(document -> document.getDocumentType() == type)
             .map(ApplicationMapper::mapDocument)
             .toList();
-    }
-
-    private static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
-        return ptCaseEntity.getParties().stream()
-            .filter(party -> party.getCasePartyRole() == role)
-            .findFirst()
-            .orElse(null);
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {

@@ -142,6 +142,9 @@ case_document_am:
 send-letter:
   url: ${SEND_LETTER_URL:http://localhost:8485}
 
+pt-frontend:
+  url: ${PT_FRONTEND_URL:http://localhost:4000}
+
 db-scheduler:
   enabled: false # This disables the autoconfiguration of DB Scheduler. Always off.
   executor-enabled: ${DB_SCHEDULER_EXECUTOR_ENABLED:true}
@@ -163,3 +166,4 @@ notify:
     backoff-delay-seconds: ${NOTIFY_CHECK_STATUS_BACKOFF_DELAY_SECONDS:3600s}
   templates:
     test-template: 5f740c1e-2ec5-411d-9291-edc5c6b35060
+    landlord-access-code-email-template: a90cbd48-cf67-41f5-82c2-cb0017c0cec2
