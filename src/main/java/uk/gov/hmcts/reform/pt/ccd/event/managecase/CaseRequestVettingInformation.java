@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.pages.caserequestvettinginfo.CaseRequestVettingInformationConfigurer;
-import uk.gov.hmcts.reform.pt.util.AddressFormatter;
-import uk.gov.hmcts.reform.pt.util.CaseFormatter;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.CASE_ISSUED;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.CASE_PROGRESSION;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CASE_REQUEST_VETTING_INFORMATION;
 
 @Component
@@ -28,7 +28,7 @@ public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, U
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         Event.EventBuilder<PTCase, UserRole, State> eventBuilder = configBuilder
             .decentralisedEvent(CASE_REQUEST_VETTING_INFORMATION.getId(), this::submit)
-            .forState(State.CASE_ISSUED)
+            .forStateTransition(CASE_ISSUED, CASE_PROGRESSION)
             .name(CASE_REQUEST_VETTING_INFORMATION.getName())
             .description(CASE_REQUEST_VETTING_INFORMATION.getName())
             .grant(CRU, PT_CASE_WORKER)
@@ -38,8 +38,8 @@ public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, U
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> payload) {
+        // todo HDPD-1364 - send email
         return SubmitResponse.<State>builder()
-            .state(State.CASE_PROGRESSION)
             .confirmationBody(buildConfirmationBody(payload.caseReference(), payload.caseData()))
             .build();
     }
@@ -70,10 +70,8 @@ public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, U
             </a>
             """.formatted(
                 caseReference,
-                AddressFormatter.formatAddressWithoutCountry(
-                    ptCase.getPropertyDetails(),
-                    AddressFormatter.COMMA_DELIMITER),
-                CaseFormatter.formatCaseName(ptCase),
+                ptCase.getFormattedPropertyAddress(),
+                ptCase.getFormattedCaseName(),
                 caseReference);
     }
 }

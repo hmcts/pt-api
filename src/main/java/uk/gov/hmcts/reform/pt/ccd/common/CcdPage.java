@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.pt.ccd.common;
 import java.beans.Introspector;
 
 public abstract class CcdPage {
-    protected abstract String getPageKey();
-
-    protected static String derivePageKey(Class<? extends CcdPage> clazz) {
-        String pageKey = clazz.getSimpleName().replaceFirst("Page$", "");
+    protected String getPageKey() {
+        String pageKey = getClass().getSimpleName().replaceFirst("Page$", "");
         return Introspector.decapitalize(pageKey);
     }
 

@@ -7,10 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.common.PageBuilder;
-import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import uk.gov.hmcts.reform.pt.ccd.pages.caserequestvettinginfo.CaseRequestVettingInformationConfigurer;
@@ -39,30 +36,15 @@ class CaseRequestVettingInformationTest extends BaseEventTest {
     }
 
     @Test
-    void shouldReturnCaseProgressionStateAndConfirmationBodyOnSubmit() {
-        PropertyDetails propertyDetails = PropertyDetails.builder()
-            .addressLine1("10 High Street")
-            .postTown("London")
-            .postcode("SW1A 1AA")
-            .build();
-        PartyDetails landlordPartyDetails = PartyDetails.builder()
-            .firstName("John")
-            .lastName("Smith")
-            .build();
-        LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordPartyDetails)
-            .build();
-
+    void shouldReturnConfirmationBodyOnSubmit() {
         PTCase caseData = PTCase.builder()
-            .applicantFirstName("Jane")
-            .applicantLastName("Doe")
-            .propertyDetails(propertyDetails)
-            .landlordDetails(landlordDetails)
+            .formattedPropertyAddress("10 High Street, London, SW1A 1AA")
+            .formattedCaseName("Jane Doe vs John Smith")
             .build();
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
-        assertThat(result.getState()).isEqualTo(State.CASE_PROGRESSION);
+        assertThat(result.getState()).isNull();
         assertThat(result.getConfirmationBody())
             .contains("Vetting information requested")
             .contains("Case number: " + TEST_CASE_REFERENCE)

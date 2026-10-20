@@ -47,6 +47,9 @@ class PTCaseViewTest {
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
+        assertThat(result.getFormattedPropertyAddress())
+            .isEqualTo("10 Downing Street, Westminster, London, Greater London, SW1A 2AA");
+        assertThat(result.getFormattedCaseName()).isEqualTo("Jane Doe vs John Smith");
         assertThat(result.getPropertyDetails())
             .satisfies(address -> {
                 assertThat(address.getAddressLine1()).isEqualTo("10 Downing Street");
@@ -65,6 +68,8 @@ class PTCaseViewTest {
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
+        assertThat(result.getFormattedPropertyAddress()).isNull();
+        assertThat(result.getFormattedCaseName()).isEqualTo("Jane Doe vs John Smith");
         assertThat(result.getPropertyDetails()).isNull();
         assertLandlord(result, LandlordRepresentativeType.LETTING_AGENT);
     }
@@ -76,6 +81,8 @@ class PTCaseViewTest {
 
         assertThat(result.getApplicantFirstName()).isNull();
         assertThat(result.getApplicantLastName()).isNull();
+        assertThat(result.getFormattedPropertyAddress()).isNull();
+        assertThat(result.getFormattedCaseName()).isEmpty();
         assertThat(result.getPropertyDetails()).isNull();
         assertLandlord(result, LandlordRepresentativeType.REPRESENTATIVE);
     }
@@ -87,6 +94,9 @@ class PTCaseViewTest {
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
+        assertThat(result.getFormattedPropertyAddress())
+            .isEqualTo("10 Downing Street, Westminster, London, Greater London, SW1A 2AA");
+        assertThat(result.getFormattedCaseName()).isEmpty();
         assertThat(result.getLandlordDetails()).isNull();
         assertThat(result.getPropertyDetails())
             .satisfies(address -> {
@@ -101,6 +111,8 @@ class PTCaseViewTest {
 
         assertThat(result.getApplicantFirstName()).isNull();
         assertThat(result.getApplicantLastName()).isNull();
+        assertThat(result.getFormattedPropertyAddress()).isNull();
+        assertThat(result.getFormattedCaseName()).isEmpty();
         assertThat(result.getLandlordDetails()).isNull();
         assertThat(result.getPropertyDetails()).isNull();
     }

@@ -12,10 +12,8 @@ public class CcdConstants {
         """
         <p class="govuk-body">
             Case number: ${[CASE_REFERENCE]}<br/>
-            ${propertyDetails.addressLine1}, ${propertyDetails.addressLine2}, \
-            ${propertyDetails.postTown}, ${propertyDetails.county}, ${propertyDetails.postcode}<br/>
-            ${applicantFirstName} ${applicantLastName} vs ${landlordDetails.landlordPartyDetails.firstName} \
-            ${landlordDetails.landlordPartyDetails.lastName}
+            ${formattedPropertyAddress}<br/>
+            ${formattedCaseName}
         </p>
         """;
 }

@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SystemUserAccess;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.SuperUserAccess;
 
-import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 
@@ -129,11 +129,21 @@ public class PTCase {
     private TTL ttl;
 
     @CCD(
+        access = {CaseworkerAccess.class}
+    )
+    private String formattedPropertyAddress;
+
+    @CCD(
+        access = {CaseworkerAccess.class}
+    )
+    private String formattedCaseName;
+
+    @CCD(
         access = {CaseworkerAccess.class},
         typeOverride = FieldType.MultiSelectList,
         typeParameterOverride = "VettingInformationType"
     )
-    private List<VettingInformationType> vettingInfoRequested;
+    private Set<VettingInformationType> vettingInfoRequested;
 
     @CCD(
         typeOverride = FieldType.TextArea,
