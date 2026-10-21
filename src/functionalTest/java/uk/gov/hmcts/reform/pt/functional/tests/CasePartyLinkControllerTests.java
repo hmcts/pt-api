@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.pt.functional.tests;
 
+import io.restassured.http.ContentType;
 import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.annotations.Title;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
+import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -12,15 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
-import uk.gov.hmcts.reform.pt.ccd.CaseType;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
 import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
-import uk.gov.hmcts.reform.pt.functional.testutils.PayloadLoader;
+import uk.gov.hmcts.reform.pt.functional.testutils.CcdCaseCreator;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
-import uk.gov.hmcts.reform.pt.functional.testutils.RandomNumberUtil;
 import uk.gov.hmcts.reform.pt.functional.testutils.TestCaseCleanUp;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag("Functional")
@@ -32,37 +33,26 @@ class CasePartyLinkControllerTests extends BaseApi {
     @Steps
     ApiSteps apiSteps;
 
-    private static final Long caseId = RandomNumberUtil.generateRandomNumber(16);
-    private static final String caseType = CaseType.getCaseType();
     private static final String WRONG_CODE = "ABCDEFGHJKLM";
+    private static Long caseId;
     private static String landlordToken;
     private static String accessCode;
 
     @BeforeAll
     static void createCaseWithLandlordCode() {
-        ApiSteps steps = new ApiSteps();
-        for (String[] event : new String[][]{
-            {
-                "citizen-create-application",
-                "/payloads/citizenCreateApplication-submitEventCallbackRequest.json"
-            },
-            {
-                "citizen-update-application",
-                "/payloads/citizenUpdateApplication-withLandlord-submitEventCallbackRequest.json"
-            }
-        }) {
-            steps.requestIsPreparedWithAppropriateValues();
-            steps.theRequestContainsValidServiceToken(TestConstants.PT_API);
-            steps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.citizenUser);
-            steps.theRequestContainsIdempotencyKeyHeader();
-            steps.theRequestContainsTheQueryParameter("eventId", event[0]);
-            steps.theRequestContainsBody(
-                PayloadLoader.load(event[1], Map.of("caseTypeId", caseType, "caseId", caseId))
-            );
-            steps.callIsSubmittedToTheEndpoint("SubmitEventCallback", "POST");
-            steps.checkStatusCode(200);
-        }
+        // Create and update through the CCD data store so CCD has a case pointer and the right version
+        caseId = CcdCaseCreator.createCitizenCase(ApiSteps.citizenUserIdamToken, ApiSteps.ptApiS2sToken);
 
+        CcdCaseCreator.updateCitizenCase(caseId, "citizen-update-application",
+                         Map.of("landlordDetails", Map.of(
+                             "representativeType", "noLettingAgentOrRepresentative",
+                             "landlordPartyDetails", Map.of(
+                                 "firstName", "Larry",
+                                 "lastName", "Landlord",
+                                 "emailAddress", "simulate-delivered@notifications.service.gov.uk"))),
+                         ApiSteps.citizenUserIdamToken, ApiSteps.ptApiS2sToken);
+
+        ApiSteps steps = new ApiSteps();
         steps.requestIsPreparedWithAppropriateValues();
         steps.theRequestContainsValidServiceToken(TestConstants.PT_API);
         steps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.systemUser);
@@ -130,6 +120,23 @@ class CasePartyLinkControllerTests extends BaseApi {
 
     @AfterAll
     static void tearDown() {
+        String landlordId = SerenityRest.given()
+            .baseUri(System.getenv("IDAM_API_URL"))
+            .header(TestConstants.AUTHORIZATION, "Bearer " + landlordToken)
+            .get("/o/userinfo")
+            .then().extract().path("uid");
+
+        SerenityRest.given()
+            .baseUri(System.getenv("DATA_STORE_URL_BASE"))
+            .header(TestConstants.AUTHORIZATION, "Bearer " + ApiSteps.systemUserIdamToken)
+            .header(TestConstants.SERVICE_AUTHORIZATION, ApiSteps.ptApiS2sToken)
+            .contentType(ContentType.JSON)
+            .body(Map.of("case_users", List.of(Map.of(
+                "case_id", caseId.toString(),
+                "user_id", landlordId,
+                "case_role", "[DEFENDANT]"))))
+            .delete("/case-users");
+
         TestCaseCleanUp.deleteCase(caseId);
     }
 }
