@@ -6,10 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
@@ -23,6 +21,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,25 +36,17 @@ public class PTCaseEntity extends AuditableEntity {
     @Column(nullable = false, unique = true)
     private Long caseReference;
 
-    @Column(length = 100)
-    private String legislativeCountry;
-
-    @Column(length = 100)
-    private String status;
-
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private LandlordRepresentativeType landlordType;
+
+    private LocalDateTime applicationSubmittedDate;
+    private LocalDateTime caseIssuedDate;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
     private List<AddressEntity> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CaseEvidenceEntity> evidence = new ArrayList<>();
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -68,27 +59,13 @@ public class PTCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<DocumentEntity> documents = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<MarketRentCaseEntity> marketRentCases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<NoticeOfRentChangeEntity> noticeOfRentChanges = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<TenancyDetailsEntity> tenancyDetails = new ArrayList<>();
+    private MarketRentCaseEntity marketRentCase;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_type_id")
-    private CaseTypeEntity caseType;
 }

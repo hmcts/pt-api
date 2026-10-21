@@ -93,7 +93,7 @@ public class CasePartyService {
         setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);
         setIfNotNull(partyDetails.getPhoneNumber(), caseParty::setPhoneNumber);
         setIfNotNull(partyDetails.getOrganisationName(), caseParty::setOrganisationName);
-        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumber);
+        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumberForCommunications);
         casePartyRepository.save(caseParty);
 
         addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);
