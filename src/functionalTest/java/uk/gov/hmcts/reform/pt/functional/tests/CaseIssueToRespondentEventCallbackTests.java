@@ -37,9 +37,13 @@ class CaseIssueToRespondentEventCallbackTests extends BaseApi {
         submitEvent(caseId, "citizen-create-application",
                     "/payloads/citizenCreateApplication-submitEventCallbackRequest.json",
                     PtIdamTokenClient.UserType.citizenUser);
+        apiSteps.checkStatusCode(200);
+
         submitEvent(caseId, "citizen-update-application",
                     "/payloads/citizenUpdateApplication-withLandlord-submitEventCallbackRequest.json",
                     PtIdamTokenClient.UserType.citizenUser);
+        apiSteps.checkStatusCode(200);
+
         submitEvent(caseId, "case-issue-to-respondent",
                     "/payloads/caseIssueToRespondent-submitEventCallbackRequest.json",
                     PtIdamTokenClient.UserType.caseworkerUser);

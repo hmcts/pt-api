@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.service;
 
-import lombok.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class PartyAccessCodeLinkService {
         caseRoleAssignmentService.assignCaseRole(caseReference, idamUserId, UserRole.DEFENDANT);
     }
 
-    private static @NonNull CasePartyEntity getParty(PartyAccessCodeEntity accessCode) {
+    private static CasePartyEntity getParty(PartyAccessCodeEntity accessCode) {
         CasePartyEntity party = accessCode.getParty();
 
         // TODO: this check may need to be altered in future as

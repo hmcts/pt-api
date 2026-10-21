@@ -102,6 +102,15 @@ class LandlordAccessCodeNotificationTest {
         assertThat(capturedRequest().getPersonalisation()).containsEntry("propertyAddress", "");
     }
 
+    @Test
+    void shouldOmitMissingNamePartsFromTenantName() {
+        applicant.setFirstName(null);
+
+        notification.send(ptCase, applicant, landlord, ACCESS_CODE);
+
+        assertThat(capturedRequest().getPersonalisation()).containsEntry("tenantname", "Tenant");
+    }
+
     private NotificationRequest capturedRequest() {
         ArgumentCaptor<NotificationRequest> captor = ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationService).scheduleEmailNotification(captor.capture());

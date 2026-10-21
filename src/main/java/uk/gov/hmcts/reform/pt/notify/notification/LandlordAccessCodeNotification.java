@@ -27,7 +27,7 @@ public class LandlordAccessCodeNotification {
 
     public void send(PTCaseEntity ptCase, CasePartyEntity applicant, CasePartyEntity landlord, String accessCode) {
         Map<String, Object> personalisation = new HashMap<>();
-        personalisation.put("tenantname", applicant.getFirstName() + " " + applicant.getLastName());
+        personalisation.put("tenantname", fullName(applicant));
         personalisation.put("propertyAddress", formatAddress(applicant));
         personalisation.put("citizenDashboardUrl", frontendUrl);
         personalisation.put("caseReference", ptCase.getCaseReference().toString());
@@ -39,6 +39,12 @@ public class LandlordAccessCodeNotification {
             .personalisation(personalisation)
             .ptCase(ptCase)
             .build());
+    }
+
+    private String fullName(CasePartyEntity party) {
+        return Stream.of(party.getFirstName(), party.getLastName())
+            .filter(StringUtils::hasText)
+            .collect(Collectors.joining(" "));
     }
 
     private String formatAddress(CasePartyEntity applicant) {
