@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -33,6 +34,7 @@ public class BatchFetchConfigurationTest extends AbstractRepositoryTest<CasePart
     }
 
     @Test
+    @DisplayName("Should load lazy associations in batches rather than one query per owner")
     void lazyAssociationsAreLoadedInBatchesRatherThanOnePerOwner() {
         UUID idamId = UUID.randomUUID();
         for (int i = 0; i < CASE_COUNT; i++) {

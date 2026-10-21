@@ -54,6 +54,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     }
 
     @Test
+    @DisplayName("Should return case parties linked to an IDAM user")
     void findAllByIdamId_returnsList() {
         UUID idamId = UUID.randomUUID();
         saveCaseParty(1234567890123456L, idamId);
@@ -65,6 +66,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     }
 
     @Test
+    @DisplayName("Should return the user's case party for a case reference")
     void findByIdamIdAndCaseReference_returnsEntity_whenExists() {
         UUID idamId = UUID.randomUUID();
         long caseReference = 1234567890123456L;
@@ -80,6 +82,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     }
 
     @Test
+    @DisplayName("Should return application summaries for active cases and exclude cases pending disposal")
     void findActiveApplicationsByIdamId_bindsProjectionAndExcludesPendingDisposal() {
         UUID idamId = UUID.randomUUID();
         long activeReference = 1234567890123456L;
@@ -105,6 +108,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     }
 
     @Test
+    @DisplayName("Should return nothing when the case is pending disposal")
     void findByIdamIdAndCaseReference_returnsEmpty_whenPendingDisposal() {
         UUID idamId = UUID.randomUUID();
         long caseReference = 1234567890123456L;
