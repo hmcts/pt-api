@@ -1,0 +1,10 @@
+{
+  "landlordDetails": {
+    "representativeType": "noLettingAgentOrRepresentative",
+    "landlordPartyDetails": {
+      "firstName": "Larry",
+      "lastName": "Landlord",
+      "emailAddress": "simulate-delivered@notifications.service.gov.uk"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.service;
 
+import lombok.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,18 +47,7 @@ public class PartyAccessCodeLinkService {
             throw new AccessCodeExpiredException("Access code has expired");
         }
 
-        CasePartyEntity party = accessCode.getParty();
-
-        // TODO: this check may need to be altered in future as
-        //  LANDLORD_REPRESENTATIVE and LETTING_AGENT will be allowed to respond on the landlords behalf
-        if (party.getCasePartyRole() != PartyRole.LANDLORD) {
-            throw new InvalidAccessCodeException("Access code can only be used by the landlord on this case");
-        }
-
-        if (party.getIdamId() != null) {
-            // The party is already linked to an IDAM user signifying the code has been used
-            throw new AccessCodeAlreadyUsedException("This access code has already been used");
-        }
+        CasePartyEntity party = getParty(accessCode);
 
         boolean linkedElsewhere = party
             .getPtCase()
@@ -72,5 +62,21 @@ public class PartyAccessCodeLinkService {
         party.setIdamId(idamUserId);
         accessCode.setUsedAt(LocalDateTime.now(clock));
         caseRoleAssignmentService.assignCaseRole(caseReference, idamUserId, UserRole.DEFENDANT);
+    }
+
+    private static @NonNull CasePartyEntity getParty(PartyAccessCodeEntity accessCode) {
+        CasePartyEntity party = accessCode.getParty();
+
+        // TODO: this check may need to be altered in future as
+        //  LANDLORD_REPRESENTATIVE and LETTING_AGENT will be allowed to respond on the landlords behalf
+        if (party.getCasePartyRole() != PartyRole.LANDLORD) {
+            throw new InvalidAccessCodeException("Access code can only be used by the landlord on this case");
+        }
+
+        if (party.getIdamId() != null) {
+            // The party is already linked to an IDAM user signifying the code has been used
+            throw new AccessCodeAlreadyUsedException("This access code has already been used");
+        }
+        return party;
     }
 }

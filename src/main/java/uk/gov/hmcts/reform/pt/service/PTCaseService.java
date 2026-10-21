@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
+import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class PTCaseService {
     private final PTCaseRepository ptCaseRepository;
     private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
+    private final PartyAccessCodeRepository partyAccessCodeRepository;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
@@ -87,6 +89,7 @@ public class PTCaseService {
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
 
         caseApplicationRepository.deleteAll(caseApplicationRepository.findAllByCaseReference(caseReference));
+        partyAccessCodeRepository.deleteAll(partyAccessCodeRepository.findAllByPtCaseCaseReference(caseReference));
 
         ptCaseRepository.delete(ptCaseEntity);
     }

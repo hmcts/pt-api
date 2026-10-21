@@ -29,12 +29,14 @@ import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
+import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
+import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,9 @@ class PTCaseServiceTest {
 
     @Mock
     private CaseApplicationRepository caseApplicationRepository;
+
+    @Mock
+    private PartyAccessCodeRepository partyAccessCodeRepository;
 
     @Mock
     private CasePartyRepository casePartyRepository;
@@ -148,13 +153,16 @@ class PTCaseServiceTest {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
         List<CaseApplicationEntity> applications = List.of(CaseApplicationEntity.builder().build());
+        List<PartyAccessCodeEntity> accessCodes = List.of(PartyAccessCodeEntity.builder().build());
 
         when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
         when(caseApplicationRepository.findAllByCaseReference(caseReference)).thenReturn(applications);
+        when(partyAccessCodeRepository.findAllByPtCaseCaseReference(caseReference)).thenReturn(accessCodes);
 
         ptCaseService.deleteCase(caseReference);
 
         verify(caseApplicationRepository).deleteAll(applications);
+        verify(partyAccessCodeRepository).deleteAll(accessCodes);
         verify(ptCaseRepository).delete(ptCaseEntity);
     }
 

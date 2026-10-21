@@ -24,7 +24,7 @@ public class IssueToRespondentService {
     @Transactional
     public void issueToRespondent(long caseReference) {
         PTCaseEntity ptCase = ptCaseService.fetchCaseByCaseReference(caseReference)
-            .orElseThrow(() -> new CaseNotFoundException("No case found with reference " + caseReference));
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
 
         CasePartyEntity applicant = requireParty(ptCase, APPLICANT);
         CasePartyEntity landlord = requireParty(ptCase, LANDLORD);
