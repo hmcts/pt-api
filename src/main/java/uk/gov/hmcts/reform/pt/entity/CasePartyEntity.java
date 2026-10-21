@@ -59,7 +59,7 @@ public class CasePartyEntity extends AuditableEntity {
     private LocalDateTime dateOfBirth;
 
     @Column(length = 5)
-    private String referenceNumber;
+    private String referenceNumberForCommunications;
 
     private UUID idamId;
 
@@ -68,24 +68,9 @@ public class CasePartyEntity extends AuditableEntity {
     @Builder.Default
     private List<AddressEntity> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyAttributeEntity> attributeAssertions = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo contactByText;
-
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyEventEntity> events = new ArrayList<>();
-
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @Builder.Default
-    private List<CasePartyFlagEntity> flags = new ArrayList<>();
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
