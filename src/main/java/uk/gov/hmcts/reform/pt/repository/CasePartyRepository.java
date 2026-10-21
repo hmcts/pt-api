@@ -31,7 +31,25 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
     List<ApplicationSummary> findActiveApplicationsByIdamId(@Param("idamId") UUID idamId);
 
     @Query(value = """
-        SELECT cp.* FROM case_party cp
+        SELECT
+            cp.id,
+            cp.pt_case_id,
+            cp.first_name,
+            cp.last_name,
+            cp.organisation_name,
+            cp.phone_number,
+            cp.mobile_phone_number,
+            cp.email_address,
+            cp.date_of_birth,
+            cp.reference_number_for_communications,
+            cp.case_party_type_id,
+            cp.party_role,
+            cp.idam_id,
+            cp.contact_by_text,
+            cp.created_date,
+            cp.last_modified_date,
+            cp.last_modified_by
+        FROM case_party cp
         JOIN pt_case pc ON pc.id = cp.pt_case_id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
         WHERE cp.idam_id = :idamId
