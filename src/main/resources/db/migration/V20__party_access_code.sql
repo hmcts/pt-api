@@ -1,5 +1,5 @@
 -- Table for storing respondent access codes
-CREATE TABLE party_access_code (
+CREATE TABLE case_party_access_code (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     pt_case_id BIGINT NOT NULL REFERENCES pt_case (id),
     case_party_id BIGINT NOT NULL REFERENCES case_party (id),
@@ -11,5 +11,5 @@ CREATE TABLE party_access_code (
     last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_modified_by VARCHAR(100),
 
-    CONSTRAINT uq_party_access_code_case_party UNIQUE (case_party_id)
+    CONSTRAINT uq_case_party_access_code_case_party UNIQUE (case_party_id)
 );

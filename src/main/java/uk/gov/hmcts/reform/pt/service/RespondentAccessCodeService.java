@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+@RequiredArgsConstructor
 @Service
 public class RespondentAccessCodeService {
 
@@ -22,19 +24,8 @@ public class RespondentAccessCodeService {
     private final PasswordEncoder encoder;
     private final PartyAccessCodeRepository repository;
     private final Clock clock;
+    @Value("${access-code.validity}")
     private final Duration validity;
-
-    public RespondentAccessCodeService(AccessCodeGenerator generator,
-                                       PasswordEncoder encoder,
-                                       PartyAccessCodeRepository repository,
-                                       Clock clock,
-                                       @Value("${access-code.validity}") Duration validity) {
-        this.generator = generator;
-        this.encoder = encoder;
-        this.repository = repository;
-        this.clock = clock;
-        this.validity = validity;
-    }
 
     @Transactional
     public String createFor(PTCaseEntity ptCase, CasePartyEntity respondent) {

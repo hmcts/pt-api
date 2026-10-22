@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 public class PartyAccessCodeLinkService {
 
@@ -23,16 +25,6 @@ public class PartyAccessCodeLinkService {
     private final PasswordEncoder encoder;
     private final CaseRoleAssignmentService caseRoleAssignmentService;
     private final Clock clock;
-
-    public PartyAccessCodeLinkService(PartyAccessCodeRepository repository,
-                                      PasswordEncoder encoder,
-                                      CaseRoleAssignmentService caseRoleAssignmentService,
-                                      Clock clock) {
-        this.repository = repository;
-        this.encoder = encoder;
-        this.caseRoleAssignmentService = caseRoleAssignmentService;
-        this.clock = clock;
-    }
 
     @Transactional
     public void linkPartyByAccessCode(long caseReference, String enteredCode, UUID idamUserId) {

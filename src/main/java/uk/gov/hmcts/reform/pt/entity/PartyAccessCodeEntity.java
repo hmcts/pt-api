@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "party_access_code")
+@Table(name = "case_party_access_code")
 public class PartyAccessCodeEntity extends AuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
