@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -163,11 +162,9 @@ class PTCaseServiceTest {
         long caseReference = 1234567890123456L;
         ApplicationType applicationType = ApplicationType.CHALLENGE_RENT_INCREASE;
 
-        AddressEntity address = AddressEntity.builder().build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .id(1L)
-            .addresses(List.of(address))
             .ptCase(ptCaseEntity)
             .build();
 
@@ -237,7 +234,7 @@ class PTCaseServiceTest {
             .containsExactly("Jane", "Doe", "jane@example.com", "01111111111", "07777777777", "Test Company", "REF12");
 
         verify(casePartyRepository, times(3)).save(caseParty);
-        verify(addressService).updateAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
+        verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
         verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
@@ -538,7 +535,7 @@ class PTCaseServiceTest {
         ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
 
         ArgumentCaptor<PartyDetails> partyDetailsCaptor = ArgumentCaptor.forClass(PartyDetails.class);
-        verify(addressService).updateAddress(partyDetailsCaptor.capture(), eq(caseParty), eq(ptCaseEntity));
+        verify(addressService).updatePropertyAddress(partyDetailsCaptor.capture(), eq(caseParty), eq(ptCaseEntity));
         PartyDetails captured = partyDetailsCaptor.getValue();
         assertThat(captured.getAddressLine1()).isEqualTo("10 High Street");
         assertThat(captured.getAddressLine2()).isEqualTo("Flat 2");
@@ -562,7 +559,7 @@ class PTCaseServiceTest {
 
         ptCaseService.updatePropertyDetails(ptCase, ptCaseEntity, caseParty);
 
-        verify(addressService, never()).updateAddress(any(), any(), any());
+        verify(addressService, never()).updatePropertyAddress(any(), any(), any());
         verify(tenancyDetailsService, never()).updateWithPropertyDetails(any(), any());
         verify(marketRentCaseService, never()).updateWithPropertyDetails(any(), any());
         verify(documentService, never()).updateDocumentsForPropertyDetails(any(), any());

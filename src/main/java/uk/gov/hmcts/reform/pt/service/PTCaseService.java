@@ -205,7 +205,7 @@ public class PTCaseService {
             .county(propertyDetails.getCounty())
             .postcode(propertyDetails.getPostcode())
             .build();
-        addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);
+        addressService.updatePropertyAddress(partyDetails, caseParty, ptCaseEntity);
 
         tenancyDetailsService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         marketRentCaseService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);

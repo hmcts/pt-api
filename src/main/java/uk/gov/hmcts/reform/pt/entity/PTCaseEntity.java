@@ -43,10 +43,9 @@ public class PTCaseEntity extends AuditableEntity {
     private LocalDateTime applicationSubmittedDate;
     private LocalDateTime caseIssuedDate;
 
-    @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<AddressEntity> addresses = new ArrayList<>();
+    private CasePropertyAddress propertyAddress;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

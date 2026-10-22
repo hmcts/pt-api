@@ -5,9 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,19 +19,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "address")
-public class AddressEntity extends AuditableEntity {
+@Table(name = "case_property_address")
+public class CasePropertyAddress extends AuditableEntity {
     @Column(name = "address_line_1", length = 100)
     private String addressLine1;
 
     @Column(name = "address_line_2", length = 100)
     private String addressLine2;
 
-    @Column(name = "address_line_3", length = 100)
-    private String addressLine3;
-
     @Column(length = 100)
-    private String postTown;
+    private String townCity;
 
     @Column(length = 100)
     private String county;
@@ -40,16 +36,8 @@ public class AddressEntity extends AuditableEntity {
     @Column(name = "post_code", length = 10)
     private String postcode;
 
-    @Column(length = 100)
-    private String country;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_party_id", nullable = false)
-    @JsonBackReference
-    private CasePartyEntity party;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pt_case_id", nullable = false, unique = true)
     @JsonBackReference
     private PTCaseEntity ptCase;
 }
