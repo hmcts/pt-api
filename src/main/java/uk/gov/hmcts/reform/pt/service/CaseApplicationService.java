@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 import uk.gov.hmcts.reform.pt.mapper.ApplicationMapper;
-import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
+import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.util.CaseReferenceUtils;
 
 import java.util.List;
@@ -17,10 +17,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CaseApplicationService {
 
-    private final CaseApplicationRepository applicationRepository;
+    private final CasePartyRepository casePartyRepository;
 
     public List<ApplicationDto> getCasesForUser(UUID userId) {
-        return applicationRepository.findActiveByCasePartyIdamId(userId).stream()
+        return casePartyRepository.findActiveApplicationsByIdamId(userId).stream()
             .map(ApplicationMapper::toDto)
             .toList();
     }
@@ -30,7 +30,7 @@ public class CaseApplicationService {
             throw new InvalidCaseReferenceException(caseReference);
         }
 
-        return applicationRepository.findByPartyIdamIdAndCaseReference(caseReference, userId)
+        return casePartyRepository.findByIdamIdAndCaseReference(caseReference, userId)
             .map(ApplicationMapper::toEnrichedDto)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
     }

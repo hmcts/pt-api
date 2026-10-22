@@ -14,13 +14,10 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
-import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 
@@ -35,10 +32,8 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 public class PTCaseService {
 
     private final CasePartyService casePartyService;
-    private final CaseTypeService caseTypeService;
     private final TenancyDetailsService tenancyDetailsService;
     private final PTCaseRepository ptCaseRepository;
-    private final CaseApplicationRepository caseApplicationRepository;
     private final CasePartyRepository casePartyRepository;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
@@ -59,14 +54,9 @@ public class PTCaseService {
 
         tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), ptCaseEntity);
 
-        CasePartyEntity caseParty = casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
+        casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
 
-        CaseTypeEntity caseType = caseTypeService.getCaseTypeOrCreateIfNotExists(ptCase.getApplicationType());
-        CaseApplicationEntity application = CaseApplicationEntity.builder()
-            .caseParty(caseParty)
-            .caseType(caseType)
-            .build();
-        caseApplicationRepository.save(application);
+        marketRentCaseService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
     }
 
     @Transactional
@@ -79,8 +69,6 @@ public class PTCaseService {
     public void deleteCase(long caseReference) {
         PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
-
-        caseApplicationRepository.deleteAll(caseApplicationRepository.findAllByCaseReference(caseReference));
 
         ptCaseRepository.delete(ptCaseEntity);
     }
@@ -173,7 +161,10 @@ public class PTCaseService {
         }
 
         setIfNotNull(tenantDetails.getCompanyName(), caseParty::setOrganisationName);
-        setIfNotNull(tenantDetails.getReferenceNumberForCommunications(), caseParty::setReferenceNumber);
+        setIfNotNull(
+            tenantDetails.getReferenceNumberForCommunications(),
+            caseParty::setReferenceNumberForCommunications
+        );
         casePartyRepository.save(caseParty);
     }
 
