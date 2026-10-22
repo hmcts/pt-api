@@ -20,9 +20,11 @@ import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
+import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
@@ -35,6 +37,7 @@ public class PTCaseService {
     private final TenancyDetailsService tenancyDetailsService;
     private final PTCaseRepository ptCaseRepository;
     private final CasePartyRepository casePartyRepository;
+    private final PartyAccessCodeRepository partyAccessCodeRepository;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
@@ -59,6 +62,11 @@ public class PTCaseService {
         marketRentCaseService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
     }
 
+    @Transactional(readOnly = true)
+    public Optional<PTCaseEntity> fetchCaseByCaseReference(long caseReference) {
+        return ptCaseRepository.findByCaseReference(caseReference);
+    }
+
     @Transactional
     public void deleteDocumentsForCase(long caseReference) {
         documentService.findAllForCase(caseReference)
@@ -69,6 +77,8 @@ public class PTCaseService {
     public void deleteCase(long caseReference) {
         PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        partyAccessCodeRepository.deleteAll(partyAccessCodeRepository.findAllByPtCaseCaseReference(caseReference));
 
         ptCaseRepository.delete(ptCaseEntity);
     }
