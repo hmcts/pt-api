@@ -48,7 +48,8 @@ class AddressServiceTest {
 
         addressService.updatePropertyAddress(addressDetails, caseParty, ptCaseEntity);
 
-        ArgumentCaptor<CasePropertyAddressEntity> propertyCaptor = ArgumentCaptor.forClass(CasePropertyAddressEntity.class);
+        ArgumentCaptor<CasePropertyAddressEntity> propertyCaptor =
+            ArgumentCaptor.forClass(CasePropertyAddressEntity.class);
         verify(casePropertyAddressRepository).save(propertyCaptor.capture());
         CasePropertyAddressEntity propertyAddress = propertyCaptor.getValue();
 
