@@ -21,9 +21,9 @@ import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -443,7 +443,7 @@ class ApplicationMapperTest {
             .sharePropertyWithLandlordDetails("No sharing")
             .build();
 
-        CasePropertyAddress address = CasePropertyAddress.builder()
+        CasePropertyAddressEntity address = CasePropertyAddressEntity.builder()
             .addressLine1("123 Test Street")
             .addressLine2("Apt 4")
             .townCity("Manchester")
@@ -467,7 +467,7 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenTenancyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .propertyAddress(CasePropertyAddress.builder().build())
+            .propertyAddress(CasePropertyAddressEntity.builder().build())
             .marketRentCase(MarketRentCaseEntity.builder().build())
             .build();
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
@@ -480,7 +480,7 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .propertyAddress(CasePropertyAddress.builder().build())
+            .propertyAddress(CasePropertyAddressEntity.builder().build())
             .marketRentCase(MarketRentCaseEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().build())
                 .build())
@@ -888,7 +888,7 @@ class ApplicationMapperTest {
         PartyRole agentRole = PartyRole.LETTING_AGENT;
         PartyRole repRole = PartyRole.LANDLORD_REPRESENTATIVE;
 
-        CasePartyAddress landlordAddress = CasePartyAddress.builder()
+        CasePartyAddressEntity landlordAddress = CasePartyAddressEntity.builder()
             .addressLine1("1 Landlord Way")
             .addressLine2("Somewhere")
             .townCity("London")
@@ -961,16 +961,16 @@ class ApplicationMapperTest {
         assertThat(ApplicationMapper.mapParty(null)).isNull();
     }
 
-    private static CasePropertyAddress propertyAddress(String postcode) {
-        return CasePropertyAddress.builder()
+    private static CasePropertyAddressEntity propertyAddress(String postcode) {
+        return CasePropertyAddressEntity.builder()
             .addressLine1("123 Test St")
             .townCity("London")
             .postcode(postcode)
             .build();
     }
 
-    private static CasePartyAddress partyAddress(String postcode) {
-        return CasePartyAddress.builder()
+    private static CasePartyAddressEntity partyAddress(String postcode) {
+        return CasePartyAddressEntity.builder()
             .addressLine1("123 Test St")
             .townCity("London")
             .postcode(postcode)
@@ -1008,7 +1008,7 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static PTCaseEntity ptCase(CasePropertyAddress propertyAddress, TenancyDetailsEntity tenancyDetails) {
+    private static PTCaseEntity ptCase(CasePropertyAddressEntity propertyAddress, TenancyDetailsEntity tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .createdDate(CREATED_DATE)
@@ -1031,7 +1031,7 @@ class ApplicationMapperTest {
         PTCaseEntity ptCase,
         UUID idamId,
         YesOrNo contactByText,
-        CasePartyAddress address
+        CasePartyAddressEntity address
     ) {
         return CasePartyEntity.builder()
             .firstName(FIRST_NAME)

@@ -45,7 +45,7 @@ public class PTCaseEntity extends AuditableEntity {
 
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private CasePropertyAddress propertyAddress;
+    private CasePropertyAddressEntity propertyAddress;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

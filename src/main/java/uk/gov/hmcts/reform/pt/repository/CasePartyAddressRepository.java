@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.pt.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 
-public interface CasePartyAddressRepository extends JpaRepository<CasePartyAddress, Long> {
+public interface CasePartyAddressRepository extends JpaRepository<CasePartyAddressEntity, Long> {
 }

@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "case_property_address")
-public class CasePropertyAddress extends AuditableEntity {
+public class CasePropertyAddressEntity extends AuditableEntity {
     @Column(name = "address_line_1", length = 100)
     private String addressLine1;
 

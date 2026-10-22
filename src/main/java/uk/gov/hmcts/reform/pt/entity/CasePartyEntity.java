@@ -66,7 +66,7 @@ public class CasePartyEntity extends AuditableEntity {
 
     @OneToOne(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private CasePartyAddress address;
+    private CasePartyAddressEntity address;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

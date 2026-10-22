@@ -8,9 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePropertyAddressRepository;
@@ -48,9 +48,9 @@ class AddressServiceTest {
 
         addressService.updatePropertyAddress(addressDetails, caseParty, ptCaseEntity);
 
-        ArgumentCaptor<CasePropertyAddress> propertyCaptor = ArgumentCaptor.forClass(CasePropertyAddress.class);
+        ArgumentCaptor<CasePropertyAddressEntity> propertyCaptor = ArgumentCaptor.forClass(CasePropertyAddressEntity.class);
         verify(casePropertyAddressRepository).save(propertyCaptor.capture());
-        CasePropertyAddress propertyAddress = propertyCaptor.getValue();
+        CasePropertyAddressEntity propertyAddress = propertyCaptor.getValue();
 
         assertThat(propertyAddress.getAddressLine1()).isEqualTo("Line 1");
         assertThat(propertyAddress.getAddressLine2()).isEqualTo("Line 2");
@@ -60,9 +60,9 @@ class AddressServiceTest {
         assertThat(propertyAddress.getPtCase()).isEqualTo(ptCaseEntity);
         assertThat(ptCaseEntity.getPropertyAddress()).isEqualTo(propertyAddress);
 
-        ArgumentCaptor<CasePartyAddress> partyCaptor = ArgumentCaptor.forClass(CasePartyAddress.class);
+        ArgumentCaptor<CasePartyAddressEntity> partyCaptor = ArgumentCaptor.forClass(CasePartyAddressEntity.class);
         verify(casePartyAddressRepository).save(partyCaptor.capture());
-        CasePartyAddress partyAddress = partyCaptor.getValue();
+        CasePartyAddressEntity partyAddress = partyCaptor.getValue();
 
         assertThat(partyAddress.getAddressLine1()).isEqualTo("Line 1");
         assertThat(partyAddress.getAddressLine2()).isEqualTo("Line 2");
@@ -76,11 +76,11 @@ class AddressServiceTest {
     @Test
     @DisplayName("Should update the existing property address and party address")
     void updatePropertyAddressUpdatesExistingAddresses() {
-        CasePropertyAddress existingPropertyAddress = CasePropertyAddress.builder()
+        CasePropertyAddressEntity existingPropertyAddress = CasePropertyAddressEntity.builder()
             .addressLine1("Old property line 1")
             .postcode("OLD 1AA")
             .build();
-        CasePartyAddress existingPartyAddress = CasePartyAddress.builder()
+        CasePartyAddressEntity existingPartyAddress = CasePartyAddressEntity.builder()
             .addressLine1("Old party line 1")
             .postcode("OLD 1AA")
             .build();
@@ -122,9 +122,9 @@ class AddressServiceTest {
 
         addressService.updatePartyAddress(partyDetails, caseParty);
 
-        ArgumentCaptor<CasePartyAddress> captor = ArgumentCaptor.forClass(CasePartyAddress.class);
+        ArgumentCaptor<CasePartyAddressEntity> captor = ArgumentCaptor.forClass(CasePartyAddressEntity.class);
         verify(casePartyAddressRepository).save(captor.capture());
-        CasePartyAddress savedAddress = captor.getValue();
+        CasePartyAddressEntity savedAddress = captor.getValue();
 
         assertThat(savedAddress.getAddressLine1()).isEqualTo("Line 1");
         assertThat(savedAddress.getTownCity()).isEqualTo("Post town");
@@ -137,7 +137,7 @@ class AddressServiceTest {
     @Test
     @DisplayName("Should update the existing party address without touching the property address")
     void updatePartyAddressUpdatesExistingPartyAddress() {
-        CasePartyAddress existingAddress = CasePartyAddress.builder()
+        CasePartyAddressEntity existingAddress = CasePartyAddressEntity.builder()
             .addressLine1("Old line 1")
             .build();
         CasePartyEntity caseParty = CasePartyEntity.builder()

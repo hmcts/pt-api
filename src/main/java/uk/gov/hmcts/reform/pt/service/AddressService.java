@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
-import uk.gov.hmcts.reform.pt.entity.CasePartyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyAddress;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyAddressRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePropertyAddressRepository;
@@ -26,9 +26,9 @@ public class AddressService {
         CasePartyEntity caseParty,
         PTCaseEntity ptCaseEntity
     ) {
-        CasePropertyAddress propertyAddress = ptCaseEntity.getPropertyAddress();
+        CasePropertyAddressEntity propertyAddress = ptCaseEntity.getPropertyAddress();
         if (propertyAddress == null) {
-            propertyAddress = new CasePropertyAddress();
+            propertyAddress = new CasePropertyAddressEntity();
             ptCaseEntity.setPropertyAddress(propertyAddress);
         }
 
@@ -46,9 +46,9 @@ public class AddressService {
 
     @Transactional
     public void updatePartyAddress(PartyDetails partyDetails, CasePartyEntity caseParty) {
-        CasePartyAddress address = caseParty.getAddress();
+        CasePartyAddressEntity address = caseParty.getAddress();
         if (address == null) {
-            address = new CasePartyAddress();
+            address = new CasePartyAddressEntity();
             caseParty.setAddress(address);
         }
 
