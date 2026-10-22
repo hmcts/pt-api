@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
+import uk.gov.hmcts.reform.pt.entity.AbstractAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
@@ -32,11 +33,7 @@ public class AddressService {
             ptCaseEntity.setPropertyAddress(propertyAddress);
         }
 
-        setIfNotNull(addressDetails.getAddressLine1(), propertyAddress::setAddressLine1);
-        setIfNotNull(addressDetails.getAddressLine2(), propertyAddress::setAddressLine2);
-        setIfNotNull(addressDetails.getPostTown(), propertyAddress::setTownCity);
-        setIfNotNull(addressDetails.getCounty(), propertyAddress::setCounty);
-        setIfNotNull(addressDetails.getPostcode(), propertyAddress::setPostcode);
+        applyAddressDetails(addressDetails, propertyAddress);
         propertyAddress.setPtCase(ptCaseEntity);
 
         casePropertyAddressRepository.save(propertyAddress);
@@ -52,13 +49,17 @@ public class AddressService {
             caseParty.setAddress(address);
         }
 
-        setIfNotNull(partyDetails.getAddressLine1(), address::setAddressLine1);
-        setIfNotNull(partyDetails.getAddressLine2(), address::setAddressLine2);
-        setIfNotNull(partyDetails.getPostTown(), address::setTownCity);
-        setIfNotNull(partyDetails.getCounty(), address::setCounty);
-        setIfNotNull(partyDetails.getPostcode(), address::setPostcode);
+        applyAddressDetails(partyDetails, address);
         address.setParty(caseParty);
 
         casePartyAddressRepository.save(address);
+    }
+
+    private static void applyAddressDetails(PartyDetails addressDetails, AbstractAddressEntity address) {
+        setIfNotNull(addressDetails.getAddressLine1(), address::setAddressLine1);
+        setIfNotNull(addressDetails.getAddressLine2(), address::setAddressLine2);
+        setIfNotNull(addressDetails.getPostTown(), address::setTownCity);
+        setIfNotNull(addressDetails.getCounty(), address::setCounty);
+        setIfNotNull(addressDetails.getPostcode(), address::setPostcode);
     }
 }

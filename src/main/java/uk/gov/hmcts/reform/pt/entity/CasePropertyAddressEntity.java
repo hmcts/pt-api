@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.pt.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -20,22 +19,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "case_property_address")
-public class CasePropertyAddressEntity extends AuditableEntity {
-    @Column(name = "address_line_1", length = 100)
-    private String addressLine1;
-
-    @Column(name = "address_line_2", length = 100)
-    private String addressLine2;
-
-    @Column(length = 100)
-    private String townCity;
-
-    @Column(length = 100)
-    private String county;
-
-    @Column(name = "post_code", length = 10)
-    private String postcode;
-
+public class CasePropertyAddressEntity extends AbstractAddressEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id", nullable = false, unique = true)
     @JsonBackReference
