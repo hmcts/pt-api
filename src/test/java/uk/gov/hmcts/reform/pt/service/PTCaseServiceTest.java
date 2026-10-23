@@ -25,16 +25,15 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseApplicationEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.CaseTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
+import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
-import uk.gov.hmcts.reform.pt.repository.CaseApplicationRepository;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
+import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -66,10 +65,7 @@ class PTCaseServiceTest {
     private TenancyDetailsService tenancyDetailsService;
 
     @Mock
-    private CaseTypeService caseTypeService;
-
-    @Mock
-    private CaseApplicationRepository caseApplicationRepository;
+    private PartyAccessCodeRepository partyAccessCodeRepository;
 
     @Mock
     private CasePartyRepository casePartyRepository;
@@ -102,8 +98,6 @@ class PTCaseServiceTest {
 
         when(casePartyService.createApplicantCaseParty(any(), any(), any()))
             .thenReturn(CasePartyEntity.builder().build());
-        when(caseTypeService.getCaseTypeOrCreateIfNotExists(applicationType))
-            .thenReturn(CaseTypeEntity.builder().build());
         when(tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(
             eq(ASSURED_PERIODIC_TENANCY),
             any(PTCaseEntity.class))
@@ -124,7 +118,7 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
-        verify(caseApplicationRepository).save(any());
+        verify(marketRentCaseService).updateWithApplicationType(savedEntity, applicationType);
     }
 
     @Test
@@ -143,18 +137,18 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete the case applications and the case when the case exists")
-    void deleteCaseDeletesApplicationsAndCase() {
+    @DisplayName("Should delete the case when the case exists")
+    void deleteCaseDeletesCase() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
-        List<CaseApplicationEntity> applications = List.of(CaseApplicationEntity.builder().build());
+        List<PartyAccessCodeEntity> accessCodes = List.of(PartyAccessCodeEntity.builder().build());
 
         when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
-        when(caseApplicationRepository.findAllByCaseReference(caseReference)).thenReturn(applications);
+        when(partyAccessCodeRepository.findAllByPtCaseCaseReference(caseReference)).thenReturn(accessCodes);
 
         ptCaseService.deleteCase(caseReference);
 
-        verify(caseApplicationRepository).deleteAll(applications);
+        verify(partyAccessCodeRepository).deleteAll(accessCodes);
         verify(ptCaseRepository).delete(ptCaseEntity);
     }
 
@@ -168,7 +162,6 @@ class PTCaseServiceTest {
         assertThatThrownBy(() -> ptCaseService.deleteCase(caseReference))
             .isInstanceOf(CaseNotFoundException.class);
 
-        verify(caseApplicationRepository, times(0)).deleteAll(any());
         verify(ptCaseRepository, times(0)).delete(any());
     }
 
@@ -248,7 +241,7 @@ class PTCaseServiceTest {
                 CasePartyEntity::getPhoneNumber,
                 CasePartyEntity::getMobilePhoneNumber,
                 CasePartyEntity::getOrganisationName,
-                CasePartyEntity::getReferenceNumber)
+                CasePartyEntity::getReferenceNumberForCommunications)
             .containsExactly("Jane", "Doe", "jane@example.com", "01111111111", "07777777777", "Test Company", "REF12");
 
         verify(casePartyRepository, times(3)).save(caseParty);
@@ -430,7 +423,7 @@ class PTCaseServiceTest {
         ptCaseService.updateTenantDetails(ptCase, caseParty);
 
         assertThat(caseParty.getOrganisationName()).isEqualTo("ACME");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("12345");
+        assertThat(caseParty.getReferenceNumberForCommunications()).isEqualTo("12345");
         verify(casePartyRepository).save(caseParty);
     }
 
@@ -654,7 +647,7 @@ class PTCaseServiceTest {
     void updateTenantDetailsPreservesDetailsWhenNull() {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .organisationName("ExistingOrg")
-            .referenceNumber("EXISTING-REF")
+            .referenceNumberForCommunications("EXISTING-REF")
             .build();
         TenantDetails tenantDetails = TenantDetails.builder().build();
         PTCase ptCase = PTCase.builder()
@@ -664,7 +657,7 @@ class PTCaseServiceTest {
         ptCaseService.updateTenantDetails(ptCase, caseParty);
 
         assertThat(caseParty.getOrganisationName()).isEqualTo("ExistingOrg");
-        assertThat(caseParty.getReferenceNumber()).isEqualTo("EXISTING-REF");
+        assertThat(caseParty.getReferenceNumberForCommunications()).isEqualTo("EXISTING-REF");
         verify(casePartyRepository).save(caseParty);
     }
 
@@ -806,5 +799,30 @@ class PTCaseServiceTest {
             .isInstanceOf(IllegalArgumentException.class);
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should return the case when one exists for the case reference")
+    void fetchCaseByCaseReferenceReturnsCase() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCase = PTCaseEntity.builder().id(10L).caseReference(caseReference).build();
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCase));
+
+        Optional<PTCaseEntity> result = ptCaseService.fetchCaseByCaseReference(caseReference);
+
+        assertThat(result).containsSame(ptCase);
+    }
+
+    @Test
+    @DisplayName("Should return an empty Optional when no case exists for the case reference")
+    void fetchCaseByCaseReferenceReturnsEmptyWhenNotFound() {
+        long caseReference = 1234567890123456L;
+
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        Optional<PTCaseEntity> result = ptCaseService.fetchCaseByCaseReference(caseReference);
+
+        assertThat(result).isEmpty();
     }
 }

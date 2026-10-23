@@ -163,4 +163,13 @@ public class ApiSteps {
             SerenityRest.lastResponse().getBody().asString()
         );
     }
+
+    @Step("the request contains an IDAM token for a specific user")
+    public void theRequestContainsIdamToken(String userToken) {
+        request = request.header(TestConstants.AUTHORIZATION, "Bearer " + userToken);
+    }
+
+    public String theResponseBodyValue(String jsonPath) {
+        return response.then().extract().path(jsonPath);
+    }
 }
