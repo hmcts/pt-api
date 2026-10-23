@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum EmailTemplate {
-    TEST_TEMPLATE("test-template");
+    TEST_TEMPLATE("test-template"),
+    LANDLORD_ACCESS_CODE("landlord-access-code-email-template");
 
     private final String templateKey;
 }

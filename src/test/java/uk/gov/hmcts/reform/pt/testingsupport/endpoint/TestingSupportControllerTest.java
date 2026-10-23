@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticationFilter;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.pt.notify.service.NotificationService;
 import uk.gov.hmcts.reform.pt.notify.template.EmailTemplate;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
+import uk.gov.hmcts.reform.pt.service.RespondentAccessCodeService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -38,12 +40,14 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LANDLORD;
 
 @WebMvcTest(
     controllers = TestingSupportController.class,
@@ -85,6 +89,9 @@ class TestingSupportControllerTest {
 
     @MockitoBean
     private UpstreamThrottling upstreamThrottling;
+
+    @MockitoBean
+    private RespondentAccessCodeService respondentAccessCodeService;
 
     @Test
     @WithMockUser(authorities = SYSTEM_USER_ROLE)
@@ -246,5 +253,56 @@ class TestingSupportControllerTest {
                 .content(requestJson)
                 .with(csrf()))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(authorities = SYSTEM_USER_ROLE)
+    void shouldIssueLandlordAccessCodeForSystemUser() throws Exception {
+        PTCaseEntity ptCase = PTCaseEntity.builder().id(10L).caseReference(CASE_REFERENCE).build();
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .id(1L).ptCase(ptCase).casePartyRole(LANDLORD).build();
+        ptCase.getParties().add(landlord);
+        when(ptCaseService.fetchCaseByCaseReference(CASE_REFERENCE)).thenReturn(Optional.of(ptCase));
+        when(respondentAccessCodeService.createFor(ptCase, landlord)).thenReturn("ABCDEFGHJKLM");
+
+        mockMvc.perform(post("/testing-support/cases/{caseReference}/landlord-access-code", CASE_REFERENCE)
+                            .with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.accessCode").value("ABCDEFGHJKLM"));
+    }
+
+    @Test
+    @WithMockUser(authorities = SYSTEM_USER_ROLE)
+    void shouldReturnNotFoundWhenIssuingCodeForMissingCase() throws Exception {
+        when(ptCaseService.fetchCaseByCaseReference(CASE_REFERENCE)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/testing-support/cases/{caseReference}/landlord-access-code", CASE_REFERENCE)
+                            .with(csrf()))
+            .andExpect(status().isNotFound());
+
+        verifyNoInteractions(respondentAccessCodeService);
+    }
+
+    @Test
+    @WithMockUser(authorities = SYSTEM_USER_ROLE)
+    void shouldReturnConflictWhenCaseHasNoLandlord() throws Exception {
+        PTCaseEntity ptCase = PTCaseEntity.builder().id(10L).caseReference(CASE_REFERENCE).build();
+        when(ptCaseService.fetchCaseByCaseReference(CASE_REFERENCE)).thenReturn(Optional.of(ptCase));
+
+        mockMvc.perform(post("/testing-support/cases/{caseReference}/landlord-access-code", CASE_REFERENCE)
+                            .with(csrf()))
+            .andExpect(status().isConflict());
+
+        verifyNoInteractions(respondentAccessCodeService);
+    }
+
+    @Test
+    @WithMockUser(authorities = CITIZEN_ROLE)
+    void shouldReturnForbiddenWhenNonSystemUserIssuesCode() throws Exception {
+        mockMvc.perform(post("/testing-support/cases/{caseReference}/landlord-access-code", CASE_REFERENCE)
+                            .with(csrf()))
+            .andExpect(status().isForbidden());
+
+        verifyNoInteractions(respondentAccessCodeService);
     }
 }
