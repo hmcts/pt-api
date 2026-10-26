@@ -43,7 +43,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "java:S4502"})
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
@@ -52,6 +52,9 @@ public class SecurityConfiguration {
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
+            // CSRF protection is not needed: sessions are STATELESS and authentication is via
+            // bearer tokens (IDAM/S2S), not cookies, so there is no ambient credential for a
+            // cross-site request to exploit. java:S4502 suppressed accordingly.
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
 
