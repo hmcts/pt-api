@@ -8,10 +8,16 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
+import uk.gov.hmcts.reform.pt.ccd.CaseType;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
+import uk.gov.hmcts.reform.pt.functional.testutils.PayloadLoader;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
+import uk.gov.hmcts.reform.pt.functional.testutils.RandomNumberUtil;
+import uk.gov.hmcts.reform.pt.functional.testutils.TestCaseCleanUp;
+
+import java.util.Map;
 
 @Tag("Functional")
 @ExtendWith(SerenityJUnit5Extension.class)
@@ -30,6 +36,40 @@ class ApplicationsEndpointTests extends BaseApi {
         apiSteps.callIsSubmittedToTheEndpoint("Applications", "GET");
         apiSteps.checkStatusCode(200);
         apiSteps.theResponseBodyIsAnEmptyArray();
+    }
+
+    @Title("Applications Endpoint Tests - should return 200 and the user's application once a case has been created")
+    @Test
+    void applicationsEndpointTest200WithApplicationScenario() {
+        Long caseId = RandomNumberUtil.generateRandomNumber(16);
+        try {
+            String requestBody = PayloadLoader.load(
+                "/payloads/citizenCreateApplication-submitEventCallbackRequest.json",
+                Map.of("caseTypeId", CaseType.getCaseType(), "caseId", caseId)
+            );
+
+            apiSteps.requestIsPreparedWithAppropriateValues();
+            apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
+            apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.citizenUser);
+            apiSteps.theRequestContainsIdempotencyKeyHeader();
+            apiSteps.theRequestContainsTheQueryParameter("eventId", "citizen-create-application");
+            apiSteps.theRequestContainsBody(requestBody);
+            apiSteps.callIsSubmittedToTheEndpoint("SubmitEventCallback", "POST");
+            apiSteps.checkStatusCode(200);
+
+            apiSteps.requestIsPreparedWithAppropriateValues();
+            apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
+            apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.citizenUser);
+            apiSteps.callIsSubmittedToTheEndpoint("Applications", "GET");
+            apiSteps.checkStatusCode(200);
+            apiSteps.theResponseBodyMatchesTheExpectedResponse(
+                PayloadLoader.load(
+                    "/responses/getApplications-afterCitizenCreateApplicationResponse.json",
+                    Map.of("caseId", caseId)
+                ));
+        } finally {
+            TestCaseCleanUp.deleteCase(caseId);
+        }
     }
 
     @Title("Applications Endpoint Tests - should return 401 when the S2S token is invalid")
