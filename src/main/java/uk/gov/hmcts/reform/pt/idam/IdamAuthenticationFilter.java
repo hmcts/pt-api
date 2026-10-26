@@ -23,7 +23,7 @@ import java.util.Optional;
 @Component
 public class IdamAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> FILTER_PATHS = List.of("/ccd", "/callbacks", "/testing-support");
+    private static final List<String> FILTER_PATHS = List.of("/ccd", "/callbacks", "/testing-support", "/applications");
 
     private final IdamAuthenticator idamAuthenticator;
 
