@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.pt.entity.projection;
 
+import uk.gov.hmcts.reform.pt.ccd.domain.State;
+
 import java.time.LocalDateTime;
 
 public interface ApplicationSummary {
@@ -11,4 +13,6 @@ public interface ApplicationSummary {
     LocalDateTime getCreatedDate();
 
     LocalDateTime getSubmittedDate();
+
+    State getState();
 }

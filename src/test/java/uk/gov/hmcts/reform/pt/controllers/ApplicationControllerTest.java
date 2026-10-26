@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
@@ -61,6 +62,7 @@ class ApplicationControllerTest {
 
         ApplicationDto application = ApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
+            .state(State.CASE_ISSUED)
             .build();
 
         when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
@@ -72,7 +74,8 @@ class ApplicationControllerTest {
                             .header("ServiceAuthorization", S2S)
                             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE));
+            .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE))
+            .andExpect(jsonPath("$[0].state").value("CASE_ISSUED"));
 
         verify(idamAuthenticator).validateAuthToken(AUTH);
         verify(caseApplicationService).getCasesForUser(userId);

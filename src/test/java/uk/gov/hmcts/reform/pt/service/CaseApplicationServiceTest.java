@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.AddressEntity;
@@ -50,7 +51,8 @@ class CaseApplicationServiceTest {
         Long id,
         long caseReference,
         LocalDateTime createdDate,
-        LocalDateTime submittedDate
+        LocalDateTime submittedDate,
+        State state
     ) implements ApplicationSummary {
         @Override
         public Long getId() {
@@ -71,6 +73,11 @@ class CaseApplicationServiceTest {
         public LocalDateTime getSubmittedDate() {
             return submittedDate;
         }
+
+        @Override
+        public State getState() {
+            return state;
+        }
     }
 
     @Test
@@ -81,7 +88,8 @@ class CaseApplicationServiceTest {
         LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
 
         when(casePartyRepository.findActiveApplicationsByIdamId(userId))
-            .thenReturn(List.of(new Summary(1L, CASE_REFERENCE, created, submitted)));
+            .thenReturn(List.of(
+                new Summary(1L, CASE_REFERENCE, created, submitted, State.AWAITING_SUBMISSION_TO_HMCTS)));
 
         List<ApplicationDto> result = applicationService.getCasesForUser(userId);
 
@@ -89,6 +97,7 @@ class CaseApplicationServiceTest {
         assertThat(result.getFirst().getCaseReference()).isEqualTo(CASE_REFERENCE);
         assertThat(result.getFirst().getCreatedDate()).isEqualTo(created);
         assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
+        assertThat(result.getFirst().getState()).isEqualTo(State.AWAITING_SUBMISSION_TO_HMCTS);
 
         verify(casePartyRepository).findActiveApplicationsByIdamId(userId);
         verifyNoMoreInteractions(casePartyRepository);
