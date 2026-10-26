@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.pt.functional.config.Endpoints;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.testutils.JsonAssertUtils;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
-import uk.gov.hmcts.reform.pt.functional.testutils.ServiceAuthenticationGenerator;
 
 import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.annotations.Step;
@@ -16,38 +15,24 @@ import net.serenitybdd.annotations.Step;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.citizenUser;
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.systemUser;
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.caseworkerUser;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.caseworkerUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.citizenUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.ptApiS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.ptFrontendS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.systemUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.unauthorisedS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.TestConstants.BASE_URL;
+
 
 public class ApiSteps {
 
     private RequestSpecification request;
     private Response response;
-    private static final String baseUrl = System.getenv("TEST_URL");
-    public static String ptApiS2sToken;
-    private static String ptFrontendS2sToken;
-    private static String unauthorisedS2sToken;
-    public static String systemUserIdamToken;
-    public static String citizenUserIdamToken;
-    public static String caseworkerUserIdamToken;
-
-    @Step("Generate S2S and IDAM tokens")
-    public static void setUp() {
-        ServiceAuthenticationGenerator serviceAuthenticationGenerator = new ServiceAuthenticationGenerator();
-        ptApiS2sToken = serviceAuthenticationGenerator.generate();
-        ptFrontendS2sToken = serviceAuthenticationGenerator.generate(TestConstants.PT_FRONTEND);
-        unauthorisedS2sToken = serviceAuthenticationGenerator.generate(TestConstants.CIVIL_SERVICE);
-
-        systemUserIdamToken = PtIdamTokenClient.generateToken(systemUser);
-        citizenUserIdamToken = PtIdamTokenClient.generateToken(citizenUser);
-        caseworkerUserIdamToken = PtIdamTokenClient.generateToken(caseworkerUser);
-    }
 
     @Step("a request is prepared with appropriate values")
     public void requestIsPreparedWithAppropriateValues() {
         request = SerenityRest.given()
-            .baseUri(baseUrl)
+            .baseUri(BASE_URL)
             .contentType(ContentType.JSON);
     }
 

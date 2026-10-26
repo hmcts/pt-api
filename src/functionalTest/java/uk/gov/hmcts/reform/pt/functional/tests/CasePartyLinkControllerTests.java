@@ -16,7 +16,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
-import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
 import uk.gov.hmcts.reform.pt.functional.testutils.CcdCaseCreator;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
 import uk.gov.hmcts.reform.pt.functional.testutils.TestCaseCleanUp;
@@ -24,11 +23,15 @@ import uk.gov.hmcts.reform.pt.functional.testutils.TestCaseCleanUp;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.citizenUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.ptApiS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.systemUserIdamToken;
+
 @Tag("Functional")
 @ExtendWith(SerenityJUnit5Extension.class)
 @EnabledIfEnvironmentVariable(named = "CCD_ENABLED", matches = "true")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CasePartyLinkControllerTests extends BaseApi {
+class CasePartyLinkControllerTests {
 
     @Steps
     ApiSteps apiSteps;
@@ -41,7 +44,7 @@ class CasePartyLinkControllerTests extends BaseApi {
     @BeforeAll
     static void createCaseWithLandlordCode() {
         // Create and update through the CCD data store so CCD has a case pointer and the right version
-        caseId = CcdCaseCreator.createCitizenCase(ApiSteps.citizenUserIdamToken, ApiSteps.ptApiS2sToken);
+        caseId = CcdCaseCreator.createCitizenCase(citizenUserIdamToken, ptApiS2sToken);
 
         CcdCaseCreator.updateCitizenCase(caseId, "citizen-update-application",
                          Map.of("landlordDetails", Map.of(
@@ -50,7 +53,7 @@ class CasePartyLinkControllerTests extends BaseApi {
                                  "firstName", "Larry",
                                  "lastName", "Landlord",
                                  "emailAddress", "simulate-delivered@notifications.service.gov.uk"))),
-                         ApiSteps.citizenUserIdamToken, ApiSteps.ptApiS2sToken);
+                         citizenUserIdamToken, ptApiS2sToken);
 
         ApiSteps steps = new ApiSteps();
         steps.requestIsPreparedWithAppropriateValues();
@@ -128,8 +131,8 @@ class CasePartyLinkControllerTests extends BaseApi {
 
         SerenityRest.given()
             .baseUri(System.getenv("DATA_STORE_URL_BASE"))
-            .header(TestConstants.AUTHORIZATION, "Bearer " + ApiSteps.systemUserIdamToken)
-            .header(TestConstants.SERVICE_AUTHORIZATION, ApiSteps.ptApiS2sToken)
+            .header(TestConstants.AUTHORIZATION, "Bearer " + systemUserIdamToken)
+            .header(TestConstants.SERVICE_AUTHORIZATION, ptApiS2sToken)
             .contentType(ContentType.JSON)
             .body(Map.of("case_users", List.of(Map.of(
                 "case_id", caseId.toString(),
