@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.ValidateAccessCodeRequestDto;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
+import uk.gov.hmcts.reform.pt.idam.UserInfo;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PartyAccessCodeLinkService;
 
 import java.util.UUID;
@@ -20,17 +21,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CasePartyLinkController {
 
-    private final IdamAuthenticator idamAuthenticator;
     private final PartyAccessCodeLinkService linkService;
+    private final SecurityContextService securityContextService;
 
     @PostMapping("/{caseReference}/validate-access-code")
     public ResponseEntity<Void> validateAccessCode(
         @PathVariable long caseReference,
         @Valid @RequestBody ValidateAccessCodeRequestDto request,
-        @RequestHeader("Authorization") String authorization) {
+        @RequestHeader("Authorization") String authorization,
+        @RequestHeader("ServiceAuthorization") String s2sToken) {
 
-        UUID userId = UUID.fromString(idamAuthenticator.validateAuthToken(authorization).getUserDetails().getUid());
-        linkService.linkPartyByAccessCode(caseReference, request.getAccessCode(), userId);
+        UserInfo userInfo = securityContextService.getCurrentUserDetails();
+
+        linkService.linkPartyByAccessCode(caseReference, request.getAccessCode(), UUID.fromString(userInfo.getUid()));
         return ResponseEntity.ok().build();
     }
 }

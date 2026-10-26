@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.exception.InvalidAccessCodeException;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
-import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.PartyAccessCodeLinkService;
 
 import java.util.UUID;
@@ -36,7 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class CasePartyLinkControllerTest {
 
-    private static final String AUTH = "Bearer token";
+    private static final String IDAM_TOKEN = "Bearer idam-token";
+    private static final String S2S_TOKEN = "Bearer s2s-token";
     private static final long CASE_REFERENCE = 1234567890123456L;
     private static final String URL = "/cases/" + CASE_REFERENCE + "/validate-access-code";
     private static final UUID USER_ID = UUID.randomUUID();
@@ -48,6 +49,9 @@ class CasePartyLinkControllerTest {
     private IdamAuthenticator idamAuthenticator;
 
     @MockitoBean
+    SecurityContextService securityContextService;
+
+    @MockitoBean
     private UpstreamThrottling upstreamThrottling;
 
     @MockitoBean
@@ -56,7 +60,8 @@ class CasePartyLinkControllerTest {
     @BeforeEach
     void setUp() {
         UserInfo userInfo = UserInfo.builder().uid(USER_ID.toString()).build();
-        when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(new User(AUTH, userInfo));
+        when(securityContextService.getCurrentUserDetails())
+            .thenReturn(UserInfo.builder().uid(userInfo.getUid()).build());
     }
 
     @Test
@@ -105,7 +110,8 @@ class CasePartyLinkControllerTest {
 
     private ResultActions postCode(String code) throws Exception {
         return mockMvc.perform(post(URL)
-                                   .header("Authorization", AUTH)
+                                   .header("Authorization", IDAM_TOKEN)
+                                   .header("ServiceAuthorization", S2S_TOKEN)
                                    .contentType(MediaType.APPLICATION_JSON)
                                    .content("{\"accessCode\":\"" + code + "\"}"));
     }
