@@ -75,7 +75,7 @@ public class DocumentService {
     public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
         this.updateMultipleDocuments(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
-            details.getSuggestedMarketRentEvidenceDocuments(),
+            details.getSuggestedMarketRentEvidence(),
             ptCaseEntity
         );
     }

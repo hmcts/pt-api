@@ -34,7 +34,7 @@ public class MarketRentDetails {
         access = {CitizenAccess.class}
     )
     @Builder.Default
-    private List<ListValue<UploadedDocument>> suggestedMarketRentEvidenceDocuments = new ArrayList<>();
+    private List<ListValue<UploadedDocument>> suggestedMarketRentEvidence = new ArrayList<>();
 
     @CCD(
         label = "Have any additional property information to consider when determining rent",

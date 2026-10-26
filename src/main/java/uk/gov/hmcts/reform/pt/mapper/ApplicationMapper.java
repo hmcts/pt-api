@@ -235,7 +235,7 @@ public class ApplicationMapper {
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
             .applicantSuggestedMarketRentReasons(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
-            .suggestedMarketRentEvidenceDocuments(
+            .suggestedMarketRentEvidence(
                 findDocumentsOfTypeAndMap(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity))
             .additionalPropertyInfoToConsiderWhenDetermining(
                 get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))

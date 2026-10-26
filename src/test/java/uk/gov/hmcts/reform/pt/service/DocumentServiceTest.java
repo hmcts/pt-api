@@ -388,7 +388,7 @@ class DocumentServiceTest {
             .build();
 
         MarketRentDetails details = MarketRentDetails.builder()
-            .suggestedMarketRentEvidenceDocuments(List.of(new ListValue<>("1", rentDoc)))
+            .suggestedMarketRentEvidence(List.of(new ListValue<>("1", rentDoc)))
             .build();
 
         documentService.updateDocumentsForMarketRentDetails(details, ptCase);

@@ -692,8 +692,8 @@ class ApplicationMapperTest {
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
             .isEqualTo("Renovations");
-        assertThat(result.getSuggestedMarketRentEvidenceDocuments()).hasSize(1);
-        DocumentDto evidence = result.getSuggestedMarketRentEvidenceDocuments().getFirst();
+        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
+        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
         assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
         assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
@@ -722,7 +722,7 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidenceDocuments()).isEmpty();
+        assertThat(result.getSuggestedMarketRentEvidence()).isEmpty();
     }
 
     @Test
@@ -758,8 +758,8 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isNull();
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isNull();
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidenceDocuments()).hasSize(1);
-        DocumentDto evidence = result.getSuggestedMarketRentEvidenceDocuments().getFirst();
+        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
+        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
         assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
         assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
@@ -1123,7 +1123,7 @@ class ApplicationMapperTest {
                 MarketRentDto.builder()
                     .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                     .applicantSuggestedMarketRentReasons("Market rate for the area")
-                    .suggestedMarketRentEvidenceDocuments(List.of())
+                    .suggestedMarketRentEvidence(List.of())
                     .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
                     .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
                     .build())

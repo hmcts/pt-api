@@ -13,7 +13,7 @@ public class MarketRentDto {
     private BigDecimal applicantSuggestedMarketRent;
     private String applicantSuggestedMarketRentReasons;
 
-    private List<DocumentDto> suggestedMarketRentEvidenceDocuments;
+    private List<DocumentDto> suggestedMarketRentEvidence;
 
     private YesOrNo additionalPropertyInfoToConsiderWhenDetermining;
     private String additionalPropertyInfoToConsiderWhenDeterminingDetails;
