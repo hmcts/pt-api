@@ -64,7 +64,7 @@ class SecurityConfigurationIT {
     private SecurityContextService securityContextService;
 
     /**
-     * Need these because @WebMvcTest won't find them and they are used in the ApplicationController's ctor
+     * Need these because @WebMvcTest won't find them and they are used in the ApplicationController's ctor.
      */
     @MockitoBean
     private CaseApplicationService caseApplicationService;
