@@ -23,4 +23,9 @@ public class TenantDetails {
         access = {CitizenAccess.class}
     )
     private String referenceNumberForCommunications;
+
+    @CCD(
+        label = "Applicant/Tenant's PCQ ID"
+    )
+    private String pcqId;
 }

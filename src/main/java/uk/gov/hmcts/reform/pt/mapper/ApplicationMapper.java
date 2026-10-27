@@ -84,6 +84,7 @@ public class ApplicationMapper {
             .lastName(caseParty.getLastName())
             .companyName(caseParty.getOrganisationName())
             .referenceNumberForCommunications(caseParty.getReferenceNumberForCommunications())
+            .pcqId(caseParty.getPcqId())
             .build();
     }
 
@@ -294,6 +295,7 @@ public class ApplicationMapper {
             .emailAddress(entity.getEmailAddress())
             .phoneNumber(entity.getPhoneNumber())
             .dxNumber(entity.getReferenceNumberForCommunications())
+            .pcqId(entity.getPcqId())
             .addressLine1(get(address, AddressEntity::getAddressLine1))
             .addressLine2(get(address, AddressEntity::getAddressLine2))
             .postTown(get(address, AddressEntity::getPostTown))

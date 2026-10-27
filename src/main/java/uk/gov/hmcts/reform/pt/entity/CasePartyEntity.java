@@ -63,6 +63,8 @@ public class CasePartyEntity extends AuditableEntity {
 
     private UUID idamId;
 
+    private UUID pcqId;
+
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
