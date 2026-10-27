@@ -105,7 +105,7 @@ ccd:
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
         CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_PT: https://${SERVICE_FQDN}
-        DATA_STORE_S2S_AUTHORISED_SERVICES: "ccd_data,ccd_gw,xui_webapp,ccd_case_document_am_api,acc_manage_case_assignment,pt_api,pt_frontend"
+        DATA_STORE_S2S_AUTHORISED_SERVICES: "ccd_data,ccd_gw,xui_webapp,ccd_case_document_am_api,pt_api,pt_frontend"
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://{{ .Release.Name }}-es-master:9200"
         ELASTIC_SEARCH_HOSTS: "http://{{ .Release.Name }}-es-master:9200"
