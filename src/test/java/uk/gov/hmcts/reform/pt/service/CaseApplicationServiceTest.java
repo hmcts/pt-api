@@ -9,8 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -150,7 +150,7 @@ class CaseApplicationServiceTest {
     private CasePartyEntity createApplicantCaseParty(long caseReference, UUID userId) {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
-            .addresses(List.of(AddressEntity.builder().postcode("AB12 3CD").build()))
+            .propertyAddress(CasePropertyAddressEntity.builder().postcode("AB12 3CD").build())
             .marketRentCase(MarketRentCaseEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build())
                 .build())
