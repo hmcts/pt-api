@@ -37,6 +37,7 @@ public class ApplicationMapper {
             .caseReference(summary.getCaseReference())
             .createdDate(summary.getCreatedDate())
             .submittedOn(summary.getSubmittedDate())
+            .state(summary.getState())
             .build();
     }
 
