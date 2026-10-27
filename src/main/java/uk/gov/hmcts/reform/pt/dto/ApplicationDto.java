@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.pt.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.pt.ccd.domain.State;
 
 import java.time.LocalDateTime;
 
@@ -11,4 +12,5 @@ public class ApplicationDto {
     private long caseReference;
     private LocalDateTime createdDate;
     private LocalDateTime submittedOn;
+    private State state;
 }

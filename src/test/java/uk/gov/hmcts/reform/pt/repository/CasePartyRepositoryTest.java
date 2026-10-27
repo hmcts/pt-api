@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
@@ -105,6 +106,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         assertThat(summary.getId()).isNotNull();
         assertThat(summary.getCreatedDate()).isNotNull();
         assertThat(summary.getSubmittedDate()).isEqualTo(submittedDate);
+        assertThat(summary.getState()).isEqualTo(State.AWAITING_SUBMISSION_TO_HMCTS);
     }
 
     @Test
