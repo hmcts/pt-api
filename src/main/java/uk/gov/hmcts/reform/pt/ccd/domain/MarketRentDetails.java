@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -29,7 +33,8 @@ public class MarketRentDetails {
         label = "Evidence supporting proposed rent",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument suggestedMarketRentEvidence;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> suggestedMarketRentEvidence = new ArrayList<>();
 
     @CCD(
         label = "Have any additional property information to consider when determining rent",
