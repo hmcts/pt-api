@@ -6,11 +6,10 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.CurrentAndMarketRentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
-import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
@@ -64,8 +63,7 @@ public class ApplicationMapper {
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase))
-            .currentRentsDetails(mapCurrentRentDetails(ptCase))
-            .marketRentDetails(mapMarketRentDetails(ptCase))
+            .currentAndMarketRentDetails(mapCurrentAndMarketRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
             .createdDate(ptCase.getCreatedDate())
             .build();
@@ -175,7 +173,7 @@ public class ApplicationMapper {
             .build();
     }
 
-    public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
+    public static CurrentAndMarketRentDetailsDto mapCurrentAndMarketRentDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
@@ -183,7 +181,7 @@ public class ApplicationMapper {
             return null;
         }
 
-        return CurrentRentsDetailsDto.builder()
+        return CurrentAndMarketRentDetailsDto.builder()
             .tribunalPreviouslyDeterminedTenancyRent(
                 get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
             .previousTribunalCaseReference(
@@ -222,16 +220,6 @@ public class ApplicationMapper {
                 get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
             .otherHouseholdManagementChargesDetails(
                 get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
-            .build();
-    }
-
-    public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        if (marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
-            return null;
-        }
-
-        return MarketRentDto.builder()
             .applicantSuggestedMarketRent(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
             .applicantSuggestedMarketRentReasons(

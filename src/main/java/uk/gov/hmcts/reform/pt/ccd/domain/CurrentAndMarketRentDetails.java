@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrentRentDetails {
+public class CurrentAndMarketRentDetails {
     @CCD(
         label = "Tribunal previously determined tenancy rent",
         access = {CitizenAccess.class}
@@ -192,4 +192,34 @@ public class CurrentRentDetails {
         access = {CitizenAccess.class}
     )
     private String otherHouseholdManagementChargesDetails;
+
+    @CCD(
+        label = "Applicant's suggested market rent",
+        access = {CitizenAccess.class}
+    )
+    private Double applicantSuggestedMarketRent;
+
+    @CCD(
+        label = "Applicant's suggested market rent reasons",
+        access = {CitizenAccess.class}
+    )
+    private String applicantSuggestedMarketRentReasons;
+
+    @CCD(
+        label = "Evidence supporting proposed rent",
+        access = {CitizenAccess.class}
+    )
+    private UploadedDocument suggestedMarketRentEvidence;
+
+    @CCD(
+        label = "Have any additional property information to consider when determining rent",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo additionalInfoToConsiderWhenDeterminingRent;
+
+    @CCD(
+        label = "Additional property information to consider when determining rent details",
+        access = {CitizenAccess.class}
+    )
+    private String additionalInfoToConsiderWhenDeterminingRentDetails;
 }

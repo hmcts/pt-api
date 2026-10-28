@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -42,7 +41,7 @@ public class MarketRentCaseService {
     }
 
     @Transactional
-    public void updateWithCurrentRentDetails(PTCaseEntity ptCaseEntity, CurrentRentDetails details) {
+    public void updateWithCurrentAndMarketRentDetails(PTCaseEntity ptCaseEntity, CurrentAndMarketRentDetails details) {
         MarketRentCaseEntity marketRentCase = findOrBuildMarketRentCase(ptCaseEntity);
         setIfNotNull(details.getRentPaymentFrequency(), marketRentCase::setRentPaymentFrequency);
         setIfNotNull(toBigDecimal(details.getRentCostWeekly()), marketRentCase::setRentCostWeekly);
@@ -94,13 +93,6 @@ public class MarketRentCaseService {
             details.getVaryingAdditionalRentalServiceChargesDetails(),
             marketRentCase::setVaryingAdditionalRentalServiceChargesDetails
         );
-
-        marketRentCaseRepository.save(marketRentCase);
-    }
-
-    @Transactional
-    public void updateWithMarketRentDetails(PTCaseEntity ptCaseEntity, MarketRentDetails details) {
-        MarketRentCaseEntity marketRentCase = findOrBuildMarketRentCase(ptCaseEntity);
         setIfNotNull(
             toBigDecimal(details.getApplicantSuggestedMarketRent()),
             marketRentCase::setApplicantSuggestedMarketRent

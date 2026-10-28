@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class CurrentRentsDetailsDto {
+public class CurrentAndMarketRentDetailsDto {
     private YesOrNo tribunalPreviouslyDeterminedTenancyRent;
     private String previousTribunalCaseReference;
 
@@ -47,4 +47,12 @@ public class CurrentRentsDetailsDto {
 
     private YesOrNo anyOtherHouseholdManagementCharges;
     private String otherHouseholdManagementChargesDetails;
+
+    private BigDecimal applicantSuggestedMarketRent;
+    private String applicantSuggestedMarketRentReasons;
+
+    private DocumentDto suggestedMarketRentEvidence;
+
+    private YesOrNo additionalPropertyInfoToConsiderWhenDetermining;
+    private String additionalPropertyInfoToConsiderWhenDeterminingDetails;
 }
