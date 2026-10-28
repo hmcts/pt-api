@@ -37,6 +37,7 @@ public class ApplicationMapper {
             .caseReference(summary.getCaseReference())
             .createdDate(summary.getCreatedDate())
             .submittedOn(summary.getSubmittedDate())
+            .state(summary.getState())
             .build();
     }
 
@@ -236,7 +237,7 @@ public class ApplicationMapper {
             .applicantSuggestedMarketRentReasons(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
-                findDocumentOfTypeAndMap(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity))
+                findDocumentsOfTypeAndMap(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity))
             .additionalPropertyInfoToConsiderWhenDetermining(
                 get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
