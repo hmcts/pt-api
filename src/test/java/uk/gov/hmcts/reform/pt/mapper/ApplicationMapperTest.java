@@ -308,7 +308,7 @@ class ApplicationMapperTest {
                 .size(1024L)
                 .build()
         );
-        assertThat(result.getNoticeNotLegallyValidDocument()).isEqualTo(
+        assertThat(result.getNoticeNotLegallyValidDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/2")
                 .binaryUrl("http://dm-store/doc/2/binary")
@@ -342,7 +342,7 @@ class ApplicationMapperTest {
         assertThat(result.getNoticeNotLegallyValidDetails()).isNull();
         assertThat(result.getRentIncreaseToCauseHardship()).isNull();
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
-        assertThat(result.getNoticeNotLegallyValidDocument()).isNull();
+        assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
         assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
     }
 
@@ -367,7 +367,7 @@ class ApplicationMapperTest {
         assertThat(result.getNoticeLegallyValid()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.NO);
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
-        assertThat(result.getNoticeNotLegallyValidDocument()).isNull();
+        assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
         assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
     }
 
@@ -1104,7 +1104,10 @@ class ApplicationMapperTest {
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Inspection reason")
                     .build())
-            .noticeOfRentIncreaseDetails(NoticeOfRentIncreaseDto.builder().build())
+            .noticeOfRentIncreaseDetails(
+                NoticeOfRentIncreaseDto.builder()
+                    .noticeNotLegallyValidDocuments(List.of())
+                    .build())
             .propertyDetails(
                 PropertyDetailsDto.builder()
                     .addressLine1("123 Test St")

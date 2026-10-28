@@ -114,8 +114,8 @@ public class ApplicationMapper {
             .noticeLegallyValid(get(entity, NoticeOfRentChangeEntity::getNoticeLegallyValid))
             .noticeNotLegallyValidDetails(
                 get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidDetails))
-            .noticeNotLegallyValidDocument(
-                findDocumentOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
+            .noticeNotLegallyValidDocuments(
+                findDocumentsOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(
                 get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardship))
             .rentIncreaseToCauseHardshipDocument(
