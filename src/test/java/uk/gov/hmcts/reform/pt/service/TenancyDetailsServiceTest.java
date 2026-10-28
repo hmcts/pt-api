@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
@@ -177,7 +177,7 @@ class TenancyDetailsServiceTest {
         LocalDate endDate = LocalDate.of(2026, 1, 1);
         LocalDate originalStartDate = LocalDate.of(2024, 1, 1);
 
-        CurrentRentDetails details = CurrentRentDetails.builder()
+        CurrentAndMarketRentDetails details = CurrentAndMarketRentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
             .previousTribunalCaseReference("TRIB-123")
             .currentTenancyStartDate(startDate)
@@ -205,7 +205,7 @@ class TenancyDetailsServiceTest {
         when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         LocalDate startDate = LocalDate.of(2025, 1, 1);
-        CurrentRentDetails details = CurrentRentDetails.builder()
+        CurrentAndMarketRentDetails details = CurrentAndMarketRentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.NO)
             .currentTenancyStartDate(startDate)
             .build();

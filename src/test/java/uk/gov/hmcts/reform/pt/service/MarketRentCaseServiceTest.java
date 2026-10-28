@@ -9,10 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -92,14 +91,14 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with current rent details")
-    void updateWithCurrentRentDetailsWhenExists() {
+    @DisplayName("Should update existing MarketRentCaseEntity with current and market rent details")
+    void updateWithCurrentAndMarketRentDetailsWhenExists() {
         MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .marketRentCase(existing)
             .build();
 
-        CurrentRentDetails details = CurrentRentDetails.builder()
+        CurrentAndMarketRentDetails details = CurrentAndMarketRentDetails.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostWeekly(150d)
             .rentCostFortnightly(300d)
@@ -123,9 +122,13 @@ class MarketRentCaseServiceTest {
             .otherHouseholdManagementChargesDetails("Other charges")
             .additionalRentalServiceChargesVary(YesOrNo.YES)
             .varyingAdditionalRentalServiceChargesDetails("Charge variations")
+            .applicantSuggestedMarketRent(1200d)
+            .applicantSuggestedMarketRentReasons("Market rate for area")
+            .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
             .build();
 
-        marketRentCaseService.updateWithCurrentRentDetails(ptCase, details);
+        marketRentCaseService.updateWithCurrentAndMarketRentDetails(ptCase, details);
 
         verify(marketRentCaseRepository).save(existing);
         assertThat(existing.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
@@ -151,47 +154,6 @@ class MarketRentCaseServiceTest {
         assertThat(existing.getOtherHouseholdManagementChargesDetails()).isEqualTo("Other charges");
         assertThat(existing.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getVaryingAdditionalRentalServiceChargesDetails()).isEqualTo("Charge variations");
-    }
-
-    @Test
-    @DisplayName("Should create and save new MarketRentCaseEntity with current rent details when list is empty")
-    void updateWithCurrentRentDetailsWhenEmpty() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .build();
-
-        CurrentRentDetails details = CurrentRentDetails.builder()
-            .rentPaymentFrequency(Frequency.WEEKLY)
-            .rentCostWeekly(200d)
-            .build();
-
-        marketRentCaseService.updateWithCurrentRentDetails(ptCase, details);
-
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository).save(captor.capture());
-        MarketRentCaseEntity saved = captor.getValue();
-
-        assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
-        assertThat(saved.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(200d));
-    }
-
-    @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with market rent details")
-    void updateWithMarketRentDetailsWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCase(existing)
-            .build();
-
-        MarketRentDetails details = MarketRentDetails.builder()
-            .applicantSuggestedMarketRent(1200d)
-            .applicantSuggestedMarketRentReasons("Market rate for area")
-            .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
-            .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
-            .build();
-
-        marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
-
-        verify(marketRentCaseRepository).save(existing);
         assertThat(existing.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(1200d));
         assertThat(existing.getApplicantSuggestedMarketRentReasons()).isEqualTo("Market rate for area");
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
@@ -200,23 +162,27 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and save new MarketRentCaseEntity with market rent details when list is empty")
-    void updateWithMarketRentDetailsWhenEmpty() {
+    @DisplayName("Should create and save new MarketRentCaseEntity with rent details when empty")
+    void updateWithCurrentAndMarketRentDetailsWhenEmpty() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .build();
 
-        MarketRentDetails details = MarketRentDetails.builder()
+        CurrentAndMarketRentDetails details = CurrentAndMarketRentDetails.builder()
+            .rentPaymentFrequency(Frequency.WEEKLY)
+            .rentCostWeekly(200d)
             .applicantSuggestedMarketRent(950d)
             .applicantSuggestedMarketRentReasons("Reason for rate")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
-        marketRentCaseService.updateWithMarketRentDetails(ptCase, details);
+        marketRentCaseService.updateWithCurrentAndMarketRentDetails(ptCase, details);
 
         ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
         verify(marketRentCaseRepository).save(captor.capture());
         MarketRentCaseEntity saved = captor.getValue();
 
+        assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
+        assertThat(saved.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(200d));
         assertThat(saved.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(950d));
         assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
