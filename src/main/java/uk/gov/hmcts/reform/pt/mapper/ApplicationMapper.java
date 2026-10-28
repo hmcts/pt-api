@@ -234,6 +234,10 @@ public class ApplicationMapper {
         return MarketRentDto.builder()
             .applicantSuggestedMarketRent(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
+            .applicantSuggestedMarketRentFrequency(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequency))
+            .applicantSuggestedMarketRentFrequencyOther(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequencyOther))
             .applicantSuggestedMarketRentReasons(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
