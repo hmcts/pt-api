@@ -137,7 +137,7 @@ class CasePartyLinkControllerTests {
             .body(Map.of("case_users", List.of(Map.of(
                 "case_id", caseId.toString(),
                 "user_id", landlordId,
-                "case_role", "[DEFENDANT]"))))
+                "case_role", "[RESPONDENT]"))))
             .delete("/case-users");
 
         TestCaseCleanUp.deleteCase(caseId);

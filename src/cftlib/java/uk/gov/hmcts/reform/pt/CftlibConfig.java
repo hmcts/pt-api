@@ -41,7 +41,7 @@ public class CftlibConfig implements CFTLibConfigurer {
         var users = Map.ofEntries(
             Map.entry("caseworker@pt.com", List.of("caseworker", "caseworker-pt")),
             Map.entry("pt-solicitor1@test.com", List.of("caseworker", "caseworker-pt-solicitor")),
-            Map.entry("pt-defendant-solicitor@test.com",
+            Map.entry("pt-respondent-solicitor@test.com",
                 List.of("pui-case-manager", "caseworker", "caseworker-pt-solicitor")),
             Map.entry("citizen@pt.com", List.of("citizen")),
             Map.entry("data.store.idam.system.user@gmail.com", List.of()),

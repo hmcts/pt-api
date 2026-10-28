@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
-import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 
 import java.util.UUID;
@@ -18,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT;
 
 @ExtendWith(MockitoExtension.class)
 class CaseRoleAssignmentServiceTest {
@@ -40,7 +40,7 @@ class CaseRoleAssignmentServiceTest {
         when(idamTokenProvider.getAuthToken()).thenReturn("Bearer system-token");
         when(authTokenGenerator.generate()).thenReturn("s2s-token");
 
-        service.assignCaseRole(1234567890123456L, userId, UserRole.DEFENDANT);
+        service.assignCaseRole(1234567890123456L, userId, RESPONDENT);
 
         ArgumentCaptor<CaseAssignmentUserRolesRequest> captor =
             ArgumentCaptor.forClass(CaseAssignmentUserRolesRequest.class);
@@ -51,7 +51,7 @@ class CaseRoleAssignmentServiceTest {
             .satisfies(role -> {
                 assertThat(role.getCaseDataId()).isEqualTo("1234567890123456");
                 assertThat(role.getUserId()).isEqualTo(userId.toString());
-                assertThat(role.getCaseRole()).isEqualTo("[DEFENDANT]");
+                assertThat(role.getCaseRole()).isEqualTo("[RESPONDENT]");
             });
     }
 }
