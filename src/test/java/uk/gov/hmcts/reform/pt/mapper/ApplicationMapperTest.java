@@ -21,8 +21,9 @@ import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -72,7 +73,7 @@ class ApplicationMapperTest {
             null,
             null,
             null,
-            Collections.emptyList()
+            null
         );
         assertThatThrownBy(() -> ApplicationMapper.toEnrichedDto(caseParty))
             .isInstanceOf(CaseNotFoundException.class)
@@ -85,7 +86,7 @@ class ApplicationMapperTest {
             null,
             null,
             YesOrNo.YES,
-            Collections.emptyList()
+            null
         );
 
         ContactPreferencesDto result = ApplicationMapper.mapContactPreferences(caseParty);
@@ -101,7 +102,7 @@ class ApplicationMapperTest {
             null,
             null,
             null,
-            Collections.emptyList()
+            null
         );
 
         ContactPreferencesDto result = ApplicationMapper.mapContactPreferences(caseParty);
@@ -117,7 +118,7 @@ class ApplicationMapperTest {
             null,
             null,
             null,
-            Collections.emptyList()
+            null
         );
 
         TenantDetailsDto result = ApplicationMapper.mapTenantDetails(caseParty);
@@ -207,12 +208,12 @@ class ApplicationMapperTest {
 
     @Test
     void shouldDefaultPostcodeToEmptyStringWhenNoProperties() {
-        PTCaseEntity ptCase = ptCase(Collections.emptyList(), null);
+        PTCaseEntity ptCase = ptCase(null, null);
         CasePartyEntity caseParty = caseParty(
             ptCase,
             null,
             null,
-            Collections.emptyList()
+            null
         );
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
@@ -221,13 +222,13 @@ class ApplicationMapperTest {
 
     @Test
     void shouldDefaultApplicationTypeToNullWhenNoMarketRentCase() {
-        PTCaseEntity ptCase = ptCase(addresses(POSTCODE), null);
+        PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), null);
         ptCase.setMarketRentCase(null);
         CasePartyEntity caseParty = caseParty(
             ptCase,
             null,
             null,
-            Collections.emptyList()
+            null
         );
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
@@ -237,10 +238,10 @@ class ApplicationMapperTest {
     @Test
     void shouldDefaultApplicantIdamUserIdToNullWhenNoAccessRecords() {
         CasePartyEntity caseParty = caseParty(
-            ptCase(addresses(POSTCODE), null),
+            ptCase(propertyAddress(POSTCODE), null),
             null,
             null,
-            Collections.emptyList()
+            null
         );
         EnrichedApplicationDto result = ApplicationMapper.toEnrichedDto(caseParty);
 
@@ -442,24 +443,21 @@ class ApplicationMapperTest {
             .sharePropertyWithLandlordDetails("No sharing")
             .build();
 
-        AddressEntity address = AddressEntity.builder()
+        CasePropertyAddressEntity address = CasePropertyAddressEntity.builder()
             .addressLine1("123 Test Street")
             .addressLine2("Apt 4")
-            .postTown("Manchester")
+            .townCity("Manchester")
             .county("Greater Manchester")
             .postcode("M1 1AA")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .propertyAddress(address)
             .marketRentCase(withTenancyDetails(marketRentCase, tenancyDetails))
             .documents(List.of(floorPlanDoc, outsidePropertyDoc, roomDoc1, roomDoc2, repairsDoc))
             .build();
 
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(List.of(address))
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result)
             .usingRecursiveComparison()
@@ -469,13 +467,10 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenTenancyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .propertyAddress(CasePropertyAddressEntity.builder().build())
             .marketRentCase(MarketRentCaseEntity.builder().build())
             .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(List.of(AddressEntity.builder().build()))
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getOtherFacilitiesAvailable()).isNull();
@@ -485,15 +480,12 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .propertyAddress(CasePropertyAddressEntity.builder().build())
             .marketRentCase(MarketRentCaseEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().build())
                 .build())
             .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(List.of(AddressEntity.builder().build()))
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getPropertyType()).isNull();
@@ -507,11 +499,7 @@ class ApplicationMapperTest {
                 .tenancyDetails(TenancyDetailsEntity.builder().build())
                 .build())
             .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(Collections.emptyList())
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getAddressLine1()).isNull();
@@ -523,11 +511,7 @@ class ApplicationMapperTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .documents(Collections.emptyList())
             .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(Collections.emptyList())
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNull();
     }
@@ -546,11 +530,7 @@ class ApplicationMapperTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .documents(List.of(floorPlan))
             .build();
-        CasePartyEntity party = CasePartyEntity.builder()
-            .addresses(Collections.emptyList())
-            .build();
-
-        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity, party);
+        PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getFloorPlanDocuments()).hasSize(1);
@@ -910,10 +890,10 @@ class ApplicationMapperTest {
         PartyRole agentRole = PartyRole.LETTING_AGENT;
         PartyRole repRole = PartyRole.LANDLORD_REPRESENTATIVE;
 
-        AddressEntity landlordAddress = AddressEntity.builder()
+        CasePartyAddressEntity landlordAddress = CasePartyAddressEntity.builder()
             .addressLine1("1 Landlord Way")
             .addressLine2("Somewhere")
-            .postTown("London")
+            .townCity("London")
             .county("Greater London")
             .postcode("SW1 1AA")
             .build();
@@ -926,21 +906,19 @@ class ApplicationMapperTest {
             .phoneNumber("0123456789")
             .referenceNumberForCommunications("LL01")
             .casePartyRole(landlordRole)
-            .addresses(List.of(landlordAddress))
+            .address(landlordAddress)
             .build();
 
         CasePartyEntity agentParty = CasePartyEntity.builder()
             .firstName("Agent")
             .lastName("Smith")
             .casePartyRole(agentRole)
-            .addresses(Collections.emptyList())
             .build();
 
         CasePartyEntity repParty = CasePartyEntity.builder()
             .firstName("Rep")
             .lastName("Jones")
             .casePartyRole(repRole)
-            .addresses(Collections.emptyList())
             .build();
 
         CasePartyEntity partyWithoutRole = CasePartyEntity.builder()
@@ -985,12 +963,20 @@ class ApplicationMapperTest {
         assertThat(ApplicationMapper.mapParty(null)).isNull();
     }
 
-    private static List<AddressEntity> addresses(String postcode) {
-        return List.of(AddressEntity.builder()
-                           .addressLine1("123 Test St")
-                           .postTown("London")
-                           .postcode(postcode)
-                           .build());
+    private static CasePropertyAddressEntity propertyAddress(String postcode) {
+        return CasePropertyAddressEntity.builder()
+            .addressLine1("123 Test St")
+            .townCity("London")
+            .postcode(postcode)
+            .build();
+    }
+
+    private static CasePartyAddressEntity partyAddress(String postcode) {
+        return CasePartyAddressEntity.builder()
+            .addressLine1("123 Test St")
+            .townCity("London")
+            .postcode(postcode)
+            .build();
     }
 
     private static TenancyDetailsEntity tenancyDetails(TenancyType tenancyType) {
@@ -1024,11 +1010,11 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static PTCaseEntity ptCase(List<AddressEntity> addresses, TenancyDetailsEntity tenancyDetails) {
+    private static PTCaseEntity ptCase(CasePropertyAddressEntity propertyAddress, TenancyDetailsEntity tenancyDetails) {
         return PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .createdDate(CREATED_DATE)
-            .addresses(addresses)
+            .propertyAddress(propertyAddress)
             .marketRentCase(withTenancyDetails(marketRentCase(), tenancyDetails))
             .documents(List.of(
                 DocumentEntity.builder()
@@ -1047,7 +1033,7 @@ class ApplicationMapperTest {
         PTCaseEntity ptCase,
         UUID idamId,
         YesOrNo contactByText,
-        List<AddressEntity> addresses
+        CasePartyAddressEntity address
     ) {
         return CasePartyEntity.builder()
             .firstName(FIRST_NAME)
@@ -1060,18 +1046,17 @@ class ApplicationMapperTest {
             .ptCase(ptCase)
             .idamId(idamId)
             .contactByText(contactByText)
-            .addresses(addresses)
+            .address(address)
             .build();
     }
 
     private static CasePartyEntity fullCaseParty(UUID userId) {
-        List<AddressEntity> partyAddresses = addresses(POSTCODE);
-        PTCaseEntity ptCase = ptCase(partyAddresses, tenancyDetails(TENANCY_TYPE));
+        PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), tenancyDetails(TENANCY_TYPE));
         return caseParty(
             ptCase,
             userId,
             YesOrNo.YES,
-            partyAddresses
+            partyAddress(POSTCODE)
         );
     }
 

@@ -16,8 +16,9 @@ import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
@@ -26,7 +27,6 @@ import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -37,6 +37,7 @@ public class ApplicationMapper {
             .caseReference(summary.getCaseReference())
             .createdDate(summary.getCreatedDate())
             .submittedOn(summary.getSubmittedDate())
+            .state(summary.getState())
             .build();
     }
 
@@ -49,8 +50,8 @@ public class ApplicationMapper {
         return EnrichedApplicationDto.builder()
             .caseReference(ptCase.getCaseReference())
             .postcode(
-                !ptCase.getAddresses().isEmpty()
-                    ? ptCase.getAddresses().getFirst().getPostcode()
+                ptCase.getPropertyAddress() != null
+                    ? ptCase.getPropertyAddress().getPostcode()
                     : "")
             .applicationType(get(ptCase.getMarketRentCase(), MarketRentCaseEntity::getMarketRentCaseType))
             .tenancyType(get(tenancyDetailsOf(ptCase), TenancyDetailsEntity::getTenancyType))
@@ -62,7 +63,7 @@ public class ApplicationMapper {
             .tenantDetails(mapTenantDetails(caseParty))
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
-            .propertyDetails(mapPropertyDetails(ptCase, caseParty))
+            .propertyDetails(mapPropertyDetails(ptCase))
             .currentRentsDetails(mapCurrentRentDetails(ptCase))
             .marketRentDetails(mapMarketRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
@@ -123,10 +124,10 @@ public class ApplicationMapper {
             .build();
     }
 
-    public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity, CasePartyEntity party) {
+    public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        AddressEntity address = findFirstOrNull(party.getAddresses());
+        CasePropertyAddressEntity address = ptCaseEntity.getPropertyAddress();
 
         if (tenancyDetails == null && marketRentCase == null && address == null
             && ptCaseEntity.getDocuments().isEmpty()) {
@@ -134,11 +135,11 @@ public class ApplicationMapper {
         }
 
         return PropertyDetailsDto.builder()
-            .addressLine1(get(address, AddressEntity::getAddressLine1))
-            .addressLine2(get(address, AddressEntity::getAddressLine2))
-            .postTown(get(address, AddressEntity::getPostTown))
-            .county(get(address, AddressEntity::getCounty))
-            .postcode(get(address, AddressEntity::getPostcode))
+            .addressLine1(get(address, CasePropertyAddressEntity::getAddressLine1))
+            .addressLine2(get(address, CasePropertyAddressEntity::getAddressLine2))
+            .postTown(get(address, CasePropertyAddressEntity::getTownCity))
+            .county(get(address, CasePropertyAddressEntity::getCounty))
+            .postcode(get(address, CasePropertyAddressEntity::getPostcode))
             .propertyType(get(marketRentCase, MarketRentCaseEntity::getTypeOfPropertyRenting))
             .rentingFlatDetails(get(marketRentCase, MarketRentCaseEntity::getRentingFlatDetails))
             .rentingRoomDetails(get(marketRentCase, MarketRentCaseEntity::getRentingRoomDetails))
@@ -285,7 +286,7 @@ public class ApplicationMapper {
             return null;
         }
 
-        AddressEntity address = findFirstOrNull(entity.getAddresses());
+        CasePartyAddressEntity address = entity.getAddress();
 
         return PartyDto.builder()
             .firstName(entity.getFirstName())
@@ -294,11 +295,11 @@ public class ApplicationMapper {
             .emailAddress(entity.getEmailAddress())
             .phoneNumber(entity.getPhoneNumber())
             .dxNumber(entity.getReferenceNumberForCommunications())
-            .addressLine1(get(address, AddressEntity::getAddressLine1))
-            .addressLine2(get(address, AddressEntity::getAddressLine2))
-            .postTown(get(address, AddressEntity::getPostTown))
-            .county(get(address, AddressEntity::getCounty))
-            .postcode(get(address, AddressEntity::getPostcode))
+            .addressLine1(get(address, CasePartyAddressEntity::getAddressLine1))
+            .addressLine2(get(address, CasePartyAddressEntity::getAddressLine2))
+            .postTown(get(address, CasePartyAddressEntity::getTownCity))
+            .county(get(address, CasePartyAddressEntity::getCounty))
+            .postcode(get(address, CasePartyAddressEntity::getPostcode))
             .build();
     }
 
@@ -332,7 +333,4 @@ public class ApplicationMapper {
         return source == null ? null : getter.apply(source);
     }
 
-    private static <T> T findFirstOrNull(Collection<T> source) {
-        return source.stream().findFirst().orElse(null);
-    }
 }
