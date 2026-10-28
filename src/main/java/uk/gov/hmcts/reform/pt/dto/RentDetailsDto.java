@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -51,7 +52,7 @@ public class RentDetailsDto {
     private BigDecimal applicantSuggestedMarketRent;
     private String applicantSuggestedMarketRentReasons;
 
-    private DocumentDto suggestedMarketRentEvidence;
+    private List<DocumentDto> suggestedMarketRentEvidence;
 
     private YesOrNo additionalPropertyInfoToConsiderWhenDetermining;
     private String additionalPropertyInfoToConsiderWhenDeterminingDetails;

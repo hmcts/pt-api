@@ -637,7 +637,7 @@ class ApplicationMapperTest {
         assertThat(result.getRentPaymentFrequency()).isNull();
         assertThat(result.getRentCostMonthly()).isNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidence()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isEmpty();
     }
 
     @Test
@@ -660,7 +660,7 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidence()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isEmpty();
     }
 
     @Test
@@ -685,13 +685,14 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRent()).isNull();
         assertThat(result.getRentPaymentFrequency()).isNull();
         assertThat(result.getCurrentTenancyStartDate()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
-        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
-        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
+        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
+        assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
-        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
+        assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(evidence.getContentType()).isEqualTo("application/pdf");
+        assertThat(evidence.getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -1053,6 +1054,7 @@ class ApplicationMapperTest {
                 RentDetailsDto.builder()
                     .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                     .applicantSuggestedMarketRentReasons("Market rate for the area")
+                    .suggestedMarketRentEvidence(List.of())
                     .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
                     .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
                     .build())
@@ -1191,14 +1193,14 @@ class ApplicationMapperTest {
             .otherHouseholdManagementChargesDetails("Household management details")
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
-            .suggestedMarketRentEvidence(
-                DocumentDto.builder()
-                    .url("http://dm-store/doc/proposed-rent")
-                    .binaryUrl("http://dm-store/doc/proposed-rent/binary")
-                    .filename("proposed-rent.pdf")
-                    .contentType("application/pdf")
-                    .size(1024L)
-                    .build())
+            .suggestedMarketRentEvidence(List.of(
+                    DocumentDto.builder()
+                        .url("http://dm-store/doc/proposed-rent")
+                        .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+                        .filename("proposed-rent.pdf")
+                        .contentType("application/pdf")
+                        .size(1024L)
+                        .build()))
             .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
             .build();
