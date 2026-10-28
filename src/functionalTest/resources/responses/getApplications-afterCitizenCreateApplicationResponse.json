@@ -1,0 +1,8 @@
+[
+  {
+    "caseReference": ${caseId},
+    "createdDate": "[[IGNORE_VALUE]]",
+    "submittedOn": null,
+    "state": "AWAITING_SUBMISSION_TO_HMCTS"
+  }
+]
