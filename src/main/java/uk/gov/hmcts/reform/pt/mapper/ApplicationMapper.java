@@ -177,7 +177,7 @@ public class ApplicationMapper {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
-        if (tenancyDetails == null && marketRentCase == null) {
+        if (tenancyDetails == null && marketRentCase == null && ptCaseEntity.getDocuments() == null) {
             return null;
         }
 
