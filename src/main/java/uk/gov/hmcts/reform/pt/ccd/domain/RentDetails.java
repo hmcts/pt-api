@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrentAndMarketRentDetails {
+public class RentDetails {
     @CCD(
         label = "Tribunal previously determined tenancy rent",
         access = {CitizenAccess.class}

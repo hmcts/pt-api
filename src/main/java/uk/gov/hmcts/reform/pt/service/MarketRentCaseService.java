@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -41,7 +41,7 @@ public class MarketRentCaseService {
     }
 
     @Transactional
-    public void updateWithCurrentAndMarketRentDetails(PTCaseEntity ptCaseEntity, CurrentAndMarketRentDetails details) {
+    public void updateWithRentDetails(PTCaseEntity ptCaseEntity, RentDetails details) {
         MarketRentCaseEntity marketRentCase = findOrBuildMarketRentCase(ptCaseEntity);
         setIfNotNull(details.getRentPaymentFrequency(), marketRentCase::setRentPaymentFrequency);
         setIfNotNull(toBigDecimal(details.getRentCostWeekly()), marketRentCase::setRentCostWeekly);

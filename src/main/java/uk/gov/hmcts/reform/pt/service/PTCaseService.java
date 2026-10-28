@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
@@ -100,7 +100,7 @@ public class PTCaseService {
         this.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
         this.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
         this.updatePropertyDetails(ptCase, ptCaseEntity, applicantCaseParty);
-        this.updateCurrentAndMarketRentDetails(ptCase, ptCaseEntity);
+        this.updateRentDetails(ptCase, ptCaseEntity);
         this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
         this.updateLandlordDetails(ptCase, ptCaseEntity);
     }
@@ -127,9 +127,9 @@ public class PTCaseService {
             documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
         }
 
-        CurrentAndMarketRentDetails marketRentDetails = ptCase.getCurrentAndMarketRentDetails();
-        if (marketRentDetails != null) {
-            documentService.updateDocumentsForCurrentAndMarketRentDetails(marketRentDetails, ptCaseEntity);
+        RentDetails rentDetails = ptCase.getRentDetails();
+        if (rentDetails != null) {
+            documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         }
 
         return documentUploadValidator.errors(caseReference, urlsBefore);
@@ -221,15 +221,15 @@ public class PTCaseService {
     }
 
     @Transactional
-    public void updateCurrentAndMarketRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
-        CurrentAndMarketRentDetails currentAndMarketRentDetails = ptCase.getCurrentAndMarketRentDetails();
-        if (currentAndMarketRentDetails == null) {
+    public void updateRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        RentDetails rentDetails = ptCase.getRentDetails();
+        if (rentDetails == null) {
             return;
         }
 
-        tenancyDetailsService.updateWithCurrentRentDetails(ptCaseEntity, currentAndMarketRentDetails);
-        marketRentCaseService.updateWithCurrentAndMarketRentDetails(ptCaseEntity, currentAndMarketRentDetails);
-        documentService.updateDocumentsForCurrentAndMarketRentDetails(currentAndMarketRentDetails, ptCaseEntity);
+        tenancyDetailsService.updateWithRentDetails(ptCaseEntity, rentDetails);
+        marketRentCaseService.updateWithRentDetails(ptCaseEntity, rentDetails);
+        documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
     }
 
     @Transactional

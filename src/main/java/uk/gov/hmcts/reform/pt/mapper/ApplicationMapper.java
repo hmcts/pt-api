@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.CurrentAndMarketRentDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
@@ -63,7 +63,7 @@ public class ApplicationMapper {
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase))
-            .currentAndMarketRentDetails(mapCurrentAndMarketRentDetails(ptCase))
+            .rentDetails(mapRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
             .createdDate(ptCase.getCreatedDate())
             .build();
@@ -173,15 +173,15 @@ public class ApplicationMapper {
             .build();
     }
 
-    public static CurrentAndMarketRentDetailsDto mapCurrentAndMarketRentDetails(PTCaseEntity ptCaseEntity) {
+    public static RentDetailsDto mapRentDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
-        if (tenancyDetails == null && marketRentCase == null && ptCaseEntity.getDocuments() == null) {
+        if (tenancyDetails == null && marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
-        return CurrentAndMarketRentDetailsDto.builder()
+        return RentDetailsDto.builder()
             .tribunalPreviouslyDeterminedTenancyRent(
                 get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
             .previousTribunalCaseReference(

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
@@ -66,7 +66,7 @@ public class TenancyDetailsService {
     }
 
     @Transactional
-    public void updateWithCurrentRentDetails(PTCaseEntity ptCaseEntity, CurrentAndMarketRentDetails details) {
+    public void updateWithRentDetails(PTCaseEntity ptCaseEntity, RentDetails details) {
         TenancyDetailsEntity tenancyDetails = getOrCreateTenancyDetails(ptCaseEntity);
         setIfNotNull(
             details.getTribunalPreviouslyDeterminedTenancyRent(),

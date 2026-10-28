@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.CurrentAndMarketRentDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
@@ -540,7 +540,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapCurrentAndMarketRentDetails() {
+    void shouldMapRentDetails() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -589,15 +589,15 @@ class ApplicationMapperTest {
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result)
             .usingRecursiveComparison()
-            .isEqualTo(expectedCurrentAndMarketRentDetailsDto(startDate, endDate, originalStartDate));
+            .isEqualTo(expectedRentDetailsDto(startDate, endDate, originalStartDate));
     }
 
     @Test
-    void shouldMapCurrentAndMarketRentDetailsWhenTenancyDetailsIsNull() {
+    void shouldMapRentDetailsWhenTenancyDetailsIsNull() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostMonthly(new BigDecimal("400.00"))
@@ -607,7 +607,7 @@ class ApplicationMapperTest {
             .marketRentCase(marketRentCase)
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
@@ -618,7 +618,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapCurrentAndMarketRentDetailsWhenOnlyTenancyDetailsPopulated() {
+    void shouldMapRentDetailsWhenOnlyTenancyDetailsPopulated() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
@@ -629,7 +629,7 @@ class ApplicationMapperTest {
             .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(tenancyDetails).build())
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
@@ -641,7 +641,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapCurrentAndMarketRentDetailsWithoutEvidenceDocument() {
+    void shouldMapDetailsWithoutEvidenceDocument() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentReasons("Reasons")
@@ -653,7 +653,7 @@ class ApplicationMapperTest {
             .documents(Collections.emptyList())
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
@@ -664,11 +664,11 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldReturnNullWhenNoCurrentAndMarketRentEntitiesExist() {
+    void shouldReturnNullWhenNoRentDetailsEntitiesExist() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNull();
     }
@@ -679,7 +679,7 @@ class ApplicationMapperTest {
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
-        CurrentAndMarketRentDetailsDto result = ApplicationMapper.mapCurrentAndMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isNull();
@@ -1049,8 +1049,8 @@ class ApplicationMapperTest {
                     .outsidePropertyDocuments(List.of())
                     .repairsEvidenceDocuments(List.of())
                     .build())
-            .currentAndMarketRentDetails(
-                CurrentAndMarketRentDetailsDto.builder()
+            .rentDetails(
+                RentDetailsDto.builder()
                     .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                     .applicantSuggestedMarketRentReasons("Market rate for the area")
                     .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
@@ -1154,12 +1154,12 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static CurrentAndMarketRentDetailsDto expectedCurrentAndMarketRentDetailsDto(
+    private static RentDetailsDto expectedRentDetailsDto(
         LocalDateTime startDate,
         LocalDateTime endDate,
         LocalDateTime originalStartDate
     ) {
-        return CurrentAndMarketRentDetailsDto.builder()
+        return RentDetailsDto.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
             .previousTribunalCaseReference("TRIB-123")
             .rentPaymentFrequency(Frequency.MONTHLY)

@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
@@ -375,8 +375,8 @@ class DocumentServiceTest {
     }
 
     @Test
-    @DisplayName("Should update document for current and market rent details when evidence document is present")
-    void updateDocumentsForCurrentAndMarketRentDetailsUpdatesDocument() {
+    @DisplayName("Should update document for rent details when evidence document is present")
+    void updateDocumentsForRentDetailsUpdatesDocument() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .documents(Collections.emptyList())
             .build();
@@ -387,11 +387,11 @@ class DocumentServiceTest {
             .sizeInBytes(500L)
             .build();
 
-        CurrentAndMarketRentDetails details = CurrentAndMarketRentDetails.builder()
+        RentDetails details = RentDetails.builder()
             .suggestedMarketRentEvidence(rentDoc)
             .build();
 
-        documentService.updateDocumentsForCurrentAndMarketRentDetails(details, ptCase);
+        documentService.updateDocumentsForRentDetails(details, ptCase);
 
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
         verify(documentRepository).save(captor.capture());

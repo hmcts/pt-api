@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentAndMarketRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -72,8 +72,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public void updateDocumentsForCurrentAndMarketRentDetails(CurrentAndMarketRentDetails details,
-                                                              PTCaseEntity ptCaseEntity) {
+    public void updateDocumentsForRentDetails(RentDetails details, PTCaseEntity ptCaseEntity) {
         this.updateSingleDocument(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
