@@ -8,6 +8,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT_SOLICITOR;
 
 @ExtendWith(MockitoExtension.class)
 class DefendantReadAccessTest {
@@ -17,7 +19,7 @@ class DefendantReadAccessTest {
 
         SetMultimap<HasRole, Permission> grants = defendantReadAccess.getGrants();
 
-        assertThat(grants.get(UserRole.DEFENDANT_SOLICITOR)).containsExactly(Permission.R);
-        assertThat(grants.get(UserRole.DEFENDANT)).containsExactly(Permission.R);
+        assertThat(grants.get(RESPONDENT)).containsExactly(Permission.R);
+        assertThat(grants.get(RESPONDENT_SOLICITOR)).containsExactly(Permission.R);
     }
 }
