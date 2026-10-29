@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.pages.caserequestvettinginfo.CaseRequestVettingInformationConfigurer;
+import uk.gov.hmcts.reform.pt.service.CaseVettingService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CASE_REQUEST_VETTING_INFO
 @RequiredArgsConstructor
 public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, UserRole> {
     private final CaseRequestVettingInformationConfigurer pageConfigurer;
+    private final CaseVettingService caseVettingService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
@@ -39,6 +41,8 @@ public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, U
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> payload) {
         // todo HDPD-1364 - send email
+        caseVettingService.updateCaseVetting(payload.caseReference(), payload.caseData());
+
         return SubmitResponse.<State>builder()
             .confirmationBody(buildConfirmationBody(payload.caseReference(), payload.caseData()))
             .build();

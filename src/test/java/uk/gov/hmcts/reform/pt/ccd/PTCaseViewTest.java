@@ -10,13 +10,12 @@ import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.service.CasePartyService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,11 +38,11 @@ class PTCaseViewTest {
 
     @Test
     void shouldMapApplicantLandlordAndPropertyAddress() {
-        CasePartyEntity applicant = applicant(List.of(address()));
+        CasePartyEntity applicant = applicant();
         CasePartyEntity landlord = party("John", "Smith");
 
         PTCase result = getCase(LandlordRepresentativeType.REPRESENTATIVE,
-                                Optional.of(applicant), Optional.of(landlord));
+                                Optional.of(applicant), Optional.of(landlord), address());
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
@@ -64,7 +63,7 @@ class PTCaseViewTest {
     @Test
     void shouldMapApplicantWithoutAddresses() {
         PTCase result = getCase(LandlordRepresentativeType.LETTING_AGENT,
-                                Optional.of(applicant(List.of())), Optional.of(party("John", "Smith")));
+                                Optional.of(applicant()), Optional.of(party("John", "Smith")), null);
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
@@ -77,7 +76,7 @@ class PTCaseViewTest {
     @Test
     void shouldMapCaseWithoutApplicant() {
         PTCase result = getCase(LandlordRepresentativeType.REPRESENTATIVE,
-                                Optional.empty(), Optional.of(party("John", "Smith")));
+                                Optional.empty(), Optional.of(party("John", "Smith")), null);
 
         assertThat(result.getApplicantFirstName()).isNull();
         assertThat(result.getApplicantLastName()).isNull();
@@ -90,7 +89,7 @@ class PTCaseViewTest {
     @Test
     void shouldMapCaseWithoutLandlord() {
         PTCase result = getCase(null,
-                                Optional.of(applicant(List.of(address()))), Optional.empty());
+                                Optional.of(applicant()), Optional.empty(), address());
 
         assertThat(result.getApplicantFirstName()).isEqualTo("Jane");
         assertThat(result.getApplicantLastName()).isEqualTo("Doe");
@@ -101,13 +100,16 @@ class PTCaseViewTest {
         assertThat(result.getPropertyDetails())
             .satisfies(address -> {
                 assertThat(address.getAddressLine1()).isEqualTo("10 Downing Street");
+                assertThat(address.getAddressLine2()).isEqualTo("Westminster");
+                assertThat(address.getPostTown()).isEqualTo("London");
+                assertThat(address.getCounty()).isEqualTo("Greater London");
                 assertThat(address.getPostcode()).isEqualTo("SW1A 2AA");
             });
     }
 
     @Test
     void shouldMapCaseWithoutApplicantOrLandlord() {
-        var result = getCase(null, Optional.empty(), Optional.empty());
+        var result = getCase(null, Optional.empty(), Optional.empty(), null);
 
         assertThat(result.getApplicantFirstName()).isNull();
         assertThat(result.getApplicantLastName()).isNull();
@@ -121,7 +123,8 @@ class PTCaseViewTest {
     private PTCase getCase(
         LandlordRepresentativeType representativeType,
         Optional<CasePartyEntity> applicant,
-        Optional<CasePartyEntity> landlord
+        Optional<CasePartyEntity> landlord,
+        CasePropertyAddressEntity propertyAddress
     ) {
         CaseViewRequest<State> request = mock(CaseViewRequest.class);
         when(request.caseRef()).thenReturn(CASE_REF);
@@ -129,6 +132,7 @@ class PTCaseViewTest {
         var entity = PTCaseEntity.builder()
             .caseReference(CASE_REF)
             .landlordType(representativeType)
+            .propertyAddress(propertyAddress)
             .build();
 
         when(ptCaseService.getCase(CASE_REF)).thenReturn(entity);
@@ -140,11 +144,10 @@ class PTCaseViewTest {
         return ptCaseView.getCase(request);
     }
 
-    private static CasePartyEntity applicant(List<AddressEntity> addresses) {
+    private static CasePartyEntity applicant() {
         return CasePartyEntity.builder()
             .firstName("Jane")
             .lastName("Doe")
-            .addresses(addresses)
             .build();
     }
 
@@ -155,11 +158,11 @@ class PTCaseViewTest {
             .build();
     }
 
-    private static AddressEntity address() {
-        return AddressEntity.builder()
+    private static CasePropertyAddressEntity address() {
+        return CasePropertyAddressEntity.builder()
             .addressLine1("10 Downing Street")
             .addressLine2("Westminster")
-            .postTown("London")
+            .townCity("London")
             .county("Greater London")
             .postcode("SW1A 2AA")
             .build();

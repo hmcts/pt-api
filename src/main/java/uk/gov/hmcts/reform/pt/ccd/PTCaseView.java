@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.service.CasePartyService;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
@@ -38,8 +38,7 @@ public class PTCaseView implements CaseView<PTCase, State> {
             .orElse(null);
         CasePartyEntity respondent = casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD)
             .orElse(null);
-        AddressEntity propertyAddress = (applicant == null) ? null : applicant.getAddresses().stream().findFirst()
-            .orElse(null);
+        CasePropertyAddressEntity propertyAddress = ptCaseEntity.getPropertyAddress();
         PropertyDetails propertyDetails = getPropertyDetails(propertyAddress);
 
         return PTCase.builder()
@@ -65,12 +64,12 @@ public class PTCaseView implements CaseView<PTCase, State> {
             : null;
     }
 
-    private PropertyDetails getPropertyDetails(AddressEntity address) {
+    private PropertyDetails getPropertyDetails(CasePropertyAddressEntity address) {
         return address != null
             ? PropertyDetails.builder()
                 .addressLine1(address.getAddressLine1())
                 .addressLine2(address.getAddressLine2())
-                .postTown(address.getPostTown())
+                .postTown(address.getTownCity())
                 .county(address.getCounty())
                 .postcode(address.getPostcode())
                 .build()

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
 import uk.gov.hmcts.reform.pt.ccd.pages.caserequestvettinginfo.CaseRequestVettingInformationConfigurer;
+import uk.gov.hmcts.reform.pt.service.CaseVettingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,11 +23,14 @@ class CaseRequestVettingInformationTest extends BaseEventTest {
     @Mock
     private CaseRequestVettingInformationConfigurer pageConfigurer;
 
+    @Mock
+    private CaseVettingService caseVettingService;
+
     private CaseRequestVettingInformation underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new CaseRequestVettingInformation(pageConfigurer);
+        underTest = new CaseRequestVettingInformation(pageConfigurer, caseVettingService);
         configureEvent(underTest);
     }
 
@@ -36,7 +40,7 @@ class CaseRequestVettingInformationTest extends BaseEventTest {
     }
 
     @Test
-    void shouldReturnConfirmationBodyOnSubmit() {
+    void shouldUpdateCaseVettingAndReturnConfirmationBodyOnSubmit() {
         PTCase caseData = PTCase.builder()
             .formattedPropertyAddress("10 High Street, London, SW1A 1AA")
             .formattedCaseName("Jane Doe vs John Smith")
@@ -44,6 +48,7 @@ class CaseRequestVettingInformationTest extends BaseEventTest {
 
         SubmitResponse<State> result = callSubmitHandler(caseData);
 
+        verify(caseVettingService).updateCaseVetting(TEST_CASE_REFERENCE, caseData);
         assertThat(result.getState()).isNull();
         assertThat(result.getConfirmationBody())
             .contains("Vetting information requested")
