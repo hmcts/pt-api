@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.pt.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class TenantDetailsDto {
@@ -10,4 +12,5 @@ public class TenantDetailsDto {
     private String lastName;
     private String companyName;
     private String referenceNumberForCommunications;
+    private UUID pcqId;
 }
