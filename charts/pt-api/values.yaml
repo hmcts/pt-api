@@ -19,8 +19,6 @@ java:
           alias: PT_IDAM_SYSTEM_USERNAME
         - name: idam-system-user-password
           alias: PT_IDAM_SYSTEM_PASSWORD
-        - name: ccd-elastic-search-hosts
-          alias: ELASTIC_SEARCH_HOSTS
         - name: gov-notify-key
           alias: PT_NOTIFY_API_KEY
   environment:
