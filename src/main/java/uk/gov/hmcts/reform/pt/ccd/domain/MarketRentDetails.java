@@ -24,6 +24,18 @@ public class MarketRentDetails {
     private Double applicantSuggestedMarketRent;
 
     @CCD(
+        label = "Applicant's suggested market rent frequency",
+        access = {CitizenAccess.class}
+    )
+    private Frequency applicantSuggestedMarketRentFrequency;
+
+    @CCD(
+        label = "Applicant's suggested market rent frequency other details",
+        access = {CitizenAccess.class}
+    )
+    private String applicantSuggestedMarketRentFrequencyOther;
+
+    @CCD(
         label = "Applicant's suggested market rent reasons",
         access = {CitizenAccess.class}
     )

@@ -184,6 +184,8 @@ class MarketRentCaseServiceTest {
 
         MarketRentDetails details = MarketRentDetails.builder()
             .applicantSuggestedMarketRent(1200d)
+            .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
+            .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
             .applicantSuggestedMarketRentReasons("Market rate for area")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
@@ -193,6 +195,8 @@ class MarketRentCaseServiceTest {
 
         verify(marketRentCaseRepository).save(existing);
         assertThat(existing.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(1200d));
+        assertThat(existing.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
+        assertThat(existing.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
         assertThat(existing.getApplicantSuggestedMarketRentReasons()).isEqualTo("Market rate for area");
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
@@ -207,6 +211,7 @@ class MarketRentCaseServiceTest {
 
         MarketRentDetails details = MarketRentDetails.builder()
             .applicantSuggestedMarketRent(950d)
+            .applicantSuggestedMarketRentFrequency(Frequency.MONTHLY)
             .applicantSuggestedMarketRentReasons("Reason for rate")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
@@ -218,6 +223,8 @@ class MarketRentCaseServiceTest {
         MarketRentCaseEntity saved = captor.getValue();
 
         assertThat(saved.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(950d));
+        assertThat(saved.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(saved.getApplicantSuggestedMarketRentFrequencyOther()).isNull();
         assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();
