@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -23,7 +22,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Getter
@@ -40,21 +38,25 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(anonymousPaths.toArray(String[]::new));
+        return web -> web.ignoring().requestMatchers(anonymousPaths.toArray(
+            String[]::new));
     }
 
     @Bean
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "java:S4502"})
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
             .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
-            .addFilterBefore(idamAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterAfter(idamAuthFilter, ServiceAuthFilter.class)
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable);
+            // CSRF protection is not needed: sessions are STATELESS and authentication is via
+            // bearer tokens (IDAM/S2S), not cookies, so there is no ambient credential for a
+            // cross-site request to exploit. java:S4502 suppressed accordingly.
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
 
         return http.build();
     }

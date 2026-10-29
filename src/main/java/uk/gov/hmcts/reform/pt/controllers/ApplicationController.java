@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
@@ -28,8 +29,8 @@ import java.util.UUID;
 @RequestMapping("/applications")
 public class ApplicationController {
 
-    private final IdamAuthenticator idamAuthenticator;
     private final CaseApplicationService caseApplicationService;
+    private final SecurityContextService securityContextService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -51,9 +52,9 @@ public class ApplicationController {
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
         @RequestHeader("ServiceAuthorization") String s2sToken
     ) {
-        UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
+        UserInfo userInfo = securityContextService.getCurrentUserDetails();
 
-        return ResponseEntity.ok(caseApplicationService.getCasesForUser(UUID.fromString(user.getUid())));
+        return ResponseEntity.ok(caseApplicationService.getCasesForUser(UUID.fromString(userInfo.getUid())));
     }
 
     @GetMapping(value = "/{caseReference}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,9 +79,9 @@ public class ApplicationController {
         @RequestHeader("ServiceAuthorization") String s2sToken,
         @PathVariable Long caseReference
     ) {
-        UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
+        UserInfo userInfo = securityContextService.getCurrentUserDetails();
 
         return ResponseEntity.ok(
-            caseApplicationService.getCaseByCaseReference(caseReference, UUID.fromString(user.getUid())));
+            caseApplicationService.getCaseByCaseReference(caseReference, UUID.fromString(userInfo.getUid())));
     }
 }
