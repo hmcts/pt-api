@@ -38,7 +38,7 @@ public class CasePartyService {
         PartyDetails partyDetails = PartyDetails.builder()
             .postcode(ptCase.getPostcode())
             .build();
-        addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);
+        addressService.updatePropertyAddress(partyDetails, caseParty, ptCaseEntity);
 
         return caseParty;
     }
@@ -93,15 +93,14 @@ public class CasePartyService {
         setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);
         setIfNotNull(partyDetails.getPhoneNumber(), caseParty::setPhoneNumber);
         setIfNotNull(partyDetails.getOrganisationName(), caseParty::setOrganisationName);
-        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumber);
+        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumberForCommunications);
         casePartyRepository.save(caseParty);
 
-        addressService.updateAddress(partyDetails, caseParty, ptCaseEntity);
+        addressService.updatePartyAddress(partyDetails, caseParty);
     }
 
     @Transactional
     public void removeParty(CasePartyEntity casePartyEntity) {
-        addressService.deleteAddressesForParty(casePartyEntity);
         casePartyRepository.delete(casePartyEntity);
     }
 

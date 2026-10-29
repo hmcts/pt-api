@@ -7,7 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -56,6 +56,9 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentIncreaseToCauseHardship;
 
+    @Column(length = 100)
+    private String hardshipDetails;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo noticeLegallyValid;
@@ -63,16 +66,8 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Column(length = 500)
     private String noticeNotLegallyValidDetails;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pt_case_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "market_rent_case_id", unique = true)
     @JsonBackReference
-    private PTCaseEntity ptCase;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id")
-    private DocumentEntity document;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notice_of_increase_validity_challenge_document_id")
-    private DocumentEntity noticeOfIncreaseValidityChallengeDocument;
+    private MarketRentCaseEntity marketRentCase;
 }

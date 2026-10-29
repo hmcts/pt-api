@@ -3,5 +3,7 @@
   "extends": [
     "local>hmcts/.github:renovate-config",
     "local>hmcts/.github//renovate/automerge-all"
-  ]
+  ],
+  "minimumReleaseAge": "1 day",
+  "internalChecksFilter": "strict"
 }
