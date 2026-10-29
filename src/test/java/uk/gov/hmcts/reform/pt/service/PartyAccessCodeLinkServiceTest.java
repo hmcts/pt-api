@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -29,7 +30,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT;
 
 @ExtendWith(MockitoExtension.class)
 class PartyAccessCodeLinkServiceTest {
@@ -69,7 +69,7 @@ class PartyAccessCodeLinkServiceTest {
         service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID);
 
         assertThat(landlord.getIdamId()).isEqualTo(USER_ID);
-        verify(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, RESPONDENT);
+        verify(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, UserRole.DEFENDANT);
     }
 
     @Test
@@ -151,7 +151,7 @@ class PartyAccessCodeLinkServiceTest {
     void shouldPropagateRoleAssignmentFailure() {
         givenStoredCode(accessCodeFor(landlord, NOW.plusDays(1)));
         doThrow(new RuntimeException("CCD down"))
-            .when(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, RESPONDENT);
+            .when(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, UserRole.DEFENDANT);
 
         // In the real app @Transactional rolls back the idamId change when this throws
         assertThatThrownBy(() -> service.linkPartyByAccessCode(CASE_REFERENCE, ENTERED_CODE, USER_ID))
@@ -167,7 +167,7 @@ class PartyAccessCodeLinkServiceTest {
 
         assertThat(landlord.getIdamId()).isEqualTo(USER_ID);
         assertThat(accessCode.getUsedAt()).isEqualTo(NOW);
-        verify(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, RESPONDENT);
+        verify(caseRoleAssignmentService).assignCaseRole(CASE_REFERENCE, USER_ID, UserRole.DEFENDANT);
     }
 
     @Test
