@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
@@ -15,8 +16,6 @@ import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT;
 
 @RequiredArgsConstructor
 @Service
@@ -53,7 +52,7 @@ public class PartyAccessCodeLinkService {
 
         party.setIdamId(idamUserId);
         accessCode.setUsedAt(LocalDateTime.now(clock));
-        caseRoleAssignmentService.assignCaseRole(caseReference, idamUserId, RESPONDENT);
+        caseRoleAssignmentService.assignCaseRole(caseReference, idamUserId, UserRole.DEFENDANT);
     }
 
     private static CasePartyEntity getParty(PartyAccessCodeEntity accessCode) {

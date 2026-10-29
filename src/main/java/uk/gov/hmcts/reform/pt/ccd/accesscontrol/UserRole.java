@@ -27,8 +27,8 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 public enum UserRole implements HasRole {
 
     CREATOR("[CREATOR]", CRU),
-    RESPONDENT("[RESPONDENT]", CRU),
-    RESPONDENT_SOLICITOR("[RESPONDENTSOLICITOR]", CRU),
+    DEFENDANT("[DEFENDANT]", CRU),
+    DEFENDANT_SOLICITOR("[DEFENDANTSOLICITOR]", CRU),
 
     CITIZEN("citizen", CRU),
 

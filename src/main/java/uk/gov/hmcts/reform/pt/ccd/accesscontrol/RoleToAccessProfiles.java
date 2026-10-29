@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CIRCUIT_JUDGE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT_SOLICITOR;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.GS_PROFILE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.FEE_PAID_JUDGE;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.HEARING_CENTRE_ADMIN;
@@ -17,8 +19,6 @@ import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.LEADERSHIP_JUDGE
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_CASE_WORKER;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.PT_SOLICITOR;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RAS_VALIDATOR;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SUPER_USER;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.SYSTEM_USER;
 
@@ -29,10 +29,10 @@ public class RoleToAccessProfiles implements CCDConfig<PTCase, State, UserRolesF
     public void configure(ConfigBuilder<PTCase, State, UserRolesForAccessProfiles> configBuilder) {
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CREATOR)
             .accessProfiles(CREATOR.getRole()).build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RESPONDENT)
-            .accessProfiles(RESPONDENT.getRole()).build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RESPONDENT_SOLICITOR)
-            .accessProfiles(RESPONDENT_SOLICITOR.getRole()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.DEFENDANT)
+            .accessProfiles(DEFENDANT.getRole()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.DEFENDANT_SOLICITOR)
+            .accessProfiles(DEFENDANT_SOLICITOR.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CITIZEN)
             .accessProfiles(CITIZEN.getRole()).build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PT_CASE_WORKER)
