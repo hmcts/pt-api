@@ -35,9 +35,9 @@ public class DocumentService {
             details.getLandlordNoticeProposingNewRentDocument(),
             ptCaseEntity
         );
-        this.updateSingleDocument(
+        this.updateMultipleDocuments(
             DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE,
-            details.getNoticeNotLegallyValidDocument(),
+            details.getNoticeNotLegallyValidDocuments(),
             ptCaseEntity
         );
         this.updateSingleDocument(
