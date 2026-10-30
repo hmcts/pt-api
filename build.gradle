@@ -240,24 +240,15 @@ repositories {
   maven { url = 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1' }
 }
 
-ext {
-  lombokVersion = "1.18.48"
-}
-
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
-  implementation 'org.springframework.boot:spring-boot-starter-aop'
-  implementation 'org.springframework.boot:spring-boot-starter-json'
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: flywayVersion
   implementation group: 'org.flywaydb', name: 'flyway-core', version: flywayVersion
-
-  implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.3'
 
@@ -279,7 +270,6 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
 
-  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.7'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
   testImplementation 'org.testcontainers:testcontainers:2.0.5'
@@ -287,12 +277,7 @@ dependencies {
   testImplementation 'org.testcontainers:testcontainers-postgresql:2.0.5'
 
   testImplementation "org.springframework.security:spring-security-test"
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
-    exclude group: 'junit', module: 'junit'
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-  }
-  testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
   highLevelDataSetupImplementation(group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.12_CCD-8388') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
@@ -302,18 +287,14 @@ dependencies {
     exclude group: 'com.launchdarkly', module: 'launchdarkly-java-server-sdk'
   }
 
-  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.4'
   integrationTestImplementation group: 'com.github.hmcts.rse-cft-lib', name: 'ccd-lib', version: '0.19.2462'
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: serenityBddVersion
-  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: serenityBddVersion
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit5', version: serenityBddVersion
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.7.5'
-  contractTestImplementation group: 'org.hamcrest', name: 'java-hamcrest', version: '2.0.0.0'
-  contractTestImplementation 'org.junit.jupiter:junit-jupiter-engine'
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
 
