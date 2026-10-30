@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 
-@EnableScheduling
+@EnableScheduling // Required for scheduled task in CCD SDK's RetainAndDisposeTask
 @ImportAutoConfiguration({FeignAutoConfiguration.class, FeignClientsConfiguration.class,
     HttpMessageConvertersAutoConfiguration.class})
 @EnableFeignClients(
