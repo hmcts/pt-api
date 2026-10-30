@@ -120,8 +120,8 @@ public class ApplicationMapper {
                 findDocumentOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(
                 get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardship))
-            .rentIncreaseToCauseHardshipDocument(
-                findDocumentOfTypeAndMap(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity))
+            .rentIncreaseHardshipDocuments(
+                findDocumentsOfTypeAndMap(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity))
             .build();
     }
 
