@@ -653,6 +653,8 @@ class ApplicationMapperTest {
 
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
+            .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
             .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
@@ -667,18 +669,21 @@ class ApplicationMapperTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
+        assertThat(result.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
         assertThat(result.getApplicantSuggestedMarketRentReasons())
             .isEqualTo("Similar properties in the area rent for this amount");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
             .isEqualTo("Renovations");
-        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
-        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
-        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
+        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
+        assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
-        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
+        assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(evidence.getContentType()).isEqualTo("application/pdf");
+        assertThat(evidence.getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -701,7 +706,7 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidence()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isEmpty();
     }
 
     @Test
@@ -737,13 +742,14 @@ class ApplicationMapperTest {
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isNull();
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isNull();
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
-        assertThat(result.getSuggestedMarketRentEvidence()).isNotNull();
-        assertThat(result.getSuggestedMarketRentEvidence().getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
-        assertThat(result.getSuggestedMarketRentEvidence().getBinaryUrl())
+        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
+        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
+        assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
+        assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
-        assertThat(result.getSuggestedMarketRentEvidence().getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getContentType()).isEqualTo("application/pdf");
-        assertThat(result.getSuggestedMarketRentEvidence().getSize()).isEqualTo(1024L);
+        assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
+        assertThat(evidence.getContentType()).isEqualTo("application/pdf");
+        assertThat(evidence.getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -1106,6 +1112,7 @@ class ApplicationMapperTest {
                 MarketRentDto.builder()
                     .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                     .applicantSuggestedMarketRentReasons("Market rate for the area")
+                    .suggestedMarketRentEvidence(List.of())
                     .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
                     .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
                     .build())

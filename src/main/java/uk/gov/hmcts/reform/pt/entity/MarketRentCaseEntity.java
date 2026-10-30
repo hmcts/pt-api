@@ -129,6 +129,13 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private Frequency applicantSuggestedMarketRentFrequency;
+
+    @Column(length = 500)
+    private String applicantSuggestedMarketRentFrequencyOther;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalRentalServiceChargesVary;
 
     @Column(length = 500)
