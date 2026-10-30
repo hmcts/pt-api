@@ -21,7 +21,8 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
             pc.id                         AS id,
             pc.case_reference             AS caseReference,
             pc.created_date               AS createdDate,
-            pc.application_submitted_date AS submittedDate
+            pc.application_submitted_date AS submittedDate,
+            cd.state                      AS state
         FROM case_party cp
         JOIN pt_case pc ON pc.id = cp.pt_case_id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
@@ -45,6 +46,7 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
             cp.case_party_type_id,
             cp.party_role,
             cp.idam_id,
+            cp.pcq_id,
             cp.contact_by_text,
             cp.created_date,
             cp.last_modified_date,
