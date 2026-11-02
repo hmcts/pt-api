@@ -653,6 +653,8 @@ class ApplicationMapperTest {
 
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
+            .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
             .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
@@ -667,6 +669,8 @@ class ApplicationMapperTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
+        assertThat(result.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
         assertThat(result.getApplicantSuggestedMarketRentReasons())
             .isEqualTo("Similar properties in the area rent for this amount");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
