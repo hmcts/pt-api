@@ -3,7 +3,7 @@ CREATE TABLE case_application_vetting (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   vetting_status VARCHAR(100),
   status_reason TEXT,
-  market_rent_case_id BIGINT NOT NULL REFERENCES market_rent_case (id),
+  market_rent_case_id BIGINT NOT NULL UNIQUE REFERENCES market_rent_case (id),
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
