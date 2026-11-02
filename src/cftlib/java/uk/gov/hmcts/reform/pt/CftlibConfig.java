@@ -57,7 +57,7 @@ public class CftlibConfig implements CFTLibConfigurer {
         // Create users and roles including in idam simulator
         for (var entry : users.entrySet()) {
             lib.createIdamUser(entry.getKey(), entry.getValue().toArray(new String[0]));
-            lib.createProfile(entry.getKey(), "CIVIL", "PT", State.AWAITING_SUBMISSION_TO_HMCTS.name());
+            lib.createProfile(entry.getKey(), "PT", "PT", State.AWAITING_SUBMISSION_TO_HMCTS.name());
         }
 
         createAccessProfiles(lib);
