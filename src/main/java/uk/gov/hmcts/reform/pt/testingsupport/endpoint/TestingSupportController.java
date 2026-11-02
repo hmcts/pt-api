@@ -19,17 +19,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.controllers.advice.ErrorResponse;
+import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.pt.mapper.ApplicationMapper;
 import uk.gov.hmcts.reform.pt.notify.model.NotificationRequest;
 import uk.gov.hmcts.reform.pt.notify.model.NotificationResponse;
 import uk.gov.hmcts.reform.pt.notify.service.NotificationService;
 import uk.gov.hmcts.reform.pt.notify.template.EmailTemplate;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
+import uk.gov.hmcts.reform.pt.service.RespondentAccessCodeService;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -42,6 +47,7 @@ public class TestingSupportController {
     private final PTCaseService ptCaseService;
     private final PTCaseRepository ptCaseRepository;
     private final NotificationService notificationService;
+    private final RespondentAccessCodeService respondentAccessCodeService;
 
     private static final long TEST_NOTIFICATION_CASE_REFERENCE = 1234123412341234L;
 
@@ -116,5 +122,20 @@ public class TestingSupportController {
     public static class NotificationTestRequest {
         private String emailAddress;
         private String testReference;
+    }
+
+    @PostMapping("/cases/{caseReference}/landlord-access-code")
+    @PreAuthorize("hasAuthority('pt-system-update')")
+    public ResponseEntity<Map<String, String>> issueLandlordAccessCode(@PathVariable long caseReference) {
+        Optional<PTCaseEntity> ptCase = ptCaseService.fetchCaseByCaseReference(caseReference);
+        if (ptCase.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        CasePartyEntity landlord = ApplicationMapper.getPartyWithRole(ptCase.get(), PartyRole.LANDLORD);
+        if (landlord == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        return ResponseEntity.ok(
+            Map.of("accessCode", respondentAccessCodeService.createFor(ptCase.get(), landlord)));
     }
 }

@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.pt.functional.config.Endpoints;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.testutils.JsonAssertUtils;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
-import uk.gov.hmcts.reform.pt.functional.testutils.ServiceAuthenticationGenerator;
 
 import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.annotations.Step;
@@ -16,40 +15,24 @@ import net.serenitybdd.annotations.Step;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.citizenUser;
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.systemUser;
-import static uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient.UserType.caseworkerUser;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.caseworkerUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.citizenUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.ptApiS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.ptFrontendS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.systemUserIdamToken;
+import static uk.gov.hmcts.reform.pt.functional.config.AuthTokens.unauthorisedS2sToken;
+import static uk.gov.hmcts.reform.pt.functional.config.TestConstants.BASE_URL;
+
 
 public class ApiSteps {
 
     private RequestSpecification request;
     private Response response;
-    private static final String baseUrl = System.getenv("TEST_URL");
-    public static String ptApiS2sToken;
-    private static String ptFrontendS2sToken;
-    private static String unauthorisedS2sToken;
-    public static String systemUserIdamToken;
-    public static String citizenUserIdamToken;
-    public static String caseworkerUserIdamToken;
-
-    @Step("Generate S2S tokens")
-    public static void setUp() {
-        ServiceAuthenticationGenerator serviceAuthenticationGenerator = new ServiceAuthenticationGenerator();
-        ptApiS2sToken = serviceAuthenticationGenerator.generate();
-        ptFrontendS2sToken = serviceAuthenticationGenerator.generate(TestConstants.PT_FRONTEND);
-        unauthorisedS2sToken = serviceAuthenticationGenerator.generate(TestConstants.CIVIL_SERVICE);
-
-        systemUserIdamToken = PtIdamTokenClient.generateToken(systemUser);
-        citizenUserIdamToken = PtIdamTokenClient.generateToken(citizenUser);
-        caseworkerUserIdamToken = PtIdamTokenClient.generateToken(caseworkerUser);
-
-        SerenityRest.given().baseUri(baseUrl);
-    }
 
     @Step("a request is prepared with appropriate values")
     public void requestIsPreparedWithAppropriateValues() {
         request = SerenityRest.given()
-            .baseUri(baseUrl)
+            .baseUri(BASE_URL)
             .contentType(ContentType.JSON);
     }
 
@@ -105,15 +88,12 @@ public class ApiSteps {
 
     @Step("Check status code is {0}")
     public void checkStatusCode(int statusCode) {
-        if (response == null) {
-            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
-        }
-        response.then().assertThat().statusCode(statusCode);
+        requireResponse().then().assertThat().statusCode(statusCode);
     }
 
     @Step("the response body is an empty array")
     public void theResponseBodyIsAnEmptyArray() {
-        SerenityRest.then()
+        requireResponse().then()
             .assertThat()
             .body("", Matchers.hasSize(0));
     }
@@ -139,28 +119,38 @@ public class ApiSteps {
         request = request.body(body);
     }
 
-    @Step("the response body contains {0} as a string: {1}")
-    public void theResponseBodyContainsAString(String attribute, String value) {
-        if (response == null) {
-            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
-        }
-        response.then().assertThat().body(attribute, Matchers.equalTo(value));
+    @Step("the response body field {0} equals: {1}")
+    public void theResponseBodyFieldEquals(String attribute, String value) {
+        requireResponse().then().assertThat().body(attribute, Matchers.equalTo(value));
     }
 
     @Step("the response body does not contain the case reference {0}")
     public void theResponseBodyDoesNotContainCaseReference(Long caseReference) {
-        if (response == null) {
-            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
-        }
-        response.then().assertThat()
+        requireResponse().then().assertThat()
             .body("caseReference", Matchers.not(Matchers.hasItem(caseReference)));
     }
 
     @Step("the response body matches the expected response")
-    public void theResponseBodyMatchesTheExpectedResponse(String expectedPath) {
+    public void theResponseBodyMatchesTheExpectedResponse(String expectedJson) {
         JsonAssertUtils.assertEqualsIgnoreFields(
-            expectedPath,
-            SerenityRest.lastResponse().getBody().asString()
+            expectedJson,
+            requireResponse().getBody().asString()
         );
+    }
+
+    @Step("the request contains an IDAM token for a specific user")
+    public void theRequestContainsIdamToken(String userToken) {
+        request = request.header(TestConstants.AUTHORIZATION, "Bearer " + userToken);
+    }
+
+    public String theResponseBodyValue(String jsonPath) {
+        return response.then().extract().path(jsonPath);
+    }
+
+    private Response requireResponse() {
+        if (response == null) {
+            throw new IllegalStateException("No response available. Did you call callIsSubmittedToTheEndpoint first?");
+        }
+        return response;
     }
 }

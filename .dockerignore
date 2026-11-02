@@ -1,0 +1,3 @@
+*
+!lib/applicationinsights.json
+!build/libs/pt-api.jar

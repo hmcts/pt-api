@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.functional.config;
 import static uk.gov.hmcts.reform.pt.functional.testutils.EnvUtils.getEnv;
 
 public class TestConstants {
+    public static final String BASE_URL = System.getenv("TEST_URL");
     public static final String PT_API = "pt_api";
     public static final String PT_FRONTEND = "pt_frontend";
     public static final String CIVIL_SERVICE = "civil_service";

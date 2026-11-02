@@ -62,7 +62,7 @@ class CasePartyServiceTest {
         assertThat(result.getIdamId()).isEqualTo(idamId);
 
         verify(casePartyRepository).save(any(CasePartyEntity.class));
-        verify(addressService).updateAddress(any(PartyDetails.class), eq(result), eq(ptCaseEntity));
+        verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(result), eq(ptCaseEntity));
     }
 
     @Test
@@ -74,7 +74,7 @@ class CasePartyServiceTest {
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
         verify(casePartyRepository, never()).save(any());
-        verify(addressService, never()).updateAddress(any(), any(), any());
+        verify(addressService, never()).updatePartyAddress(any(), any());
     }
 
     @Test
@@ -96,7 +96,6 @@ class CasePartyServiceTest {
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(addressService).deleteAddressesForParty(existingRep);
         verify(casePartyRepository).delete(existingRep);
         verify(casePartyRepository, times(2)).save(any(CasePartyEntity.class));
     }
@@ -119,7 +118,6 @@ class CasePartyServiceTest {
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(addressService).deleteAddressesForParty(existingLandlord);
         verify(casePartyRepository).delete(existingLandlord);
     }
 
@@ -223,17 +221,17 @@ class CasePartyServiceTest {
         assertThat(existing.getOrganisationName()).isEqualTo("Org");
         assertThat(existing.getReferenceNumberForCommunications()).isEqualTo("DX123");
         verify(casePartyRepository).save(existing);
-        verify(addressService).updateAddress(partyDetails, existing, ptCaseEntity);
+        verify(addressService).updatePartyAddress(partyDetails, existing);
+        verify(addressService, never()).updatePropertyAddress(any(), any(), any());
     }
 
     @Test
-    @DisplayName("Should remove party and delete addresses")
+    @DisplayName("Should remove the party, which also removes its address")
     void removeParty() {
         CasePartyEntity party = CasePartyEntity.builder().build();
 
         casePartyService.removeParty(party);
 
-        verify(addressService).deleteAddressesForParty(party);
         verify(casePartyRepository).delete(party);
     }
 

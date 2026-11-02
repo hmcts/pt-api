@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@2.13.0")
+@Library("Infrastructure@2.13.4")
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
@@ -49,7 +49,7 @@ withPipeline(type, product, component) {
 
   onPR() {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
-    setPreviewEnvVars()
+    setPreviewEnvVars(githubApi)
     if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:ccd").size() > 0) {
       env.CCD_ENABLED = "true"
       enableHighLevelDataSetup("pt-kv1")
@@ -115,11 +115,20 @@ withPipeline(type, product, component) {
 }
 
 
-def setPreviewEnvVars() {
+def setPreviewEnvVars(githubApi) {
   // TODO: Update URL to include XUI when available
   env.TEST_E2E_URL_WEB = "https://pt-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
   env.ENVIRONMENT= "preview"
   env.ENABLE_TESTING_SUPPORT = "true"
+
+  def frontendLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pt-frontend-pr:")
+  if (frontendLabels && frontendLabels.size() > 0) {
+    def labelName = frontendLabels[0]
+    def PT_FRONTEND_CHANGE_ID = labelName.replace("pt-frontend-pr:", "")
+    env.PT_FRONTEND_URL = "https://pt-frontend-pr-${PT_FRONTEND_CHANGE_ID}.preview.platform.hmcts.net"
+  } else {
+    env.PT_FRONTEND_URL = "https://pt.aat.platform.hmcts.net/"
+  }
 }
 
 def setAatEnvVars() {
