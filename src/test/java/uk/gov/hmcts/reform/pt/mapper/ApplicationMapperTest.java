@@ -644,6 +644,8 @@ class ApplicationMapperTest {
     void shouldMapDetailsWithoutEvidenceDocument() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
+            .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
             .applicantSuggestedMarketRentReasons("Reasons")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
@@ -657,6 +659,8 @@ class ApplicationMapperTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
+        assertThat(result.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();

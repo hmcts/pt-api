@@ -98,6 +98,14 @@ public class MarketRentCaseService {
             marketRentCase::setApplicantSuggestedMarketRent
         );
         setIfNotNull(
+            details.getApplicantSuggestedMarketRentFrequency(),
+            marketRentCase::setApplicantSuggestedMarketRentFrequency
+        );
+        setIfNotNull(
+            details.getApplicantSuggestedMarketRentFrequencyOther(),
+            marketRentCase::setApplicantSuggestedMarketRentFrequencyOther
+        );
+        setIfNotNull(
             details.getApplicantSuggestedMarketRentReasons(),
             marketRentCase::setApplicantSuggestedMarketRentReasons
         );

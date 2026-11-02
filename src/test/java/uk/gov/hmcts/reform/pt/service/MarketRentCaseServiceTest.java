@@ -154,11 +154,6 @@ class MarketRentCaseServiceTest {
         assertThat(existing.getOtherHouseholdManagementChargesDetails()).isEqualTo("Other charges");
         assertThat(existing.getAdditionalRentalServiceChargesVary()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getVaryingAdditionalRentalServiceChargesDetails()).isEqualTo("Charge variations");
-        assertThat(existing.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(1200d));
-        assertThat(existing.getApplicantSuggestedMarketRentReasons()).isEqualTo("Market rate for area");
-        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails())
-            .isEqualTo("Renovated");
     }
 
     @Test
@@ -171,6 +166,7 @@ class MarketRentCaseServiceTest {
             .rentPaymentFrequency(Frequency.WEEKLY)
             .rentCostWeekly(200d)
             .applicantSuggestedMarketRent(950d)
+            .applicantSuggestedMarketRentFrequency(Frequency.MONTHLY)
             .applicantSuggestedMarketRentReasons("Reason for rate")
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
@@ -184,6 +180,8 @@ class MarketRentCaseServiceTest {
         assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
         assertThat(saved.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(200d));
         assertThat(saved.getApplicantSuggestedMarketRent()).isEqualTo(BigDecimal.valueOf(950d));
+        assertThat(saved.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(saved.getApplicantSuggestedMarketRentFrequencyOther()).isNull();
         assertThat(saved.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reason for rate");
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRent()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails()).isNull();

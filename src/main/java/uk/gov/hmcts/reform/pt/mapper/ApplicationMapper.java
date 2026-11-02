@@ -223,6 +223,10 @@ public class ApplicationMapper {
                 get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
             .applicantSuggestedMarketRent(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
+            .applicantSuggestedMarketRentFrequency(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequency))
+            .applicantSuggestedMarketRentFrequencyOther(
+                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequencyOther))
             .applicantSuggestedMarketRentReasons(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(

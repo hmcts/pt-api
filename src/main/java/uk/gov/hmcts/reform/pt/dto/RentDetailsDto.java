@@ -51,6 +51,8 @@ public class RentDetailsDto {
 
     private BigDecimal applicantSuggestedMarketRent;
     private String applicantSuggestedMarketRentReasons;
+    private Frequency applicantSuggestedMarketRentFrequency;
+    private String applicantSuggestedMarketRentFrequencyOther;
 
     private List<DocumentDto> suggestedMarketRentEvidence;
 
