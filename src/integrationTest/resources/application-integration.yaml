@@ -1,6 +1,12 @@
 security:
   anonymousPaths:
-    - "/**"
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/swagger-ui.html"
+    - "/swagger-ui/**"
+    - "/v3/api-docs/**"
 
 spring:
   flyway:
@@ -12,7 +18,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
       dialect: org.hibernate.dialect.PostgreSQLDialect
       format_sql: true
       show-sql: ${SPRING_JPA_SHOW_SQL:false}
