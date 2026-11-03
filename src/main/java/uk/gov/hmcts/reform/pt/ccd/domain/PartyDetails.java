@@ -77,4 +77,9 @@ public class PartyDetails {
         access = {CitizenAccess.class}
     )
     private String dxNumber;
+
+    @CCD(
+        label = "Party's PCQ ID"
+    )
+    private String pcqId;
 }
