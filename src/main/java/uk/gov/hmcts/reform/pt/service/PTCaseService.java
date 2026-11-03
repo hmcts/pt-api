@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
@@ -105,6 +106,7 @@ public class PTCaseService {
         this.updateMarketRentDetails(ptCase, ptCaseEntity);
         this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
         this.updateLandlordDetails(ptCase, ptCaseEntity);
+        this.updateExtraSupportDetails(ptCase, applicantCaseParty);
     }
 
     @Transactional
@@ -266,5 +268,16 @@ public class PTCaseService {
 
         setIfNotNull(landlordDetails.getRepresentativeType(), ptCaseEntity::setLandlordType);
         ptCaseRepository.save(ptCaseEntity);
+    }
+
+    @Transactional
+    public void updateExtraSupportDetails(PTCase ptCase, CasePartyEntity applicantParty) {
+        ExtraSupportDetails extraSupportDetails = ptCase.getExtraSupportDetails();
+        if (extraSupportDetails == null) {
+            return;
+        }
+
+        setIfNotNull(extraSupportDetails.getExtraSupportRequired(), applicantParty::setExtraSupportRequired);
+        casePartyRepository.save(applicantParty);
     }
 }

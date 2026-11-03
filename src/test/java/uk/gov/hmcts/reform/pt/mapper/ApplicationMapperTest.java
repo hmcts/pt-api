@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
@@ -139,6 +140,31 @@ class ApplicationMapperTest {
         assertThat(result.getLastName()).isNull();
         assertThat(result.getCompanyName()).isNull();
         assertThat(result.getReferenceNumberForCommunications()).isNull();
+    }
+
+    @Test
+    void shouldMapExtraSupportDetails() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .build();
+
+        ExtraSupportDto result = ApplicationMapper.mapExtraSupportDetails(caseParty);
+
+        assertThat(result.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldMapExtraSupportDetailsWhenNoOrNull() {
+        CasePartyEntity casePartyNo = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.NO)
+            .build();
+
+        ExtraSupportDto resultNo = ApplicationMapper.mapExtraSupportDetails(casePartyNo);
+        assertThat(resultNo.getExtraSupportRequired()).isEqualTo(YesOrNo.NO);
+
+        CasePartyEntity casePartyNull = CasePartyEntity.builder().build();
+        ExtraSupportDto resultNull = ApplicationMapper.mapExtraSupportDetails(casePartyNull);
+        assertThat(resultNull.getExtraSupportRequired()).isNull();
     }
 
     @Test
@@ -1050,6 +1076,7 @@ class ApplicationMapperTest {
             .ptCase(ptCase)
             .idamId(idamId)
             .contactByText(contactByText)
+            .extraSupportRequired(YesOrNo.YES)
             .address(address)
             .build();
     }
@@ -1128,6 +1155,10 @@ class ApplicationMapperTest {
                             .contentType("application/pdf")
                             .size(2048L)
                             .build())
+                    .build())
+            .extraSupportDetails(
+                ExtraSupportDto.builder()
+                    .extraSupportRequired(YesOrNo.YES)
                     .build())
             .build();
     }

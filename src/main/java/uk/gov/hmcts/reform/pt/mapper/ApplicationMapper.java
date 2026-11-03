@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
@@ -67,6 +68,7 @@ public class ApplicationMapper {
             .currentRentsDetails(mapCurrentRentDetails(ptCase))
             .marketRentDetails(mapMarketRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
+            .extraSupportDetails(mapExtraSupportDetails(caseParty))
             .createdDate(ptCase.getCreatedDate())
             .build();
     }
@@ -283,7 +285,12 @@ public class ApplicationMapper {
             .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
             .landlordRepresentativeType(ptCaseEntity.getLandlordType())
             .build();
+    }
 
+    public static ExtraSupportDto mapExtraSupportDetails(CasePartyEntity caseParty) {
+        return ExtraSupportDto.builder()
+            .extraSupportRequired(caseParty.getExtraSupportRequired())
+            .build();
     }
 
     public static PartyDto mapParty(CasePartyEntity entity) {
