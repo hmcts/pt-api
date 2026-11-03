@@ -73,7 +73,7 @@ public class DocumentService {
 
     @Transactional
     public void updateDocumentsForMarketRentDetails(MarketRentDetails details, PTCaseEntity ptCaseEntity) {
-        this.updateSingleDocument(
+        this.updateMultipleDocuments(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
             ptCaseEntity

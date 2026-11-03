@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -63,10 +64,11 @@ public class CasePartyEntity extends AuditableEntity {
 
     private UUID idamId;
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
+    private UUID pcqId;
+
+    @OneToOne(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
-    @Builder.Default
-    private List<AddressEntity> addresses = new ArrayList<>();
+    private CasePartyAddressEntity address;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

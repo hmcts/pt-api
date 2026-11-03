@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
 
-@EnableScheduling
+@EnableScheduling // Required for scheduled task in CCD SDK's RetainAndDisposeTask
 @ImportAutoConfiguration({FeignAutoConfiguration.class, FeignClientsConfiguration.class,
     HttpMessageConvertersAutoConfiguration.class})
 @EnableFeignClients(
@@ -26,8 +26,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
     scanBasePackages = {
         "uk.gov.hmcts.reform.pt",
         "uk.gov.hmcts.ccd.sdk",
-        "uk.gov.hmcts.reform.ccd.client",
-        "uk.gov.hmcts.reform.sendletter"
+        "uk.gov.hmcts.reform.ccd.client"
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {

@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.pt.entity.AddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.notify.model.NotificationRequest;
 import uk.gov.hmcts.reform.pt.notify.service.NotificationService;
@@ -45,12 +45,12 @@ class LandlordAccessCodeNotificationTest {
 
     @Test
     void shouldScheduleLandlordAccessCodeEmail() {
-        applicant.getAddresses().add(AddressEntity.builder()
-                                         .addressLine1("1 High Street")
-                                         .addressLine2("Flat 2")
-                                         .postTown("Birmingham")
-                                         .postcode("B1 1AA")
-                                         .build());
+        ptCase.setPropertyAddress(CasePropertyAddressEntity.builder()
+                                      .addressLine1("1 High Street")
+                                      .addressLine2("Flat 2")
+                                      .townCity("Birmingham")
+                                      .postcode("B1 1AA")
+                                      .build());
 
         notification.send(ptCase, applicant, landlord, ACCESS_CODE);
 
@@ -69,14 +69,13 @@ class LandlordAccessCodeNotificationTest {
 
     @Test
     void shouldSkipBlankAddressParts() {
-        applicant.getAddresses().add(AddressEntity.builder()
-                                         .addressLine1("1 High Street")
-                                         .addressLine2("  ")
-                                         .addressLine3(null)
-                                         .postTown("Birmingham")
-                                         .county("")
-                                         .postcode("B1 1AA")
-                                         .build());
+        ptCase.setPropertyAddress(CasePropertyAddressEntity.builder()
+                                      .addressLine1("1 High Street")
+                                      .addressLine2("  ")
+                                      .townCity("Birmingham")
+                                      .county("")
+                                      .postcode("B1 1AA")
+                                      .build());
 
         notification.send(ptCase, applicant, landlord, ACCESS_CODE);
 
@@ -85,18 +84,7 @@ class LandlordAccessCodeNotificationTest {
     }
 
     @Test
-    void shouldUseFirstAddressWhenApplicantHasSeveral() {
-        applicant.getAddresses().add(AddressEntity.builder().addressLine1("1 High Street").postcode("B1 1AA").build());
-        applicant.getAddresses().add(AddressEntity.builder().addressLine1("9 Other Road").postcode("M1 1AA").build());
-
-        notification.send(ptCase, applicant, landlord, ACCESS_CODE);
-
-        assertThat(capturedRequest().getPersonalisation())
-            .containsEntry("propertyAddress", "1 High Street, B1 1AA");
-    }
-
-    @Test
-    void shouldSendEmptyAddressWhenApplicantHasNone() {
+    void shouldSendEmptyAddressWhenCaseHasNoPropertyAddress() {
         notification.send(ptCase, applicant, landlord, ACCESS_CODE);
 
         assertThat(capturedRequest().getPersonalisation()).containsEntry("propertyAddress", "");

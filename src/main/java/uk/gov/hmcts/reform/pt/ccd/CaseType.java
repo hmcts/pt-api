@@ -12,7 +12,7 @@ import static java.lang.System.getenv;
 import static java.util.Optional.ofNullable;
 
 /**
- * Setup some common possessions case type configuration.
+ * Setup some common PT case type configuration.
  */
 @Component
 public class CaseType implements CCDConfig<PTCase, State, UserRole> {

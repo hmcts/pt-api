@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.pt.ccd.CaseType;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
-import uk.gov.hmcts.reform.pt.functional.steps.BaseApi;
 import uk.gov.hmcts.reform.pt.functional.testutils.PayloadLoader;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
 import uk.gov.hmcts.reform.pt.functional.testutils.RandomNumberUtil;
@@ -22,7 +21,7 @@ import java.util.Map;
 @Tag("Functional")
 @ExtendWith(SerenityJUnit5Extension.class)
 @EnabledIfEnvironmentVariable(named = "CCD_ENABLED", matches = "true")
-class CitizenDeleteApplicationEventCallbackTests extends BaseApi {
+class CitizenDeleteApplicationEventCallbackTests {
 
     @Steps
     ApiSteps apiSteps;
