@@ -64,6 +64,8 @@ spring:
 #      maxLifetime: 7200000
 #      connectionTimeout: 30000
   jpa:
+    hibernate:
+      ddl-auto: validate
     properties:
       dialect: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
