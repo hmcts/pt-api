@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = { "spring.flyway.enabled=false" })
+    properties = { "spring.flyway.enabled=false", "spring.jpa.hibernate.ddl-auto=none" })
 @AutoConfigureMockMvc
 class OpenAPIPublisherTest {
 
