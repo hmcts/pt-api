@@ -83,13 +83,6 @@ spring:
     oauth2:
       client:
         registration:
-          prd-admin:
-            provider: idam
-            client-id: ${IDAM_CLIENT_ID:pt-api}
-            client-secret: ${IDAM_CLIENT_SECRET:dummy-secret-for-local}
-            client-authentication-method: client_secret_post
-            authorization-grant-type: password
-            scope: openid,profile,roles
           system-user:
             provider: idam
             client-id: ${IDAM_CLIENT_ID:pt-api}
@@ -138,9 +131,6 @@ caseApi:
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
-
-send-letter:
-  url: ${SEND_LETTER_URL:http://localhost:8485}
 
 pt-frontend:
   url: ${PT_FRONTEND_URL:http://localhost:4000}
