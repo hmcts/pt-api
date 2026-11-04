@@ -24,7 +24,7 @@ public class FeeService {
      * Retrieves fee information from the Fees Register based on a configured fee type key.
      * The key must exist in {@link FeesConfiguration}; otherwise a {@link FeeNotFoundException} is thrown.
      *
-     * @param feeType the logical fee type key (e.g., "caseIssued")
+     * @param feeType the logical fee type key (e.g., "applicationFee")
      * @return a {@link FeeDetails} representing the fee details
      * @throws FeeNotFoundException if the fee type is not configured or the Fees Register call fails
      */
