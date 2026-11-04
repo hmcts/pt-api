@@ -8,4 +8,5 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 public class ExtraSupportDto {
     private YesOrNo extraSupportRequired;
+    private String extraSupportRequiredDetails;
 }

@@ -290,6 +290,7 @@ public class ApplicationMapper {
     public static ExtraSupportDto mapExtraSupportDetails(CasePartyEntity caseParty) {
         return ExtraSupportDto.builder()
             .extraSupportRequired(caseParty.getExtraSupportRequired())
+            .extraSupportRequiredDetails(caseParty.getExtraSupportRequiredDetails())
             .build();
     }
 

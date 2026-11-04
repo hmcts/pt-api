@@ -146,11 +146,13 @@ class ApplicationMapperTest {
     void shouldMapExtraSupportDetails() {
         CasePartyEntity caseParty = CasePartyEntity.builder()
             .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Sign language interpreter")
             .build();
 
         ExtraSupportDto result = ApplicationMapper.mapExtraSupportDetails(caseParty);
 
         assertThat(result.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getExtraSupportRequiredDetails()).isEqualTo("Sign language interpreter");
     }
 
     @Test
@@ -161,10 +163,12 @@ class ApplicationMapperTest {
 
         ExtraSupportDto resultNo = ApplicationMapper.mapExtraSupportDetails(casePartyNo);
         assertThat(resultNo.getExtraSupportRequired()).isEqualTo(YesOrNo.NO);
+        assertThat(resultNo.getExtraSupportRequiredDetails()).isNull();
 
         CasePartyEntity casePartyNull = CasePartyEntity.builder().build();
         ExtraSupportDto resultNull = ApplicationMapper.mapExtraSupportDetails(casePartyNull);
         assertThat(resultNull.getExtraSupportRequired()).isNull();
+        assertThat(resultNull.getExtraSupportRequiredDetails()).isNull();
     }
 
     @Test
@@ -1077,6 +1081,7 @@ class ApplicationMapperTest {
             .idamId(idamId)
             .contactByText(contactByText)
             .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Hearing loop required")
             .address(address)
             .build();
     }
@@ -1159,6 +1164,7 @@ class ApplicationMapperTest {
             .extraSupportDetails(
                 ExtraSupportDto.builder()
                     .extraSupportRequired(YesOrNo.YES)
+                    .extraSupportRequiredDetails("Hearing loop required")
                     .build())
             .build();
     }

@@ -14,8 +14,14 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @AllArgsConstructor
 public class ExtraSupportDetails {
     @CCD(
-        label = "Does the applicant party requires extra support?",
+        label = "Does the applicant party require extra support?",
         access = {CitizenAccess.class}
     )
     private YesOrNo extraSupportRequired;
+
+    @CCD(
+        label = "Extra support required details",
+        access = {CitizenAccess.class}
+    )
+    private String extraSupportRequiredDetails;
 }

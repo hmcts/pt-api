@@ -278,6 +278,8 @@ public class PTCaseService {
         }
 
         setIfNotNull(extraSupportDetails.getExtraSupportRequired(), applicantParty::setExtraSupportRequired);
+        setIfNotNull(extraSupportDetails.getExtraSupportRequiredDetails(),
+                     applicantParty::setExtraSupportRequiredDetails);
         casePartyRepository.save(applicantParty);
     }
 }

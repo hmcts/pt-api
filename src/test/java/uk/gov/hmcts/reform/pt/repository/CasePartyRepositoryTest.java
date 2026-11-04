@@ -82,6 +82,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         assertThat(result).isPresent();
         assertThat(result.get().getPtCase().getCaseReference()).isEqualTo(caseReference);
         assertThat(result.get().getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(result.get().getExtraSupportRequiredDetails()).isEqualTo("Help");
     }
 
     @Test
@@ -132,6 +133,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
             .ptCase(ptCase)
             .idamId(idamId)
             .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Help")
             .build());
         return ptCase;
     }
