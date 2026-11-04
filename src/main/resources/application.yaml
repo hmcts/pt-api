@@ -171,9 +171,6 @@ fees:
       channel: default
       event: issue
       keyword:
-  request:
-    max-retries: ${FEES_AND_PAY_TASK_MAX_RETRIES:5}
-    backoff-delay-seconds: ${FEES_AND_PAY_TASK_BACKOFF_DELAY_SECONDS:600s}
 payments:
   api:
     url: ${PAYMENT_API_URL:http://localhost:8083/payments}
