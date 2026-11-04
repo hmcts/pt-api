@@ -336,7 +336,6 @@ tasks.register('fortifyScan', JavaExec) {
 }
 
 project.tasks.named("generateCCDConfig") {
-  environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JPA_HIBERNATE_DDL_AUTO', 'none'
   environment 'PT_DB_USER_NAME', 'postgres'
@@ -362,7 +361,6 @@ tasks.withType(CftlibExec).configureEach {
   environment 'DB_PORT', '6432'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_PT', 'http://localhost:4550'
   environment 'SPRING_FLYWAY_ENABLED', 'true'
-  environment 'SPRING_PROFILES_ACTIVE', 'dev'
   environment 'XUI_JURISDICTIONS', 'PT'
   environment 'XUI_DOCUMENTS_API_V2', 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
   environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,pt_frontend,pt_api'
