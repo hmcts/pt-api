@@ -6,9 +6,6 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-  sql:
-    init:
-      mode: always
   jpa:
     hibernate:
       ddl-auto: validate
