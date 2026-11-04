@@ -23,14 +23,10 @@ ccd:
         username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
         password: ${PT_IDAM_SYSTEM_PASSWORD:password}
 
-# If you use a database then uncomment the `group:, readiness: and include: "db"` lines in the health probes and uncomment the datasource section
 management:
   endpoint:
     health:
       show-details: "always"
-      # group:
-      #  readiness:
-      #   include: "db"
   endpoints:
     web:
       base-path: /
@@ -56,25 +52,13 @@ spring:
     password: ${PT_DB_PASSWORD:}
     properties:
       charSet: UTF-8
-#    hikari:
-#      minimumIdle: 2
-#      maximumPoolSize: 10
-#      idleTimeout: 10000
-#      poolName: PtHikariCP
-#      maxLifetime: 7200000
-#      connectionTimeout: 30000
   jpa:
     properties:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
         # Load lazy associations for up to this many owners per query instead of one at a time.
         # ApplicationMapper walks caseParty and ptCase and then several of their collections, so
         # without this each one costs a separate select per case.
         default_batch_fetch_size: 25
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#        format_sql: true
-#        show-sql: ${SPRING_JPA_SHOW_SQL:false}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
@@ -131,7 +115,7 @@ idam:
 
 core_case_data:
   api:
-    url: ${CCD_DATA_STORE_URL:localhost:4452}
+    url: ${CCD_DATA_STORE_URL:http://localhost:4452}
 
 caseApi:
   url: ${CASE_API_URL:http://localhost:4550}
