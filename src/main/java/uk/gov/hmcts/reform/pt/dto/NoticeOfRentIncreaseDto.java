@@ -16,5 +16,6 @@ public class NoticeOfRentIncreaseDto {
     private DocumentDto noticeNotLegallyValidDocument;
 
     private YesOrNo rentIncreaseToCauseHardship;
+    private String rentIncreaseToCauseHardshipDetails;
     private DocumentDto rentIncreaseToCauseHardshipDocument;
 }
