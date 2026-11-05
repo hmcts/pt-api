@@ -190,6 +190,7 @@ class PTCaseServiceTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noticeLegallyValid(YesOrNo.YES)
             .rentIncreaseToCauseHardship(YesOrNo.NO)
+            .rentIncreaseToCauseHardshipDetails("Hardship expected")
             .build();
 
         PropertyDetails propertyDetails = PropertyDetails.builder()
@@ -452,6 +453,7 @@ class PTCaseServiceTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noticeLegallyValid(YesOrNo.NO)
             .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .rentIncreaseToCauseHardshipDetails("Hardship")
             .build();
         PTCase ptCase = PTCase.builder()
             .noticeOfRentIncreaseDetails(noticeDetails)
