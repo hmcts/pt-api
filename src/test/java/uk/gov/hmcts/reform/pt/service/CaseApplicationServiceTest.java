@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.PendingDisposal;
 import static uk.gov.hmcts.reform.pt.ccd.domain.TenancyType.ASSURED_PERIODIC_TENANCY;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,7 +88,7 @@ class CaseApplicationServiceTest {
         LocalDateTime created = LocalDateTime.of(2026, 1, 2, 3, 4);
         LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
 
-        when(casePartyRepository.findActiveApplicationsByIdamId(userId))
+        when(casePartyRepository.findActiveApplicationsByIdamId(userId, List.of(PendingDisposal.name())))
             .thenReturn(List.of(
                 new Summary(1L, CASE_REFERENCE, created, submitted, State.AWAITING_SUBMISSION_TO_HMCTS)));
 
@@ -99,7 +100,7 @@ class CaseApplicationServiceTest {
         assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
         assertThat(result.getFirst().getState()).isEqualTo(State.AWAITING_SUBMISSION_TO_HMCTS);
 
-        verify(casePartyRepository).findActiveApplicationsByIdamId(userId);
+        verify(casePartyRepository).findActiveApplicationsByIdamId(userId, List.of(PendingDisposal.name()));
         verifyNoMoreInteractions(casePartyRepository);
     }
 
