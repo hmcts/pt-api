@@ -283,6 +283,7 @@ class ApplicationMapperTest {
             .noticeLegallyValid(YesOrNo.NO)
             .noticeNotLegallyValidDetails("Incorrect notice period")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .hardshipDetails("Financial hardship")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -299,6 +300,7 @@ class ApplicationMapperTest {
         assertThat(result.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
         assertThat(result.getNoticeNotLegallyValidDetails()).isEqualTo("Incorrect notice period");
         assertThat(result.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getRentIncreaseToCauseHardshipDetails()).isEqualTo("Financial hardship");
 
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isEqualTo(
             DocumentDto.builder()
@@ -342,6 +344,7 @@ class ApplicationMapperTest {
         assertThat(result.getNoticeLegallyValid()).isNull();
         assertThat(result.getNoticeNotLegallyValidDetails()).isNull();
         assertThat(result.getRentIncreaseToCauseHardship()).isNull();
+        assertThat(result.getRentIncreaseToCauseHardshipDetails()).isNull();
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
         assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
         assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
@@ -367,6 +370,7 @@ class ApplicationMapperTest {
         assertThat(result.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(result.getNoticeLegallyValid()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.NO);
+        assertThat(result.getRentIncreaseToCauseHardshipDetails()).isNull();
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
         assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
         assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
