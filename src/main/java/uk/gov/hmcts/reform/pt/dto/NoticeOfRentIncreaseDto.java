@@ -6,6 +6,8 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
 import java.util.List;
 
+import java.util.List;
+
 @Data
 @Builder
 public class NoticeOfRentIncreaseDto {
@@ -19,5 +21,5 @@ public class NoticeOfRentIncreaseDto {
 
     private YesOrNo rentIncreaseToCauseHardship;
     private String rentIncreaseToCauseHardshipDetails;
-    private DocumentDto rentIncreaseToCauseHardshipDocument;
+    private List<DocumentDto> rentIncreaseHardshipDocuments;
 }

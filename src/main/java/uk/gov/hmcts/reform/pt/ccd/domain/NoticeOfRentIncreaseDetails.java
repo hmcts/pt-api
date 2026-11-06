@@ -70,5 +70,6 @@ public class NoticeOfRentIncreaseDetails {
         label = "Rent increase to cause hardship document",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument rentIncreaseToCauseHardshipDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> rentIncreaseHardshipDocuments = new ArrayList<>();
 }
