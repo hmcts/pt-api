@@ -250,8 +250,8 @@ class DocumentServiceTest {
 
         NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
             .landlordNoticeProposingNewRentDocument(noticeDoc)
-            .noticeNotLegallyValidDocument(invalidNoticeDoc)
-            .rentIncreaseToCauseHardshipDocument(hardshipDoc)
+            .noticeNotLegallyValidDocuments(List.of(new ListValue<>("1", invalidNoticeDoc)))
+            .rentIncreaseHardshipDocuments(List.of(new ListValue<>("1", hardshipDoc)))
             .build();
 
         documentService.updateDocumentsForNoticeOfRentChange(details, ptCase);
