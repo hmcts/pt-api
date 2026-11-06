@@ -16,32 +16,38 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.CASE_ISSUED;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.CLOSED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.DRAFT_DISCARDED;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.PENDING_CASE_ISSUED;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.REQUESTED_FOR_DELETION;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.PendingDisposal;
 
 @Service
 @RequiredArgsConstructor
 public class CaseApplicationService {
 
-    private final CasePartyRepository casePartyRepository;
-
-    //TODO: CONFIRM are there any other states we don't want to return cases to FE for applicant?
-    private static final List<String> APPLICANT_EXCLUDED_STATES = Stream.of(
-            PendingDisposal
+    public static final List<String> APPLICANT_EXCLUDED_STATES = Stream.of(
+            PendingDisposal,
+            REQUESTED_FOR_DELETION,
+            CLOSED
         )
         .map(State::name)
         .toList();
 
-    //TODO: CONFIRM which case states the respondent should not be able to see a cases in
-    private static final List<String> RESPONDENT_EXCLUDED_STATES = Stream.of(
+    public static final List<String> RESPONDENT_EXCLUDED_STATES = Stream.of(
             PendingDisposal,
             AWAITING_SUBMISSION_TO_HMCTS,
             PENDING_CASE_ISSUED,
-            DRAFT_DISCARDED
+            DRAFT_DISCARDED,
+            CASE_ISSUED,
+            REQUESTED_FOR_DELETION,
+            CLOSED
         )
         .map(State::name)
         .toList();
+
+    private final CasePartyRepository casePartyRepository;
 
     public List<ApplicationDto> getCasesForUser(UUID userId) {
         return casePartyRepository.findActiveApplicationsByIdamId(userId, APPLICANT_EXCLUDED_STATES)

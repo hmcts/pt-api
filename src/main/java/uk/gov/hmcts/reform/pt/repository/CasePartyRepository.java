@@ -17,7 +17,6 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
 
     List<CasePartyEntity> findAllByIdamId(UUID idamId);
 
-    //TODO: confirm states that we want to omit from the search
     @Query(value = """
         SELECT DISTINCT
             pc.id                         AS id,
