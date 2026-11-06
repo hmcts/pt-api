@@ -51,13 +51,20 @@ public class NoticeOfRentIncreaseDetails {
         label = "Notice for not legally valid document",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument noticeNotLegallyValidDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> noticeNotLegallyValidDocuments = new ArrayList<>();
 
     @CCD(
         label = "Will rent increase cause hardship",
         access = {CitizenAccess.class}
     )
     private YesOrNo rentIncreaseToCauseHardship;
+
+    @CCD(
+        label = "Details why rent increase will cause hardship",
+        access = {CitizenAccess.class}
+    )
+    private String rentIncreaseToCauseHardshipDetails;
 
     @CCD(
         label = "Rent increase to cause hardship document",
