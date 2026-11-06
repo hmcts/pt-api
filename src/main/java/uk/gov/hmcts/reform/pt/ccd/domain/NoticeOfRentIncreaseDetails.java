@@ -56,6 +56,12 @@ public class NoticeOfRentIncreaseDetails {
     private YesOrNo rentIncreaseToCauseHardship;
 
     @CCD(
+        label = "Details why rent increase will cause hardship",
+        access = {CitizenAccess.class}
+    )
+    private String rentIncreaseToCauseHardshipDetails;
+
+    @CCD(
         label = "Rent increase to cause hardship document",
         access = {CitizenAccess.class}
     )
