@@ -40,9 +40,9 @@ public class DocumentService {
             details.getNoticeNotLegallyValidDocuments(),
             ptCaseEntity
         );
-        this.updateSingleDocument(
+        this.updateMultipleDocuments(
             DocumentType.HARDSHIP_EVIDENCE,
-            details.getRentIncreaseToCauseHardshipDocument(),
+            details.getRentIncreaseHardshipDocuments(),
             ptCaseEntity
         );
     }

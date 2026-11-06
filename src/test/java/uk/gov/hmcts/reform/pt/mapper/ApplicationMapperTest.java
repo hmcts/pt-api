@@ -320,7 +320,7 @@ class ApplicationMapperTest {
                 .size(2048L)
                 .build()
         );
-        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isEqualTo(
+        assertThat(result.getRentIncreaseHardshipDocuments()).containsExactly(
             DocumentDto.builder()
                 .url("http://dm-store/doc/3")
                 .binaryUrl("http://dm-store/doc/3/binary")
@@ -347,7 +347,7 @@ class ApplicationMapperTest {
         assertThat(result.getRentIncreaseToCauseHardshipDetails()).isNull();
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
         assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
-        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
+        assertThat(result.getRentIncreaseHardshipDocuments()).isEmpty();
     }
 
     @Test
@@ -373,7 +373,7 @@ class ApplicationMapperTest {
         assertThat(result.getRentIncreaseToCauseHardshipDetails()).isNull();
         assertThat(result.getLandlordNoticeProposingNewRentDocument()).isNull();
         assertThat(result.getNoticeNotLegallyValidDocuments()).isEmpty();
-        assertThat(result.getRentIncreaseToCauseHardshipDocument()).isNull();
+        assertThat(result.getRentIncreaseHardshipDocuments()).isEmpty();
     }
 
     @Test
@@ -1100,8 +1100,11 @@ class ApplicationMapperTest {
                     .noDecisionWithoutInspectionReason("Inspection reason")
                     .build())
             .noticeOfRentIncreaseDetails(
+                
                 NoticeOfRentIncreaseDto.builder()
                     .noticeNotLegallyValidDocuments(List.of())
+                    
+                    .rentIncreaseHardshipDocuments(List.of())
                     .build())
             .propertyDetails(
                 PropertyDetailsDto.builder()
