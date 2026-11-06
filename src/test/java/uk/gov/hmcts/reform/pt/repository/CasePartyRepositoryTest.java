@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -80,6 +81,8 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
 
         assertThat(result).isPresent();
         assertThat(result.get().getPtCase().getCaseReference()).isEqualTo(caseReference);
+        assertThat(result.get().getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(result.get().getExtraSupportRequiredDetails()).isEqualTo("Help");
     }
 
     @Test
@@ -129,6 +132,8 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         repository.save(CasePartyEntity.builder()
             .ptCase(ptCase)
             .idamId(idamId)
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Help")
             .build());
         return ptCase;
     }

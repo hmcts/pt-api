@@ -74,6 +74,13 @@ public class CasePartyEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo contactByText;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo extraSupportRequired;
+
+    @Column(length = 500)
+    private String extraSupportRequiredDetails;
+
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default

@@ -29,4 +29,5 @@ public class EnrichedApplicationDto {
     private MarketRentDto marketRentDetails;
     private TenancyAgreementDto tenancyAgreementDetails;
     private LandlordDetailsDto landlordDetails;
+    private ExtraSupportDto extraSupportDetails;
 }
