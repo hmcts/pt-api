@@ -1,4 +1,5 @@
 import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.gradle.api.tasks.options.Option
 import uk.gov.hmcts.rse.AuthMode
 import uk.gov.hmcts.rse.CftlibExec
 
@@ -323,19 +324,22 @@ tasks.register('migratePostgresDatabase', FlywayMigrateTask) {
 
 def ddlPipeline = "$projectDir/scripts/generate-migration.sh"
 
-tasks.register('generateMigration', Exec) {
+abstract class GenerateMigration extends Exec {
+  @Input
+  @Optional
+  @Option(option = 'name', description = 'Name for the generated migration, e.g. add_review_notes')
+  abstract Property<String> getMigrationName()
+}
+
+tasks.register('generateMigration', GenerateMigration) {
   group = 'ddl'
-  description = 'Converts the Oracle DDL to Postgres and generates a Flyway migration. Pass -PmigrationName=<name>.'
-  // Validated in doFirst, not here: a configuration-time throw would break any
-  // invocation that realises every task, such as `gradlew tasks` or an IDE sync.
-  // Not -Pname either: that collides with Gradle's built-in Project.name.
-  commandLine ddlPipeline, '--help'
+  description = 'Converts the Oracle DDL to Postgres and generates a Flyway migration.'
   doFirst {
-    if (!project.hasProperty('migrationName')) {
+    if (!migrationName.isPresent()) {
       throw new GradleException(
-        "Missing migration name. Usage: ./gradlew generateMigration -PmigrationName=add_review_notes")
+        "Missing migration name. Usage: ./gradlew generateMigration --name=add_review_notes")
     }
-    commandLine ddlPipeline, project.property('migrationName')
+    commandLine ddlPipeline, migrationName.get()
   }
 }
 
