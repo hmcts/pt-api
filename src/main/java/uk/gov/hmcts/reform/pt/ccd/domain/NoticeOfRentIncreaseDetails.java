@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -47,7 +51,8 @@ public class NoticeOfRentIncreaseDetails {
         label = "Notice for not legally valid document",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument noticeNotLegallyValidDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> noticeNotLegallyValidDocuments = new ArrayList<>();
 
     @CCD(
         label = "Will rent increase cause hardship",
@@ -56,8 +61,15 @@ public class NoticeOfRentIncreaseDetails {
     private YesOrNo rentIncreaseToCauseHardship;
 
     @CCD(
+        label = "Details why rent increase will cause hardship",
+        access = {CitizenAccess.class}
+    )
+    private String rentIncreaseToCauseHardshipDetails;
+
+    @CCD(
         label = "Rent increase to cause hardship document",
         access = {CitizenAccess.class}
     )
-    private UploadedDocument rentIncreaseToCauseHardshipDocument;
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> rentIncreaseHardshipDocuments = new ArrayList<>();
 }

@@ -18,6 +18,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Table(name = "case_party_type")
 public class CasePartyTypeEntity extends AuditableEntity {
-    @Column(length = 100)
+    @Column(name = "type_name", length = 100)
     private String applicationTypeName;
 }
