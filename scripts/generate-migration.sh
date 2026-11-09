@@ -5,8 +5,7 @@ set -euo pipefail
 readonly ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 readonly ORACLE_DDL="${ORACLE_DDL:-ddl/oracle/oracle_ddl.sql}"
 readonly POSTGRES_DDL="${POSTGRES_DDL:-ddl/postgres/postgres_ddl.sql}"
-# src/main/resources/db/migration once the DDLs are in sync.
-readonly MIGRATION_DIR="${MIGRATION_DIR:-ddl/temp_migrations}"
+readonly MIGRATION_DIR="${MIGRATION_DIR:-src/main/resources/db/migration}"
 readonly PYTHON_IMAGE="python:3.12-slim"
 readonly ATLAS_IMAGE="arigaio/atlas:latest"
 readonly POSTGRES_IMAGE="postgres:16"
@@ -16,7 +15,7 @@ readonly RUN_AS="$(id -u):$(id -g)"
 
 readonly COMMAND="${1:-}"
 if [[ -z "$COMMAND" ]]; then
-    echo "usage: $(basename "$0") <migration_name>|--baseline|--verify" >&2
+    echo "usage: $(basename "$0") <migration_name>|--baseline|--verify|--reverse" >&2
     exit 64
 fi
 
@@ -161,11 +160,10 @@ normalise_output() {
     fi
 }
 
-# Renders the schema the existing migrations produce, as Postgres DDL. Use this
-# to seed ddl/postgres so a diff describes a delta rather than dropping
-# everything the DDL does not mention.
+# Renders the schema the existing migrations produce, as Postgres DDL.
 baseline() {
-    echo "==> Rendering current schema from $MIGRATION_DIR"
+    local redirect="${1:-}"
+    echo "==> Rendering current schema from $MIGRATION_DIR" >&2
     docker run --rm \
         --network "$NETWORK" \
         --volume "$ROOT:/work" \
@@ -173,7 +171,33 @@ baseline() {
         "$ATLAS_IMAGE" schema inspect \
         --url "file://$MIGRATION_DIR?format=flyway" \
         --dev-url "postgres://postgres:atlas@$DEV_DB:5432/dev?sslmode=disable&search_path=public" \
-        --format '{{ sql . "  " }}'
+        --format '{{ sql . "  " }}' \
+        | grep -vE '^To upgrade|^$'
+}
+
+# Derive both DDLs from what the migrations actually produce. Use this
+# to initialise and establish alignment.
+reverse() {
+    echo "==> Rebuilding $POSTGRES_DDL from $MIGRATION_DIR"
+    mkdir -p "$(dirname "$POSTGRES_DDL")"
+    baseline > "$POSTGRES_DDL"
+    echo "    wrote $(grep -c 'CREATE TABLE' "$POSTGRES_DDL") table(s) to $POSTGRES_DDL"
+
+    echo "==> Converting $POSTGRES_DDL to Oracle"
+    mkdir -p "$(dirname "$ORACLE_DDL")"
+    docker run --rm \
+        --volume "$ROOT:/work" \
+        --workdir /work \
+        --user "$RUN_AS" \
+        --env HOME=/tmp \
+        "$PYTHON_IMAGE" \
+        sh -c "pip install --quiet --disable-pip-version-check sqlglot \
+            && python scripts/postgres_to_oracle.py '$POSTGRES_DDL' '$ORACLE_DDL'"
+
+    # Atlas and sqlglot format SQL differently, so the Postgres DDL has to be
+    # re-derived through the forward transpiler. Otherwise --verify compares
+    # Atlas's output against sqlglot's and always reports a difference.
+    transpile
 }
 
 verify() {
@@ -241,6 +265,13 @@ warn_on_destructive_changes() {
         echo "Review it before committing." >&2
     fi
 }
+
+if [[ "$COMMAND" == "--reverse" ]]; then
+    ensure_checksum
+    start_dev_database
+    reverse
+    exit 0
+fi
 
 if [[ "$COMMAND" == "--verify" ]]; then
     ensure_checksum

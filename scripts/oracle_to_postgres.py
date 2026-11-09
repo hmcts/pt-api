@@ -1,11 +1,3 @@
-"""Transpile an Oracle DDL file to Postgres using sqlglot.
-
-sqlglot handles most of the dialect translation but leaves a few Oracle-isms
-that are not valid Postgres, so they are rewritten explicitly below. Keep this
-list small and visible: each entry is a translation sqlglot does not make, not
-a preference.
-"""
-
 import pathlib
 import re
 import sys
@@ -14,7 +6,11 @@ import sqlglot
 
 FIXUPS: list[tuple[str, str, str]] = [
     (r"\bSYSTIMESTAMP\(\)", "CURRENT_TIMESTAMP", "SYSTIMESTAMP has no Postgres equivalent"),
-    (r"\bDECIMAL\(19\)", "BIGINT", "NUMBER(19) is an integer id, not a decimal"),
+    (r"\bDECIMAL\(19\)", "BIGINT", "NUMBER(19) is a 64-bit id"),
+    (r"\bDECIMAL\(10\)", "INTEGER", "NUMBER(10) is a 32-bit int"),
+    (r"\bDECIMAL\(5\)", "SMALLINT", "NUMBER(5) is a 16-bit int"),
+    (r"\bDECIMAL\(1\)", "BOOLEAN", "NUMBER(1) is Oracle's boolean stand-in"),
+    (r"\bRAW\(16\)", "UUID", "RAW(16) is Oracle's UUID stand-in"),
 ]
 
 
