@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeType;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 @Data
@@ -14,7 +14,7 @@ import java.util.Map;
 @ConfigurationProperties("fees")
 public class FeesConfiguration {
 
-    private Map<FeeType, LookUpReferenceData> lookup = new HashMap<>();
+    private Map<FeeType, LookUpReferenceData> lookup = new EnumMap<>(FeeType.class);
 
     @Data
     public static class LookUpReferenceData {
