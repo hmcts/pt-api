@@ -138,7 +138,8 @@ class SecurityConfigurationIT {
     @Test
     @DisplayName("Idam allows Internal error without inspecting /error page")
     void shouldNotReturnForbiddenFromIdam_whenA500WouldBExpected() throws Exception {
-        when(caseApplicationService.getCaseByCaseReference(eq(123L),any())).thenThrow(new IllegalStateException("Ooops"));
+        when(caseApplicationService.getCaseByCaseReference(eq(123L),any()))
+            .thenThrow(new IllegalStateException("Ooops"));
         mockMvc.perform(get("/applications/123")
                             .header(ServiceAuthFilter.AUTHORISATION, S2S_TOKEN)
                             .header(HttpHeaders.AUTHORIZATION, IDAM_TOKEN))
