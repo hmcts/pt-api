@@ -44,6 +44,7 @@ class NoticeOfRentChangeServiceTest {
             .noticeLegallyValid(YesOrNo.NO)
             .noticeNotLegallyValidDetails("Invalid date on notice")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .rentIncreaseToCauseHardshipDetails("Financial hardship")
             .build();
 
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(details, ptCaseEntity);
@@ -60,6 +61,7 @@ class NoticeOfRentChangeServiceTest {
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getNoticeNotLegallyValidDetails()).isEqualTo("Invalid date on notice");
         assertThat(saved.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
+        assertThat(saved.getHardshipDetails()).isEqualTo("Financial hardship");
     }
 
     @Test
@@ -71,6 +73,7 @@ class NoticeOfRentChangeServiceTest {
             .noticeLegallyValid(YesOrNo.YES)
             .noticeNotLegallyValidDetails(null)
             .rentIncreaseToCauseHardship(YesOrNo.NO)
+            .hardshipDetails("Old hardship")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
@@ -85,6 +88,7 @@ class NoticeOfRentChangeServiceTest {
             .noticeLegallyValid(YesOrNo.NO)
             .noticeNotLegallyValidDetails("Updated details")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .rentIncreaseToCauseHardshipDetails("Updated hardship")
             .build();
 
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(details, ptCaseEntity);
@@ -96,5 +100,6 @@ class NoticeOfRentChangeServiceTest {
         assertThat(existing.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
         assertThat(existing.getNoticeNotLegallyValidDetails()).isEqualTo("Updated details");
         assertThat(existing.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getHardshipDetails()).isEqualTo("Updated hardship");
     }
 }
