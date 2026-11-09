@@ -321,6 +321,30 @@ tasks.register('migratePostgresDatabase', FlywayMigrateTask) {
   }
 }
 
+def ddlPipeline = "$projectDir/scripts/generate-migration.sh"
+
+tasks.register('generateMigration', Exec) {
+  group = 'ddl'
+  description = 'Converts the Oracle DDL to Postgres and generates a Flyway migration. Pass -PmigrationName=<name>.'
+  // Validated in doFirst, not here: a configuration-time throw would break any
+  // invocation that realises every task, such as `gradlew tasks` or an IDE sync.
+  // Not -Pname either: that collides with Gradle's built-in Project.name.
+  commandLine ddlPipeline, '--help'
+  doFirst {
+    if (!project.hasProperty('migrationName')) {
+      throw new GradleException(
+        "Missing migration name. Usage: ./gradlew generateMigration -PmigrationName=add_review_notes")
+    }
+    commandLine ddlPipeline, project.property('migrationName')
+  }
+}
+
+tasks.register('verifyDDL', Exec) {
+  group = 'ddl'
+  description = 'Checks the committed Postgres DDL and migrations match the Oracle DDL.'
+  commandLine ddlPipeline, '--verify'
+}
+
 tasks.register('fortifyScan', JavaExec) {
   mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
