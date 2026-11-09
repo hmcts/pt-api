@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -132,6 +133,19 @@ class SecurityConfigurationIT {
 
         verify(serviceAuthorisationApi).getServiceName(S2S_TOKEN);
         verifyNoInteractions(idamAuthenticator);
+    }
+
+    @Test
+    @DisplayName("Idam allows Internal error without inspecting /error page")
+    void shouldNotReturnForbiddenFromIdam_whenA500WouldBExpected() throws Exception {
+        when(caseApplicationService.getCaseByCaseReference(eq(123L),any())).thenThrow(new IllegalStateException("Ooops"));
+        mockMvc.perform(get("/applications/123")
+                            .header(ServiceAuthFilter.AUTHORISATION, S2S_TOKEN)
+                            .header(HttpHeaders.AUTHORIZATION, IDAM_TOKEN))
+            .andExpect(status().isInternalServerError());
+
+        verify(serviceAuthorisationApi).getServiceName(S2S_TOKEN);
+        verify(idamAuthenticator).validateAuthToken(IDAM_TOKEN);
     }
 
     @DisplayName("Service and Idam checks for anonymous paths")
