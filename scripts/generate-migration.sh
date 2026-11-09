@@ -16,7 +16,7 @@ readonly RUN_AS="$(id -u):$(id -g)"
 
 readonly COMMAND="${1:-}"
 if [[ -z "$COMMAND" ]]; then
-    echo "usage: $(basename "$0") <migration_name>|--baseline" >&2
+    echo "usage: $(basename "$0") <migration_name>|--baseline|--verify" >&2
     exit 64
 fi
 
@@ -27,18 +27,24 @@ if [[ ! -f "$ORACLE_DDL" ]]; then
     exit 66
 fi
 
+# Verification works on copies so it never mutates tracked files. Must live
+# inside the repo for the bind-mounted containers to reach it.
+readonly VERIFY_DIR=".ddl-verify-$$"
+
 readonly NETWORK="atlas-dev-$$"
 readonly DEV_DB="atlas-dev-db-$$"
 
 cleanup() {
     docker rm -f "$DEV_DB" >/dev/null 2>&1 || true
     docker network rm "$NETWORK" >/dev/null 2>&1 || true
+    rm -rf "$ROOT/$VERIFY_DIR"
 }
 trap cleanup EXIT
 
 transpile() {
+    local target="${1:-$POSTGRES_DDL}"
     echo "==> Converting $ORACLE_DDL to Postgres"
-    mkdir -p "$(dirname "$POSTGRES_DDL")"
+    mkdir -p "$(dirname "$target")"
     docker run --rm \
         --volume "$ROOT:/work" \
         --workdir /work \
@@ -46,7 +52,7 @@ transpile() {
         --env HOME=/tmp \
         "$PYTHON_IMAGE" \
         sh -c "pip install --quiet --disable-pip-version-check sqlglot \
-            && python scripts/oracle_to_postgres.py '$ORACLE_DDL' '$POSTGRES_DDL'"
+            && python scripts/oracle_to_postgres.py '$ORACLE_DDL' '$target'"
 }
 
 start_dev_database() {
@@ -157,8 +163,7 @@ normalise_output() {
 
 # Renders the schema the existing migrations produce, as Postgres DDL. Use this
 # to seed ddl/postgres so a diff describes a delta rather than dropping
-# everything the DDL does not mention. Only covers tables owned by these
-# migrations: ccd.* comes from the SDK's own migrations and is not included.
+# everything the DDL does not mention.
 baseline() {
     echo "==> Rendering current schema from $MIGRATION_DIR"
     docker run --rm \
@@ -169,6 +174,59 @@ baseline() {
         --url "file://$MIGRATION_DIR?format=flyway" \
         --dev-url "postgres://postgres:atlas@$DEV_DB:5432/dev?sslmode=disable&search_path=public" \
         --format '{{ sql . "  " }}'
+}
+
+verify() {
+    local failed=0
+    local expected_ddl="$VERIFY_DIR/postgres_ddl.sql"
+    local migrations_copy="$VERIFY_DIR/migrations"
+
+    mkdir -p "$VERIFY_DIR"
+    transpile "$expected_ddl"
+
+    echo "==> Comparing against committed $POSTGRES_DDL"
+    if ! diff -u "$POSTGRES_DDL" "$expected_ddl"; then
+        echo >&2
+        echo "FAIL: $POSTGRES_DDL does not match $ORACLE_DDL." >&2
+        echo "Run ./scripts/generate-migration.sh <name> and commit the result." >&2
+        failed=1
+    else
+        echo "    $POSTGRES_DDL is up to date"
+    fi
+
+    cp -r "$MIGRATION_DIR" "$migrations_copy"
+    local before after generated
+    before="$(ls "$migrations_copy" | sort)"
+
+    echo "==> Checking the committed migrations produce that schema"
+    docker run --rm \
+        --network "$NETWORK" \
+        --volume "$ROOT:/work" \
+        --workdir /work \
+        --user "$RUN_AS" \
+        "$ATLAS_IMAGE" migrate diff verify_check \
+        --dir "file://$migrations_copy?format=flyway" \
+        --to "file://$expected_ddl" \
+        --dev-url "postgres://postgres:atlas@$DEV_DB:5432/dev?sslmode=disable&search_path=public"
+
+    after="$(ls "$migrations_copy" | sort)"
+    generated="$(comm -13 <(echo "$before") <(echo "$after"))"
+
+    if [[ -n "$generated" ]]; then
+        echo >&2
+        echo "FAIL: $MIGRATION_DIR is missing a migration. Atlas would generate:" >&2
+        echo >&2
+        sed 's/^/    /' "$migrations_copy"/V*verify_check.sql >&2
+        failed=1
+    else
+        echo "    $MIGRATION_DIR is up to date"
+    fi
+
+    if [[ "$failed" == 1 ]]; then
+        exit 1
+    fi
+    echo
+    echo "==> Verification passed"
 }
 
 warn_on_destructive_changes() {
@@ -183,6 +241,13 @@ warn_on_destructive_changes() {
         echo "Review it before committing." >&2
     fi
 }
+
+if [[ "$COMMAND" == "--verify" ]]; then
+    ensure_checksum
+    start_dev_database
+    verify
+    exit 0
+fi
 
 if [[ "$COMMAND" == "--baseline" ]]; then
     ensure_checksum
