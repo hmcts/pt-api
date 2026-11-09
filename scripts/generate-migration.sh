@@ -1,28 +1,18 @@
 #!/usr/bin/env bash
-#
-# Converts the Oracle DDL to Postgres with sqlglot, then generates a Flyway
-# migration for the difference between the existing migrations and that DDL.
-#
-#   ./scripts/generate-migration.sh <migration_name>   generate a migration
-#   ./scripts/generate-migration.sh --baseline          dump the current schema
-#
-# Both tools run in official containers, so nothing needs installing locally.
-# Atlas needs a scratch database to compute the diff against; this starts one
-# rather than letting Atlas spawn its own, which would need the Docker socket.
-#
-# IMPORTANT: ddl/postgres is treated as the *complete* desired schema. Anything
-# the migrations create that is absent from it will be diffed as a DROP. See
-# README notes before using this on a schema the DDL does not fully describe.
 
 set -euo pipefail
 
 readonly ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 readonly ORACLE_DDL="${ORACLE_DDL:-ddl/oracle/oracle_ddl.sql}"
 readonly POSTGRES_DDL="${POSTGRES_DDL:-ddl/postgres/postgres_ddl.sql}"
-readonly MIGRATION_DIR="src/main/resources/db/migration"
+# src/main/resources/db/migration once the DDLs are in sync.
+readonly MIGRATION_DIR="${MIGRATION_DIR:-ddl/temp_migrations}"
 readonly PYTHON_IMAGE="python:3.12-slim"
 readonly ATLAS_IMAGE="arigaio/atlas:latest"
 readonly POSTGRES_IMAGE="postgres:16"
+# Containers write into the bind-mounted repo. Without this they run as root and
+# leave root-owned files behind, which the host user cannot then edit.
+readonly RUN_AS="$(id -u):$(id -g)"
 
 readonly COMMAND="${1:-}"
 if [[ -z "$COMMAND" ]]; then
@@ -52,6 +42,8 @@ transpile() {
     docker run --rm \
         --volume "$ROOT:/work" \
         --workdir /work \
+        --user "$RUN_AS" \
+        --env HOME=/tmp \
         "$PYTHON_IMAGE" \
         sh -c "pip install --quiet --disable-pip-version-check sqlglot \
             && python scripts/oracle_to_postgres.py '$ORACLE_DDL' '$POSTGRES_DDL'"
@@ -87,20 +79,80 @@ ensure_checksum() {
     docker run --rm \
         --volume "$ROOT:/work" \
         --workdir /work \
+        --user "$RUN_AS" \
         "$ATLAS_IMAGE" migrate hash \
         --dir "file://$MIGRATION_DIR?format=flyway"
 }
 
 generate_migration() {
     echo "==> Generating migration '$MIGRATION_NAME'"
+    local before after
+    before="$(ls "$MIGRATION_DIR" 2>/dev/null | sort)"
+
     docker run --rm \
         --network "$NETWORK" \
         --volume "$ROOT:/work" \
         --workdir /work \
+        --user "$RUN_AS" \
         "$ATLAS_IMAGE" migrate diff "$MIGRATION_NAME" \
         --dir "file://$MIGRATION_DIR?format=flyway" \
         --to "file://$POSTGRES_DDL" \
         --dev-url "postgres://postgres:atlas@$DEV_DB:5432/dev?sslmode=disable&search_path=public"
+
+    after="$(ls "$MIGRATION_DIR" 2>/dev/null | sort)"
+    GENERATED_FILES="$(comm -13 <(echo "$before") <(echo "$after"))"
+}
+
+# Highest existing V<n>__ version, plus one. Ignores Atlas's timestamp versions.
+next_version() {
+    local max=0 name version
+    for path in "$MIGRATION_DIR"/V*__*.sql; do
+        [[ -e "$path" ]] || continue
+        name="$(basename "$path")"
+        version="${name#V}"
+        version="${version%%__*}"
+        [[ "$version" =~ ^[0-9]{1,6}$ ]] || continue
+        ((version > max)) && max="$version"
+    done
+    echo "$((max + 1))"
+}
+
+# Atlas always names versions by timestamp and always emits an undo script for
+# the flyway format; neither is configurable. Renumber to match the sequential
+# V<n>__ convention and drop the undo file, then re-hash so atlas.sum agrees.
+normalise_output() {
+    [[ -n "${GENERATED_FILES:-}" ]] || return 0
+
+    local removed=0 renamed=0
+    while IFS= read -r name; do
+        [[ -n "$name" ]] || continue
+        if [[ "$name" == U*__*.sql ]]; then
+            rm -f "$MIGRATION_DIR/$name"
+            removed=1
+        fi
+    done <<< "$GENERATED_FILES"
+
+    while IFS= read -r name; do
+        [[ -n "$name" ]] || continue
+        if [[ "$name" == V*__*.sql ]]; then
+            local target="V$(next_version)__${name#*__}"
+            mv "$MIGRATION_DIR/$name" "$MIGRATION_DIR/$target"
+            echo "==> Renamed $name to $target"
+            GENERATED_FILES="$target"
+            renamed=1
+        fi
+    done <<< "$GENERATED_FILES"
+
+    [[ "$removed" == 1 ]] && echo "==> Removed Atlas undo script"
+
+    if [[ "$renamed" == 1 || "$removed" == 1 ]]; then
+        docker run --rm \
+            --volume "$ROOT:/work" \
+            --workdir /work \
+            --user "$RUN_AS" \
+        "$ATLAS_IMAGE" migrate hash \
+            --dir "file://$MIGRATION_DIR?format=flyway"
+    fi
 }
 
 # Renders the schema the existing migrations produce, as Postgres DDL. Use this
@@ -120,9 +172,9 @@ baseline() {
 }
 
 warn_on_destructive_changes() {
-    local newest
-    newest="$(ls -t "$MIGRATION_DIR"/*.sql 2>/dev/null | head -1)"
-    [[ -n "$newest" ]] || return 0
+    [[ -n "${GENERATED_FILES:-}" ]] || return 0
+    local newest="$MIGRATION_DIR/$GENERATED_FILES"
+    [[ -f "$newest" ]] || return 0
 
     if grep -qiE '^\s*(DROP|TRUNCATE)\b' "$newest"; then
         echo
@@ -144,6 +196,7 @@ transpile
 ensure_checksum
 start_dev_database
 generate_migration
+normalise_output
 warn_on_destructive_changes
 
 echo
