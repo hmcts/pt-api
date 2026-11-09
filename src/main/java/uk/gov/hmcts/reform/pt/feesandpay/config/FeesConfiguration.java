@@ -14,7 +14,7 @@ import java.util.Map;
 @ConfigurationProperties("fees")
 public class FeesConfiguration {
 
-    private Map<String, LookUpReferenceData> lookup = new HashMap<>();
+    private Map<FeeType, LookUpReferenceData> lookup = new HashMap<>();
 
     @Data
     public static class LookUpReferenceData {
@@ -29,7 +29,6 @@ public class FeesConfiguration {
     }
 
     public LookUpReferenceData getLookup(FeeType feeType) {
-        return lookup.get(feeType.getCode());
+        return lookup.get(feeType);
     }
-
 }

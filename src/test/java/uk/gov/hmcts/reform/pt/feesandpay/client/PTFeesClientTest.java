@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fees.client.FeesApi;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.pt.feesandpay.config.FeesConfiguration;
 import uk.gov.hmcts.reform.pt.feesandpay.exception.FeeNotFoundException;
-import uk.gov.hmcts.reform.pt.feesandpay.model.FeeType;
 
 import java.math.BigDecimal;
 
@@ -20,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.pt.feesandpay.model.FeeType.APPLICATION_FEE;
 
 @ExtendWith(MockitoExtension.class)
 class PTFeesClientTest {
@@ -39,22 +39,22 @@ class PTFeesClientTest {
 
     @Test
     void shouldLookUpFeeUsingConfiguredReferenceData() {
-        feesConfiguration.getLookup().put(FeeType.APPLICATION_FEE.getCode(), referenceData(BigDecimal.ONE));
+        feesConfiguration.getLookup().put(APPLICATION_FEE, referenceData(BigDecimal.ONE));
         FeeLookupResponseDto response = FeeLookupResponseDto.builder().code("FEE0001").build();
         when(feesApi.lookupFee("service", "jurisdiction1", "jurisdiction2", "default", "issue",
                                "all", BigDecimal.ONE, "keyword")).thenReturn(response);
 
-        FeeLookupResponseDto result = ptFeesClient.lookupFee(FeeType.APPLICATION_FEE);
+        FeeLookupResponseDto result = ptFeesClient.lookupFee(APPLICATION_FEE);
 
         assertThat(result).isSameAs(response);
     }
 
     @Test
     void shouldUseSuppliedAmountOrVolumeOverConfiguredValue() {
-        feesConfiguration.getLookup().put(FeeType.APPLICATION_FEE.getCode(), referenceData(BigDecimal.ONE));
+        feesConfiguration.getLookup().put(APPLICATION_FEE, referenceData(BigDecimal.ONE));
         BigDecimal amountOrVolume = new BigDecimal("2500.00");
 
-        ptFeesClient.lookupFee(FeeType.APPLICATION_FEE, amountOrVolume);
+        ptFeesClient.lookupFee(APPLICATION_FEE, amountOrVolume);
 
         verify(feesApi).lookupFee("service", "jurisdiction1", "jurisdiction2", "default", "issue",
                                   "all", amountOrVolume, "keyword");
@@ -62,18 +62,18 @@ class PTFeesClientTest {
 
     @Test
     void shouldThrowFeeNotFoundExceptionWhenFeeTypeNotConfigured() {
-        assertThatThrownBy(() -> ptFeesClient.lookupFee(FeeType.APPLICATION_FEE))
+        assertThatThrownBy(() -> ptFeesClient.lookupFee(APPLICATION_FEE))
             .isInstanceOf(FeeNotFoundException.class)
-            .hasMessageContaining(FeeType.APPLICATION_FEE.name());
+            .hasMessageContaining(APPLICATION_FEE.name());
 
         verifyNoInteractions(feesApi);
     }
 
     @Test
     void shouldPassNullAmountOrVolumeWhenNeitherSuppliedNorConfigured() {
-        feesConfiguration.getLookup().put(FeeType.APPLICATION_FEE.getCode(), referenceData(null));
+        feesConfiguration.getLookup().put(APPLICATION_FEE, referenceData(null));
 
-        ptFeesClient.lookupFee(FeeType.APPLICATION_FEE);
+        ptFeesClient.lookupFee(APPLICATION_FEE);
 
         verify(feesApi).lookupFee(anyString(), anyString(), anyString(), anyString(), anyString(),
                                   anyString(), any(), anyString());
