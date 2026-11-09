@@ -59,7 +59,7 @@ public class CaseRequestVettingInformation implements CCDConfig<PTCase, State, U
             </div>
 
             <p class="govuk-body">
-                We have sent an email to the application, asking them to provide the missing information.
+                We have sent an email to the applicant, asking them to provide the missing information.
             </p>
 
             <h3 class="govuk-heading-s">What happens next</h3>
