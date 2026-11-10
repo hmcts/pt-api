@@ -12,11 +12,10 @@ import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
-import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
@@ -545,7 +544,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapCurrentRentDetails() {
+    void shouldMapRentDetails() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime originalStartDate = LocalDateTime.of(2024, 1, 1, 0, 0);
@@ -581,40 +580,49 @@ class ApplicationMapperTest {
             .rentInclusiveOfUtilityCharges(YesOrNo.YES)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
             .varyingAdditionalRentalServiceChargesDetails("Service charge details")
+            .otherHouseholdManagementCharges(YesOrNo.YES)
+            .otherHouseholdManagementChargesDetails("Household management details")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
+            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCase(withTenancyDetails(marketRentCase, tenancyDetails))
+            .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
-        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result)
             .usingRecursiveComparison()
-            .isEqualTo(expectedCurrentRentsDetailsDto(startDate, endDate, originalStartDate));
+            .isEqualTo(expectedRentDetailsDto(startDate, endDate, originalStartDate));
     }
 
     @Test
-    void shouldMapCurrentRentDetailsWhenTenancyDetailsIsNull() {
+    void shouldMapRentDetailsWhenTenancyDetailsIsNull() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostMonthly(new BigDecimal("400.00"))
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .marketRentCase(marketRentCase)
             .build();
 
-        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
         assertThat(result.getRentCostMonthly()).isEqualTo(new BigDecimal("400.00"));
+        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
         assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isNull();
         assertThat(result.getCurrentTenancyStartDate()).isNull();
     }
 
     @Test
-    void shouldMapCurrentRentDetailsWhenMarketRentCaseIsNull() {
+    void shouldMapRentDetailsWhenOnlyTenancyDetailsPopulated() {
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
@@ -625,75 +633,23 @@ class ApplicationMapperTest {
             .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(tenancyDetails).build())
             .build();
 
-        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
         assertThat(result.getCurrentTenancyStartDate()).isEqualTo(startDate);
         assertThat(result.getRentPaymentFrequency()).isNull();
         assertThat(result.getRentCostMonthly()).isNull();
+        assertThat(result.getApplicantSuggestedMarketRent()).isNull();
+        assertThat(result.getSuggestedMarketRentEvidence()).isEmpty();
     }
 
     @Test
-    void shouldReturnNullWhenNoCurrentRentEntitiesExist() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .build();
-
-        CurrentRentsDetailsDto result = ApplicationMapper.mapCurrentRentDetails(ptCaseEntity);
-
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void shouldMapMarketRentDetails() {
-        DocumentEntity document = DocumentEntity.builder()
-            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
-            .url("http://dm-store/doc/proposed-rent")
-            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
-            .fileName("proposed-rent.pdf")
-            .contentType("application/pdf")
-            .size(1024L)
-            .build();
-
+    void shouldMapDetailsWithoutEvidenceDocument() {
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
             .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
-            .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
-            .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
-            .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
-            .build();
-
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(marketRentCase)
-            .documents(List.of(document))
-            .build();
-
-        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
-
-        assertThat(result).isNotNull();
-        assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
-        assertThat(result.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
-        assertThat(result.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
-        assertThat(result.getApplicantSuggestedMarketRentReasons())
-            .isEqualTo("Similar properties in the area rent for this amount");
-        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.YES);
-        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails())
-            .isEqualTo("Renovations");
-        assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
-        DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
-        assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
-        assertThat(evidence.getBinaryUrl())
-            .isEqualTo("http://dm-store/doc/proposed-rent/binary");
-        assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(evidence.getContentType()).isEqualTo("application/pdf");
-        assertThat(evidence.getSize()).isEqualTo(1024L);
-    }
-
-    @Test
-    void shouldMapMarketRentDetailsWithoutEvidenceDocument() {
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
-            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentReasons("Reasons")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
@@ -703,10 +659,12 @@ class ApplicationMapperTest {
             .documents(Collections.emptyList())
             .build();
 
-        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isEqualTo(new BigDecimal("1500.00"));
+        assertThat(result.getApplicantSuggestedMarketRentFrequency()).isEqualTo(Frequency.OTHER);
+        assertThat(result.getApplicantSuggestedMarketRentFrequencyOther()).isEqualTo("Every 4 weeks");
         assertThat(result.getApplicantSuggestedMarketRentReasons()).isEqualTo("Reasons");
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isEqualTo(YesOrNo.NO);
         assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
@@ -714,38 +672,27 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldReturnNullWhenMarketRentCaseIsNullForMarketRentDetails() {
+    void shouldReturnNullWhenNoRentDetailsEntitiesExist() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
             .build();
 
-        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNull();
     }
 
     @Test
-    public void shouldMapMarketRentDocumentsWhenNoMarketRentCaseExists() {
-        DocumentEntity document = DocumentEntity.builder()
-            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
-            .url("http://dm-store/doc/proposed-rent")
-            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
-            .fileName("proposed-rent.pdf")
-            .contentType("application/pdf")
-            .size(1024L)
-            .build();
-
+    void shouldMapMarketRentEvidenceDocumentWhenNoMarketRentCaseExists() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .documents(List.of(document))
+            .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
-        MarketRentDto result = ApplicationMapper.mapMarketRentDetails(ptCaseEntity);
+        RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getApplicantSuggestedMarketRent()).isNull();
-        assertThat(result.getApplicantSuggestedMarketRentReasons()).isNull();
-        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDetermining()).isNull();
-        assertThat(result.getAdditionalPropertyInfoToConsiderWhenDeterminingDetails()).isNull();
+        assertThat(result.getRentPaymentFrequency()).isNull();
+        assertThat(result.getCurrentTenancyStartDate()).isNull();
         assertThat(result.getSuggestedMarketRentEvidence()).hasSize(1);
         DocumentDto evidence = result.getSuggestedMarketRentEvidence().getFirst();
         assertThat(evidence.getUrl()).isEqualTo("http://dm-store/doc/proposed-rent");
@@ -1117,9 +1064,8 @@ class ApplicationMapperTest {
                     .outsidePropertyDocuments(List.of())
                     .repairsEvidenceDocuments(List.of())
                     .build())
-            .currentRentsDetails(CurrentRentsDetailsDto.builder().build())
-            .marketRentDetails(
-                MarketRentDto.builder()
+            .rentDetails(
+                RentDetailsDto.builder()
                     .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
                     .applicantSuggestedMarketRentReasons("Market rate for the area")
                     .suggestedMarketRentEvidence(List.of())
@@ -1213,12 +1159,23 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static CurrentRentsDetailsDto expectedCurrentRentsDetailsDto(
+    private static DocumentEntity proposedMarketRentEvidenceDocument() {
+        return DocumentEntity.builder()
+            .documentType(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE)
+            .url("http://dm-store/doc/proposed-rent")
+            .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+            .fileName("proposed-rent.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+    }
+
+    private static RentDetailsDto expectedRentDetailsDto(
         LocalDateTime startDate,
         LocalDateTime endDate,
         LocalDateTime originalStartDate
     ) {
-        return CurrentRentsDetailsDto.builder()
+        return RentDetailsDto.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
             .previousTribunalCaseReference("TRIB-123")
             .rentPaymentFrequency(Frequency.MONTHLY)
@@ -1246,6 +1203,20 @@ class ApplicationMapperTest {
             .originalTenancyStartDate(originalStartDate)
             .additionalRentalServiceChargesVary(YesOrNo.YES)
             .varyingAdditionalRentalServiceChargesDetails("Service charge details")
+            .anyOtherHouseholdManagementCharges(YesOrNo.YES)
+            .otherHouseholdManagementChargesDetails("Household management details")
+            .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
+            .applicantSuggestedMarketRentReasons("Similar properties in the area rent for this amount")
+            .suggestedMarketRentEvidence(List.of(
+                    DocumentDto.builder()
+                        .url("http://dm-store/doc/proposed-rent")
+                        .binaryUrl("http://dm-store/doc/proposed-rent/binary")
+                        .filename("proposed-rent.pdf")
+                        .contentType("application/pdf")
+                        .size(1024L)
+                        .build()))
+            .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
+            .additionalPropertyInfoToConsiderWhenDeterminingDetails("Renovations")
             .build();
     }
 }
