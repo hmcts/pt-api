@@ -25,6 +25,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handle(IllegalStateException e) {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(e.getMessage());
+    }
+
     @ExceptionHandler(IdamException.class)
     public ResponseEntity<ErrorResponse> handleIdamException(IdamException ex) {
         log.error("IDAM call failed", ex);

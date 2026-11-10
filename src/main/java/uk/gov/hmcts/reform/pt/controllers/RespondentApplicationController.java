@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
-import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
@@ -26,8 +26,8 @@ import java.util.UUID;
 @RequestMapping("/respondent/applications")
 public class RespondentApplicationController {
 
-    private final IdamAuthenticator idamAuthenticator;
     private final CaseApplicationService caseApplicationService;
+    private final SecurityContextService securityContextService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -49,8 +49,8 @@ public class RespondentApplicationController {
         @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
         @RequestHeader("ServiceAuthorization") String s2sToken
     ) {
-        UserInfo user = idamAuthenticator.validateAuthToken(authorization).getUserDetails();
+        UserInfo userInfo = securityContextService.getCurrentUserDetails();
 
-        return ResponseEntity.ok(caseApplicationService.getRespondentCasesForUser(UUID.fromString(user.getUid())));
+        return ResponseEntity.ok(caseApplicationService.getRespondentCasesForUser(UUID.fromString(userInfo.getUid())));
     }
 }
