@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 
@@ -701,6 +703,36 @@ class ApplicationMapperTest {
         assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
         assertThat(evidence.getContentType()).isEqualTo("application/pdf");
         assertThat(evidence.getSize()).isEqualTo(1024L);
+    }
+
+    @Test
+    void shouldMapLandlordResponse() {
+        RespondentPropertyDetailsEntity respondentPropertyDetails = RespondentPropertyDetailsEntity.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCase(MarketRentCaseEntity.builder()
+                                .respondentPropertyDetails(respondentPropertyDetails)
+                                .build())
+            .build();
+
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
+            .isEqualTo("Tenancy started in March, not January");
+    }
+
+    @Test
+    void shouldReturnNullLandlordResponseWhenRespondentPropertyDetailsAbsent() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .build();
+
+        assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
     }
 
     @Test
