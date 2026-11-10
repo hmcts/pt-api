@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
+import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
 
 import java.util.List;
@@ -35,6 +36,9 @@ class ApplicationControllerTest {
     private static final String AUTH = "Bearer token";
     private static final String S2S = "Bearer s2s";
     private static final long CASE_REFERENCE = 1234567890123456L;
+
+    @MockitoBean
+    private SecurityContextService securityContextService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,14 +62,13 @@ class ApplicationControllerTest {
         UserInfo userInfo = UserInfo.builder()
             .uid(userId.toString())
             .build();
-        User user = new User(AUTH, userInfo);
 
         ApplicationDto application = ApplicationDto.builder()
             .caseReference(CASE_REFERENCE)
             .state(State.CASE_ISSUED)
             .build();
 
-        when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
+        when(securityContextService.getCurrentUserDetails()).thenReturn(userInfo);
         when(caseApplicationService.getCasesForUser(userId))
             .thenReturn(List.of(application));
 
@@ -77,7 +80,7 @@ class ApplicationControllerTest {
             .andExpect(jsonPath("$[0].caseReference").value(CASE_REFERENCE))
             .andExpect(jsonPath("$[0].state").value("CASE_ISSUED"));
 
-        verify(idamAuthenticator).validateAuthToken(AUTH);
+        verify(securityContextService).getCurrentUserDetails();
         verify(caseApplicationService).getCasesForUser(userId);
     }
 
@@ -92,7 +95,7 @@ class ApplicationControllerTest {
             .build();
         User user = new User(AUTH, userInfo);
 
-        when(idamAuthenticator.validateAuthToken(AUTH)).thenReturn(user);
+        when(securityContextService.getCurrentUserDetails()).thenReturn(userInfo);
         when(caseApplicationService.getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class)))
             .thenReturn(application);
 
@@ -103,7 +106,7 @@ class ApplicationControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.caseReference").value(CASE_REFERENCE));
 
-        verify(idamAuthenticator).validateAuthToken(AUTH);
+        verify(securityContextService).getCurrentUserDetails();
         verify(caseApplicationService).getCaseByCaseReference(eq(CASE_REFERENCE), any(UUID.class));
     }
 }
