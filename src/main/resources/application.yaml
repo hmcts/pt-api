@@ -98,7 +98,7 @@ idam:
     totp_secret: ${PT_API_S2S_SECRET:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:pt_api}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:pt_api,pt_frontend,ccd_data}
+    services: ${S2S_NAMES_WHITELIST:pt_api,pt_frontend,ccd_data,payment_app}
   system-user:
     username: ${PT_IDAM_SYSTEM_USERNAME:pt-system-user@localhost}
     password: ${PT_IDAM_SYSTEM_PASSWORD:password}
@@ -143,3 +143,21 @@ notify:
   templates:
     test-template: 5f740c1e-2ec5-411d-9291-edc5c6b35060
     landlord-access-code-email-template: a90cbd48-cf67-41f5-82c2-cb0017c0cec2
+
+fees:
+  api:
+    url: ${FEES_REGISTER_API_URL:http://localhost:8083}
+  lookup:
+    applicationFee: # one entry per fee; the values come from the Fees Register
+      service:
+      jurisdiction1:
+      jurisdiction2:
+      channel: default
+      event: issue
+      keyword:
+payments:
+  api:
+    url: ${PAYMENT_API_URL:http://localhost:8083/payments}
+    callback-url: ${PAY_CALLBACK_URL:http://host.docker.internal:4550/payment-update}
+  params:
+    hmctsOrgId: ${PT_HMCTS_ORG_ID:}
