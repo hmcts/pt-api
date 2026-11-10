@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 public class ApplicationControllerExceptionHandler {
     @ExceptionHandler(CaseNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCaseNotFoundException(CaseNotFoundException caseNotFoundException) {
-        log.error("Case not found", caseNotFoundException);
+        log.warn("Case not found", caseNotFoundException);
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponse(caseNotFoundException.getMessage()));
@@ -22,7 +22,7 @@ public class ApplicationControllerExceptionHandler {
 
     @ExceptionHandler(InvalidCaseReferenceException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCaseReferenceException(InvalidCaseReferenceException ex) {
-        log.error("Invalid case reference", ex);
+        log.warn("Invalid case reference", ex);
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(new ErrorResponse(ex.getMessage()));

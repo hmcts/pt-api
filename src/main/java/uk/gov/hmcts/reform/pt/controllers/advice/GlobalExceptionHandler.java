@@ -21,13 +21,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidAuthTokenException.class)
     public ResponseEntity<ErrorResponse> handleInvalidAuth(InvalidAuthTokenException ex) {
-        log.error("Invalid authentication token", ex);
+        log.warn("Invalid authentication token", ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(IdamException.class)
     public ResponseEntity<ErrorResponse> handleIdamException(IdamException ex) {
-        log.error("IDAM call failed", ex);
+        log.warn("IDAM call failed", ex);
         if (upstreamThrottling.isUpstreamUnavailable(ex)) {
             return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
