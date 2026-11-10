@@ -27,6 +27,7 @@ public class IdamAuthenticationFilter extends OncePerRequestFilter {
                                                              "/callbacks",
                                                              "/testing-support",
                                                              "/applications",
+                                                             "/respondent/applications",
                                                              "/cases");
 
     private final IdamAuthenticator idamAuthenticator;

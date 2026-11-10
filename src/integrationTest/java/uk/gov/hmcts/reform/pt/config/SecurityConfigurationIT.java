@@ -13,6 +13,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.pt.controllers.ApplicationController;
+import uk.gov.hmcts.reform.pt.controllers.CasePartyLinkController;
+import uk.gov.hmcts.reform.pt.controllers.RespondentApplicationController;
 import uk.gov.hmcts.reform.pt.controllers.RootController;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
@@ -28,6 +31,7 @@ import uk.gov.hmcts.reform.pt.idam.User;
 import uk.gov.hmcts.reform.pt.idam.UserInfo;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 import uk.gov.hmcts.reform.pt.service.CaseApplicationService;
+import uk.gov.hmcts.reform.pt.service.PartyAccessCodeLinkService;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,9 +42,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {ApplicationController.class, RootController.class})
+@WebMvcTest(controllers = {
+    ApplicationController.class,
+    RootController.class,
+    RespondentApplicationController.class,
+    CasePartyLinkController.class})
 @Import({SecurityConfiguration.class, SecurityConfigurationIT.ServiceAuthFilterConfig.class})
 @ActiveProfiles("integration")
 class SecurityConfigurationIT {
@@ -51,6 +60,9 @@ class SecurityConfigurationIT {
     private static final String IDAM_TOKEN = "Bearer idam-token";
     private static final String INVALID_IDAM_TOKEN = "INVALID IDAM TOKEN";
     private static final String AUTHORISED_S2S_SERVICE = "pt_api";
+    private static final String ACCESS_CODE = "ABCDEFGHIJKL";
+
+    private static final UUID RANDOM_UUID = UUID.randomUUID();
 
     @Autowired
     private MockMvc mockMvc;
@@ -65,10 +77,13 @@ class SecurityConfigurationIT {
     private SecurityContextService securityContextService;
 
     /**
-     * Need these because @WebMvcTest won't find them and they are used in the ApplicationController's ctor.
+     * Need these because @WebMvcTest won't find them, and they are used in the ApplicationController's ctor.
      */
     @MockitoBean
     private CaseApplicationService caseApplicationService;
+
+    @MockitoBean
+    private PartyAccessCodeLinkService partyAccessCodeLinkService;
 
     @MockitoBean
     private UpstreamThrottling upstreamThrottling;
@@ -99,27 +114,47 @@ class SecurityConfigurationIT {
         when(serviceAuthorisationApi.getServiceName(S2S_TOKEN)).thenReturn(AUTHORISED_S2S_SERVICE);
         when(serviceAuthorisationApi.getServiceName(INVALID_S2S_TOKEN)).thenReturn(INVALID_S2S_NAME);
 
-        UUID randomUuid = UUID.randomUUID();
         when(securityContextService.getCurrentUserDetails())
-            .thenReturn(UserInfo.builder().uid(randomUuid.toString()).build());
+            .thenReturn(UserInfo.builder().uid(RANDOM_UUID.toString()).build());
 
-        User user = new User(IDAM_TOKEN, UserInfo.builder().uid(randomUuid.toString()).build());
+        User user = new User(IDAM_TOKEN, UserInfo.builder().uid(RANDOM_UUID.toString()).build());
 
         when(idamAuthenticator.validateAuthToken(any())).thenReturn(user);
         when(idamAuthenticator.validateAuthToken(INVALID_IDAM_TOKEN))
             .thenThrow(new InvalidAuthTokenException("Invalid Idam token"));
     }
 
-    @DisplayName("Idam and Service filter invocations should be invoked")
-    @ParameterizedTest(name = "Idam and Service filter should be invoked for {0}")
-    @ValueSource(strings = {"/applications", "/applications/1234", "/cases"})
-    void shouldInvokeIdamFilter_whenRequestingAKnownPath(String path) throws Exception {
+    @DisplayName("Idam and Service filter invocations should be invoked for GET operations")
+    @ParameterizedTest(name = "Idam and Service filter should be invoked when we GET {0}")
+    @ValueSource(strings = {
+        "/applications",
+        "/applications/1234",
+        "/respondent/applications"})
+    void shouldInvokeIdamFilter_whenWeGetFromAKnownPath(String path) throws Exception {
         mockMvc.perform(get(path)
                             .header(ServiceAuthFilter.AUTHORISATION, S2S_TOKEN)
                             .header(HttpHeaders.AUTHORIZATION, IDAM_TOKEN));
 
         verify(serviceAuthorisationApi).getServiceName(S2S_TOKEN);
         verify(idamAuthenticator).validateAuthToken(IDAM_TOKEN);
+    }
+
+    @Test
+    @DisplayName("Idam and Service filter invocations should be invoked for POST operations")
+    void shouldInvokeIdamFilter_whenWePostToAKnownPath() throws Exception {
+        mockMvc.perform(post("/cases/1234/validate-access-code")
+                            .header(ServiceAuthFilter.AUTHORISATION, S2S_TOKEN)
+                            .header(HttpHeaders.AUTHORIZATION, IDAM_TOKEN)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"accessCode\": \"" + ACCESS_CODE + "\"}"));
+
+        verify(serviceAuthorisationApi).getServiceName(S2S_TOKEN);
+        verify(idamAuthenticator).validateAuthToken(IDAM_TOKEN);
+        verify(securityContextService).getCurrentUserDetails();
+        verify(partyAccessCodeLinkService).linkPartyByAccessCode(
+            1234L,
+            ACCESS_CODE,
+            RANDOM_UUID);
     }
 
     @DisplayName("Idam should reject unknown endpoint")
@@ -137,7 +172,7 @@ class SecurityConfigurationIT {
 
     @Test
     @DisplayName("Idam allows Internal error without inspecting /error page")
-    void shouldNotReturnForbiddenFromIdam_whenA500WouldBExpected() throws Exception {
+    void shouldNotReturnForbiddenFromIdam_whenA500WouldBeExpected() throws Exception {
         when(caseApplicationService.getCaseByCaseReference(eq(123L),any()))
             .thenThrow(new IllegalStateException("Ooops"));
         mockMvc.perform(get("/applications/123")

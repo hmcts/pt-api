@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,9 @@ public class CasePartyLinkController {
     public ResponseEntity<Void> validateAccessCode(
         @PathVariable long caseReference,
         @Valid @RequestBody ValidateAccessCodeRequestDto request,
+        @Parameter(description = "Bearer token for user authentication", required = true)
         @RequestHeader("Authorization") String authorization,
+        @Parameter(description = "Service-to-Service (S2S) authorization token", required = true)
         @RequestHeader("ServiceAuthorization") String s2sToken) {
 
         UserInfo userInfo = securityContextService.getCurrentUserDetails();
