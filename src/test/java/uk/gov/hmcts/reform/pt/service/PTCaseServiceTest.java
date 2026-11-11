@@ -432,7 +432,9 @@ class PTCaseServiceTest {
             .extraSupportRequired(YesOrNo.YES)
             .extraSupportRequiredDetails("Existing details")
             .build();
-        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder().build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .build();
         PTCase ptCase = PTCase.builder()
             .extraSupportDetails(extraSupportDetails)
             .build();
@@ -441,6 +443,28 @@ class PTCaseServiceTest {
 
         assertThat(caseParty.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
         assertThat(caseParty.getExtraSupportRequiredDetails()).isEqualTo("Existing details");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should reset extra support details to null when extra support required is NO")
+    void updateExtraSupportDetailsResetsDetailsWhenNo() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Existing details")
+            .build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.NO)
+            .extraSupportRequiredDetails("Some details")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .extraSupportDetails(extraSupportDetails)
+            .build();
+
+        ptCaseService.updateExtraSupportDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getExtraSupportRequired()).isEqualTo(YesOrNo.NO);
+        assertThat(caseParty.getExtraSupportRequiredDetails()).isNull();
         verify(casePartyRepository).save(caseParty);
     }
 
