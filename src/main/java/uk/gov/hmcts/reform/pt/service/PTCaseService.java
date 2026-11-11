@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
@@ -102,8 +101,7 @@ public class PTCaseService {
         this.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
         this.updateNoticeOfRentChangeDetails(ptCase, ptCaseEntity);
         this.updatePropertyDetails(ptCase, ptCaseEntity, applicantCaseParty);
-        this.updateCurrentRentDetails(ptCase, ptCaseEntity);
-        this.updateMarketRentDetails(ptCase, ptCaseEntity);
+        this.updateRentDetails(ptCase, ptCaseEntity);
         this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
         this.updateLandlordDetails(ptCase, ptCaseEntity);
         this.updateExtraSupportDetails(ptCase, applicantCaseParty);
@@ -131,9 +129,9 @@ public class PTCaseService {
             documentService.updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
         }
 
-        MarketRentDetails marketRentDetails = ptCase.getMarketRentDetails();
-        if (marketRentDetails != null) {
-            documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        RentDetails rentDetails = ptCase.getRentDetails();
+        if (rentDetails != null) {
+            documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         }
 
         return documentUploadValidator.errors(caseReference, urlsBefore);
@@ -225,25 +223,15 @@ public class PTCaseService {
     }
 
     @Transactional
-    public void updateCurrentRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
-        CurrentRentDetails currentRentDetails = ptCase.getCurrentRentDetails();
-        if (currentRentDetails == null) {
+    public void updateRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        RentDetails rentDetails = ptCase.getRentDetails();
+        if (rentDetails == null) {
             return;
         }
 
-        tenancyDetailsService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
-        marketRentCaseService.updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
-    }
-
-    @Transactional
-    public void updateMarketRentDetails(PTCase ptCase, PTCaseEntity ptCaseEntity) {
-        MarketRentDetails marketRentDetails = ptCase.getMarketRentDetails();
-        if (marketRentDetails == null) {
-            return;
-        }
-
-        marketRentCaseService.updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
-        documentService.updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        tenancyDetailsService.updateWithRentDetails(ptCaseEntity, rentDetails);
+        marketRentCaseService.updateWithRentDetails(ptCaseEntity, rentDetails);
+        documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
     }
 
     @Transactional

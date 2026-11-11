@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,9 +28,13 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
         JOIN pt_case pc ON pc.id = cp.pt_case_id
         JOIN ccd.case_data cd ON cd.reference = pc.case_reference
         WHERE cp.idam_id = :idamId
-        AND cd.state <> 'PendingDisposal'
+        AND cp.party_role = 'APPLICANT'
+        AND cd.state NOT IN (:excludedStates)
         """, nativeQuery = true)
-    List<ApplicationSummary> findActiveApplicationsByIdamId(@Param("idamId") UUID idamId);
+    List<ApplicationSummary> findActiveApplicationsByIdamId(
+        @Param("idamId") UUID idamId,
+        @Param("excludedStates") Collection<String> excludedStates
+    );
 
     @Query(value = """
         SELECT
@@ -63,5 +68,25 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
     Optional<CasePartyEntity> findByIdamIdAndCaseReference(
         @Param("caseReference") Long caseReference,
         @Param("idamId") UUID idamId
+    );
+
+    @Query(value = """
+        SELECT DISTINCT
+            pc.id                         AS id,
+            pc.case_reference             AS caseReference,
+            pc.created_date               AS createdDate,
+            pc.application_submitted_date AS submittedDate,
+            cd.state                      AS state
+        FROM case_party cp
+        JOIN case_party_access_code pac ON pac.case_party_id = cp.id
+        JOIN pt_case pc ON pc.id = cp.pt_case_id
+        JOIN ccd.case_data cd ON cd.reference = pc.case_reference
+        WHERE cp.idam_id = :idamId
+        AND pac.used_at IS NOT NULL
+        AND cd.state NOT IN (:excludedStates)
+        """, nativeQuery = true)
+    List<ApplicationSummary> findRespondentApplicationsByIdamId(
+        @Param("idamId") UUID idamId,
+        @Param("excludedStates") Collection<String> excludedStates
     );
 }

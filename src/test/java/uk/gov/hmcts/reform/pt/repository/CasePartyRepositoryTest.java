@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
@@ -17,6 +18,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.APPLICANT;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.PendingDisposal;
 
 class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository> {
 
@@ -59,7 +62,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     @DisplayName("Should return case parties linked to an IDAM user")
     void findAllByIdamId_returnsList() {
         UUID idamId = UUID.randomUUID();
-        saveCaseParty(1234567890123456L, idamId);
+        saveCaseParty(1234567890123456L, idamId, APPLICANT);
 
         List<CasePartyEntity> result = repository.findAllByIdamId(idamId);
 
@@ -73,7 +76,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         UUID idamId = UUID.randomUUID();
         long caseReference = 1234567890123456L;
 
-        saveCaseParty(caseReference, idamId);
+        saveCaseParty(caseReference, idamId, APPLICANT);
 
         insertCcdCase(caseReference, "AWAITING_SUBMISSION_TO_HMCTS");
 
@@ -93,15 +96,16 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         long disposingReference = 9876543210987654L;
         LocalDateTime submittedDate = LocalDateTime.of(2026, 3, 1, 10, 0);
 
-        PTCaseEntity activeCase = saveCaseParty(activeReference, idamId);
-        saveCaseParty(disposingReference, idamId);
+        PTCaseEntity activeCase = saveCaseParty(activeReference, idamId, APPLICANT);
+        saveCaseParty(disposingReference, idamId, APPLICANT);
         activeCase.setApplicationSubmittedDate(submittedDate);
         ptCaseRepository.save(activeCase);
 
         insertCcdCase(activeReference, "AWAITING_SUBMISSION_TO_HMCTS");
         insertCcdCase(disposingReference, "PendingDisposal");
 
-        List<ApplicationSummary> result = repository.findActiveApplicationsByIdamId(idamId);
+        List<ApplicationSummary> result =
+            repository.findActiveApplicationsByIdamId(idamId, List.of(PendingDisposal.name()));
 
         assertThat(result).hasSize(1);
         ApplicationSummary summary = result.getFirst();
@@ -117,7 +121,7 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
     void findByIdamIdAndCaseReference_returnsEmpty_whenPendingDisposal() {
         UUID idamId = UUID.randomUUID();
         long caseReference = 1234567890123456L;
-        saveCaseParty(caseReference, idamId);
+        saveCaseParty(caseReference, idamId, APPLICANT);
         insertCcdCase(caseReference, "PendingDisposal");
 
         Optional<CasePartyEntity> result = repository.findByIdamIdAndCaseReference(caseReference, idamId);
@@ -125,12 +129,13 @@ class CasePartyRepositoryTest extends AbstractRepositoryTest<CasePartyRepository
         assertThat(result).isEmpty();
     }
 
-    private PTCaseEntity saveCaseParty(long caseReference, UUID idamId) {
+    private PTCaseEntity saveCaseParty(long caseReference, UUID idamId, PartyRole role) {
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder()
             .caseReference(caseReference)
             .build());
         repository.save(CasePartyEntity.builder()
             .ptCase(ptCase)
+            .casePartyRole(role)
             .idamId(idamId)
             .extraSupportRequired(YesOrNo.YES)
             .extraSupportRequiredDetails("Help")

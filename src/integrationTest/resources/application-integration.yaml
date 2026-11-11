@@ -1,6 +1,12 @@
 security:
   anonymousPaths:
-    - "/**"
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/swagger-ui.html"
+    - "/swagger-ui/**"
+    - "/v3/api-docs/**"
 
 spring:
   flyway:

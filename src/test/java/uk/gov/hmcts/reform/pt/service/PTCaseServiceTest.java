@@ -12,12 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
-import uk.gov.hmcts.reform.pt.ccd.domain.MarketRentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
@@ -191,6 +190,7 @@ class PTCaseServiceTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noticeLegallyValid(YesOrNo.YES)
             .rentIncreaseToCauseHardship(YesOrNo.NO)
+            .rentIncreaseToCauseHardshipDetails("Hardship expected")
             .build();
 
         PropertyDetails propertyDetails = PropertyDetails.builder()
@@ -198,8 +198,7 @@ class PTCaseServiceTest {
             .postcode("AB1 2CD")
             .build();
 
-        CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
-        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
+        RentDetails rentDetails = RentDetails.builder().build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
             .representativeType(LandlordRepresentativeType.LETTING_AGENT)
@@ -227,8 +226,7 @@ class PTCaseServiceTest {
             .hearingInspectionDetails(hearingInspectionDetails)
             .noticeOfRentIncreaseDetails(noticeDetails)
             .propertyDetails(propertyDetails)
-            .currentRentDetails(currentRentDetails)
-            .marketRentDetails(marketRentDetails)
+            .rentDetails(rentDetails)
             .tenancyAgreementDetails(tenancyAgreementDetails)
             .landlordDetails(landlordDetails)
             .extraSupportDetails(extraSupportDetails)
@@ -269,10 +267,9 @@ class PTCaseServiceTest {
         verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
-        verify(tenancyDetailsService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
-        verify(marketRentCaseService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
-        verify(marketRentCaseService).updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
-        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        verify(tenancyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(marketRentCaseService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(documentService).updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
         verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
         verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
@@ -305,61 +302,34 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update current rent details when currentRentDetails is present")
-    void updateCurrentRentDetailsSuccess() {
+    @DisplayName("Should update rent details when rentDetails is present")
+    void updateRentDetailsSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CurrentRentDetails currentRentDetails = CurrentRentDetails.builder().build();
+        RentDetails rentDetails = RentDetails.builder().build();
         PTCase ptCase = PTCase.builder()
-            .currentRentDetails(currentRentDetails)
+            .rentDetails(rentDetails)
             .build();
 
-        ptCaseService.updateCurrentRentDetails(ptCase, ptCaseEntity);
+        ptCaseService.updateRentDetails(ptCase, ptCaseEntity);
 
-        verify(tenancyDetailsService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
-        verify(marketRentCaseService).updateWithCurrentRentDetails(ptCaseEntity, currentRentDetails);
+        verify(tenancyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(marketRentCaseService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(documentService).updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
     }
 
     @Test
-    @DisplayName("Should skip updating current rent details when currentRentDetails is null")
-    void updateCurrentRentDetailsSkippedWhenNull() {
+    @DisplayName("Should skip updating rent details when rentDetails is null")
+    void updateRentDetailsSkippedWhenNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         PTCase ptCase = PTCase.builder()
-            .currentRentDetails(null)
+            .rentDetails(null)
             .build();
 
-        ptCaseService.updateCurrentRentDetails(ptCase, ptCaseEntity);
+        ptCaseService.updateRentDetails(ptCase, ptCaseEntity);
 
-        verify(tenancyDetailsService, never()).updateWithCurrentRentDetails(any(), any());
-        verify(marketRentCaseService, never()).updateWithCurrentRentDetails(any(), any());
-    }
-
-    @Test
-    @DisplayName("Should update market rent details when marketRentDetails is present")
-    void updateMarketRentDetailsSuccess() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
-        PTCase ptCase = PTCase.builder()
-            .marketRentDetails(marketRentDetails)
-            .build();
-
-        ptCaseService.updateMarketRentDetails(ptCase, ptCaseEntity);
-
-        verify(marketRentCaseService).updateWithMarketRentDetails(ptCaseEntity, marketRentDetails);
-        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
-    }
-
-    @Test
-    @DisplayName("Should skip updating market rent details when marketRentDetails is null")
-    void updateMarketRentDetailsSkippedWhenNull() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        PTCase ptCase = PTCase.builder()
-            .marketRentDetails(null)
-            .build();
-
-        ptCaseService.updateMarketRentDetails(ptCase, ptCaseEntity);
-
-        verify(marketRentCaseService, never()).updateWithMarketRentDetails(any(), any());
-        verify(documentService, never()).updateDocumentsForMarketRentDetails(any(), any());
+        verify(tenancyDetailsService, never()).updateWithRentDetails(any(), any());
+        verify(marketRentCaseService, never()).updateWithRentDetails(any(), any());
+        verify(documentService, never()).updateDocumentsForRentDetails(any(), any());
     }
 
     @Test
@@ -521,6 +491,7 @@ class PTCaseServiceTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noticeLegallyValid(YesOrNo.NO)
             .rentIncreaseToCauseHardship(YesOrNo.YES)
+            .rentIncreaseToCauseHardshipDetails("Hardship")
             .build();
         PTCase ptCase = PTCase.builder()
             .noticeOfRentIncreaseDetails(noticeDetails)
@@ -795,18 +766,18 @@ class PTCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should upsert market rent documents without touching the case party")
-    void shouldUpdateMarketRentDocumentsOnly() {
+    @DisplayName("Should upsert rent details documents without touching the case party")
+    void shouldUpdateRentDocumentsOnly() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
         when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
 
-        MarketRentDetails marketRentDetails = MarketRentDetails.builder().build();
-        PTCase ptCase = PTCase.builder().marketRentDetails(marketRentDetails).build();
+        RentDetails rentDetails = RentDetails.builder().build();
+        PTCase ptCase = PTCase.builder().rentDetails(rentDetails).build();
 
         ptCaseService.updateDocuments(caseReference, ptCase);
 
-        verify(documentService).updateDocumentsForMarketRentDetails(marketRentDetails, ptCaseEntity);
+        verify(documentService).updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         verify(casePartyRepository, never()).save(any());
     }
 
