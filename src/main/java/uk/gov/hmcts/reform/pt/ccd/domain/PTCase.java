@@ -94,16 +94,10 @@ public class PTCase {
     private PropertyDetails propertyDetails;
 
     @CCD(
-        label = "Current rent details",
+        label = "Rent details",
         access = {CitizenAccess.class}
     )
-    private CurrentRentDetails currentRentDetails;
-
-    @CCD(
-        label = "Market rent details",
-        access = {CitizenAccess.class}
-    )
-    private MarketRentDetails marketRentDetails;
+    private RentDetails rentDetails;
 
     @CCD(
         label = "Tenancy agreement details",
