@@ -15,6 +15,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_UPLOAD_DOCUMENT;
 
 @Component
@@ -27,7 +28,7 @@ public class CitizenUploadDocument implements CCDConfig<PTCase, State, UserRole>
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(CITIZEN_UPLOAD_DOCUMENT.getId(), this::submit)
-            .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .forState(AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_UPLOAD_DOCUMENT.getName())
             .grant(CRU, CITIZEN);
     }

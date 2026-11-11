@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.State;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.CASE_PROGRESSION;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.RESPONDENT_SUBMIT_RESPONSE;
 
 @Component
@@ -22,7 +23,7 @@ public class RespondentSubmitResponse implements CCDConfig<PTCase, State, UserRo
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(RESPONDENT_SUBMIT_RESPONSE.getId(), this::submit)
-            .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .forState(CASE_PROGRESSION)
             .name(RESPONDENT_SUBMIT_RESPONSE.getName())
             .grant(CRU, DEFENDANT);
     }
