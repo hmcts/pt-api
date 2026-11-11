@@ -312,7 +312,7 @@ class ApplicationMapperTest {
             .noticeLegallyValid(YesOrNo.NO)
             .noticeNotLegallyValidDetails("Incorrect notice period")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
-            .hardshipDetails("Financial hardship")
+            .rentIncreaseToCauseHardshipDetails("Financial hardship")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
@@ -1079,10 +1079,8 @@ class ApplicationMapperTest {
                     .noDecisionWithoutInspectionReason("Inspection reason")
                     .build())
             .noticeOfRentIncreaseDetails(
-                
                 NoticeOfRentIncreaseDto.builder()
                     .noticeNotLegallyValidDocuments(List.of())
-                    
                     .rentIncreaseHardshipDocuments(List.of())
                     .build())
             .propertyDetails(
