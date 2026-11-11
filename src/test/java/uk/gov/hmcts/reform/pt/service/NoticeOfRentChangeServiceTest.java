@@ -61,7 +61,7 @@ class NoticeOfRentChangeServiceTest {
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
         assertThat(saved.getNoticeNotLegallyValidDetails()).isEqualTo("Invalid date on notice");
         assertThat(saved.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
-        assertThat(saved.getHardshipDetails()).isEqualTo("Financial hardship");
+        assertThat(saved.getRentIncreaseToCauseHardshipDetails()).isEqualTo("Financial hardship");
     }
 
     @Test
@@ -73,7 +73,7 @@ class NoticeOfRentChangeServiceTest {
             .noticeLegallyValid(YesOrNo.YES)
             .noticeNotLegallyValidDetails(null)
             .rentIncreaseToCauseHardship(YesOrNo.NO)
-            .hardshipDetails("Old hardship")
+            .rentIncreaseToCauseHardshipDetails("Old hardship")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
@@ -100,6 +100,6 @@ class NoticeOfRentChangeServiceTest {
         assertThat(existing.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
         assertThat(existing.getNoticeNotLegallyValidDetails()).isEqualTo("Updated details");
         assertThat(existing.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getHardshipDetails()).isEqualTo("Updated hardship");
+        assertThat(existing.getRentIncreaseToCauseHardshipDetails()).isEqualTo("Updated hardship");
     }
 }
