@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_SUBMIT_APPLICATION;
 
 @Component
@@ -27,9 +27,7 @@ public class CitizenSubmitApplication implements CCDConfig<PTCase, State, UserRo
             .decentralisedEvent(CITIZEN_SUBMIT_APPLICATION.getId(), this::submit)
             .forStateTransition(State.AWAITING_SUBMISSION_TO_HMCTS, State.PENDING_CASE_ISSUED)
             .name(CITIZEN_SUBMIT_APPLICATION.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CREATOR);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

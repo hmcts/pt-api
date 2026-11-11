@@ -27,9 +27,7 @@ public class CitizenDeleteDocument implements CCDConfig<PTCase, State, UserRole>
             .decentralisedEvent(CITIZEN_DELETE_DOCUMENT.getId(), this::submit)
             .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_DELETE_DOCUMENT.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CITIZEN);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

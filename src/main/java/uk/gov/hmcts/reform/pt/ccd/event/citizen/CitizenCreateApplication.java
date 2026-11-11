@@ -31,9 +31,7 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
             .decentralisedEvent(CITIZEN_CREATE_APPLICATION.getId(), this::submit)
             .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_CREATE_APPLICATION.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CITIZEN);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
