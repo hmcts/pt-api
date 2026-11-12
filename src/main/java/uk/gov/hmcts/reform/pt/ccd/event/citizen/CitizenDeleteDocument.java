@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_DELETE_DOCUMENT;
 
@@ -28,7 +28,7 @@ public class CitizenDeleteDocument implements CCDConfig<PTCase, State, UserRole>
             .decentralisedEvent(CITIZEN_DELETE_DOCUMENT.getId(), this::submit)
             .forState(AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_DELETE_DOCUMENT.getName())
-            .grant(CRU, CITIZEN);
+            .grant(CRU, CREATOR);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
