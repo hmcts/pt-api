@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
@@ -70,6 +71,9 @@ class PTCaseServiceTest {
 
     @Mock
     private NoticeOfRentChangeService noticeOfRentChangeService;
+
+    @Mock
+    private RespondentPropertyDetailsService respondentPropertyDetailsService;
 
     @Mock
     private DocumentService documentService;
@@ -198,6 +202,9 @@ class PTCaseServiceTest {
             .build();
 
         RentDetails rentDetails = RentDetails.builder().build();
+        LandlordResponse landlordResponse = LandlordResponse.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
             .representativeType(LandlordRepresentativeType.LETTING_AGENT)
@@ -224,6 +231,7 @@ class PTCaseServiceTest {
             .rentDetails(rentDetails)
             .tenancyAgreementDetails(tenancyAgreementDetails)
             .landlordDetails(landlordDetails)
+            .landlordResponse(landlordResponse)
             .build();
 
         ptCaseService.updateCase(caseReference, ptCase);
@@ -255,6 +263,7 @@ class PTCaseServiceTest {
         verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
         verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
         verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
+        verify(respondentPropertyDetailsService).updateLandlordResponse(landlordResponse, ptCaseEntity);
     }
 
     @Test
@@ -432,6 +441,36 @@ class PTCaseServiceTest {
 
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should update landlord response when landlordResponse present")
+    void updateLandlordResponseSuccess() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        LandlordResponse landlordResponse = LandlordResponse.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .landlordResponse(landlordResponse)
+            .build();
+
+        ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
+
+        verify(respondentPropertyDetailsService).updateLandlordResponse(landlordResponse, ptCaseEntity);
+    }
+
+    @Test
+    @DisplayName("Should skip updating landlord response when landlordResponse is null")
+    void updateLandlordResponseSkippedWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .landlordResponse(null)
+            .build();
+
+        ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
+
+        verify(respondentPropertyDetailsService, never()).updateLandlordResponse(any(), any());
     }
 
     @Test

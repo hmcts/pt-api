@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
@@ -38,6 +39,7 @@ public class PTCaseService {
     private final CasePartyRepository casePartyRepository;
     private final PartyAccessCodeRepository partyAccessCodeRepository;
     private final NoticeOfRentChangeService noticeOfRentChangeService;
+    private final RespondentPropertyDetailsService respondentPropertyDetailsService;
     private final DocumentService documentService;
     private final MarketRentCaseService marketRentCaseService;
     private final AddressService addressService;
@@ -103,6 +105,7 @@ public class PTCaseService {
         this.updateRentDetails(ptCase, ptCaseEntity);
         this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
         this.updateLandlordDetails(ptCase, ptCaseEntity);
+        this.updateLandlordResponse(ptCase, ptCaseEntity);
     }
 
     @Transactional
@@ -197,6 +200,16 @@ public class PTCaseService {
 
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(noticeOfRentIncreaseDetails, ptCaseEntity);
         documentService.updateDocumentsForNoticeOfRentChange(noticeOfRentIncreaseDetails, ptCaseEntity);
+    }
+
+    @Transactional
+    public void updateLandlordResponse(PTCase ptCase, PTCaseEntity ptCaseEntity) {
+        LandlordResponse landlordResponse = ptCase.getLandlordResponse();
+        if (landlordResponse == null) {
+            return;
+        }
+
+        respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
     }
 
     @Transactional
