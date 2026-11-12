@@ -33,7 +33,10 @@ public enum DocumentType implements HasLabel {
     TENANT_REPAIRS_EVIDENCE("Tenant repairs evidence"),
 
     @JsonProperty("tenantProposedRentEvidence")
-    TENANT_PROPOSED_MARKET_RENT_EVIDENCE("Tenant proposed rent evidence");
+    TENANT_PROPOSED_MARKET_RENT_EVIDENCE("Tenant proposed rent evidence"),
+
+    @JsonProperty("evidenceSupportingResponseToTenancyDetails")
+    EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS("Evidence supporting response to tenancy details");
 
     private final String label;
 }

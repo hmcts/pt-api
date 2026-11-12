@@ -135,6 +135,11 @@ public class PTCaseService {
             documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         }
 
+        LandlordResponse landlordResponse = ptCase.getLandlordResponse();
+        if (landlordResponse != null) {
+            documentService.updateDocumentsForLandlordResponse(landlordResponse, ptCaseEntity);
+        }
+
         return documentUploadValidator.errors(caseReference, urlsBefore);
     }
 

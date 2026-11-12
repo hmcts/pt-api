@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -400,6 +401,34 @@ class DocumentServiceTest {
         assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
         assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
         assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
+    }
+
+    @Test
+    @DisplayName("Should update document for landlord response when tenancy details evidence is present")
+    void updateDocumentsForLandlordResponseUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument evidenceDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/tenancy").filename("tenancy.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(500L)
+            .build();
+
+        LandlordResponse details = LandlordResponse.builder()
+            .tenancyDetailsResponseEvidence(List.of(new ListValue<>("1", evidenceDoc)))
+            .build();
+
+        documentService.updateDocumentsForLandlordResponse(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy");
+        assertThat(savedDoc.getFileName()).isEqualTo("tenancy.pdf");
     }
 
     @Test

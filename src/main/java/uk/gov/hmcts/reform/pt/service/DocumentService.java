@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
@@ -76,6 +77,15 @@ public class DocumentService {
         this.updateMultipleDocuments(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForLandlordResponse(LandlordResponse details, PTCaseEntity ptCaseEntity) {
+        this.updateMultipleDocuments(
+            DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS,
+            details.getTenancyDetailsResponseEvidence(),
             ptCaseEntity
         );
     }

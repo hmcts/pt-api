@@ -260,15 +260,24 @@ public class ApplicationMapper {
 
     public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
         RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
-        if (respondentPropertyDetails == null) {
+        List<DocumentDto> tenancyDetailsResponseEvidence =
+            findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS, ptCaseEntity);
+        if (respondentPropertyDetails == null && tenancyDetailsResponseEvidence.isEmpty()) {
             return null;
         }
 
         return LandlordResponseDto.builder()
             .respondToTenantAnswersAboutTenancyDetails(
-                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetails())
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetails
+                ))
             .respondToTenantAnswersAboutTenancyDetailsDescription(
-                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetailsDescription())
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetailsDescription
+                ))
+            .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
             .build();
     }
 
