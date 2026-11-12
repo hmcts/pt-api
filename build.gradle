@@ -312,6 +312,8 @@ dependencies {
 
   // cftlib does not pull oauth2-client transitively from `implementation`; needed by OAuth2ClientConfig
   cftlibImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+  smokeTestImplementation 'io.rest-assured:rest-assured'
 }
 
 flyway {
