@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.domain.State.PendingDisposal;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_DELETE_APPLICATION;
 
 @Component
@@ -31,10 +31,8 @@ public class CitizenDeleteApplication implements CCDConfig<PTCase, State, UserRo
             .decentralisedEvent(CITIZEN_DELETE_APPLICATION.getId(), this::submit)
             .forStateTransition(AWAITING_SUBMISSION_TO_HMCTS, PendingDisposal)
             .name(CITIZEN_DELETE_APPLICATION.getName())
-            .grant(CRU, CITIZEN)
-            .ttlIncrement(EXPIRE_IMMEDIATELY)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CREATOR)
+            .ttlIncrement(EXPIRE_IMMEDIATELY);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
