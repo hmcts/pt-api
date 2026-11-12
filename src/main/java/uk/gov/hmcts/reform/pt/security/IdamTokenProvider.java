@@ -48,7 +48,7 @@ public class IdamTokenProvider {
             OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
 
             if (authorizedClient == null || authorizedClient.getAccessToken() == null) {
-                log.error("Failed to authorize OAuth2 client for {} - client or token is null",
+                log.warn("Failed to authorize OAuth2 client for {} - client or token is null",
                           clientRegistrationId);
                 throw new IdamException("Unable to get access token response");
             }

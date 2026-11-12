@@ -13,18 +13,21 @@ import uk.gov.hmcts.reform.pt.exception.InvalidCaseReferenceException;
 @RestControllerAdvice(assignableTypes = ApplicationController.class)
 public class ApplicationControllerExceptionHandler {
     @ExceptionHandler(CaseNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCaseNotFoundException(CaseNotFoundException caseNotFoundException) {
-        log.warn("Case not found", caseNotFoundException);
+    public ResponseEntity<ErrorResponse> handleCaseNotFoundException(CaseNotFoundException cnfException) {
+        // Exception contains message text and case number, so just log that
+        log.warn(cnfException.getMessage());
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
-            .body(new ErrorResponse(caseNotFoundException.getMessage()));
+            .body(new ErrorResponse(cnfException.getMessage()));
     }
 
     @ExceptionHandler(InvalidCaseReferenceException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCaseReferenceException(InvalidCaseReferenceException ex) {
-        log.warn("Invalid case reference", ex);
+    public ResponseEntity<ErrorResponse> handleInvalidCaseReferenceException(
+        InvalidCaseReferenceException icrException) {
+        // Exception contains message text and case number, so just log that
+        log.warn(icrException.getMessage());
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(new ErrorResponse(ex.getMessage()));
+            .body(new ErrorResponse(icrException.getMessage()));
     }
 }

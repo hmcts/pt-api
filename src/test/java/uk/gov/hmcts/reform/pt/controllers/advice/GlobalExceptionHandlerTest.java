@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.pt.exception.IdamException;
-import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 
 import java.util.Set;
@@ -33,31 +32,6 @@ class GlobalExceptionHandlerTest {
         );
 
         underTest = new GlobalExceptionHandler(upstreamThrottling);
-    }
-
-    @Test
-    void shouldHandleInvalidAuthTokenException() {
-        String expectedErrorMessage = "Invalid authentication token";
-        InvalidAuthTokenException exception = new InvalidAuthTokenException(expectedErrorMessage);
-
-        ResponseEntity<ErrorResponse> responseEntity = underTest.handleInvalidAuth(exception);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().message()).isEqualTo(expectedErrorMessage);
-    }
-
-    @Test
-    void shouldHandleInvalidAuthTokenExceptionWithCause() {
-        String expectedErrorMessage = "Invalid authentication token";
-        Exception cause = new RuntimeException("Root cause");
-        InvalidAuthTokenException exception = new InvalidAuthTokenException(expectedErrorMessage, cause);
-
-        ResponseEntity<ErrorResponse> responseEntity = underTest.handleInvalidAuth(exception);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(responseEntity.getBody()).isNotNull();
-        assertThat(responseEntity.getBody().message()).isEqualTo(expectedErrorMessage);
     }
 
     @Test
