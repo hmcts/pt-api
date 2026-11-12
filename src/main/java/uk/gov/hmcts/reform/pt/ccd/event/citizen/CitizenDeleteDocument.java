@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_DELETE_DOCUMENT;
 
 @Component
@@ -25,11 +26,9 @@ public class CitizenDeleteDocument implements CCDConfig<PTCase, State, UserRole>
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(CITIZEN_DELETE_DOCUMENT.getId(), this::submit)
-            .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .forState(AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_DELETE_DOCUMENT.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CITIZEN);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
