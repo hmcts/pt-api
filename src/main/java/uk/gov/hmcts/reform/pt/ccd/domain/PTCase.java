@@ -117,6 +117,12 @@ public class PTCase {
     )
     private ExtraSupportDetails extraSupportDetails;
 
+    @CCD(
+        label = "Landlord response",
+        access = {CitizenAccess.class}
+    )
+    private LandlordResponse landlordResponse;
+
     @JsonProperty("TTL")
     @CCD(
         label = "Time to live",

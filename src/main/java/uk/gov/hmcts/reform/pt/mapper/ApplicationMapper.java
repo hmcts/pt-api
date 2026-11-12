@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
+import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -67,6 +69,7 @@ public class ApplicationMapper {
             .rentDetails(mapRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
             .extraSupportDetails(mapExtraSupportDetails(caseParty))
+            .landlordResponse(mapLandlordResponse(ptCase))
             .createdDate(ptCase.getCreatedDate())
             .build();
     }
@@ -257,6 +260,20 @@ public class ApplicationMapper {
             .build();
     }
 
+    public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
+        RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
+        if (respondentPropertyDetails == null) {
+            return null;
+        }
+
+        return LandlordResponseDto.builder()
+            .respondToTenantAnswersAboutTenancyDetails(
+                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetails())
+            .respondToTenantAnswersAboutTenancyDetailsDescription(
+                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetailsDescription())
+            .build();
+    }
+
     public static DocumentDto mapDocument(DocumentEntity entity) {
         return DocumentDto.builder()
             .id(entity.getId())
@@ -331,6 +348,10 @@ public class ApplicationMapper {
 
     private static TenancyDetailsEntity tenancyDetailsOf(PTCaseEntity ptCaseEntity) {
         return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getTenancyDetails);
+    }
+
+    private static RespondentPropertyDetailsEntity respondentPropertyDetailsOf(PTCaseEntity ptCaseEntity) {
+        return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getRespondentPropertyDetails);
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {
