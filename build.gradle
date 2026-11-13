@@ -200,6 +200,11 @@ def getCheckedOutGitCommitHash() {
 
 jacocoTestReport {
   executionData(test, integration)
+  afterEvaluate {
+    classDirectories.setFrom(files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: ["**/entity/**", "**/dto/**"])
+    }))
+  }
   reports {
     xml.getRequired().set(true)
     csv.getRequired().set(false)
@@ -214,6 +219,8 @@ sonarqube {
   properties {
     property "sonar.projectName", "Reform :: pt-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:pt-api"
+    property "sonar.coverage.exclusions", "**/dto/**," +
+      "**/entity/**,"
   }
 }
 

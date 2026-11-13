@@ -25,8 +25,8 @@ public class EnrichedApplicationDto {
     private HearingInspectionDetailsDto hearingInspectionDetails;
     private NoticeOfRentIncreaseDto noticeOfRentIncreaseDetails;
     private PropertyDetailsDto propertyDetails;
-    private CurrentRentsDetailsDto currentRentsDetails;
-    private MarketRentDto marketRentDetails;
+    private RentDetailsDto rentDetails;
     private TenancyAgreementDto tenancyAgreementDetails;
     private LandlordDetailsDto landlordDetails;
+    private LandlordResponseDto landlordResponse;
 }

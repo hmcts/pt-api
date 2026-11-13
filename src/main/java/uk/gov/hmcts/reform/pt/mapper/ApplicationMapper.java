@@ -6,11 +6,11 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.CurrentRentsDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
-import uk.gov.hmcts.reform.pt.dto.MarketRentDto;
+import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
+import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.projection.ApplicationSummary;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
@@ -64,9 +65,9 @@ public class ApplicationMapper {
             .hearingInspectionDetails(mapHearingInspectionDetails(ptCase))
             .noticeOfRentIncreaseDetails(mapNoticeOfRentChangeDetails(ptCase))
             .propertyDetails(mapPropertyDetails(ptCase))
-            .currentRentsDetails(mapCurrentRentDetails(ptCase))
-            .marketRentDetails(mapMarketRentDetails(ptCase))
+            .rentDetails(mapRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
+            .landlordResponse(mapLandlordResponse(ptCase))
             .createdDate(ptCase.getCreatedDate())
             .build();
     }
@@ -120,7 +121,8 @@ public class ApplicationMapper {
                 findDocumentsOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(
                 get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardship))
-            .rentIncreaseToCauseHardshipDetails(get(entity, NoticeOfRentChangeEntity::getHardshipDetails))
+            .rentIncreaseToCauseHardshipDetails(
+                get(entity, NoticeOfRentChangeEntity::getRentIncreaseToCauseHardshipDetails))
             .rentIncreaseHardshipDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.HARDSHIP_EVIDENCE, ptCaseEntity))
             .build();
@@ -177,15 +179,15 @@ public class ApplicationMapper {
             .build();
     }
 
-    public static CurrentRentsDetailsDto mapCurrentRentDetails(PTCaseEntity ptCaseEntity) {
+    public static RentDetailsDto mapRentDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
         MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
 
-        if (tenancyDetails == null && marketRentCase == null) {
+        if (tenancyDetails == null && marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
-        return CurrentRentsDetailsDto.builder()
+        return RentDetailsDto.builder()
             .tribunalPreviouslyDeterminedTenancyRent(
                 get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
             .previousTribunalCaseReference(
@@ -224,16 +226,6 @@ public class ApplicationMapper {
                 get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
             .otherHouseholdManagementChargesDetails(
                 get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
-            .build();
-    }
-
-    public static MarketRentDto mapMarketRentDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        if (marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
-            return null;
-        }
-
-        return MarketRentDto.builder()
             .applicantSuggestedMarketRent(
                 get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
             .applicantSuggestedMarketRentFrequency(
@@ -263,6 +255,20 @@ public class ApplicationMapper {
             .noTenancyAgreementReason(get(tenancyDetails, TenancyDetailsEntity::getNoTenancyAgreementReason))
             .tenancyAgreementDocument(
                 findDocumentOfTypeAndMap(DocumentType.TENANCY_AGREEMENT, ptCaseEntity))
+            .build();
+    }
+
+    public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
+        RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
+        if (respondentPropertyDetails == null) {
+            return null;
+        }
+
+        return LandlordResponseDto.builder()
+            .respondToTenantAnswersAboutTenancyDetails(
+                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetails())
+            .respondToTenantAnswersAboutTenancyDetailsDescription(
+                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .build();
     }
 
@@ -334,6 +340,10 @@ public class ApplicationMapper {
 
     private static TenancyDetailsEntity tenancyDetailsOf(PTCaseEntity ptCaseEntity) {
         return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getTenancyDetails);
+    }
+
+    private static RespondentPropertyDetailsEntity respondentPropertyDetailsOf(PTCaseEntity ptCaseEntity) {
+        return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getRespondentPropertyDetails);
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {

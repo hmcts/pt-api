@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_CREATE_APPLICATION;
 
 @Component
@@ -29,11 +30,9 @@ public class CitizenCreateApplication implements CCDConfig<PTCase, State, UserRo
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(CITIZEN_CREATE_APPLICATION.getId(), this::submit)
-            .initialState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .initialState(AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_CREATE_APPLICATION.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CITIZEN);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
