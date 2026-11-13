@@ -23,7 +23,12 @@ import java.util.Optional;
 @Component
 public class IdamAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> FILTER_PATHS = List.of("/ccd", "/callbacks", "/testing-support");
+    private static final List<String> FILTER_PATHS = List.of("/ccd",
+                                                             "/callbacks",
+                                                             "/testing-support",
+                                                             "/applications",
+                                                             "/respondent/applications",
+                                                             "/cases");
 
     private final IdamAuthenticator idamAuthenticator;
 
@@ -50,7 +55,7 @@ public class IdamAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (InvalidAuthTokenException ex) {
-            log.error("Authorization failed: {}", ex.getMessage(), ex);
+            log.warn("Authorization failed: {}", ex.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
         }
     }

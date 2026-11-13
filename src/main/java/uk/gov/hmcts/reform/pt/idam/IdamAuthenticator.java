@@ -27,16 +27,16 @@ public class IdamAuthenticator {
         }
         try {
             User user = retrieveUser(authorisation);
-            log.info("Successfully authenticated Idam token");
+            log.debug("Successfully authenticated Idam token");
             return user;
         } catch (FeignException.Unauthorized ex) {
-            log.error("The Authorization token provided is expired or invalid", ex);
+            log.warn("The Authorization token provided is expired or invalid", ex);
             throw new InvalidAuthTokenException("The Authorization token provided is expired or invalid", ex);
         } catch (FeignException ex) {
             // Any other Feign error (timeout, 5xx, network) — surface as IdamException so the
             // controller advice returns 503 + Retry-After instead of a raw 500. The token might
             // still be valid; this is an upstream-IDAM problem, not a client problem.
-            log.error("IDAM /o/userinfo call failed while validating Authorization token", ex);
+            log.warn("IDAM /o/userinfo call failed while validating Authorization token", ex);
             throw new IdamException("Unable to validate authorization token", ex);
         }
     }
