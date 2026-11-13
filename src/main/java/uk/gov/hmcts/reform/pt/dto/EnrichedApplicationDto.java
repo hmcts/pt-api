@@ -28,4 +28,5 @@ public class EnrichedApplicationDto {
     private RentDetailsDto rentDetails;
     private TenancyAgreementDto tenancyAgreementDetails;
     private LandlordDetailsDto landlordDetails;
+    private LandlordResponseDto landlordResponse;
 }

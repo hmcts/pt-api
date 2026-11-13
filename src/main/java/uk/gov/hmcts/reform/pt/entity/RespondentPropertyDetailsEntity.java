@@ -1,0 +1,41 @@
+package uk.gov.hmcts.reform.pt.entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+
+@Entity
+@Setter
+@Getter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "respondent_property_details")
+public class RespondentPropertyDetailsEntity extends AuditableEntity {
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo respondToTenantAnswersAboutTenancyDetails;
+
+    @Column(length = 500)
+    private String respondToTenantAnswersAboutTenancyDetailsDescription;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "market_rent_case_id", nullable = false, unique = true)
+    @JsonBackReference
+    private MarketRentCaseEntity marketRentCase;
+}

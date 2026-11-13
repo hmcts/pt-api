@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
+import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.DEFENDANT;
@@ -18,6 +19,8 @@ import static uk.gov.hmcts.reform.pt.ccd.event.EventId.RESPONDENT_UPDATE_RESPONS
 @Component
 @RequiredArgsConstructor
 public class RespondentUpdateResponse implements CCDConfig<PTCase, State, UserRole> {
+
+    private final PTCaseService ptCaseService;
 
     @Override
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
@@ -29,6 +32,7 @@ public class RespondentUpdateResponse implements CCDConfig<PTCase, State, UserRo
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {
+        ptCaseService.updateCase(eventPayload.caseReference(), eventPayload.caseData());
         return SubmitResponse.<State>builder().build();
     }
 }
