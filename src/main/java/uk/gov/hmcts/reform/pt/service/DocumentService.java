@@ -18,8 +18,10 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
@@ -150,10 +152,15 @@ public class DocumentService {
 
     @Transactional
     public boolean deleteDocument(long documentId, long caseReference) {
+        return deleteDocument(documentId, caseReference, EnumSet.allOf(DocumentType.class));
+    }
+
+    @Transactional
+    public boolean deleteDocument(long documentId, long caseReference, Set<DocumentType> allowedTypes) {
         Optional<DocumentEntity> document =
             documentRepository.findByIdAndPtCaseCaseReference(documentId, caseReference);
 
-        if (document.isEmpty()) {
+        if (document.isEmpty() || !allowedTypes.contains(document.get().getDocumentType())) {
             return false;
         }
 

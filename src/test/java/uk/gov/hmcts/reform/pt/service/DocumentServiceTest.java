@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -370,6 +371,41 @@ class DocumentServiceTest {
             .thenReturn(Optional.empty());
 
         assertThat(documentService.deleteDocument(999L, CASE_REFERENCE)).isFalse();
+
+        verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
+        verify(caseDocumentService, never()).deleteDocument(anyString());
+    }
+
+    @Test
+    @DisplayName("Should delete a document whose type is one of the allowed types")
+    void deleteDocumentOfAllowedTypeRemovesRowAndStoredFile() {
+        DocumentEntity stored = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS)
+            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+            .build();
+        when(documentRepository.findByIdAndPtCaseCaseReference(3L, CASE_REFERENCE))
+            .thenReturn(Optional.of(stored));
+
+        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+        assertThat(documentService.deleteDocument(3L, CASE_REFERENCE, allowed)).isTrue();
+
+        verify(documentRepository).deleteByIdAndPtCaseCaseReference(3L, CASE_REFERENCE);
+        verify(caseDocumentService).deleteDocument(stored.getUrl());
+    }
+
+    @Test
+    @DisplayName("Should touch nothing when the document type is not one of the allowed types")
+    void deleteDocumentOfOtherTypeDoesNothing() {
+        when(documentRepository.findByIdAndPtCaseCaseReference(4L, CASE_REFERENCE))
+            .thenReturn(Optional.of(DocumentEntity.builder()
+                .documentType(DocumentType.TENANCY_AGREEMENT)
+                .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+                .build()));
+
+        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+        assertThat(documentService.deleteDocument(4L, CASE_REFERENCE, allowed)).isFalse();
 
         verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
         verify(caseDocumentService, never()).deleteDocument(anyString());
