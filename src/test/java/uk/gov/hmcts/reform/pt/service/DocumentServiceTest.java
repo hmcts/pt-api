@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -375,6 +377,41 @@ class DocumentServiceTest {
     }
 
     @Test
+    @DisplayName("Should delete a document whose type is one of the allowed types")
+    void deleteDocumentOfAllowedTypeRemovesRowAndStoredFile() {
+        DocumentEntity stored = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS)
+            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+            .build();
+        when(documentRepository.findByIdAndPtCaseCaseReference(3L, CASE_REFERENCE))
+            .thenReturn(Optional.of(stored));
+
+        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+        assertThat(documentService.deleteDocument(3L, CASE_REFERENCE, allowed)).isTrue();
+
+        verify(documentRepository).deleteByIdAndPtCaseCaseReference(3L, CASE_REFERENCE);
+        verify(caseDocumentService).deleteDocument(stored.getUrl());
+    }
+
+    @Test
+    @DisplayName("Should touch nothing when the document type is not one of the allowed types")
+    void deleteDocumentOfOtherTypeDoesNothing() {
+        when(documentRepository.findByIdAndPtCaseCaseReference(4L, CASE_REFERENCE))
+            .thenReturn(Optional.of(DocumentEntity.builder()
+                .documentType(DocumentType.TENANCY_AGREEMENT)
+                .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+                .build()));
+
+        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+        assertThat(documentService.deleteDocument(4L, CASE_REFERENCE, allowed)).isFalse();
+
+        verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
+        verify(caseDocumentService, never()).deleteDocument(anyString());
+    }
+
+    @Test
     @DisplayName("Should update document for rent details when evidence document is present")
     void updateDocumentsForRentDetailsUpdatesDocument() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
@@ -400,6 +437,34 @@ class DocumentServiceTest {
         assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
         assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
         assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
+    }
+
+    @Test
+    @DisplayName("Should update document for landlord response when tenancy details evidence is present")
+    void updateDocumentsForLandlordResponseUpdatesDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument evidenceDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/tenancy").filename("tenancy.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(500L)
+            .build();
+
+        LandlordResponse details = LandlordResponse.builder()
+            .tenancyDetailsResponseEvidence(List.of(new ListValue<>("1", evidenceDoc)))
+            .build();
+
+        documentService.updateDocumentsForLandlordResponse(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy");
+        assertThat(savedDoc.getFileName()).isEqualTo("tenancy.pdf");
     }
 
     @Test

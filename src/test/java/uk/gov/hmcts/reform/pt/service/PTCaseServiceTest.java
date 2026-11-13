@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
+import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -752,6 +754,48 @@ class PTCaseServiceTest {
     }
 
     @Test
+    @DisplayName("Should upsert landlord response documents through the respondent document update")
+    void shouldUpdateLandlordResponseDocumentsOnly() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        LandlordResponse landlordResponse = LandlordResponse.builder().build();
+        PTCase ptCase = PTCase.builder().landlordResponse(landlordResponse).build();
+
+        ptCaseService.updateRespondentDocuments(caseReference, ptCase);
+
+        verify(documentService).updateDocumentsForLandlordResponse(landlordResponse, ptCaseEntity);
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should not upsert landlord response documents through the citizen document update")
+    void shouldIgnoreLandlordResponseDocumentsOnCitizenUpdate() {
+        long caseReference = 1234567890123456L;
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().caseReference(caseReference).build();
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
+
+        PTCase ptCase = PTCase.builder().landlordResponse(LandlordResponse.builder().build()).build();
+
+        ptCaseService.updateDocuments(caseReference, ptCase);
+
+        verify(documentService, never()).updateDocumentsForLandlordResponse(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should return not found when updating respondent documents for a missing case")
+    void updateRespondentDocumentsShouldThrowWhenCaseMissing() {
+        long caseReference = 1234567890123456L;
+        when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.empty());
+
+        PTCase ptCase = PTCase.builder().build();
+
+        assertThatThrownBy(() -> ptCaseService.updateRespondentDocuments(caseReference, ptCase))
+            .isInstanceOf(CaseNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("Should never delete a document while updating the case")
     void updateShouldNeverDeleteDocuments() {
         long caseReference = 1234567890123456L;
@@ -806,6 +850,29 @@ class PTCaseServiceTest {
             .isInstanceOf(IllegalArgumentException.class);
 
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should only let a respondent delete respondent documents")
+    void shouldDeleteNamedRespondentDocumentOfRespondentTypesOnly() {
+        long caseReference = 1234567890123456L;
+
+        ptCaseService.deleteRespondentDocument(caseReference, PTCase.builder().documentIdToDelete("42").build());
+
+        verify(documentService).deleteDocument(
+            42L, caseReference, Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS));
+        verify(documentService, never()).deleteDocument(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("Should reject a respondent delete that names no document")
+    void shouldRejectRespondentDeleteWithoutDocumentId() {
+        PTCase ptCase = PTCase.builder().build();
+
+        assertThatThrownBy(() -> ptCaseService.deleteRespondentDocument(1234567890123456L, ptCase))
+            .isInstanceOf(IllegalArgumentException.class);
+
+        verify(documentService, never()).deleteDocument(anyLong(), anyLong(), any());
     }
 
     @Test

@@ -724,6 +724,33 @@ class ApplicationMapperTest {
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
+        assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+    }
+
+    @Test
+    void shouldMapLandlordResponseEvidenceWhenRespondentPropertyDetailsAbsent() {
+        DocumentEntity evidence = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS)
+            .url("http://dm-store/doc/tenancy-evidence")
+            .binaryUrl("http://dm-store/doc/tenancy-evidence/binary")
+            .fileName("tenancy-evidence.pdf")
+            .contentType("application/pdf")
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .documents(List.of(evidence))
+            .build();
+
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription()).isNull();
+        assertThat(result.getTenancyDetailsResponseEvidence()).hasSize(1);
+        assertThat(result.getTenancyDetailsResponseEvidence().get(0).getUrl())
+            .isEqualTo("http://dm-store/doc/tenancy-evidence");
     }
 
     @Test
