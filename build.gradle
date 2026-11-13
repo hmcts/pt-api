@@ -257,7 +257,7 @@ dependencies {
   runtimeOnly "org.flywaydb:flyway-database-postgresql:$flywayVersion"
   implementation "org.flywaydb:flyway-core:$flywayVersion"
 
-  implementation "org.springframework.cloud:spring-cloud-starter-openfeign:4.3.3"
+  implementation "org.springframework.cloud:spring-cloud-starter-openfeign:5.0.4"
 
   // Compile-time only: needed for IdamApi.class reference in @EnableFeignClients (ccd-sdk's IdamClient depends on it).
   implementation "com.github.hmcts:idam-java-client:3.0.5"
@@ -302,7 +302,7 @@ dependencies {
     exclude group: 'com.launchdarkly', module: 'launchdarkly-java-server-sdk'
   }
 
-  integrationTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:4.3.4"
+  integrationTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:5.0.3"
   integrationTestImplementation "com.github.hmcts.rse-cft-lib:ccd-lib:0.19.2463"
 
   functionalTestImplementation "net.serenity-bdd:serenity-rest-assured:$serenityBddVersion"
