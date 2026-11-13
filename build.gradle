@@ -1,4 +1,5 @@
 import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.gradle.api.tasks.options.Option
 import uk.gov.hmcts.rse.AuthMode
 import uk.gov.hmcts.rse.CftlibExec
 
@@ -334,6 +335,33 @@ tasks.register('migratePostgresDatabase', FlywayMigrateTask) {
   if (project.hasProperty("dburl")) {
     url = "jdbc:postgresql://${dburl}"
   }
+}
+
+def ddlPipeline = "$projectDir/scripts/generate-migration.sh"
+
+abstract class GenerateMigration extends Exec {
+  @Input
+  @Optional
+  @Option(option = 'name', description = 'Name for the generated migration, e.g. add_review_notes')
+  abstract Property<String> getMigrationName()
+}
+
+tasks.register('generateMigration', GenerateMigration) {
+  group = 'ddl'
+  description = 'Converts the Oracle DDL to Postgres and generates a Flyway migration.'
+  doFirst {
+    if (!migrationName.isPresent()) {
+      throw new GradleException(
+        "Missing migration name. Usage: ./gradlew generateMigration --name=add_review_notes")
+    }
+    commandLine ddlPipeline, migrationName.get()
+  }
+}
+
+tasks.register('verifyDDL', Exec) {
+  group = 'ddl'
+  description = 'Checks the committed Postgres DDL and migrations match the Oracle DDL.'
+  commandLine ddlPipeline, '--verify'
 }
 
 tasks.register('fortifyScan', JavaExec) {
