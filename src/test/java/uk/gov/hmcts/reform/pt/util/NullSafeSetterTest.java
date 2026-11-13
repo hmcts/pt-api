@@ -54,6 +54,36 @@ class NullSafeSetterTest {
         assertThat(target.getDateTime()).isEqualTo(initialDateTime);
     }
 
+    @Test
+    @DisplayName("Should invoke setter when condition is true and value is not null")
+    void setIfElseNullWhenConditionTrueAndValuePresent() {
+        StringHolder target = new StringHolder("initial");
+
+        NullSafeSetter.setIfElseNull(() -> true, () -> "updated", target::setValue);
+
+        assertThat(target.getValue()).isEqualTo("updated");
+    }
+
+    @Test
+    @DisplayName("Should not invoke setter when condition is true and value is null")
+    void setIfElseNullWhenConditionTrueAndValueNull() {
+        StringHolder target = new StringHolder("initial");
+
+        NullSafeSetter.setIfElseNull(() -> true, () -> null, target::setValue);
+
+        assertThat(target.getValue()).isEqualTo("initial");
+    }
+
+    @Test
+    @DisplayName("Should set null when condition is false")
+    void setIfElseNullWhenConditionFalse() {
+        StringHolder target = new StringHolder("initial");
+
+        NullSafeSetter.setIfElseNull(() -> false, () -> "updated", target::setValue);
+
+        assertThat(target.getValue()).isNull();
+    }
+
     @Data
     @AllArgsConstructor
     private static final class StringHolder {

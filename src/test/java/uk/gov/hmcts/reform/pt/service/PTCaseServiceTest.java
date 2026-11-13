@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
@@ -209,6 +210,10 @@ class PTCaseServiceTest {
         LandlordDetails landlordDetails = LandlordDetails.builder()
             .representativeType(LandlordRepresentativeType.LETTING_AGENT)
             .build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Help")
+            .build();
 
         PTCase ptCase = PTCase.builder()
             .applicantFirstName("Jane")
@@ -231,6 +236,7 @@ class PTCaseServiceTest {
             .rentDetails(rentDetails)
             .tenancyAgreementDetails(tenancyAgreementDetails)
             .landlordDetails(landlordDetails)
+            .extraSupportDetails(extraSupportDetails)
             .landlordResponse(landlordResponse)
             .build();
 
@@ -244,10 +250,22 @@ class PTCaseServiceTest {
                 CasePartyEntity::getPhoneNumber,
                 CasePartyEntity::getMobilePhoneNumber,
                 CasePartyEntity::getOrganisationName,
-                CasePartyEntity::getReferenceNumberForCommunications)
-            .containsExactly("Jane", "Doe", "jane@example.com", "01111111111", "07777777777", "Test Company", "REF12");
+                CasePartyEntity::getReferenceNumberForCommunications,
+                CasePartyEntity::getExtraSupportRequired,
+                CasePartyEntity::getExtraSupportRequiredDetails)
+            .containsExactly(
+                "Jane",
+                "Doe",
+                "jane@example.com",
+                "01111111111",
+                "07777777777",
+                "Test Company",
+                "REF12",
+                YesOrNo.YES,
+                "Help"
+            );
 
-        verify(casePartyRepository, times(3)).save(caseParty);
+        verify(casePartyRepository, times(4)).save(caseParty);
         verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
@@ -382,6 +400,81 @@ class PTCaseServiceTest {
 
         verify(casePartyService, never()).updateWithLandlordDetails(any(), any());
         verify(ptCaseRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should update extra support details and save")
+    void updateExtraSupportDetailsSuccess() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Help")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .extraSupportDetails(extraSupportDetails)
+            .build();
+
+        ptCaseService.updateExtraSupportDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(caseParty.getExtraSupportRequiredDetails()).isEqualTo("Help");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should skip updating extra support details when extraSupportDetails is null")
+    void updateExtraSupportDetailsSkippedWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder().build();
+        PTCase ptCase = PTCase.builder()
+            .extraSupportDetails(null)
+            .build();
+
+        ptCaseService.updateExtraSupportDetails(ptCase, caseParty);
+
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should preserve extra support details when null in extraSupportDetails")
+    void updateExtraSupportDetailsPreservesDetailsWhenNull() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Existing details")
+            .build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .extraSupportDetails(extraSupportDetails)
+            .build();
+
+        ptCaseService.updateExtraSupportDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(caseParty.getExtraSupportRequiredDetails()).isEqualTo("Existing details");
+        verify(casePartyRepository).save(caseParty);
+    }
+
+    @Test
+    @DisplayName("Should reset extra support details to null when extra support required is NO")
+    void updateExtraSupportDetailsResetsDetailsWhenNo() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Existing details")
+            .build();
+        ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
+            .extraSupportRequired(YesOrNo.NO)
+            .extraSupportRequiredDetails("Some details")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .extraSupportDetails(extraSupportDetails)
+            .build();
+
+        ptCaseService.updateExtraSupportDetails(ptCase, caseParty);
+
+        assertThat(caseParty.getExtraSupportRequired()).isEqualTo(YesOrNo.NO);
+        assertThat(caseParty.getExtraSupportRequiredDetails()).isNull();
+        verify(casePartyRepository).save(caseParty);
     }
 
     @Test

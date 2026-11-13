@@ -112,6 +112,12 @@ public class PTCase {
     private LandlordDetails landlordDetails;
 
     @CCD(
+        label = "Extra support details",
+        access = {CitizenAccess.class}
+    )
+    private ExtraSupportDetails extraSupportDetails;
+
+    @CCD(
         label = "Landlord response",
         access = {CitizenAccess.class}
     )

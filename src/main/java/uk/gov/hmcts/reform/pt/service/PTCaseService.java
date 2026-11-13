@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfElseNull;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -105,6 +108,7 @@ public class PTCaseService {
         this.updateRentDetails(ptCase, ptCaseEntity);
         this.updateTenancyAgreementDetails(ptCase, ptCaseEntity);
         this.updateLandlordDetails(ptCase, ptCaseEntity);
+        this.updateExtraSupportDetails(ptCase, applicantCaseParty);
         this.updateLandlordResponse(ptCase, ptCaseEntity);
     }
 
@@ -267,5 +271,19 @@ public class PTCaseService {
 
         setIfNotNull(landlordDetails.getRepresentativeType(), ptCaseEntity::setLandlordType);
         ptCaseRepository.save(ptCaseEntity);
+    }
+
+    @Transactional
+    public void updateExtraSupportDetails(PTCase ptCase, CasePartyEntity applicantParty) {
+        ExtraSupportDetails extraSupportDetails = ptCase.getExtraSupportDetails();
+        if (extraSupportDetails == null) {
+            return;
+        }
+
+        setIfNotNull(extraSupportDetails.getExtraSupportRequired(), applicantParty::setExtraSupportRequired);
+        setIfElseNull(() -> extraSupportDetails.getExtraSupportRequired() == YesOrNo.YES,
+                      extraSupportDetails::getExtraSupportRequiredDetails,
+                      applicantParty::setExtraSupportRequiredDetails);
+        casePartyRepository.save(applicantParty);
     }
 }
