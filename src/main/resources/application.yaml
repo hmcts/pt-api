@@ -163,4 +163,4 @@ payments:
     url: ${PAYMENT_API_URL:http://localhost:8083/payments}
     callback-url: ${PAY_CALLBACK_URL:http://host.docker.internal:4550/payment-update}
   params:
-    hmctsOrgId: ${PT_HMCTS_ORG_ID:}
+    hmctsOrgId: ${PT_HMCTS_ORG_ID:BGA3}
