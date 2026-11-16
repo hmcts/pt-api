@@ -262,7 +262,8 @@ public class ApplicationMapper {
 
     public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
         RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
-        if (respondentPropertyDetails == null) {
+        CasePartyEntity respondent = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
+        if (respondentPropertyDetails == null || respondent == null) {
             return null;
         }
 
@@ -271,6 +272,7 @@ public class ApplicationMapper {
                 respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetails())
             .respondToTenantAnswersAboutTenancyDetailsDescription(
                 respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetailsDescription())
+            .landlordPhoneNumber(respondent.getPhoneNumber())
             .build();
     }
 
@@ -357,5 +359,4 @@ public class ApplicationMapper {
     private static <T, R> R get(T source, Function<T, R> getter) {
         return source == null ? null : getter.apply(source);
     }
-
 }

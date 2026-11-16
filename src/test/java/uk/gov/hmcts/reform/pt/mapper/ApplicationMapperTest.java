@@ -742,7 +742,13 @@ class ApplicationMapperTest {
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
             .build();
 
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("01234567890")
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(List.of(landlord))
             .marketRentCase(MarketRentCaseEntity.builder()
                                 .respondentPropertyDetails(respondentPropertyDetails)
                                 .build())
@@ -754,12 +760,36 @@ class ApplicationMapperTest {
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
+        assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
     }
 
     @Test
     void shouldReturnNullLandlordResponseWhenRespondentPropertyDetailsAbsent() {
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("01234567890")
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(List.of(landlord))
             .marketRentCase(MarketRentCaseEntity.builder().build())
+            .build();
+
+        assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
+    }
+
+    @Test
+    void shouldReturnNullLandlordResponseWhenLandlordPartyAbsent() {
+        RespondentPropertyDetailsEntity respondentPropertyDetails = RespondentPropertyDetailsEntity.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(Collections.emptyList())
+            .marketRentCase(MarketRentCaseEntity.builder()
+                                .respondentPropertyDetails(respondentPropertyDetails)
+                                .build())
             .build();
 
         assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();

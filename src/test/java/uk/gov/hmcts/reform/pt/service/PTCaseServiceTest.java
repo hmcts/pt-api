@@ -183,6 +183,11 @@ class PTCaseServiceTest {
         when(ptCaseRepository.findByCaseReference(caseReference)).thenReturn(Optional.of(ptCaseEntity));
         when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.APPLICANT))
             .thenReturn(Optional.of(caseParty));
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .build();
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD))
+            .thenReturn(Optional.of(landlord));
 
         HearingPropertyInspectionDetails hearingInspectionDetails = HearingPropertyInspectionDetails.builder()
             .hearingRequested(YesOrNo.YES)
@@ -205,6 +210,7 @@ class PTCaseServiceTest {
         RentDetails rentDetails = RentDetails.builder().build();
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .landlordPhoneNumber("01234567890")
             .build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
@@ -266,6 +272,8 @@ class PTCaseServiceTest {
             );
 
         verify(casePartyRepository, times(4)).save(caseParty);
+        assertThat(landlord.getPhoneNumber()).isEqualTo("01234567890");
+        verify(casePartyRepository).save(landlord);
         verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository, times(2)).save(ptCaseEntity);
@@ -540,9 +548,16 @@ class PTCaseServiceTest {
     @DisplayName("Should update landlord response when landlordResponse present")
     void updateLandlordResponseSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .build();
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD))
+            .thenReturn(Optional.of(landlord));
+
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March")
+            .landlordPhoneNumber("01234567890")
             .build();
         PTCase ptCase = PTCase.builder()
             .landlordResponse(landlordResponse)
@@ -551,6 +566,8 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
 
         verify(respondentPropertyDetailsService).updateLandlordResponse(landlordResponse, ptCaseEntity);
+        assertThat(landlord.getPhoneNumber()).isEqualTo("01234567890");
+        verify(casePartyRepository).save(landlord);
     }
 
     @Test
@@ -564,6 +581,29 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
 
         verify(respondentPropertyDetailsService, never()).updateLandlordResponse(any(), any());
+        verify(casePartyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should skip updating landlord response when landlord party is null")
+    void updateLandlordResponseSkippedWhenLandlordPartyNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD))
+            .thenReturn(Optional.empty());
+
+        LandlordResponse landlordResponse = LandlordResponse.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March")
+            .landlordPhoneNumber("01234567890")
+            .build();
+        PTCase ptCase = PTCase.builder()
+            .landlordResponse(landlordResponse)
+            .build();
+
+        ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
+
+        verify(respondentPropertyDetailsService, never()).updateLandlordResponse(any(), any());
+        verify(casePartyRepository, never()).save(any());
     }
 
     @Test

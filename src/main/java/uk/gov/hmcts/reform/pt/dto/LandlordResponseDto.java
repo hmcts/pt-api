@@ -9,4 +9,5 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 public class LandlordResponseDto {
     private YesOrNo respondToTenantAnswersAboutTenancyDetails;
     private String respondToTenantAnswersAboutTenancyDetailsDescription;
+    private String landlordPhoneNumber;
 }
