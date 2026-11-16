@@ -12,7 +12,8 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CITIZEN;
+import static uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole.CREATOR;
+import static uk.gov.hmcts.reform.pt.ccd.domain.State.AWAITING_SUBMISSION_TO_HMCTS;
 import static uk.gov.hmcts.reform.pt.ccd.event.EventId.CITIZEN_UPDATE_APPLICATION;
 
 @Component
@@ -25,11 +26,9 @@ public class CitizenUpdateApplication implements CCDConfig<PTCase, State, UserRo
     public void configureDecentralised(DecentralisedConfigBuilder<PTCase, State, UserRole> configBuilder) {
         configBuilder
             .decentralisedEvent(CITIZEN_UPDATE_APPLICATION.getId(), this::submit)
-            .forState(State.AWAITING_SUBMISSION_TO_HMCTS)
+            .forState(AWAITING_SUBMISSION_TO_HMCTS)
             .name(CITIZEN_UPDATE_APPLICATION.getName())
-            .grant(CRU, CITIZEN)
-            .showSummary()
-            .endButtonLabel("Submit");
+            .grant(CRU, CREATOR);
     }
 
     private SubmitResponse<State> submit(EventPayload<PTCase, State> eventPayload) {

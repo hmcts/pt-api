@@ -32,6 +32,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.pt.ccd.domain.TenancyType.ASSURED_PERIODIC_TENANCY;
+import static uk.gov.hmcts.reform.pt.service.CaseApplicationService.APPLICANT_EXCLUDED_STATES;
+import static uk.gov.hmcts.reform.pt.service.CaseApplicationService.RESPONDENT_EXCLUDED_STATES;
 
 @ExtendWith(MockitoExtension.class)
 class CaseApplicationServiceTest {
@@ -81,13 +83,13 @@ class CaseApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("Should get applications for a user")
-    void getApplicationsForUser() {
+    @DisplayName("Should get applications where the user is the applicant")
+    void getApplicantApplicationsForUser() {
         UUID userId = UUID.randomUUID();
         LocalDateTime created = LocalDateTime.of(2026, 1, 2, 3, 4);
         LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
 
-        when(casePartyRepository.findActiveApplicationsByIdamId(userId))
+        when(casePartyRepository.findActiveApplicationsByIdamId(userId, APPLICANT_EXCLUDED_STATES))
             .thenReturn(List.of(
                 new Summary(1L, CASE_REFERENCE, created, submitted, State.AWAITING_SUBMISSION_TO_HMCTS)));
 
@@ -99,7 +101,30 @@ class CaseApplicationServiceTest {
         assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
         assertThat(result.getFirst().getState()).isEqualTo(State.AWAITING_SUBMISSION_TO_HMCTS);
 
-        verify(casePartyRepository).findActiveApplicationsByIdamId(userId);
+        verify(casePartyRepository).findActiveApplicationsByIdamId(userId, APPLICANT_EXCLUDED_STATES);
+        verifyNoMoreInteractions(casePartyRepository);
+    }
+
+    @Test
+    @DisplayName("Should get applications where the user is the respondent")
+    void getRespondentApplicationsForUser() {
+        UUID userId = UUID.randomUUID();
+        LocalDateTime created = LocalDateTime.of(2026, 1, 2, 3, 4);
+        LocalDateTime submitted = LocalDateTime.of(2026, 1, 5, 6, 7);
+
+        when(casePartyRepository.findRespondentApplicationsByIdamId(userId, RESPONDENT_EXCLUDED_STATES))
+            .thenReturn(List.of(
+                new Summary(1L, CASE_REFERENCE, created, submitted, State.PENDING_CASE_ISSUED)));
+
+        List<ApplicationDto> result = applicationService.getRespondentCasesForUser(userId);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getCaseReference()).isEqualTo(CASE_REFERENCE);
+        assertThat(result.getFirst().getCreatedDate()).isEqualTo(created);
+        assertThat(result.getFirst().getSubmittedOn()).isEqualTo(submitted);
+        assertThat(result.getFirst().getState()).isEqualTo(State.PENDING_CASE_ISSUED);
+
+        verify(casePartyRepository).findRespondentApplicationsByIdamId(userId, RESPONDENT_EXCLUDED_STATES);
         verifyNoMoreInteractions(casePartyRepository);
     }
 

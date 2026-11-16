@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.ccd.domain.CurrentRentDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
@@ -164,8 +164,8 @@ class TenancyDetailsServiceTest {
     }
 
     @Test
-    @DisplayName("Should update existing TenancyDetailsEntity with current rent details")
-    void updateWithCurrentRentDetailsWhenExists() {
+    @DisplayName("Should update existing TenancyDetailsEntity with rent details")
+    void updateWithRentDetailsWhenExists() {
         TenancyDetailsEntity existing = TenancyDetailsEntity.builder().build();
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
@@ -177,7 +177,7 @@ class TenancyDetailsServiceTest {
         LocalDate endDate = LocalDate.of(2026, 1, 1);
         LocalDate originalStartDate = LocalDate.of(2024, 1, 1);
 
-        CurrentRentDetails details = CurrentRentDetails.builder()
+        RentDetails details = RentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.YES)
             .previousTribunalCaseReference("TRIB-123")
             .currentTenancyStartDate(startDate)
@@ -186,7 +186,7 @@ class TenancyDetailsServiceTest {
             .originalTenancyStartDate(originalStartDate)
             .build();
 
-        tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
+        tenancyDetailsService.updateWithRentDetails(ptCase, details);
 
         verify(tenancyDetailsRepository).save(existing);
         assertThat(existing.getTribunalPreviouslyDeterminedTenancyRent()).isEqualTo(YesOrNo.YES);
@@ -198,19 +198,19 @@ class TenancyDetailsServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and save TenancyDetailsEntity with current rent details when list is empty")
-    void updateWithCurrentRentDetailsWhenEmpty() {
+    @DisplayName("Should create and save TenancyDetailsEntity with rent details when list is empty")
+    void updateWithRentDetailsWhenEmpty() {
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
         when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         LocalDate startDate = LocalDate.of(2025, 1, 1);
-        CurrentRentDetails details = CurrentRentDetails.builder()
+        RentDetails details = RentDetails.builder()
             .tribunalPreviouslyDeterminedTenancyRent(YesOrNo.NO)
             .currentTenancyStartDate(startDate)
             .build();
 
-        tenancyDetailsService.updateWithCurrentRentDetails(ptCase, details);
+        tenancyDetailsService.updateWithRentDetails(ptCase, details);
 
         ArgumentCaptor<TenancyDetailsEntity> captor = ArgumentCaptor.forClass(TenancyDetailsEntity.class);
         verify(tenancyDetailsRepository).save(captor.capture());

@@ -191,6 +191,10 @@ public class MarketRentCaseEntity extends AuditableEntity {
 
     @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
     @JsonManagedReference
+    private RespondentPropertyDetailsEntity respondentPropertyDetails;
+
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private CaseApplicationVettingEntity caseApplicationVetting;
 
     @OneToOne(fetch = FetchType.LAZY)

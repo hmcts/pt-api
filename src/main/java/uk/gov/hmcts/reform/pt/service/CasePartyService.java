@@ -14,6 +14,10 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.APPLICANT;
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LANDLORD;
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LANDLORD_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LETTING_AGENT;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -30,7 +34,7 @@ public class CasePartyService {
             .lastName(ptCase.getApplicantLastName())
             .emailAddress(ptCase.getEmail())
             .ptCase(ptCaseEntity)
-            .casePartyRole(PartyRole.APPLICANT)
+            .casePartyRole(APPLICANT)
             .idamId(idamId)
             .build();
         casePartyRepository.save(caseParty);
@@ -49,30 +53,30 @@ public class CasePartyService {
         if (landlord == null) {
             return;
         }
-        this.updatePartyDetails(ptCaseEntity, landlord, PartyRole.LANDLORD);
+        this.updatePartyDetails(ptCaseEntity, landlord, LANDLORD);
 
         PartyDetails lettingAgent = landlordDetails.getLettingAgentPartyDetails();
         PartyDetails representative = landlordDetails.getRepresentativePartyDetails();
 
         switch (landlordDetails.getRepresentativeType()) {
             case LETTING_AGENT -> {
-                this.updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
+                this.updatePartyDetails(ptCaseEntity, lettingAgent, LETTING_AGENT);
                 getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)
                     .ifPresent(this::removeParty);
             }
             case REPRESENTATIVE -> {
-                this.updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
-                getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD)
+                this.updatePartyDetails(ptCaseEntity, representative, LANDLORD_REPRESENTATIVE);
+                getPartyForCaseByRole(ptCaseEntity, LANDLORD)
                     .ifPresent(this::removeParty);
             }
             case LETTING_AGENT_AND_REPRESENTATIVE -> {
-                this.updatePartyDetails(ptCaseEntity, lettingAgent, PartyRole.LETTING_AGENT);
-                this.updatePartyDetails(ptCaseEntity, representative, PartyRole.LANDLORD_REPRESENTATIVE);
+                this.updatePartyDetails(ptCaseEntity, lettingAgent, LETTING_AGENT);
+                this.updatePartyDetails(ptCaseEntity, representative, LANDLORD_REPRESENTATIVE);
             }
             case NO_LETTING_AGENT_OR_REPRESENTATIVE, NOT_SURE -> {
-                getPartyForCaseByRole(ptCaseEntity, PartyRole.LETTING_AGENT)
+                getPartyForCaseByRole(ptCaseEntity, LETTING_AGENT)
                     .ifPresent(this::removeParty);
-                getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)
+                getPartyForCaseByRole(ptCaseEntity, LANDLORD_REPRESENTATIVE)
                     .ifPresent(this::removeParty);
             }
         }

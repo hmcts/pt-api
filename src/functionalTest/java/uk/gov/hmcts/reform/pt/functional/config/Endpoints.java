@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.pt.functional.config;
 
+import lombok.Getter;
+
+@Getter
 public enum Endpoints {
 
     Applications("/applications"),
+    RespondentApplications("/respondent/applications"),
     ReturnApplication("/applications/{caseReference}"),
     SubmitEventCallback("/ccd-persistence/cases"),
     DeleteTestCase("/testing-support/cases/{caseReference}"),
@@ -13,9 +17,5 @@ public enum Endpoints {
 
     Endpoints(String resource) {
         this.resource = resource;
-    }
-
-    public String getResource() {
-        return resource;
     }
 }
