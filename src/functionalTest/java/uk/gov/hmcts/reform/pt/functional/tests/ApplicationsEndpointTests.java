@@ -3,14 +3,15 @@ package uk.gov.hmcts.reform.pt.functional.tests;
 import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.annotations.Title;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.hmcts.reform.pt.ccd.CaseType;
+import uk.gov.hmcts.reform.pt.functional.config.AuthTokens;
 import uk.gov.hmcts.reform.pt.functional.config.TestConstants;
 import uk.gov.hmcts.reform.pt.functional.steps.ApiSteps;
+import uk.gov.hmcts.reform.pt.functional.testutils.CcdCaseCreator;
 import uk.gov.hmcts.reform.pt.functional.testutils.PayloadLoader;
 import uk.gov.hmcts.reform.pt.functional.testutils.PtIdamTokenClient;
 import uk.gov.hmcts.reform.pt.functional.testutils.RandomNumberUtil;
@@ -92,16 +93,25 @@ class ApplicationsEndpointTests {
     }
 
     @Title("Applications Case Reference Endpoint Tests - should return 200 when the case exists")
-    @Disabled("Unable to create case yet, so this will not return anything")
     @Test
     void applicationsCaseReferenceEndpointTest200Scenario() {
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
-        apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
-        apiSteps.checkStatusCode(200);
-        apiSteps.theResponseBodyIsAnEmptyArray();
+        Long caseId = CcdCaseCreator.createCitizenCase(AuthTokens.citizenUserIdamToken, AuthTokens.ptApiS2sToken);
+        try {
+            apiSteps.requestIsPreparedWithAppropriateValues();
+            apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
+
+            apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.citizenUser);
+            apiSteps.theRequestContainsThePathParameter("caseReference", caseId.toString());
+            apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
+            apiSteps.checkStatusCode(200);
+            apiSteps.theResponseBodyMatchesTheExpectedResponse(
+                PayloadLoader.load(
+                    "/responses/citizenCreateApplication-getApplicationResponse.json",
+                    Map.of("caseId", caseId.toString())
+                ));
+        } finally {
+            TestCaseCleanUp.deleteCase(caseId);
+        }
     }
 
     @Title("Applications Case Reference Endpoint Tests - should return 400 when the case ref is invalid")
@@ -117,16 +127,23 @@ class ApplicationsEndpointTests {
     }
 
     @Title("Applications Case Reference Endpoint Tests - should return 404 when trying to return another user's case")
-    @Disabled("Unable to create case yet, so this is not possible")
     @Test
     void applicationsCaseReferenceEndpointTest404Scenario() {
         // Create case by one user, then use different user's auth to try to access and should receive 404
-        apiSteps.requestIsPreparedWithAppropriateValues();
-        apiSteps.theRequestContainsUnauthorisedServiceToken();
-        apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
-        apiSteps.theRequestContainsThePathParameter("caseReference", "1234123412341234");
-        apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
-        apiSteps.checkStatusCode(404);
-        apiSteps.theResponseBodyFieldEquals("message", "No case found with reference 1");
+        Long caseId = CcdCaseCreator.createCitizenCase(AuthTokens.citizenUserIdamToken, AuthTokens.ptApiS2sToken);
+
+        try {
+            apiSteps.requestIsPreparedWithAppropriateValues();
+            apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
+
+
+            apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
+            apiSteps.theRequestContainsThePathParameter("caseReference", caseId.toString());
+            apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
+            apiSteps.checkStatusCode(404);
+            apiSteps.theResponseBodyFieldEquals("message", "No case found with reference " + caseId);
+        } finally {
+            TestCaseCleanUp.deleteCase(caseId);
+        }
     }
 }
