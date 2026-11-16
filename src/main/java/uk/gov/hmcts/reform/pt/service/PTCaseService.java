@@ -205,11 +205,17 @@ public class PTCaseService {
     @Transactional
     public void updateLandlordResponse(PTCase ptCase, PTCaseEntity ptCaseEntity) {
         LandlordResponse landlordResponse = ptCase.getLandlordResponse();
-        if (landlordResponse == null) {
+        CasePartyEntity landlord = casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD)
+            .orElse(null);
+
+        if (landlordResponse == null || landlord == null) {
             return;
         }
 
         respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
+
+        landlord.setPhoneNumber(landlordResponse.getLandlordPhoneNumber());
+        casePartyRepository.save(landlord);
     }
 
     @Transactional
