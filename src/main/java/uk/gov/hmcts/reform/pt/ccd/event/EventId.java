@@ -18,6 +18,8 @@ public enum EventId {
 
     RESPONDENT_UPDATE_RESPONSE("respondent-update-response", "Respondent Update Response"),
     RESPONDENT_SUBMIT_RESPONSE("respondent-submit-response", "Respondent Submit Response"),
+    RESPONDENT_UPLOAD_DOCUMENT("respondent-upload-document", "Respondent Upload Document"),
+    RESPONDENT_DELETE_DOCUMENT("respondent-delete-document", "Respondent Delete Document"),
 
     CREATE_DRAFT_CASE("create-draft-case", "Case: Create Draft Case"),
     DELETE_DRAFT_CASE("delete-draft-case", "Case: Delete Draft Case"),
