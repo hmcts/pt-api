@@ -62,9 +62,6 @@ withPipeline(type, product, component) {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
     enableHighLevelDataSetup("pt-kv1", true)
     setAatEnvVars()
-    //  afterSuccess('smoketest:aat') {
-    //    runE2eTests(env.ENVIRONMENT)
-    //  }
   }
 
   onDemo {
@@ -165,22 +162,4 @@ def archiveFunctionalTestReports() {
   ])
 
   archiveArtifacts allowEmptyArchive: true, artifacts: '**/report-for-functional-tests/*'
-}
-
-def runE2eTests(String context) {
-  try {
-    stage('E2E Test - ' + context) {
-      sh './gradlew runE2eTests'
-    }
-  } finally {
-    publishHTML([
-      allowMissing: true,
-      alwaysLinkToLastBuild: true,
-      keepAll: true,
-      reportDir: "src/e2eTest/playwright-report",
-      reportFiles: 'index.html',
-      reportName: 'E2E Test Report'
-    ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'definitions/test/playwright-report/**'
-  }
 }
