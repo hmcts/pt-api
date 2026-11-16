@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
@@ -67,6 +68,7 @@ public class ApplicationMapper {
             .propertyDetails(mapPropertyDetails(ptCase))
             .rentDetails(mapRentDetails(ptCase))
             .tenancyAgreementDetails(mapTenancyAgreement(ptCase))
+            .extraSupportDetails(mapExtraSupportDetails(caseParty))
             .landlordResponse(mapLandlordResponse(ptCase))
             .createdDate(ptCase.getCreatedDate())
             .build();
@@ -260,9 +262,10 @@ public class ApplicationMapper {
 
     public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
         RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
+        CasePartyEntity respondent = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
         List<DocumentDto> tenancyDetailsResponseEvidence =
             findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS, ptCaseEntity);
-        if (respondentPropertyDetails == null && tenancyDetailsResponseEvidence.isEmpty()) {
+        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()) {
             return null;
         }
 
@@ -277,6 +280,7 @@ public class ApplicationMapper {
                     respondentPropertyDetails,
                     RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetailsDescription
                 ))
+            .landlordPhoneNumber(get(respondent, CasePartyEntity::getPhoneNumber))
             .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
             .build();
     }
@@ -299,7 +303,13 @@ public class ApplicationMapper {
             .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
             .landlordRepresentativeType(ptCaseEntity.getLandlordType())
             .build();
+    }
 
+    public static ExtraSupportDto mapExtraSupportDetails(CasePartyEntity caseParty) {
+        return ExtraSupportDto.builder()
+            .extraSupportRequired(caseParty.getExtraSupportRequired())
+            .extraSupportRequiredDetails(caseParty.getExtraSupportRequiredDetails())
+            .build();
     }
 
     public static PartyDto mapParty(CasePartyEntity entity) {
@@ -358,5 +368,4 @@ public class ApplicationMapper {
     private static <T, R> R get(T source, Function<T, R> getter) {
         return source == null ? null : getter.apply(source);
     }
-
 }

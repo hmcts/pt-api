@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.SubmitResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.event.BaseEventTest;
+import uk.gov.hmcts.reform.pt.ccd.event.EventId;
 import uk.gov.hmcts.reform.pt.service.PTCaseService;
 
 import java.util.List;
@@ -57,6 +58,6 @@ public class RespondentUploadDocumentTest extends BaseEventTest {
     void shouldBeConfiguredForCaseProgression() {
         assertThat(event.getPreState()).containsExactly(State.CASE_PROGRESSION);
         assertThat(event.getPostState()).containsExactly(State.CASE_PROGRESSION);
-        assertThat(event.getId()).isEqualTo("respondent-upload-document");
+        assertThat(event.getId()).isEqualTo(EventId.RESPONDENT_UPLOAD_DOCUMENT.getId());
     }
 }
