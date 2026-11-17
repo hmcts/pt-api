@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
 import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
@@ -140,6 +141,35 @@ class ApplicationMapperTest {
         assertThat(result.getLastName()).isNull();
         assertThat(result.getCompanyName()).isNull();
         assertThat(result.getReferenceNumberForCommunications()).isNull();
+    }
+
+    @Test
+    void shouldMapExtraSupportDetails() {
+        CasePartyEntity caseParty = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Sign language interpreter")
+            .build();
+
+        ExtraSupportDto result = ApplicationMapper.mapExtraSupportDetails(caseParty);
+
+        assertThat(result.getExtraSupportRequired()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getExtraSupportRequiredDetails()).isEqualTo("Sign language interpreter");
+    }
+
+    @Test
+    void shouldMapExtraSupportDetailsWhenNoOrNull() {
+        CasePartyEntity casePartyNo = CasePartyEntity.builder()
+            .extraSupportRequired(YesOrNo.NO)
+            .build();
+
+        ExtraSupportDto resultNo = ApplicationMapper.mapExtraSupportDetails(casePartyNo);
+        assertThat(resultNo.getExtraSupportRequired()).isEqualTo(YesOrNo.NO);
+        assertThat(resultNo.getExtraSupportRequiredDetails()).isNull();
+
+        CasePartyEntity casePartyNull = CasePartyEntity.builder().build();
+        ExtraSupportDto resultNull = ApplicationMapper.mapExtraSupportDetails(casePartyNull);
+        assertThat(resultNull.getExtraSupportRequired()).isNull();
+        assertThat(resultNull.getExtraSupportRequiredDetails()).isNull();
     }
 
     @Test
@@ -712,7 +742,13 @@ class ApplicationMapperTest {
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
             .build();
 
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("01234567890")
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(List.of(landlord))
             .marketRentCase(MarketRentCaseEntity.builder()
                                 .respondentPropertyDetails(respondentPropertyDetails)
                                 .build())
@@ -724,12 +760,36 @@ class ApplicationMapperTest {
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
+        assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
     }
 
     @Test
     void shouldReturnNullLandlordResponseWhenRespondentPropertyDetailsAbsent() {
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("01234567890")
+            .build();
+
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(List.of(landlord))
             .marketRentCase(MarketRentCaseEntity.builder().build())
+            .build();
+
+        assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
+    }
+
+    @Test
+    void shouldReturnNullLandlordResponseWhenLandlordPartyAbsent() {
+        RespondentPropertyDetailsEntity respondentPropertyDetails = RespondentPropertyDetailsEntity.builder()
+            .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(Collections.emptyList())
+            .marketRentCase(MarketRentCaseEntity.builder()
+                                .respondentPropertyDetails(respondentPropertyDetails)
+                                .build())
             .build();
 
         assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
@@ -1033,6 +1093,8 @@ class ApplicationMapperTest {
             .ptCase(ptCase)
             .idamId(idamId)
             .contactByText(contactByText)
+            .extraSupportRequired(YesOrNo.YES)
+            .extraSupportRequiredDetails("Hearing loop required")
             .address(address)
             .build();
     }
@@ -1114,6 +1176,11 @@ class ApplicationMapperTest {
                             .contentType("application/pdf")
                             .size(2048L)
                             .build())
+                    .build())
+            .extraSupportDetails(
+                ExtraSupportDto.builder()
+                    .extraSupportRequired(YesOrNo.YES)
+                    .extraSupportRequiredDetails("Hearing loop required")
                     .build())
             .build();
     }
