@@ -263,16 +263,25 @@ public class ApplicationMapper {
     public static LandlordResponseDto mapLandlordResponse(PTCaseEntity ptCaseEntity) {
         RespondentPropertyDetailsEntity respondentPropertyDetails = respondentPropertyDetailsOf(ptCaseEntity);
         CasePartyEntity respondent = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
-        if (respondentPropertyDetails == null || respondent == null) {
+        List<DocumentDto> tenancyDetailsResponseEvidence =
+            findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS, ptCaseEntity);
+        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()) {
             return null;
         }
 
         return LandlordResponseDto.builder()
             .respondToTenantAnswersAboutTenancyDetails(
-                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetails())
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetails
+                ))
             .respondToTenantAnswersAboutTenancyDetailsDescription(
-                respondentPropertyDetails.getRespondToTenantAnswersAboutTenancyDetailsDescription())
-            .landlordPhoneNumber(respondent.getPhoneNumber())
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetailsDescription
+                ))
+            .landlordPhoneNumber(get(respondent, CasePartyEntity::getPhoneNumber))
+            .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
             .build();
     }
 
