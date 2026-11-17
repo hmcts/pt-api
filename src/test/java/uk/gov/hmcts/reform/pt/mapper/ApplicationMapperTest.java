@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.pt.mapper;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
@@ -286,7 +287,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/1")
             .binaryUrl("http://dm-store/doc/1/binary")
             .fileName("rent_notice.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(1024L)
             .build();
 
@@ -295,7 +296,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/2")
             .binaryUrl("http://dm-store/doc/2/binary")
             .fileName("invalid_notice.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(2048L)
             .build();
 
@@ -304,7 +305,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/3")
             .binaryUrl("http://dm-store/doc/3/binary")
             .fileName("hardship.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(4096L)
             .build();
 
@@ -338,7 +339,7 @@ class ApplicationMapperTest {
                 .url("http://dm-store/doc/1")
                 .binaryUrl("http://dm-store/doc/1/binary")
                 .filename("rent_notice.pdf")
-                .contentType("application/pdf")
+                .contentType(MediaType.APPLICATION_PDF_VALUE)
                 .size(1024L)
                 .build()
         );
@@ -347,7 +348,7 @@ class ApplicationMapperTest {
                 .url("http://dm-store/doc/2")
                 .binaryUrl("http://dm-store/doc/2/binary")
                 .filename("invalid_notice.pdf")
-                .contentType("application/pdf")
+                .contentType(MediaType.APPLICATION_PDF_VALUE)
                 .size(2048L)
                 .build()
         );
@@ -356,7 +357,7 @@ class ApplicationMapperTest {
                 .url("http://dm-store/doc/3")
                 .binaryUrl("http://dm-store/doc/3/binary")
                 .filename("hardship.pdf")
-                .contentType("application/pdf")
+                .contentType(MediaType.APPLICATION_PDF_VALUE)
                 .size(4096L)
                 .build()
         );
@@ -414,7 +415,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/floor")
             .binaryUrl("http://dm-store/doc/floor/binary")
             .fileName("floor.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(1000L)
             .build();
 
@@ -423,7 +424,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/outside")
             .binaryUrl("http://dm-store/doc/outside/binary")
             .fileName("outside.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(2000L)
             .build();
 
@@ -432,7 +433,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/room1")
             .binaryUrl("http://dm-store/doc/room1/binary")
             .fileName("room1.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(3000L)
             .build();
 
@@ -441,7 +442,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/room2")
             .binaryUrl("http://dm-store/doc/room2/binary")
             .fileName("room2.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(3500L)
             .build();
 
@@ -450,7 +451,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/repairs")
             .binaryUrl("http://dm-store/doc/repairs/binary")
             .fileName("repairs.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(4000L)
             .build();
 
@@ -558,7 +559,7 @@ class ApplicationMapperTest {
             .url("http://cdam/cases/documents/abc")
             .binaryUrl("http://cdam/cases/documents/abc/binary")
             .fileName("floor-plan.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(1024L)
             .build();
 
@@ -731,7 +732,7 @@ class ApplicationMapperTest {
         assertThat(evidence.getBinaryUrl())
             .isEqualTo("http://dm-store/doc/proposed-rent/binary");
         assertThat(evidence.getFilename()).isEqualTo("proposed-rent.pdf");
-        assertThat(evidence.getContentType()).isEqualTo("application/pdf");
+        assertThat(evidence.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(evidence.getSize()).isEqualTo(1024L);
     }
 
@@ -761,10 +762,42 @@ class ApplicationMapperTest {
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
         assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
+        assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
     }
 
     @Test
-    void shouldReturnNullLandlordResponseWhenRespondentPropertyDetailsAbsent() {
+    void shouldMapLandlordResponseEvidenceWhenRespondentPropertyDetailsAbsent() {
+        DocumentEntity evidence = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS)
+            .url("http://dm-store/doc/tenancy-evidence")
+            .binaryUrl("http://dm-store/doc/tenancy-evidence/binary")
+            .fileName("tenancy-evidence.pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .documents(List.of(evidence))
+            .build();
+
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription()).isNull();
+        assertThat(result.getLandlordPhoneNumber()).isNull();
+        assertThat(result.getTenancyDetailsResponseEvidence()).hasSize(1);
+        DocumentDto evidenceDto = result.getTenancyDetailsResponseEvidence().getFirst();
+        assertThat(evidenceDto.getUrl()).isEqualTo("http://dm-store/doc/tenancy-evidence");
+        assertThat(evidenceDto.getBinaryUrl()).isEqualTo("http://dm-store/doc/tenancy-evidence/binary");
+        assertThat(evidenceDto.getFilename()).isEqualTo("tenancy-evidence.pdf");
+        assertThat(evidenceDto.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
+        assertThat(evidenceDto.getSize()).isEqualTo(1024L);
+    }
+
+    @Test
+    void shouldMapLandlordPhoneNumberWhenRespondentPropertyDetailsAbsent() {
         CasePartyEntity landlord = CasePartyEntity.builder()
             .casePartyRole(PartyRole.LANDLORD)
             .phoneNumber("01234567890")
@@ -775,11 +808,26 @@ class ApplicationMapperTest {
             .marketRentCase(MarketRentCaseEntity.builder().build())
             .build();
 
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isNull();
+        assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnNullLandlordResponseWhenNothingExists() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .parties(Collections.emptyList())
+            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .build();
+
         assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
     }
 
     @Test
-    void shouldReturnNullLandlordResponseWhenLandlordPartyAbsent() {
+    void shouldMapLandlordResponseWhenLandlordPartyAbsent() {
         RespondentPropertyDetailsEntity respondentPropertyDetails = RespondentPropertyDetailsEntity.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
@@ -792,7 +840,11 @@ class ApplicationMapperTest {
                                 .build())
             .build();
 
-        assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getLandlordPhoneNumber()).isNull();
     }
 
     @Test
@@ -802,7 +854,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/tenancy-agreement")
             .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
             .fileName("tenancy-agreement.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(2048L)
             .build();
 
@@ -826,7 +878,7 @@ class ApplicationMapperTest {
         assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
             .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
         assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
-        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
@@ -890,7 +942,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/tenancy-agreement")
             .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
             .fileName("tenancy-agreement.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(2048L)
             .build();
 
@@ -908,7 +960,7 @@ class ApplicationMapperTest {
         assertThat(result.getTenancyAgreementDocument().getBinaryUrl())
             .isEqualTo("http://dm-store/doc/tenancy-agreement/binary");
         assertThat(result.getTenancyAgreementDocument().getFilename()).isEqualTo("tenancy-agreement.pdf");
-        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getTenancyAgreementDocument().getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(result.getTenancyAgreementDocument().getSize()).isEqualTo(2048L);
     }
 
@@ -918,7 +970,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/1")
             .binaryUrl("http://dm-store/doc/1/binary")
             .fileName("file.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(5000L)
             .build();
 
@@ -927,7 +979,7 @@ class ApplicationMapperTest {
         assertThat(result.getUrl()).isEqualTo("http://dm-store/doc/1");
         assertThat(result.getBinaryUrl()).isEqualTo("http://dm-store/doc/1/binary");
         assertThat(result.getFilename()).isEqualTo("file.pdf");
-        assertThat(result.getContentType()).isEqualTo("application/pdf");
+        assertThat(result.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(result.getSize()).isEqualTo(5000L);
     }
 
@@ -1069,7 +1121,7 @@ class ApplicationMapperTest {
                     .url("http://dm-store/doc/tenancy-agreement")
                     .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
                     .fileName("tenancy-agreement.pdf")
-                    .contentType("application/pdf")
+                    .contentType(MediaType.APPLICATION_PDF_VALUE)
                     .size(2048L)
                     .build()
             ))
@@ -1173,7 +1225,7 @@ class ApplicationMapperTest {
                             .url("http://dm-store/doc/tenancy-agreement")
                             .binaryUrl("http://dm-store/doc/tenancy-agreement/binary")
                             .filename("tenancy-agreement.pdf")
-                            .contentType("application/pdf")
+                            .contentType(MediaType.APPLICATION_PDF_VALUE)
                             .size(2048L)
                             .build())
                     .build())
@@ -1204,7 +1256,7 @@ class ApplicationMapperTest {
                         .url("http://dm-store/doc/floor")
                         .binaryUrl("http://dm-store/doc/floor/binary")
                         .filename("floor.pdf")
-                        .contentType("application/pdf")
+                        .contentType(MediaType.APPLICATION_PDF_VALUE)
                         .size(1000L)
                         .build()))
             .indoorFeatures("Indoor features")
@@ -1216,7 +1268,7 @@ class ApplicationMapperTest {
                         .url("http://dm-store/doc/outside")
                         .binaryUrl("http://dm-store/doc/outside/binary")
                         .filename("outside.pdf")
-                        .contentType("application/pdf")
+                        .contentType(MediaType.APPLICATION_PDF_VALUE)
                         .size(2000L)
                         .build()))
             .propertyRoomsDocuments(List.of(
@@ -1224,14 +1276,14 @@ class ApplicationMapperTest {
                     .url("http://dm-store/doc/room1")
                     .binaryUrl("http://dm-store/doc/room1/binary")
                     .filename("room1.pdf")
-                    .contentType("application/pdf")
+                    .contentType(MediaType.APPLICATION_PDF_VALUE)
                     .size(3000L)
                     .build(),
                 DocumentDto.builder()
                     .url("http://dm-store/doc/room2")
                     .binaryUrl("http://dm-store/doc/room2/binary")
                     .filename("room2.pdf")
-                    .contentType("application/pdf")
+                    .contentType(MediaType.APPLICATION_PDF_VALUE)
                     .size(3500L)
                     .build()
             ))
@@ -1250,7 +1302,7 @@ class ApplicationMapperTest {
                         .url("http://dm-store/doc/repairs")
                         .binaryUrl("http://dm-store/doc/repairs/binary")
                         .filename("repairs.pdf")
-                        .contentType("application/pdf")
+                        .contentType(MediaType.APPLICATION_PDF_VALUE)
                         .size(4000L)
                         .build()))
             .build();
@@ -1262,7 +1314,7 @@ class ApplicationMapperTest {
             .url("http://dm-store/doc/proposed-rent")
             .binaryUrl("http://dm-store/doc/proposed-rent/binary")
             .fileName("proposed-rent.pdf")
-            .contentType("application/pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
             .size(1024L)
             .build();
     }
@@ -1309,7 +1361,7 @@ class ApplicationMapperTest {
                         .url("http://dm-store/doc/proposed-rent")
                         .binaryUrl("http://dm-store/doc/proposed-rent/binary")
                         .filename("proposed-rent.pdf")
-                        .contentType("application/pdf")
+                        .contentType(MediaType.APPLICATION_PDF_VALUE)
                         .size(1024L)
                         .build()))
             .additionalPropertyInfoToConsiderWhenDetermining(YesOrNo.YES)
