@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
@@ -17,8 +18,10 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
@@ -76,6 +79,15 @@ public class DocumentService {
         this.updateMultipleDocuments(
             DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE,
             details.getSuggestedMarketRentEvidence(),
+            ptCaseEntity
+        );
+    }
+
+    @Transactional
+    public void updateDocumentsForLandlordResponse(LandlordResponse details, PTCaseEntity ptCaseEntity) {
+        this.updateMultipleDocuments(
+            DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS,
+            details.getTenancyDetailsResponseEvidence(),
             ptCaseEntity
         );
     }
@@ -140,10 +152,15 @@ public class DocumentService {
 
     @Transactional
     public boolean deleteDocument(long documentId, long caseReference) {
+        return deleteDocument(documentId, caseReference, EnumSet.allOf(DocumentType.class));
+    }
+
+    @Transactional
+    public boolean deleteDocument(long documentId, long caseReference, Set<DocumentType> allowedTypes) {
         Optional<DocumentEntity> document =
             documentRepository.findByIdAndPtCaseCaseReference(documentId, caseReference);
 
-        if (document.isEmpty()) {
+        if (document.isEmpty() || !allowedTypes.contains(document.get().getDocumentType())) {
             return false;
         }
 
