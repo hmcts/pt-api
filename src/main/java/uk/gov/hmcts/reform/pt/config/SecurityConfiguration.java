@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticationFilter;
 
@@ -56,7 +58,10 @@ public class SecurityConfiguration {
             // bearer tokens (IDAM/S2S), not cookies, so there is no ambient credential for a
             // cross-site request to exploit. java:S4502 suppressed accordingly.
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.PUT, "/payment-update"))
+                .permitAll()
+                .anyRequest().authenticated());
 
         return http.build();
     }
