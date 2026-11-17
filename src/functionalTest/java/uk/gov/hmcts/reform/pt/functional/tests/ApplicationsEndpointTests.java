@@ -136,7 +136,6 @@ class ApplicationsEndpointTests {
             apiSteps.requestIsPreparedWithAppropriateValues();
             apiSteps.theRequestContainsValidServiceToken(TestConstants.PT_API);
 
-
             apiSteps.theRequestContainsValidIdamToken(PtIdamTokenClient.UserType.caseworkerUser);
             apiSteps.theRequestContainsThePathParameter("caseReference", caseId.toString());
             apiSteps.callIsSubmittedToTheEndpoint("ReturnApplication", "GET");
