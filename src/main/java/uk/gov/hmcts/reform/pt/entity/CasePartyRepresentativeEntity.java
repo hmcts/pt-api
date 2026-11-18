@@ -65,7 +65,7 @@ public class CasePartyRepresentativeEntity extends AuditableEntity {
     @Column(length = 100)
     private String county;
 
-    @Column(length = 16)
+    @Column(name = "post_code", length = 16)
     private String postcode;
 
     @Column(length = 100)

@@ -23,4 +23,5 @@ ALTER TABLE case_party_representative
 
 ALTER TABLE case_party_representative
   ALTER COLUMN address_line_1 SET NOT NULL,
-  ALTER COLUMN town_city SET NOT NULL;
+  ALTER COLUMN town_city SET NOT NULL,
+  ALTER COLUMN representative_type_id SET NOT NULL;
