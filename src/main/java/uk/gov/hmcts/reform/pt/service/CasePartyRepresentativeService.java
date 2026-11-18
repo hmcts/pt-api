@@ -73,5 +73,5 @@ public class CasePartyRepresentativeService {
             .filter(representative ->
                         representative.getRepresentativeType().getTypeName() == representativeType)
             .findFirst();
-        }
+    }
 }

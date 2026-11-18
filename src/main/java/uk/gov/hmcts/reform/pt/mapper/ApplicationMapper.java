@@ -365,7 +365,8 @@ public class ApplicationMapper {
             .orElse(null);
     }
 
-    public static CasePartyRepresentativeEntity getRepresentativeWithType(CasePartyEntity representee, RepresentativeType type) {
+    public static CasePartyRepresentativeEntity getRepresentativeWithType(
+        CasePartyEntity representee, RepresentativeType type) {
         return representee.getRepresentatives().stream()
             .filter(representative ->
                         representative.getRepresentativeType().getTypeName() == type)
