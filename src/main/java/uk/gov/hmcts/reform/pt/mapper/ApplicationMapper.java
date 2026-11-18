@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.mapper;
 import lombok.experimental.UtilityClass;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
+import uk.gov.hmcts.reform.pt.ccd.domain.RepresentativeType;
 import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyRepresentativeEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
@@ -297,11 +299,17 @@ public class ApplicationMapper {
     }
 
     public static LandlordDetailsDto mapLandlordDetails(PTCaseEntity ptCaseEntity) {
+        CasePartyEntity landlordParty = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
+        if (landlordParty == null) {
+            return null;
+        }
+        CasePartyRepresentativeEntity representative =
+            getRepresentativeWithType(landlordParty, RepresentativeType.LANDLORD_REPRESENTATIVE);
+
         return LandlordDetailsDto.builder()
-            .landlord(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD)))
-            .lettingAgent(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LETTING_AGENT)))
-            .representative(mapParty(getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)))
-            .landlordRepresentativeType(ptCaseEntity.getLandlordType())
+            .landlord(mapParty(landlordParty))
+            .hasRepresentative(landlordParty.getHasRepresentative())
+            .representative(get(representative, ApplicationMapper::mapPartyRepresentative))
             .build();
     }
 
@@ -325,7 +333,6 @@ public class ApplicationMapper {
             .organisationName(entity.getOrganisationName())
             .emailAddress(entity.getEmailAddress())
             .phoneNumber(entity.getPhoneNumber())
-            .dxNumber(entity.getReferenceNumberForCommunications())
             .pcqId(entity.getPcqId())
             .addressLine1(get(address, CasePartyAddressEntity::getAddressLine1))
             .addressLine2(get(address, CasePartyAddressEntity::getAddressLine2))
@@ -335,9 +342,33 @@ public class ApplicationMapper {
             .build();
     }
 
+    public static PartyDto mapPartyRepresentative(CasePartyRepresentativeEntity representativeEntity) {
+        return PartyDto.builder()
+            .firstName(representativeEntity.getFirstName())
+            .lastName(representativeEntity.getLastName())
+            .organisationName(representativeEntity.getOrganisationName())
+            .emailAddress(representativeEntity.getEmailAddress())
+            .phoneNumber(representativeEntity.getPhoneNumber())
+            .addressLine1(representativeEntity.getAddressLine1())
+            .addressLine2(representativeEntity.getAddressLine2())
+            .postTown(representativeEntity.getTownCity())
+            .county(representativeEntity.getCounty())
+            .postcode(representativeEntity.getPostcode())
+            .country(representativeEntity.getCountry())
+            .build();
+    }
+
     public static CasePartyEntity getPartyWithRole(PTCaseEntity ptCaseEntity, PartyRole role) {
         return ptCaseEntity.getParties().stream()
             .filter(party -> party.getCasePartyRole() == role)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public static CasePartyRepresentativeEntity getRepresentativeWithType(CasePartyEntity representee, RepresentativeType type) {
+        return representee.getRepresentatives().stream()
+            .filter(representative ->
+                        representative.getRepresentativeType().getTypeName() == type)
             .findFirst()
             .orElse(null);
     }

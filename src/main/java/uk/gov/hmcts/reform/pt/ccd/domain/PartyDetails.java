@@ -61,6 +61,12 @@ public class PartyDetails {
     private String postcode;
 
     @CCD(
+        label = "Country",
+        access = {CitizenAccess.class}
+    )
+    private String country;
+
+    @CCD(
         label = "Email address",
         access = {CitizenAccess.class}
     )
@@ -71,12 +77,6 @@ public class PartyDetails {
         access = {CitizenAccess.class}
     )
     private String phoneNumber;
-
-    @CCD(
-        label = "DX number",
-        access = {CitizenAccess.class}
-    )
-    private String dxNumber;
 
     @CCD(
         label = "Party's PCQ ID"
