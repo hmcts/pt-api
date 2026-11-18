@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicantContactPreferences;
+import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
@@ -24,9 +25,11 @@ import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.repository.PartyAccessCodeRepository;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfElseNull;
@@ -35,6 +38,10 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 @Service
 @AllArgsConstructor
 public class PTCaseService {
+
+    // A respondent can only remove the documents they uploaded, never the applicant's
+    private static final Set<DocumentType> RESPONDENT_DOCUMENT_TYPES =
+        EnumSet.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
 
     private final CasePartyService casePartyService;
     private final TenancyDetailsService tenancyDetailsService;
@@ -143,13 +150,36 @@ public class PTCaseService {
     }
 
     @Transactional
+    public List<String> updateRespondentDocuments(long caseReference, PTCase ptCase) {
+        PTCaseEntity ptCaseEntity = ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+
+        final Map<Long, String> urlsBefore = documentUploadValidator.snapshot(caseReference);
+
+        LandlordResponse landlordResponse = ptCase.getLandlordResponse();
+        if (landlordResponse != null) {
+            documentService.updateDocumentsForLandlordResponse(landlordResponse, ptCaseEntity);
+        }
+
+        return documentUploadValidator.errors(caseReference, urlsBefore);
+    }
+
+    @Transactional
     public void deleteDocument(long caseReference, PTCase ptCase) {
+        documentService.deleteDocument(documentIdToDelete(ptCase), caseReference);
+    }
+
+    @Transactional
+    public void deleteRespondentDocument(long caseReference, PTCase ptCase) {
+        documentService.deleteDocument(documentIdToDelete(ptCase), caseReference, RESPONDENT_DOCUMENT_TYPES);
+    }
+
+    private static long documentIdToDelete(PTCase ptCase) {
         String documentId = ptCase.getDocumentIdToDelete();
         if (documentId == null || documentId.isBlank()) {
             throw new IllegalArgumentException("No document id supplied for deletion");
         }
-
-        documentService.deleteDocument(Long.parseLong(documentId), caseReference);
+        return Long.parseLong(documentId);
     }
 
     @Transactional
