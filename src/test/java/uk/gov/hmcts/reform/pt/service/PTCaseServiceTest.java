@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.ExtraSupportDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenantDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PartyAccessCodeEntity;
@@ -216,7 +216,7 @@ class PTCaseServiceTest {
             .build();
         TenancyAgreementDetails tenancyAgreementDetails = TenancyAgreementDetails.builder().build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
-            .representativeType(LandlordRepresentativeType.LETTING_AGENT)
+            .hasRepresentative(YesNoNotSure.YES)
             .build();
         ExtraSupportDetails extraSupportDetails = ExtraSupportDetails.builder()
             .extraSupportRequired(YesOrNo.YES)
@@ -278,7 +278,7 @@ class PTCaseServiceTest {
         verify(casePartyRepository).save(landlord);
         verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
-        verify(ptCaseRepository, times(2)).save(ptCaseEntity);
+        verify(ptCaseRepository).save(ptCaseEntity);
         verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
@@ -385,7 +385,7 @@ class PTCaseServiceTest {
     void updateLandlordDetailsSuccess() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
-            .representativeType(LandlordRepresentativeType.LETTING_AGENT)
+            .hasRepresentative(YesNoNotSure.YES)
             .build();
         PTCase ptCase = PTCase.builder()
             .landlordDetails(landlordDetails)
@@ -394,8 +394,6 @@ class PTCaseServiceTest {
         ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
 
         verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
-        verify(ptCaseRepository).save(ptCaseEntity);
     }
 
     @Test
@@ -804,23 +802,6 @@ class PTCaseServiceTest {
     }
 
 
-    @Test
-    @DisplayName("Should preserve landlord type when representativeType is null in landlordDetails")
-    void updateLandlordDetailsPreservesLandlordTypeWhenNull() {
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .landlordType(LandlordRepresentativeType.LETTING_AGENT)
-            .build();
-        LandlordDetails landlordDetails = LandlordDetails.builder().build();
-        PTCase ptCase = PTCase.builder()
-            .landlordDetails(landlordDetails)
-            .build();
-
-        ptCaseService.updateLandlordDetails(ptCase, ptCaseEntity);
-
-        verify(casePartyService).updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-        assertThat(ptCaseEntity.getLandlordType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
-        verify(ptCaseRepository).save(ptCaseEntity);
-    }
 
     @Test
     @DisplayName("Should upsert document fields without touching the case party")

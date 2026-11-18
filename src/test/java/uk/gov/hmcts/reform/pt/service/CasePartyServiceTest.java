@@ -1,16 +1,21 @@
 package uk.gov.hmcts.reform.pt.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
-import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
+import uk.gov.hmcts.reform.pt.ccd.domain.RepresentativeType;
+import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -23,9 +28,11 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class CasePartyServiceTest {
@@ -35,6 +42,15 @@ class CasePartyServiceTest {
 
     @Mock
     private AddressService addressService;
+
+    @Mock
+    private CasePartyRepresentativeService casePartyRepresentativeService;
+
+    @BeforeEach
+    void setUp() {
+        lenient().when(casePartyRepository.save(any(CasePartyEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+    }
 
     @InjectMocks
     private CasePartyService casePartyService;
@@ -78,111 +94,69 @@ class CasePartyServiceTest {
     }
 
     @Test
-    @DisplayName("Should update landlord and letting agent when representative type is LETTING_AGENT")
-    void updateWithLandlordDetailsLettingAgent() {
-        CasePartyEntity existingRep = CasePartyEntity.builder()
-            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .parties(new ArrayList<>(List.of(existingRep)))
-            .build();
-
+    @DisplayName("Should save has-representative flag and update representative when YES")
+    void updateWithLandlordDetailsRepresentativeYes() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(new ArrayList<>()).build();
         PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
-        PartyDetails lettingAgentParty = PartyDetails.builder().firstName("Agent").build();
+        PartyDetails repParty = PartyDetails.builder().firstName("Rep").build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordParty)
-            .lettingAgentPartyDetails(lettingAgentParty)
-            .representativeType(LandlordRepresentativeType.LETTING_AGENT)
+            .landlord(landlordParty)
+            .hasRepresentative(YesNoNotSure.YES)
+            .representative(repParty)
             .build();
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(casePartyRepository).delete(existingRep);
-        verify(casePartyRepository, times(2)).save(any(CasePartyEntity.class));
+        ArgumentCaptor<CasePartyEntity> captor = ArgumentCaptor.forClass(CasePartyEntity.class);
+        verify(casePartyRepository, times(2)).save(captor.capture());
+        CasePartyEntity savedLandlord = captor.getAllValues().get(1);
+        assertThat(savedLandlord.getCasePartyRole()).isEqualTo(PartyRole.LANDLORD);
+        assertThat(savedLandlord.getFirstName()).isEqualTo("Landlord");
+        assertThat(savedLandlord.getHasRepresentative()).isEqualTo(YesNoNotSure.YES);
+        verify(casePartyRepresentativeService).updateRepresentativeForLandlord(savedLandlord, repParty);
+        verify(casePartyRepresentativeService, never()).removeRepresentativeForParty(any(), any());
     }
 
-    @Test
-    @DisplayName("Should update landlord and representative when representative type is REPRESENTATIVE")
-    void updateWithLandlordDetailsRepresentative() {
+    @ParameterizedTest
+    @EnumSource(value = YesNoNotSure.class, names = {"NO", "NOT_SURE"})
+    @DisplayName("Should remove the landlord representative when has-representative is NO or NOT_SURE")
+    void updateWithLandlordDetailsRepresentativeRemoved(YesNoNotSure answer) {
         CasePartyEntity existingLandlord = CasePartyEntity.builder().casePartyRole(PartyRole.LANDLORD).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(new ArrayList<>(List.of(existingLandlord)))
             .build();
-
-        PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
-        PartyDetails repParty = PartyDetails.builder().firstName("Rep").build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordParty)
-            .representativePartyDetails(repParty)
-            .representativeType(LandlordRepresentativeType.REPRESENTATIVE)
+            .landlord(PartyDetails.builder().firstName("Landlord").build())
+            .hasRepresentative(answer)
+            .representative(PartyDetails.builder().firstName("Ignored").build())
             .build();
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(casePartyRepository).delete(existingLandlord);
+        assertThat(existingLandlord.getHasRepresentative()).isEqualTo(answer);
+        verify(casePartyRepresentativeService)
+            .removeRepresentativeForParty(existingLandlord, RepresentativeType.LANDLORD_REPRESENTATIVE);
+        verify(casePartyRepresentativeService, never()).updateRepresentativeForLandlord(any(), any());
     }
 
     @Test
-    @DisplayName("Should update both when representative type is LETTING_AGENT_AND_REPRESENTATIVE")
-    void updateWithLandlordDetailsBoth() {
-
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(new ArrayList<>()).build();
-        PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
-        PartyDetails agentParty = PartyDetails.builder().firstName("Agent").build();
-        PartyDetails repParty = PartyDetails.builder().firstName("Rep").build();
-        LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordParty)
-            .lettingAgentPartyDetails(agentParty)
-            .representativePartyDetails(repParty)
-            .representativeType(LandlordRepresentativeType.LETTING_AGENT_AND_REPRESENTATIVE)
+    @DisplayName("Should leave representative untouched and keep existing flag when has-representative is null")
+    void updateWithLandlordDetailsRepresentativeNull() {
+        CasePartyEntity existingLandlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .hasRepresentative(YesNoNotSure.YES)
             .build();
-
-        casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-
-        verify(casePartyRepository, times(3)).save(any(CasePartyEntity.class));
-    }
-
-    @Test
-    @DisplayName("Should remove agent and rep when representative type is NO_LETTING_AGENT_OR_REPRESENTATIVE")
-    void updateWithLandlordDetailsNone() {
-        CasePartyEntity existingAgent = CasePartyEntity.builder().casePartyRole(PartyRole.LETTING_AGENT).build();
-        CasePartyEntity existingRep = CasePartyEntity.builder()
-            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .parties(new ArrayList<>(List.of(existingAgent, existingRep)))
+            .parties(new ArrayList<>(List.of(existingLandlord)))
             .build();
-
-        PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
         LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordParty)
-            .representativeType(LandlordRepresentativeType.NO_LETTING_AGENT_OR_REPRESENTATIVE)
+            .landlord(PartyDetails.builder().firstName("Landlord").build())
             .build();
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
 
-        verify(casePartyRepository).delete(existingAgent);
-        verify(casePartyRepository).delete(existingRep);
-    }
-
-    @Test
-    @DisplayName("Should remove agent and rep when representative type is NOT_SURE")
-    void updateWithLandlordDetailsNotSure() {
-        CasePartyEntity existingAgent = CasePartyEntity.builder().casePartyRole(PartyRole.LETTING_AGENT).build();
-        CasePartyEntity existingRep = CasePartyEntity.builder()
-            .casePartyRole(PartyRole.LANDLORD_REPRESENTATIVE).build();
-        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .parties(new ArrayList<>(List.of(existingAgent, existingRep)))
-            .build();
-
-        PartyDetails landlordParty = PartyDetails.builder().firstName("Landlord").build();
-        LandlordDetails landlordDetails = LandlordDetails.builder()
-            .landlordPartyDetails(landlordParty)
-            .representativeType(LandlordRepresentativeType.NOT_SURE)
-            .build();
-
-        casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-
-        verify(casePartyRepository).delete(existingAgent);
-        verify(casePartyRepository).delete(existingRep);
+        assertThat(existingLandlord.getHasRepresentative()).isEqualTo(YesNoNotSure.YES);
+        verifyNoInteractions(casePartyRepresentativeService);
     }
 
     @Test
@@ -209,7 +183,6 @@ class CasePartyServiceTest {
             .emailAddress("jane@example.com")
             .phoneNumber("123456")
             .organisationName("Org")
-            .dxNumber("DX123")
             .build();
 
         casePartyService.updatePartyDetails(ptCaseEntity, partyDetails, PartyRole.LANDLORD);
@@ -219,7 +192,6 @@ class CasePartyServiceTest {
         assertThat(existing.getEmailAddress()).isEqualTo("jane@example.com");
         assertThat(existing.getPhoneNumber()).isEqualTo("123456");
         assertThat(existing.getOrganisationName()).isEqualTo("Org");
-        assertThat(existing.getReferenceNumberForCommunications()).isEqualTo("DX123");
         verify(casePartyRepository).save(existing);
         verify(addressService).updatePartyAddress(partyDetails, existing);
         verify(addressService, never()).updatePropertyAddress(any(), any(), any());

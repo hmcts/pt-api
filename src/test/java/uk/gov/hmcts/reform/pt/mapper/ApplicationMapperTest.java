@@ -6,9 +6,9 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
-import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
+import uk.gov.hmcts.reform.pt.ccd.domain.RepresentativeType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
@@ -21,15 +21,18 @@ import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.PartyDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePartyRepresentativeEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.RepresentativeTypeEntity;
 import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -985,10 +988,6 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapLandlordDetails() {
-        PartyRole landlordRole = PartyRole.LANDLORD;
-        PartyRole agentRole = PartyRole.LETTING_AGENT;
-        PartyRole repRole = PartyRole.LANDLORD_REPRESENTATIVE;
-
         CasePartyAddressEntity landlordAddress = CasePartyAddressEntity.builder()
             .addressLine1("1 Landlord Way")
             .addressLine2("Somewhere")
@@ -997,49 +996,79 @@ class ApplicationMapperTest {
             .postcode("SW1 1AA")
             .build();
 
+        RepresentativeTypeEntity landlordRepType = RepresentativeTypeEntity.builder()
+            .typeName(RepresentativeType.LANDLORD_REPRESENTATIVE)
+            .build();
+        CasePartyRepresentativeEntity representative = CasePartyRepresentativeEntity.builder()
+            .representativeType(landlordRepType)
+            .firstName("Rep")
+            .lastName("Jones")
+            .organisationName("Rep Ltd")
+            .emailAddress("rep@example.com")
+            .phoneNumber("0987654321")
+            .addressLine1("2 Rep Road")
+            .addressLine2("Rep Area")
+            .townCity("Leeds")
+            .county("West Yorkshire")
+            .postcode("LS1 1AA")
+            .country("UK")
+            .build();
+
         CasePartyEntity landlordParty = CasePartyEntity.builder()
             .firstName("Lord")
             .lastName("Landlord")
             .organisationName("Landlord Estates")
             .emailAddress("landlord@example.com")
             .phoneNumber("0123456789")
-            .referenceNumberForCommunications("LL01")
-            .casePartyRole(landlordRole)
+            .casePartyRole(PartyRole.LANDLORD)
             .address(landlordAddress)
+            .hasRepresentative(YesNoNotSure.YES)
+            .representatives(List.of(representative))
             .build();
 
-        CasePartyEntity agentParty = CasePartyEntity.builder()
-            .firstName("Agent")
-            .lastName("Smith")
-            .casePartyRole(agentRole)
-            .build();
-
-        CasePartyEntity repParty = CasePartyEntity.builder()
-            .firstName("Rep")
-            .lastName("Jones")
-            .casePartyRole(repRole)
-            .build();
-
-        CasePartyEntity partyWithoutRole = CasePartyEntity.builder()
-            .firstName("NoRole")
-            .build();
+        CasePartyEntity partyWithoutRole = CasePartyEntity.builder().firstName("NoRole").build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .landlordType(LandlordRepresentativeType.LETTING_AGENT)
-            .parties(List.of(partyWithoutRole, landlordParty, agentParty, repParty))
+            .parties(List.of(partyWithoutRole, landlordParty))
             .build();
 
         LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
-        assertThat(result.getLandlord()).isNotNull();
+        assertThat(result.getHasRepresentative()).isEqualTo(YesNoNotSure.YES);
         assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
         assertThat(result.getLandlord().getAddressLine1()).isEqualTo("1 Landlord Way");
-        assertThat(result.getLettingAgent()).isNotNull();
-        assertThat(result.getLettingAgent().getFirstName()).isEqualTo("Agent");
-        assertThat(result.getRepresentative()).isNotNull();
-        assertThat(result.getRepresentative().getFirstName()).isEqualTo("Rep");
-        assertThat(result.getLandlordRepresentativeType()).isEqualTo(LandlordRepresentativeType.LETTING_AGENT);
+        assertThat(result.getRepresentative())
+            .usingRecursiveComparison()
+            .isEqualTo(PartyDto.builder()
+                           .firstName("Rep")
+                           .lastName("Jones")
+                           .organisationName("Rep Ltd")
+                           .emailAddress("rep@example.com")
+                           .phoneNumber("0987654321")
+                           .addressLine1("2 Rep Road")
+                           .addressLine2("Rep Area")
+                           .postTown("Leeds")
+                           .county("West Yorkshire")
+                           .postcode("LS1 1AA")
+                           .country("UK")
+                           .build());
+    }
+
+    @Test
+    void shouldMapLandlordDetailsWithoutRepresentative() {
+        CasePartyEntity landlordParty = CasePartyEntity.builder()
+            .firstName("Lord")
+            .casePartyRole(PartyRole.LANDLORD)
+            .hasRepresentative(YesNoNotSure.NO)
+            .build();
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().parties(List.of(landlordParty)).build();
+
+        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+
+        assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
+        assertThat(result.getHasRepresentative()).isEqualTo(YesNoNotSure.NO);
+        assertThat(result.getRepresentative()).isNull();
     }
 
     @Test
@@ -1048,13 +1077,37 @@ class ApplicationMapperTest {
             .parties(Collections.emptyList())
             .build();
 
-        LandlordDetailsDto result = ApplicationMapper.mapLandlordDetails(ptCaseEntity);
+        assertThat(ApplicationMapper.mapLandlordDetails(ptCaseEntity)).isNull();
+    }
 
-        assertThat(result).isNotNull();
-        assertThat(result.getLandlord()).isNull();
-        assertThat(result.getLettingAgent()).isNull();
-        assertThat(result.getRepresentative()).isNull();
-        assertThat(result.getLandlordRepresentativeType()).isNull();
+    @Test
+    void shouldMapPartyRepresentative() {
+        CasePartyRepresentativeEntity entity = CasePartyRepresentativeEntity.builder()
+            .firstName("Rep")
+            .townCity("Leeds")
+            .country("UK")
+            .build();
+
+        PartyDto result = ApplicationMapper.mapPartyRepresentative(entity);
+
+        assertThat(result.getFirstName()).isEqualTo("Rep");
+        assertThat(result.getPostTown()).isEqualTo("Leeds");
+        assertThat(result.getCountry()).isEqualTo("UK");
+        assertThat(result.getLastName()).isNull();
+    }
+
+    @Test
+    void shouldGetRepresentativeWithType() {
+        CasePartyRepresentativeEntity representative = CasePartyRepresentativeEntity.builder()
+            .representativeType(RepresentativeTypeEntity.builder()
+                                    .typeName(RepresentativeType.LANDLORD_REPRESENTATIVE).build())
+            .build();
+        CasePartyEntity party = CasePartyEntity.builder().representatives(List.of(representative)).build();
+
+        assertThat(ApplicationMapper.getRepresentativeWithType(party, RepresentativeType.LANDLORD_REPRESENTATIVE))
+            .isSameAs(representative);
+        assertThat(ApplicationMapper.getRepresentativeWithType(
+            CasePartyEntity.builder().build(), RepresentativeType.LANDLORD_REPRESENTATIVE)).isNull();
     }
 
     @Test
