@@ -45,14 +45,6 @@ class CasePartyRepresentativeServiceTest {
         landlordRepType = RepresentativeTypeEntity.builder().typeName(LANDLORD_REPRESENTATIVE).build();
     }
 
-    private static CasePartyRepresentativeEntity representativeOfType(RepresentativeTypeEntity type) {
-        return CasePartyRepresentativeEntity.builder().representativeType(type).build();
-    }
-
-    private static CasePartyEntity partyWith(CasePartyRepresentativeEntity... representatives) {
-        return CasePartyEntity.builder().representatives(new ArrayList<>(List.of(representatives))).build();
-    }
-
     @Test
     @DisplayName("Should do nothing when representative details are null")
     void updateRepresentativeForLandlordWhenNull() {
@@ -173,5 +165,13 @@ class CasePartyRepresentativeServiceTest {
         assertThat(service.getRepresentativeForPartyByType(partyWith(existing), LANDLORD_REPRESENTATIVE))
             .contains(existing);
         assertThat(service.getRepresentativeForPartyByType(partyWith(), LANDLORD_REPRESENTATIVE)).isEmpty();
+    }
+
+    private static CasePartyRepresentativeEntity representativeOfType(RepresentativeTypeEntity type) {
+        return CasePartyRepresentativeEntity.builder().representativeType(type).build();
+    }
+
+    private static CasePartyEntity partyWith(CasePartyRepresentativeEntity... representatives) {
+        return CasePartyEntity.builder().representatives(new ArrayList<>(List.of(representatives))).build();
     }
 }

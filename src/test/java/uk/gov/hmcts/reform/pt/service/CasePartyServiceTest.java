@@ -140,7 +140,7 @@ class CasePartyServiceTest {
     }
 
     @Test
-    @DisplayName("Should leave representative untouched and keep existing flag when has-representative is null")
+    @DisplayName("Should leave representative untouched and keep existing flag when has representative is null")
     void updateWithLandlordDetailsRepresentativeNull() {
         CasePartyEntity existingLandlord = CasePartyEntity.builder()
             .casePartyRole(PartyRole.LANDLORD)

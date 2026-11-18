@@ -801,8 +801,6 @@ class PTCaseServiceTest {
         verify(casePartyRepository).save(caseParty);
     }
 
-
-
     @Test
     @DisplayName("Should upsert document fields without touching the case party")
     void shouldUpdateDocumentsOnly() {

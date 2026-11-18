@@ -55,6 +55,7 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
             cp.contact_by_text,
             cp.extra_support_required,
             cp.extra_support_required_details,
+            cp.has_representative,
             cp.created_date,
             cp.last_modified_date,
             cp.last_modified_by
