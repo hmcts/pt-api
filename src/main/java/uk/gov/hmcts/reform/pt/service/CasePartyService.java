@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
-import uk.gov.hmcts.reform.pt.ccd.domain.RepresentativeType;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePartyRepository;
@@ -65,6 +64,7 @@ public class CasePartyService {
             case NO, NOT_SURE ->
                 casePartyRepresentativeService.removeRepresentativeForParty(
                     landlordPartyEntity, LANDLORD_REPRESENTATIVE);
+            case null -> { }
         }
     }
 

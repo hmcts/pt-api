@@ -24,6 +24,10 @@ public class CasePartyRepresentativeService {
 
     @Transactional
     public void updateRepresentativeForLandlord(CasePartyEntity representee, PartyDetails representativeDetails) {
+        if (representativeDetails == null) {
+            return;
+        }
+
         CasePartyRepresentativeEntity partyRepresentativeEntity =
             getRepresentativeForPartyByType(representee, LANDLORD_REPRESENTATIVE)
                 .orElseGet(() -> {
