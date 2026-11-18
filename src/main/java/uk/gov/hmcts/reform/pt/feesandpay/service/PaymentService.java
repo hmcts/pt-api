@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.CasePaymentRequestDto;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.payments.request.CreateServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.response.CardPaymentServiceRequestResponse;
 import uk.gov.hmcts.reform.payments.response.PaymentServiceResponse;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
+import uk.gov.hmcts.reform.pt.feesandpay.model.PaymentStatusCallback;
+import uk.gov.hmcts.reform.pt.repository.ApplicationFeeRepository;
 import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 
 import java.math.BigDecimal;
@@ -25,15 +28,18 @@ public class PaymentService {
 
     private final PaymentsClient paymentsClient;
     private final IdamTokenProvider systemUpdateUserTokenProvider;
+    private final ApplicationFeeRepository applicationFeeRepository;
     private final String callbackUrl;
     private final String hmctsOrgId;
 
     public PaymentService(PaymentsClient paymentsClient,
                           @Qualifier("systemUpdateUserTokenProvider") IdamTokenProvider systemUpdateUserTokenProvider,
+                          ApplicationFeeRepository applicationFeeRepository,
                           @Value("${payments.api.callback-url}") String callbackUrl,
                           @Value("${payments.params.hmctsOrgId}") String hmctsOrgId) {
         this.paymentsClient = paymentsClient;
         this.systemUpdateUserTokenProvider = systemUpdateUserTokenProvider;
+        this.applicationFeeRepository = applicationFeeRepository;
         this.callbackUrl = callbackUrl;
         this.hmctsOrgId = hmctsOrgId;
     }
@@ -79,5 +85,23 @@ public class PaymentService {
     public PaymentDto getCardPaymentStatus(String internalReference) {
         return paymentsClient.getGovPayCardPaymentStatusWithCallback(
             internalReference, systemUpdateUserTokenProvider.getAuthToken());
+    }
+
+    @Transactional
+    public void processPaymentResponse(PaymentStatusCallback callback) {
+        String serviceRequestReference = callback.getServiceRequestReference();
+        log.info("Payment callback for service request {} with status {}",
+                 serviceRequestReference, callback.getServiceRequestStatus());
+
+        applicationFeeRepository.findByRequestReference(serviceRequestReference)
+            .ifPresentOrElse(
+                fee -> {
+                    fee.setExternalReference(callback.getPaymentReference());
+                    fee.setStatus(callback.getServiceRequestStatus());
+                    applicationFeeRepository.save(fee);
+                },
+                () -> log.error("Unable to find an application fee with service request reference: {}",
+                                serviceRequestReference)
+            );
     }
 }
