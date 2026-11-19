@@ -44,8 +44,8 @@ class RespondentApplicationsEndpointTests {
 
         CcdCaseCreator.updateCitizenCase(caseId, "citizen-update-application",
                                          Map.of("landlordDetails", Map.of(
-                                             "representativeType", "noLettingAgentOrRepresentative",
-                                             "landlordPartyDetails", Map.of(
+                                             "hasRepresentative", "No",
+                                             "landlord", Map.of(
                                                  "firstName", "Larry",
                                                  "lastName", "Landlord",
                                                  "emailAddress", "simulate-delivered@notifications.service.gov.uk"))),

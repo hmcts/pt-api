@@ -17,8 +17,8 @@
         "postcode": "SW1A 1AA"
       },
       "landlordDetails": {
-        "representativeType": "noLettingAgentOrRepresentative",
-        "landlordPartyDetails": {
+        "hasRepresentative": "No",
+        "landlord": {
           "firstName": "Larry",
           "lastName": "Landlord",
           "emailAddress": "simulate-delivered@notifications.service.gov.uk"
