@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.pt.feesandpay.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,14 +15,20 @@ import uk.gov.hmcts.reform.payments.request.CardPaymentServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.request.CreateServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.response.CardPaymentServiceRequestResponse;
 import uk.gov.hmcts.reform.payments.response.PaymentServiceResponse;
+import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
+import uk.gov.hmcts.reform.pt.feesandpay.model.Payment;
+import uk.gov.hmcts.reform.pt.feesandpay.model.PaymentStatusCallback;
+import uk.gov.hmcts.reform.pt.repository.ApplicationFeeRepository;
 import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,12 +46,20 @@ class PaymentServiceTest {
     @Mock
     private IdamTokenProvider systemUpdateUserTokenProvider;
 
+    @Mock
+    private ApplicationFeeRepository applicationFeeRepository;
+
     private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
-        paymentService = new PaymentService(paymentsClient, systemUpdateUserTokenProvider, CALLBACK_URL, HMCTS_ORG_ID);
-        when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
+        paymentService = new PaymentService(
+            paymentsClient,
+            systemUpdateUserTokenProvider,
+            applicationFeeRepository,
+            CALLBACK_URL,
+            HMCTS_ORG_ID
+        );
     }
 
     @Test
@@ -55,6 +71,7 @@ class PaymentServiceTest {
             .build();
         when(paymentsClient.createServiceRequest(eq(AUTH_TOKEN), any(CreateServiceRequestDTO.class)))
             .thenReturn(PaymentServiceResponse.builder().serviceRequestReference("2026-1234567890").build());
+        when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
 
         String result = paymentService.createServiceRequest(CASE_REFERENCE, fee, "Jane Smith");
 
@@ -89,6 +106,7 @@ class PaymentServiceTest {
         when(paymentsClient.createGovPayCardPaymentRequest(eq("2026-1234567890"), eq(AUTH_TOKEN),
                                                            any(CardPaymentServiceRequestDTO.class)))
             .thenReturn(response);
+        when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
 
         CardPaymentServiceRequestResponse result = paymentService.createCardPayment(
             "2026-1234567890", new BigDecimal("100.00"), "English", "https://pt/payment/return");
@@ -111,9 +129,49 @@ class PaymentServiceTest {
     void shouldGetCardPaymentStatus() {
         PaymentDto payment = PaymentDto.builder().status("Success").build();
         when(paymentsClient.getGovPayCardPaymentStatusWithCallback("RC-1234", AUTH_TOKEN)).thenReturn(payment);
+        when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
 
         PaymentDto result = paymentService.getCardPaymentStatus("RC-1234");
 
         assertThat(result).isSameAs(payment);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Paid", "Partially paid", "Not paid"})
+    void shouldUpdateStatusFromCallback(String status) {
+        String serviceRequestRef = "2025-1712345678901";
+        ApplicationFeeEntity fee = ApplicationFeeEntity.builder()
+            .requestReference(serviceRequestRef)
+            .build();
+        when(applicationFeeRepository.findByRequestReference(serviceRequestRef)).thenReturn(Optional.of(fee));
+
+        String paymentRef = "RC-1712-3456-7890-1234";
+        PaymentStatusCallback callback = PaymentStatusCallback.builder()
+            .serviceRequestReference(serviceRequestRef)
+            .serviceRequestStatus(status)
+            .payment(Payment.builder().paymentReference(paymentRef).build())
+            .build();
+
+        paymentService.processPaymentResponse(callback);
+
+        verify(applicationFeeRepository).save(fee);
+        assertThat(fee.getStatus()).isEqualTo(status);
+        assertThat(fee.getExternalReference()).isEqualTo(paymentRef);
+    }
+
+    @Test
+    void shouldNotSaveWhenApplicationFeeNotFound() {
+        PaymentStatusCallback callback = PaymentStatusCallback.builder()
+            .serviceRequestReference("2025-1712345678901")
+            .ccdCaseNumber("1712345678901234")
+            .serviceRequestAmount(new BigDecimal("47.00"))
+            .serviceRequestStatus("Paid")
+            .payment(Payment.builder().paymentReference("RC-1712-3456-7890-1234").build())
+            .build();
+        when(applicationFeeRepository.findByRequestReference("2025-1712345678901")).thenReturn(Optional.empty());
+
+        paymentService.processPaymentResponse(callback);
+
+        verify(applicationFeeRepository, never()).save(any());
     }
 }
