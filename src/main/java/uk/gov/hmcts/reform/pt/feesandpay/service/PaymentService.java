@@ -13,12 +13,17 @@ import uk.gov.hmcts.reform.payments.request.CardPaymentServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.request.CreateServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.response.CardPaymentServiceRequestResponse;
 import uk.gov.hmcts.reform.payments.response.PaymentServiceResponse;
+import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
+import uk.gov.hmcts.reform.pt.feesandpay.exception.FeeAlreadyPaidException;
+import uk.gov.hmcts.reform.pt.feesandpay.exception.FeePaymentNotFoundException;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CardPaymentStatusResponse;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CreateCardPaymentRequest;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CreateCardPaymentResponse;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
+import uk.gov.hmcts.reform.pt.feesandpay.model.PaymentStatus;
 import uk.gov.hmcts.reform.pt.feesandpay.model.PaymentStatusCallback;
 import uk.gov.hmcts.reform.pt.repository.ApplicationFeeRepository;
 import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
-
-import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -68,23 +73,46 @@ public class PaymentService {
         return response.getServiceRequestReference();
     }
 
-    public CardPaymentServiceRequestResponse createCardPayment(String serviceRequestReference,
-                                                               BigDecimal amount,
-                                                               String language,
-                                                               String returnUrl) {
-        CardPaymentServiceRequestDTO request = CardPaymentServiceRequestDTO.builder()
-            .amount(amount)
-            .language(language)
-            .returnUrl(returnUrl)
+    public CreateCardPaymentResponse createCardPaymentRequest(String serviceRequestReference,
+                                                          CreateCardPaymentRequest createCardPaymentRequest) {
+
+        ApplicationFeeEntity applicationFeeEntity = applicationFeeRepository
+            .findByRequestReference(serviceRequestReference)
+            .orElseThrow(
+                () -> new FeePaymentNotFoundException("No fee payment entity found for " + serviceRequestReference)
+            );
+
+        PaymentStatus paymentStatus = PaymentStatus.fromValue(applicationFeeEntity.getStatus());
+        if (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PARTIALLY_PAID) {
+            throw new FeeAlreadyPaidException(serviceRequestReference);
+        }
+
+        CardPaymentServiceRequestDTO paymentRequest = CardPaymentServiceRequestDTO.builder()
+            .amount(applicationFeeEntity.getAmount())
+            .language(createCardPaymentRequest.getLanguage())
+            .returnUrl(createCardPaymentRequest.getReturnUrl())
             .build();
 
-        return paymentsClient.createGovPayCardPaymentRequest(
-            serviceRequestReference, systemUpdateUserTokenProvider.getAuthToken(), request);
+        CardPaymentServiceRequestResponse govPayCardPaymentResponse = paymentsClient.createGovPayCardPaymentRequest(
+            serviceRequestReference,
+            systemUpdateUserTokenProvider.getAuthToken(),
+            paymentRequest
+        );
+
+        return CreateCardPaymentResponse.builder()
+            .paymentReference(govPayCardPaymentResponse.getPaymentReference())
+            .status(govPayCardPaymentResponse.getStatus())
+            .nextUrl(govPayCardPaymentResponse.getNextUrl())
+            .build();
     }
 
-    public PaymentDto getCardPaymentStatus(String internalReference) {
-        return paymentsClient.getGovPayCardPaymentStatusWithCallback(
-            internalReference, systemUpdateUserTokenProvider.getAuthToken());
+    public CardPaymentStatusResponse getCardPaymentStatus(String internalPaymentReference) {
+        PaymentDto cardPaymentStatus = paymentsClient.getGovPayCardPaymentStatusWithCallback(
+            internalPaymentReference, systemUpdateUserTokenProvider.getAuthToken());
+
+        return CardPaymentStatusResponse.builder()
+            .status(cardPaymentStatus.getStatus())
+            .build();
     }
 
     @Transactional
