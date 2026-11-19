@@ -152,12 +152,12 @@ fees:
     url: ${FEES_REGISTER_API_URL:http://localhost:8083}
   lookup:
     applicationFee: # one entry per fee; the values come from the Fees Register
-      service:
-      jurisdiction1:
-      jurisdiction2:
+      service: property
+      jurisdiction1: tribunal
+      jurisdiction2: property chamber
       channel: default
-      event: issue
-      keyword:
+      event: general application
+      keyword: DeterminationOfRent
 payments:
   api:
     url: ${PAYMENT_API_URL:http://localhost:8083/payments}

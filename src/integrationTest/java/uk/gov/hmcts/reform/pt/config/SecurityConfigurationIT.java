@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.pt.controllers.CasePartyLinkController;
 import uk.gov.hmcts.reform.pt.controllers.RespondentApplicationController;
 import uk.gov.hmcts.reform.pt.controllers.RootController;
 import uk.gov.hmcts.reform.pt.exception.InvalidAuthTokenException;
+import uk.gov.hmcts.reform.pt.feesandpay.controller.PaymentCallBackController;
+import uk.gov.hmcts.reform.pt.feesandpay.service.PaymentService;
 import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.idam.User;
@@ -43,13 +45,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {
     ApplicationController.class,
     RootController.class,
     RespondentApplicationController.class,
-    CasePartyLinkController.class})
+    CasePartyLinkController.class,
+    PaymentCallBackController.class})
 @Import({SecurityConfiguration.class, SecurityConfigurationIT.ServiceAuthFilterConfig.class})
 @ActiveProfiles("integration")
 class SecurityConfigurationIT {
@@ -61,6 +65,10 @@ class SecurityConfigurationIT {
     private static final String INVALID_IDAM_TOKEN = "INVALID IDAM TOKEN";
     private static final String AUTHORISED_S2S_SERVICE = "pt_api";
     private static final String ACCESS_CODE = "ABCDEFGHIJKL";
+    private static final String PAYMENT_APP_S2S_TOKEN = "Bearer payment-app-s2s-token";
+    private static final String PAYMENT_UPDATE_BODY = """
+        {"service_request_reference": "2025-1712345678901", "service_request_status": "Paid"}
+        """;
 
     private static final UUID RANDOM_UUID = UUID.randomUUID();
 
@@ -88,6 +96,9 @@ class SecurityConfigurationIT {
     @MockitoBean
     private UpstreamThrottling upstreamThrottling;
 
+    @MockitoBean
+    private PaymentService paymentService;
+
     /**
      * ServiceAuthFilter normally comes from ServiceAuthAutoConfiguration (from the
      * service-auth-provider-java-client HMCTS library), which @WebMvcTest doesn't load in this test, so we build it
@@ -113,6 +124,7 @@ class SecurityConfigurationIT {
     void setUp() {
         when(serviceAuthorisationApi.getServiceName(S2S_TOKEN)).thenReturn(AUTHORISED_S2S_SERVICE);
         when(serviceAuthorisationApi.getServiceName(INVALID_S2S_TOKEN)).thenReturn(INVALID_S2S_NAME);
+        when(serviceAuthorisationApi.getServiceName(PAYMENT_APP_S2S_TOKEN)).thenReturn("payment_app");
 
         when(securityContextService.getCurrentUserDetails())
             .thenReturn(UserInfo.builder().uid(RANDOM_UUID.toString()).build());
@@ -228,5 +240,54 @@ class SecurityConfigurationIT {
 
         verify(serviceAuthorisationApi).getServiceName(S2S_TOKEN);
         verify(idamAuthenticator).validateAuthToken(INVALID_IDAM_TOKEN);
+    }
+
+    @Test
+    @DisplayName("Payment callback is allowed with a valid service token and no Idam token")
+    void shouldAllowPaymentUpdate_whenValidServiceTokenAndNoIdamToken() throws Exception {
+        mockMvc.perform(put("/payment-update")
+                            .header(ServiceAuthFilter.AUTHORISATION, PAYMENT_APP_S2S_TOKEN)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(PAYMENT_UPDATE_BODY))
+            .andExpect(status().isNoContent());
+
+        verify(serviceAuthorisationApi).getServiceName(PAYMENT_APP_S2S_TOKEN);
+        verifyNoInteractions(idamAuthenticator);
+        verify(paymentService).processPaymentResponse(any());
+    }
+
+    @Test
+    @DisplayName("Payment callback is forbidden for an unauthorised service")
+    void shouldReturnForbidden_whenPaymentUpdateWithUnknownService() throws Exception {
+        mockMvc.perform(put("/payment-update")
+                            .header(ServiceAuthFilter.AUTHORISATION, INVALID_S2S_TOKEN)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(PAYMENT_UPDATE_BODY))
+            .andExpect(status().isForbidden());
+
+        verifyNoInteractions(paymentService);
+    }
+
+    @Test
+    @DisplayName("Payment callback is unauthorised without a service token")
+    void shouldReturnUnauthorized_whenPaymentUpdateWithoutServiceToken() throws Exception {
+        mockMvc.perform(put("/payment-update")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(PAYMENT_UPDATE_BODY))
+            .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(paymentService);
+    }
+
+    @Test
+    @DisplayName("Payment callback returns 400 for an unreadable body")
+    void shouldReturnBadRequest_whenPaymentUpdateBodyIsMalformed() throws Exception {
+        mockMvc.perform(put("/payment-update")
+                            .header(ServiceAuthFilter.AUTHORISATION, PAYMENT_APP_S2S_TOKEN)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{not json"))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(paymentService);
     }
 }
