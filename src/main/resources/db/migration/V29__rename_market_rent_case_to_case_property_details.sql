@@ -68,6 +68,6 @@ ALTER TABLE respondent_property_details
   FOREIGN KEY (case_property_details_id)
   REFERENCES case_property_details (id);
 
-CREATE INDEX respondent_property_details_ase_property_details_id_idx
+CREATE INDEX respondent_property_details_case_property_details_id_idx
   ON respondent_property_details (case_property_details_id);
 
