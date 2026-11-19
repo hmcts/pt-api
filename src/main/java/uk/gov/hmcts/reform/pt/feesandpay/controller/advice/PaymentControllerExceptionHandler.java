@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.pt.feesandpay.controller.advice;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,12 @@ public class PaymentControllerExceptionHandler {
     public ResponseEntity<ErrorResponse> handleFeePaymentNotFound(FeePaymentNotFoundException ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    public ResponseEntity<ErrorResponse> handlePaymentNotFound(FeignException.NotFound ex) {
+        log.warn("Payment not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Payment not found"));
     }
 
     @ExceptionHandler(FeeAlreadyPaidException.class)
