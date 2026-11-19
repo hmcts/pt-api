@@ -248,7 +248,7 @@ public class PTCaseService {
 
         respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
 
-        landlord.setPhoneNumber(landlordResponse.getLandlordPhoneNumber());
+        setIfNotNull(landlordResponse.getLandlordPhoneNumber(), landlord::setPhoneNumber);
         casePartyRepository.save(landlord);
     }
 
