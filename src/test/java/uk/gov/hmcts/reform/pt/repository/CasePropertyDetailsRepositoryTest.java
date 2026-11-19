@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
 import java.math.BigDecimal;
@@ -15,13 +15,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MarketRentCaseRepositoryTest extends AbstractRepositoryTest<MarketRentCaseRepository> {
+class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePropertyDetailsRepository> {
 
     private final PTCaseRepository ptCaseRepository;
 
     @Autowired
-    protected MarketRentCaseRepositoryTest(
-        MarketRentCaseRepository repository,
+    protected CasePropertyDetailsRepositoryTest(
+        CasePropertyDetailsRepository repository,
         PTCaseRepository ptCaseRepository
     ) {
         super(repository);
@@ -34,7 +34,7 @@ class MarketRentCaseRepositoryTest extends AbstractRepositoryTest<MarketRentCase
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
 
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
             .method("Online")
             .channel("Citizen")
             .status("In Progress")
@@ -49,9 +49,9 @@ class MarketRentCaseRepositoryTest extends AbstractRepositoryTest<MarketRentCase
             .ptCase(ptCase)
             .build();
 
-        MarketRentCaseEntity saved = repository.save(marketRentCase);
+        CasePropertyDetailsEntity saved = repository.save(marketRentCase);
 
-        Optional<MarketRentCaseEntity> result = repository.findById(saved.getId());
+        Optional<CasePropertyDetailsEntity> result = repository.findById(saved.getId());
 
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isNotNull();

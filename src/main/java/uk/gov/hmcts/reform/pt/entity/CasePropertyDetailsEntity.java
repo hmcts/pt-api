@@ -33,8 +33,8 @@ import java.math.BigDecimal;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "market_rent_case")
-public class MarketRentCaseEntity extends AuditableEntity {
+@Table(name = "case_property_details")
+public class CasePropertyDetailsEntity extends AuditableEntity {
     @Version
     private Integer version;
 
@@ -173,23 +173,24 @@ public class MarketRentCaseEntity extends AuditableEntity {
     @Column(length = 100)
     private String language;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private ApplicationFeeEntity applicationFee;
+    // @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
+    // @JsonManagedReference
+    // private ApplicationFeeEntity applicationFee;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private ApplicationStatementOfTruthEntity statementOfTruth;
+    // @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
+    // @JsonManagedReference
+    //
+    // private StatementOfTruthEntity statementOfTruth;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
     private TenancyDetailsEntity tenancyDetails;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
     private NoticeOfRentChangeEntity noticeOfRentChange;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
     private RespondentPropertyDetailsEntity respondentPropertyDetails;
 

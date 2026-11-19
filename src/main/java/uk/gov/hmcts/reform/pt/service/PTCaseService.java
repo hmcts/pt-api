@@ -51,7 +51,7 @@ public class PTCaseService {
     private final NoticeOfRentChangeService noticeOfRentChangeService;
     private final RespondentPropertyDetailsService respondentPropertyDetailsService;
     private final DocumentService documentService;
-    private final MarketRentCaseService marketRentCaseService;
+    private final CasePropertyDetailsService casePropertyDetailsService;
     private final AddressService addressService;
     private final DocumentUploadValidator documentUploadValidator;
 
@@ -70,7 +70,7 @@ public class PTCaseService {
 
         casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
 
-        marketRentCaseService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
+        casePropertyDetailsService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
     }
 
     @Transactional(readOnly = true)
@@ -222,7 +222,8 @@ public class PTCaseService {
 
         ptCaseRepository.save(ptCaseEntity);
 
-        marketRentCaseService.updateWithPropertyInspectionDetails(ptCaseEntity, hearingOrPropertyInspectionDetails);
+        casePropertyDetailsService.updateWithPropertyInspectionDetails(ptCaseEntity,
+                                                                       hearingOrPropertyInspectionDetails);
     }
 
     @Transactional
@@ -269,7 +270,7 @@ public class PTCaseService {
         addressService.updatePropertyAddress(partyDetails, caseParty, ptCaseEntity);
 
         tenancyDetailsService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        marketRentCaseService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        casePropertyDetailsService.updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         documentService.updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
     }
 
@@ -281,7 +282,7 @@ public class PTCaseService {
         }
 
         tenancyDetailsService.updateWithRentDetails(ptCaseEntity, rentDetails);
-        marketRentCaseService.updateWithRentDetails(ptCaseEntity, rentDetails);
+        casePropertyDetailsService.updateWithRentDetails(ptCaseEntity, rentDetails);
         documentService.updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
     }
 

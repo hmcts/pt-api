@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.RespondentPropertyDetailsRepository;
@@ -25,7 +25,7 @@ class RespondentPropertyDetailsServiceTest {
     private RespondentPropertyDetailsRepository respondentPropertyDetailsRepository;
 
     @Mock
-    private MarketRentCaseService marketRentCaseService;
+    private CasePropertyDetailsService casePropertyDetailsService;
 
     @InjectMocks
     private RespondentPropertyDetailsService respondentPropertyDetailsService;
@@ -34,8 +34,8 @@ class RespondentPropertyDetailsServiceTest {
     @DisplayName("Should create new respondent property details entity when none exists")
     void updateLandlordResponseCreatesNew() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder().build();
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(marketRentCase);
 
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
@@ -49,7 +49,7 @@ class RespondentPropertyDetailsServiceTest {
         verify(respondentPropertyDetailsRepository).save(captor.capture());
         RespondentPropertyDetailsEntity saved = captor.getValue();
 
-        assertThat(saved.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(saved.getCasePropertyDetails()).isEqualTo(marketRentCase);
         assertThat(marketRentCase.getRespondentPropertyDetails()).isEqualTo(saved);
         assertThat(saved.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getRespondToTenantAnswersAboutTenancyDetailsDescription())
@@ -65,10 +65,10 @@ class RespondentPropertyDetailsServiceTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
             .respondentPropertyDetails(existing)
             .build();
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(marketRentCase);
 
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
@@ -78,7 +78,7 @@ class RespondentPropertyDetailsServiceTest {
         respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
 
         verify(respondentPropertyDetailsRepository).save(existing);
-        assertThat(existing.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(existing.getCasePropertyDetails()).isEqualTo(marketRentCase);
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Updated description");
@@ -93,10 +93,10 @@ class RespondentPropertyDetailsServiceTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
             .respondentPropertyDetails(existing)
             .build();
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity)).thenReturn(marketRentCase);
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(marketRentCase);
 
         respondentPropertyDetailsService.updateLandlordResponse(LandlordResponse.builder().build(), ptCaseEntity);
 
