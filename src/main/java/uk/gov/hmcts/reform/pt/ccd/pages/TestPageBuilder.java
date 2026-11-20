@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.pt.ccd.pages;
 
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.reform.pt.ccd.domain.LandlordDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
+import uk.gov.hmcts.reform.pt.ccd.domain.PartyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.State;
 import uk.gov.hmcts.reform.pt.ccd.accesscontrol.UserRole;
 
@@ -13,7 +16,29 @@ public class TestPageBuilder {
             .fields()
             .page("id")
             .pageLabel("testPage")
-            .mandatory(PTCase::getApplicantFirstName);
+            .mandatory(PTCase::getApplicantFirstName)
+            .mandatory(PTCase::getApplicantLastName);
+    }
+
+    public static void updateTestCase(Event.EventBuilder<PTCase, UserRole, State> eventBuilder) {
+        eventBuilder
+            .fields()
+            .page("updateTestCase")
+            .pageLabel("Update test case")
+            .mandatory(PTCase::getApplicantFirstName)
+            .mandatory(PTCase::getApplicantLastName)
+            .complex(PTCase::getPropertyDetails)
+            .mandatory(PropertyDetails::getAddressLine1)
+            .optional(PropertyDetails::getAddressLine2)
+            .mandatory(PropertyDetails::getPostTown)
+            .optional(PropertyDetails::getCounty)
+            .mandatory(PropertyDetails::getPostcode)
+            .done()
+            .complex(PTCase::getLandlordDetails)
+            .mandatory(LandlordDetails::getRepresentativeType)
+            .complex(LandlordDetails::getLandlordPartyDetails)
+            .mandatory(PartyDetails::getFirstName)
+            .mandatory(PartyDetails::getLastName);
     }
 
     public static void changeCaseState(Event.EventBuilder<PTCase, UserRole, State> eventBuilder) {
