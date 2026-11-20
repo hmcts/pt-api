@@ -11,6 +11,8 @@ import java.util.List;
 public class LandlordResponseDto {
     private YesOrNo respondToTenantAnswersAboutTenancyDetails;
     private String respondToTenantAnswersAboutTenancyDetailsDescription;
+    private YesOrNo respondToTenantAnswersAboutPropertyDetails;
+    private String respondToTenantAnswersAboutPropertyDetailsDescription;
     private String landlordPhoneNumber;
     private List<DocumentDto> tenancyDetailsResponseEvidence;
 }

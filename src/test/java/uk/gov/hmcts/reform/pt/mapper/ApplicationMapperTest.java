@@ -741,6 +741,8 @@ class ApplicationMapperTest {
         RespondentPropertyDetailsEntity respondentPropertyDetails = RespondentPropertyDetailsEntity.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
+            .respondToTenantAnswersAboutPropertyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutPropertyDetailsDescription("The property has two bedrooms, not three")
             .build();
 
         CasePartyEntity landlord = CasePartyEntity.builder()
@@ -761,6 +763,9 @@ class ApplicationMapperTest {
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetails()).isEqualTo(YesOrNo.YES);
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetailsDescription())
+            .isEqualTo("The property has two bedrooms, not three");
         assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
         assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
     }
@@ -786,6 +791,8 @@ class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetails()).isNull();
         assertThat(result.getRespondToTenantAnswersAboutTenancyDetailsDescription()).isNull();
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetails()).isNull();
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetailsDescription()).isNull();
         assertThat(result.getLandlordPhoneNumber()).isNull();
         assertThat(result.getTenancyDetailsResponseEvidence()).hasSize(1);
         DocumentDto evidenceDto = result.getTenancyDetailsResponseEvidence().getFirst();

@@ -40,6 +40,8 @@ class RespondentPropertyDetailsServiceTest {
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Tenancy started in March, not January")
+            .respondToTenantAnswersAboutPropertyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutPropertyDetailsDescription("The property has two bedrooms, not three")
             .build();
 
         respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
@@ -54,6 +56,9 @@ class RespondentPropertyDetailsServiceTest {
         assertThat(saved.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Tenancy started in March, not January");
+        assertThat(saved.getRespondToTenantAnswersAboutPropertyDetails()).isEqualTo(YesOrNo.YES);
+        assertThat(saved.getRespondToTenantAnswersAboutPropertyDetailsDescription())
+            .isEqualTo("The property has two bedrooms, not three");
     }
 
     @Test
@@ -62,6 +67,8 @@ class RespondentPropertyDetailsServiceTest {
         RespondentPropertyDetailsEntity existing = RespondentPropertyDetailsEntity.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.NO)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Old description")
+            .respondToTenantAnswersAboutPropertyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutPropertyDetailsDescription("Old property description")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
@@ -73,6 +80,8 @@ class RespondentPropertyDetailsServiceTest {
         LandlordResponse landlordResponse = LandlordResponse.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Updated description")
+            .respondToTenantAnswersAboutPropertyDetails(YesOrNo.NO)
+            .respondToTenantAnswersAboutPropertyDetailsDescription("")
             .build();
 
         respondentPropertyDetailsService.updateLandlordResponse(landlordResponse, ptCaseEntity);
@@ -82,6 +91,8 @@ class RespondentPropertyDetailsServiceTest {
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Updated description");
+        assertThat(existing.getRespondToTenantAnswersAboutPropertyDetails()).isEqualTo(YesOrNo.NO);
+        assertThat(existing.getRespondToTenantAnswersAboutPropertyDetailsDescription()).isEmpty();
     }
 
     @Test
@@ -90,6 +101,8 @@ class RespondentPropertyDetailsServiceTest {
         RespondentPropertyDetailsEntity existing = RespondentPropertyDetailsEntity.builder()
             .respondToTenantAnswersAboutTenancyDetails(YesOrNo.YES)
             .respondToTenantAnswersAboutTenancyDetailsDescription("Existing description")
+            .respondToTenantAnswersAboutPropertyDetails(YesOrNo.YES)
+            .respondToTenantAnswersAboutPropertyDetailsDescription("Existing property description")
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
@@ -104,5 +117,8 @@ class RespondentPropertyDetailsServiceTest {
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetails()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getRespondToTenantAnswersAboutTenancyDetailsDescription())
             .isEqualTo("Existing description");
+        assertThat(existing.getRespondToTenantAnswersAboutPropertyDetails()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getRespondToTenantAnswersAboutPropertyDetailsDescription())
+            .isEqualTo("Existing property description");
     }
 }
