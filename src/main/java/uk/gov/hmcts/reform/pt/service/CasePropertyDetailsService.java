@@ -3,10 +3,9 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CasePropertyDetailsRepository;
@@ -141,13 +140,13 @@ public class CasePropertyDetailsService {
         casePropertyDetailsRepository.save(casePropertyDetails);
     }
 
-    @Transactional
-    public void updateWithApplicationType(PTCaseEntity ptCaseEntity, ApplicationType applicationType) {
-        CasePropertyDetailsEntity casePropertyDetails = findOrBuildCasePropertyDetails(ptCaseEntity);
-        setIfNotNull(applicationType, casePropertyDetails::setMarketRentCaseType);
-
-        casePropertyDetailsRepository.save(casePropertyDetails);
-    }
+    //    @Transactional
+    //    public void updateWithApplicationType(PTCaseEntity ptCaseEntity, ApplicationType applicationType) {
+    //        CasePropertyDetailsEntity casePropertyDetails = findOrBuildCasePropertyDetails(ptCaseEntity);
+    //        setIfNotNull(applicationType, casePropertyDetails::setMarketRentCaseType);
+    //
+    //        casePropertyDetailsRepository.save(casePropertyDetails);
+    //    }
 
     @Transactional
     public CasePropertyDetailsEntity getOrCreateCasePropertyDetails(PTCaseEntity ptCaseEntity) {

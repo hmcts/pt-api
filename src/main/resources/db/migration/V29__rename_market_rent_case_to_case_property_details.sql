@@ -5,9 +5,14 @@ ALTER TABLE market_rent_case
   RENAME TO case_property_details;
 
 ALTER TABLE case_property_details RENAME CONSTRAINT market_rent_case_pt_case_id_key TO case_property_details_pt_case_id_key;
+ALTER TABLE case_property_details ADD COLUMN decision_without_hearing YES_NO;
+ALTER TABLE case_property_details ADD COLUMN decision_without_hearing_reason VARCHAR (500);
+ALTER TABLE case_property_details ADD COLUMN additional_rental_varying_service_charges_details VARCHAR (500);
+ALTER TABLE case_property_details ADD COLUMN case_property_address_id BIGINT;
 
 -- manage tenancy_details FK: Add new column, copy old data, remove old column, reset FK
 ALTER TABLE tenancy_details ADD COLUMN case_property_details_id BIGINT;
+
 
 UPDATE tenancy_details td
 SET case_property_details_id = cp.id

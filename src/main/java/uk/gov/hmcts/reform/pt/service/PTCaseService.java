@@ -63,14 +63,15 @@ public class PTCaseService {
     ) {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(caseReference)
+            .caseSubType(ptCase.getApplicationType())
             .build();
         ptCaseRepository.save(ptCaseEntity);
 
         tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), ptCaseEntity);
 
         casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
-
-        casePropertyDetailsService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
+        // app type move
+        //        casePropertyDetailsService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
     }
 
     @Transactional(readOnly = true)

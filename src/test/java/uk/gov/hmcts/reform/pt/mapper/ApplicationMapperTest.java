@@ -11,16 +11,16 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
-import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
@@ -1096,7 +1096,8 @@ class ApplicationMapperTest {
 
     private static CasePropertyDetailsEntity marketRentCase() {
         return CasePropertyDetailsEntity.builder()
-            .marketRentCaseType(APPLICATION_TYPE)
+            // app type move
+            //            .marketRentCaseType(APPLICATION_TYPE)
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
             .applicantSuggestedMarketRentReasons("Market rate for the area")

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
@@ -44,7 +43,8 @@ class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePrope
             .rentCostMonthly(new BigDecimal("1200.00"))
             .applicantSuggestedMarketRent(new BigDecimal("1100.00"))
             .applicantSuggestedMarketRentFrequency(Frequency.MONTHLY)
-            .marketRentCaseType(ApplicationType.CHALLENGE_RENT_INCREASE)
+            // app type move
+            //            .marketRentCaseType(ApplicationType.CHALLENGE_RENT_INCREASE)
             .language("en")
             .ptCase(ptCase)
             .build();
@@ -63,7 +63,8 @@ class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePrope
         assertThat(result.get().getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
         assertThat(result.get().getRentCostMonthly()).isEqualByComparingTo("1200.00");
         assertThat(result.get().getApplicantSuggestedMarketRent()).isEqualByComparingTo("1100.00");
-        assertThat(result.get().getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
+        // app type move
+        //       assertThat(result.get().getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
         assertThat(result.get().getLanguage()).isEqualTo("en");
         assertThat(result.get().getPtCase().getId()).isEqualTo(ptCase.getId());
         assertThat(result.get().getPtCase().getCaseReference()).isEqualTo(caseReference);

@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
@@ -138,7 +136,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalRentalServiceChargesVary;
 
-    @Column(length = 500)
+    @Column(name = "additional_rental_varying_service_charges_details", length = 500)
     private String varyingAdditionalRentalServiceChargesDetails;
 
     @Column(length = 5000)
@@ -161,14 +159,24 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo decisionWithoutHearing;
+
+    @Column(length = 500)
+    private String decisionWithoutHearingReason;
+
+    // NOT PRESENT
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo hearingRequested;
 
+    // NOT PRESENT
     @Column(length = 500)
     private String reasonHearingRequested;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 100)
-    private ApplicationType marketRentCaseType;
+    // NOT PRESENT
+    // @Enumerated(EnumType.STRING)
+    // @Column(length = 100)
+    // private ApplicationType marketRentCaseType;
 
     @Column(length = 100)
     private String language;
@@ -176,11 +184,6 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     // @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     // @JsonManagedReference
     // private ApplicationFeeEntity applicationFee;
-
-    // @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
-    // @JsonManagedReference
-    //
-    // private StatementOfTruthEntity statementOfTruth;
 
     @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -193,6 +196,14 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
     private RespondentPropertyDetailsEntity respondentPropertyDetails;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "statement_of_truth_id", unique = true)
+    private StatementOfTruthEntity statementOfTruth;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_property_address_id", unique = true)
+    private CasePropertyAddressEntity casePropertyAddress;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pt_case_id", unique = true)

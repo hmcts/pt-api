@@ -12,6 +12,7 @@
       "email": "updated.applicant@example.com",
       "postcode": "SW1A 1AA",
       "tenancyType": "assuredPeriodicTenancy",
+      "applicationType": "challengeRentIncrease",
       "applicantContactPreferences": {
         "textUpdates": "Yes",
         "textUpdatesPhoneNumber": "07700900001",
