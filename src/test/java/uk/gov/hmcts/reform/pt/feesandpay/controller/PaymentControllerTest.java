@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.pt.feesandpay.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
+import feign.Request;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamAuthenticator;
 import uk.gov.hmcts.reform.pt.idam.UpstreamThrottling;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,6 +125,19 @@ class PaymentControllerTest {
             .thenThrow(new FeeAlreadyPaidException(SERVICE_REQUEST_REFERENCE));
 
         postValidCardPaymentRequest().andExpect(status().isConflict());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenPaymentUnknownToPaymentApi() throws Exception {
+        Request request = Request.create(Request.HttpMethod.GET, "/card-payments/RC-unknown/status",
+                                         Map.of(), null, StandardCharsets.UTF_8, null);
+        when(paymentService.getCardPaymentStatus("RC-unknown"))
+            .thenThrow(new FeignException.NotFound("Not found", request, null, Map.of()));
+
+        mockMvc.perform(get("/payment/card-payment/RC-unknown/status")
+                            .header("ServiceAuthorization", S2S_TOKEN))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Payment not found"));
     }
 
     private ResultActions postValidCardPaymentRequest() throws Exception {
