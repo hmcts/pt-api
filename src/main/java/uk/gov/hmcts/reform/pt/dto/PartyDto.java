@@ -21,4 +21,5 @@ public class PartyDto {
     private String postTown;
     private String county;
     private String postcode;
+    private String country;
 }

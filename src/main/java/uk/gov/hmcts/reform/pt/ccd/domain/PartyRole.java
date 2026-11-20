@@ -14,13 +14,7 @@ public enum PartyRole implements HasLabel {
     APPLICANT("Applicant"),
 
     @JsonProperty("landlord")
-    LANDLORD("Landlord"),
-
-    @JsonProperty("landlordRepresentative")
-    LANDLORD_REPRESENTATIVE("Landlord representative"),
-
-    @JsonProperty("lettingAgent")
-    LETTING_AGENT("Letting agent");
+    LANDLORD("Landlord");
 
     private final String label;
 }

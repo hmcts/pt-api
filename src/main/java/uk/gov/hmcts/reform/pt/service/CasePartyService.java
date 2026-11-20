@@ -16,8 +16,7 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.APPLICANT;
 import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LANDLORD;
-import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LANDLORD_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.pt.ccd.domain.PartyRole.LETTING_AGENT;
+import static uk.gov.hmcts.reform.pt.ccd.domain.RepresentativeType.LANDLORD_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -26,6 +25,7 @@ public class CasePartyService {
 
     private final CasePartyRepository casePartyRepository;
     private final AddressService addressService;
+    private final CasePartyRepresentativeService casePartyRepresentativeService;
 
     @Transactional
     public CasePartyEntity createApplicantCaseParty(PTCaseEntity ptCaseEntity, PTCase ptCase, UUID idamId) {
@@ -49,43 +49,29 @@ public class CasePartyService {
 
     @Transactional
     public void updateWithLandlordDetails(PTCaseEntity ptCaseEntity, LandlordDetails landlordDetails) {
-        PartyDetails landlord = landlordDetails.getLandlordPartyDetails();
+        PartyDetails landlord = landlordDetails.getLandlord();
         if (landlord == null) {
             return;
         }
-        this.updatePartyDetails(ptCaseEntity, landlord, LANDLORD);
+        CasePartyEntity landlordPartyEntity = updatePartyDetails(ptCaseEntity, landlord, LANDLORD);
+        setIfNotNull(landlordDetails.getHasRepresentative(), landlordPartyEntity::setHasRepresentative);
+        casePartyRepository.save(landlordPartyEntity);
 
-        PartyDetails lettingAgent = landlordDetails.getLettingAgentPartyDetails();
-        PartyDetails representative = landlordDetails.getRepresentativePartyDetails();
-
-        switch (landlordDetails.getRepresentativeType()) {
-            case LETTING_AGENT -> {
-                this.updatePartyDetails(ptCaseEntity, lettingAgent, LETTING_AGENT);
-                getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD_REPRESENTATIVE)
-                    .ifPresent(this::removeParty);
-            }
-            case REPRESENTATIVE -> {
-                this.updatePartyDetails(ptCaseEntity, representative, LANDLORD_REPRESENTATIVE);
-                getPartyForCaseByRole(ptCaseEntity, LANDLORD)
-                    .ifPresent(this::removeParty);
-            }
-            case LETTING_AGENT_AND_REPRESENTATIVE -> {
-                this.updatePartyDetails(ptCaseEntity, lettingAgent, LETTING_AGENT);
-                this.updatePartyDetails(ptCaseEntity, representative, LANDLORD_REPRESENTATIVE);
-            }
-            case NO_LETTING_AGENT_OR_REPRESENTATIVE, NOT_SURE -> {
-                getPartyForCaseByRole(ptCaseEntity, LETTING_AGENT)
-                    .ifPresent(this::removeParty);
-                getPartyForCaseByRole(ptCaseEntity, LANDLORD_REPRESENTATIVE)
-                    .ifPresent(this::removeParty);
-            }
+        PartyDetails representative = landlordDetails.getRepresentative();
+        switch (landlordDetails.getHasRepresentative()) {
+            case YES ->
+                casePartyRepresentativeService.updateRepresentativeForLandlord(landlordPartyEntity, representative);
+            case NO, NOT_SURE ->
+                casePartyRepresentativeService.removeRepresentativeForParty(
+                    landlordPartyEntity, LANDLORD_REPRESENTATIVE);
+            case null -> { }
         }
     }
 
     @Transactional
-    public void updatePartyDetails(PTCaseEntity ptCaseEntity, PartyDetails partyDetails, PartyRole role) {
+    public CasePartyEntity updatePartyDetails(PTCaseEntity ptCaseEntity, PartyDetails partyDetails, PartyRole role) {
         if (partyDetails == null) {
-            return;
+            return null;
         }
 
         CasePartyEntity caseParty = getPartyForCaseByRole(ptCaseEntity, role)
@@ -97,10 +83,11 @@ public class CasePartyService {
         setIfNotNull(partyDetails.getEmailAddress(), caseParty::setEmailAddress);
         setIfNotNull(partyDetails.getPhoneNumber(), caseParty::setPhoneNumber);
         setIfNotNull(partyDetails.getOrganisationName(), caseParty::setOrganisationName);
-        setIfNotNull(partyDetails.getDxNumber(), caseParty::setReferenceNumberForCommunications);
-        casePartyRepository.save(caseParty);
+        caseParty = casePartyRepository.save(caseParty);
 
         addressService.updatePartyAddress(partyDetails, caseParty);
+
+        return caseParty;
     }
 
     @Transactional

@@ -304,9 +304,6 @@ public class PTCaseService {
         }
 
         casePartyService.updateWithLandlordDetails(ptCaseEntity, landlordDetails);
-
-        setIfNotNull(landlordDetails.getRepresentativeType(), ptCaseEntity::setLandlordType);
-        ptCaseRepository.save(ptCaseEntity);
     }
 
     @Transactional
