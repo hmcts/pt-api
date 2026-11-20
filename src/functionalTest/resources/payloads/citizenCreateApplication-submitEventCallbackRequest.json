@@ -11,7 +11,6 @@
       "applicantLastName": "Applicant",
       "email": "test.applicant@example.com",
       "postcode": "BH1 3BP",
-      "applicationType": "challengeRentIncrease",
       "tenancyType": "assuredPeriodicTenancy"
     }
   },

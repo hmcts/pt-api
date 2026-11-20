@@ -19,6 +19,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 
 import java.time.LocalDateTime;
@@ -43,6 +44,12 @@ public class PTCaseEntity extends AuditableEntity {
     private LocalDateTime applicationSubmittedDate;
     private LocalDateTime caseIssuedDate;
 
+    private String caseType;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private ApplicationType caseSubType;
+
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     private CasePropertyAddressEntity propertyAddress;
@@ -60,7 +67,7 @@ public class PTCaseEntity extends AuditableEntity {
 
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private MarketRentCaseEntity marketRentCase;
+    private CasePropertyDetailsEntity casePropertyDetails;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference

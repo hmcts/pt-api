@@ -1,15 +1,10 @@
 package uk.gov.hmcts.reform.pt.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +22,8 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "application_statement_of_truth")
-public class ApplicationStatementOfTruthEntity extends AuditableEntity {
+@Table(name = "statement_of_truth")
+public class StatementOfTruthEntity extends AuditableEntity {
     private LocalDateTime completedDate;
 
     @Column(length = 100)
@@ -46,9 +41,4 @@ public class ApplicationStatementOfTruthEntity extends AuditableEntity {
 
     @Column(length = 100)
     private String positionHeld;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_rent_case_id", unique = true)
-    @JsonBackReference
-    private MarketRentCaseEntity marketRentCase;
 }

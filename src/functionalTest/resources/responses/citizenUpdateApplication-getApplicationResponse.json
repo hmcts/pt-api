@@ -4,7 +4,6 @@
   "applicantLastName": "Applicant",
   "email": "updated.applicant@example.com",
   "postcode": "SW1A 1AA",
-  "applicationType": "challengeRentIncrease",
   "tenancyType": "assuredPeriodicTenancy",
   "applicantContactPreferences": {
     "contactByText": "Yes",

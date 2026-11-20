@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
 import uk.gov.hmcts.reform.pt.entity.FeeHelpWithFeesEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
 import java.math.BigDecimal;
@@ -17,19 +17,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFeesRepository> {
 
     private final PTCaseRepository ptCaseRepository;
-    private final MarketRentCaseRepository marketRentCaseRepository;
+    private final CasePropertyDetailsRepository casePropertyDetailsRepository;
     private final ApplicationFeeRepository applicationFeeRepository;
 
     @Autowired
     protected FeeHelpWithFeesRepositoryTest(
         FeeHelpWithFeesRepository repository,
         PTCaseRepository ptCaseRepository,
-        MarketRentCaseRepository marketRentCaseRepository,
+        CasePropertyDetailsRepository casePropertyDetailsRepository,
         ApplicationFeeRepository applicationFeeRepository
     ) {
         super(repository);
         this.ptCaseRepository = ptCaseRepository;
-        this.marketRentCaseRepository = marketRentCaseRepository;
+        this.casePropertyDetailsRepository = casePropertyDetailsRepository;
         this.applicationFeeRepository = applicationFeeRepository;
     }
 
@@ -38,15 +38,16 @@ class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFe
     void saveAndFindFeeHelpWithFees() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
-        MarketRentCaseEntity marketRentCase = marketRentCaseRepository.save(
-            MarketRentCaseEntity.builder().ptCase(ptCase).build());
+
+        CasePropertyDetailsEntity marketRentCase = casePropertyDetailsRepository.save(
+            CasePropertyDetailsEntity.builder().ptCase(ptCase).build());
+
         ApplicationFeeEntity fee = applicationFeeRepository.save(
             ApplicationFeeEntity.builder()
                 .requestReference("RC-1700-0000-0000-0001")
                 .requestDate(LocalDateTime.now())
                 .amount(new BigDecimal("100.00"))
                 .status("Success")
-                .marketRentCase(marketRentCase)
                 .build()
         );
 
