@@ -282,6 +282,16 @@ public class ApplicationMapper {
                     respondentPropertyDetails,
                     RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutTenancyDetailsDescription
                 ))
+            .respondToTenantAnswersAboutPropertyDetails(
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutPropertyDetails
+                ))
+            .respondToTenantAnswersAboutPropertyDetailsDescription(
+                get(
+                    respondentPropertyDetails,
+                    RespondentPropertyDetailsEntity::getRespondToTenantAnswersAboutPropertyDetailsDescription
+                ))
             .landlordPhoneNumber(get(respondent, CasePartyEntity::getPhoneNumber))
             .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
             .build();
