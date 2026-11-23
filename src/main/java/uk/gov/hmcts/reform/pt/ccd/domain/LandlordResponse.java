@@ -30,6 +30,18 @@ public class LandlordResponse {
     private String respondToTenantAnswersAboutTenancyDetailsDescription;
 
     @CCD(
+        label = "Responding to the tenant's answers about property details",
+        access = {CitizenAccess.class}
+    )
+    private YesOrNo respondToTenantAnswersAboutPropertyDetails;
+
+    @CCD(
+        label = "Response to the tenant's answers about property details",
+        access = {CitizenAccess.class}
+    )
+    private String respondToTenantAnswersAboutPropertyDetailsDescription;
+
+    @CCD(
         label = "Landlord phone number",
         access = {CitizenAccess.class}
     )

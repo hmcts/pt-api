@@ -34,6 +34,13 @@ public class RespondentPropertyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String respondToTenantAnswersAboutTenancyDetailsDescription;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo respondToTenantAnswersAboutPropertyDetails;
+
+    @Column(length = 500)
+    private String respondToTenantAnswersAboutPropertyDetailsDescription;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", nullable = false, unique = true)
     @JsonBackReference

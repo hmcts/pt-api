@@ -552,6 +552,7 @@ class PTCaseServiceTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
         CasePartyEntity landlord = CasePartyEntity.builder()
             .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("09876543210")
             .build();
         when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD))
             .thenReturn(Optional.of(landlord));
@@ -569,6 +570,27 @@ class PTCaseServiceTest {
 
         verify(respondentPropertyDetailsService).updateLandlordResponse(landlordResponse, ptCaseEntity);
         assertThat(landlord.getPhoneNumber()).isEqualTo("01234567890");
+        verify(casePartyRepository).save(landlord);
+    }
+
+    @Test
+    @DisplayName("Should preserve landlord phone number when response phone number is null")
+    void updateLandlordResponsePreservesPhoneNumberWhenNull() {
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
+        CasePartyEntity landlord = CasePartyEntity.builder()
+            .casePartyRole(PartyRole.LANDLORD)
+            .phoneNumber("09876543210")
+            .build();
+        when(casePartyService.getPartyForCaseByRole(ptCaseEntity, PartyRole.LANDLORD))
+            .thenReturn(Optional.of(landlord));
+
+        LandlordResponse landlordResponse = LandlordResponse.builder().build();
+        PTCase ptCase = PTCase.builder().landlordResponse(landlordResponse).build();
+
+        ptCaseService.updateLandlordResponse(ptCase, ptCaseEntity);
+
+        assertThat(landlord.getPhoneNumber()).isEqualTo("09876543210");
+        verify(respondentPropertyDetailsService).updateLandlordResponse(landlordResponse, ptCaseEntity);
         verify(casePartyRepository).save(landlord);
     }
 
