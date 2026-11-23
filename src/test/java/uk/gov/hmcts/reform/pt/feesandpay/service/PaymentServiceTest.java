@@ -16,6 +16,11 @@ import uk.gov.hmcts.reform.payments.request.CreateServiceRequestDTO;
 import uk.gov.hmcts.reform.payments.response.CardPaymentServiceRequestResponse;
 import uk.gov.hmcts.reform.payments.response.PaymentServiceResponse;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
+import uk.gov.hmcts.reform.pt.feesandpay.exception.FeeAlreadyPaidException;
+import uk.gov.hmcts.reform.pt.feesandpay.exception.FeePaymentNotFoundException;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CardPaymentStatusResponse;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CreateCardPaymentRequest;
+import uk.gov.hmcts.reform.pt.feesandpay.model.CreateCardPaymentResponse;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
 import uk.gov.hmcts.reform.pt.feesandpay.model.Payment;
 import uk.gov.hmcts.reform.pt.feesandpay.model.PaymentStatusCallback;
@@ -26,10 +31,12 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +46,7 @@ class PaymentServiceTest {
     private static final String CALLBACK_URL = "http://pt-api/payment-update";
     private static final String HMCTS_ORG_ID = "ABC1";
     private static final long CASE_REFERENCE = 1234567890123456L;
+    private static final String SERVICE_REQUEST_REFERENCE = "2026-1234567890";
 
     @Mock
     private PaymentsClient paymentsClient;
@@ -97,43 +105,85 @@ class PaymentServiceTest {
     }
 
     @Test
-    void shouldCreateCardPaymentAgainstServiceRequest() {
-        CardPaymentServiceRequestResponse response = CardPaymentServiceRequestResponse.builder()
-            .paymentReference("RC-1234-5678-9012-3456")
-            .status("Initiated")
-            .nextUrl("https://card.payments.service.gov.uk/secure/abc")
-            .build();
-        when(paymentsClient.createGovPayCardPaymentRequest(eq("2026-1234567890"), eq(AUTH_TOKEN),
-                                                           any(CardPaymentServiceRequestDTO.class)))
-            .thenReturn(response);
+    void shouldCreateCardPaymentRequestForUnpaidApplicationFee() {
+        when(applicationFeeRepository.findByRequestReference(SERVICE_REQUEST_REFERENCE))
+            .thenReturn(Optional.of(applicationFeeWithStatus("Not paid")));
         when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
+        when(paymentsClient.createGovPayCardPaymentRequest(eq(SERVICE_REQUEST_REFERENCE), eq(AUTH_TOKEN),
+                                                           any(CardPaymentServiceRequestDTO.class)))
+            .thenReturn(CardPaymentServiceRequestResponse.builder()
+                            .paymentReference("RC-1234-5678-9012-3456")
+                            .status("Initiated")
+                            .nextUrl("https://card.payments.service.gov.uk/secure/abc")
+                            .build());
 
-        CardPaymentServiceRequestResponse result = paymentService.createCardPayment(
-            "2026-1234567890", new BigDecimal("100.00"), "English", "https://pt/payment/return");
+        CreateCardPaymentResponse result = paymentService.createCardPaymentRequest(
+            SERVICE_REQUEST_REFERENCE, cardPaymentRequest());
 
-        assertThat(result).isSameAs(response);
+        assertThat(result.getPaymentReference()).isEqualTo("RC-1234-5678-9012-3456");
+        assertThat(result.getStatus()).isEqualTo("Initiated");
+        assertThat(result.getNextUrl()).isEqualTo("https://card.payments.service.gov.uk/secure/abc");
 
         ArgumentCaptor<CardPaymentServiceRequestDTO> captor =
             ArgumentCaptor.forClass(CardPaymentServiceRequestDTO.class);
-        verify(paymentsClient).createGovPayCardPaymentRequest(eq("2026-1234567890"), eq(AUTH_TOKEN),
+        verify(paymentsClient).createGovPayCardPaymentRequest(eq(SERVICE_REQUEST_REFERENCE), eq(AUTH_TOKEN),
                                                               captor.capture());
         CardPaymentServiceRequestDTO request = captor.getValue();
-
-        assertThat(request.getAmount()).isEqualByComparingTo("100.00");
+        assertThat(request.getAmount()).isEqualByComparingTo("47.00");
         assertThat(request.getLanguage()).isEqualTo("English");
         assertThat(request.getReturnUrl()).isEqualTo("https://pt/payment/return");
-        assertThat(request.getCurrency()).isEqualTo("GBP");
+    }
+
+    @Test
+    void shouldThrowWhenNoApplicationFeeForServiceRequest() {
+        when(applicationFeeRepository.findByRequestReference(SERVICE_REQUEST_REFERENCE))
+            .thenReturn(Optional.empty());
+
+        CreateCardPaymentRequest request = cardPaymentRequest();
+        assertThatThrownBy(() -> paymentService.createCardPaymentRequest(SERVICE_REQUEST_REFERENCE, request))
+            .isInstanceOf(FeePaymentNotFoundException.class);
+
+        verifyNoInteractions(paymentsClient);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Paid", "Partially paid"})
+    void shouldThrowWhenApplicationFeeAlreadyPaid(String status) {
+        when(applicationFeeRepository.findByRequestReference(SERVICE_REQUEST_REFERENCE))
+            .thenReturn(Optional.of(applicationFeeWithStatus(status)));
+
+        CreateCardPaymentRequest request = cardPaymentRequest();
+        assertThatThrownBy(() -> paymentService.createCardPaymentRequest(SERVICE_REQUEST_REFERENCE, request))
+            .isInstanceOf(FeeAlreadyPaidException.class);
+
+        verifyNoInteractions(paymentsClient);
     }
 
     @Test
     void shouldGetCardPaymentStatus() {
-        PaymentDto payment = PaymentDto.builder().status("Success").build();
-        when(paymentsClient.getGovPayCardPaymentStatusWithCallback("RC-1234", AUTH_TOKEN)).thenReturn(payment);
+        PaymentDto paymentDto = PaymentDto.builder().status("Success").build();
+        when(paymentsClient.getGovPayCardPaymentStatusWithCallback("RC-1234", AUTH_TOKEN))
+            .thenReturn(paymentDto);
         when(systemUpdateUserTokenProvider.getAuthToken()).thenReturn(AUTH_TOKEN);
 
-        PaymentDto result = paymentService.getCardPaymentStatus("RC-1234");
+        CardPaymentStatusResponse result = paymentService.getCardPaymentStatus("RC-1234");
 
-        assertThat(result).isSameAs(payment);
+        assertThat(result.getStatus()).isEqualTo("Success");
+    }
+
+    private static ApplicationFeeEntity applicationFeeWithStatus(String status) {
+        return ApplicationFeeEntity.builder()
+            .requestReference(SERVICE_REQUEST_REFERENCE)
+            .status(status)
+            .amount(new BigDecimal("47.00"))
+            .build();
+    }
+
+    private static CreateCardPaymentRequest cardPaymentRequest() {
+        return CreateCardPaymentRequest.builder()
+            .language("English")
+            .returnUrl("https://pt/payment/return")
+            .build();
     }
 
     @ParameterizedTest
