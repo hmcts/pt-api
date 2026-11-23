@@ -188,6 +188,10 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JsonManagedReference
     private RespondentPropertyDetailsEntity respondentPropertyDetails;
 
+    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private CaseApplicationVettingEntity caseApplicationVetting;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statement_of_truth_id", unique = true)
     private StatementOfTruthEntity statementOfTruth;
