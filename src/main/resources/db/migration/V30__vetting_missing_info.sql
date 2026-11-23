@@ -15,7 +15,7 @@ CREATE TABLE missing_information_request (
   missing_information_types VARCHAR(250),
   other_documents_information_description TEXT,
   missing_information_deadline TIMESTAMP,
-  case_application_vetting_id BIGINT NOT NULL REFERENCES case_application_vetting (id),
+  case_application_vetting_id BIGINT NOT NULL UNIQUE REFERENCES case_application_vetting (id),
 
   created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
