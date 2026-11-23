@@ -140,14 +140,6 @@ public class CasePropertyDetailsService {
         casePropertyDetailsRepository.save(casePropertyDetails);
     }
 
-    //    @Transactional
-    //    public void updateWithApplicationType(PTCaseEntity ptCaseEntity, ApplicationType applicationType) {
-    //        CasePropertyDetailsEntity casePropertyDetails = findOrBuildCasePropertyDetails(ptCaseEntity);
-    //        setIfNotNull(applicationType, casePropertyDetails::setMarketRentCaseType);
-    //
-    //        casePropertyDetailsRepository.save(casePropertyDetails);
-    //    }
-
     @Transactional
     public CasePropertyDetailsEntity getOrCreateCasePropertyDetails(PTCaseEntity ptCaseEntity) {
         CasePropertyDetailsEntity casePropertyDetails = findOrBuildCasePropertyDetails(ptCaseEntity);

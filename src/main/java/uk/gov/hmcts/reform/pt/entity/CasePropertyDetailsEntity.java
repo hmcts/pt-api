@@ -173,17 +173,8 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String reasonHearingRequested;
 
-    // NOT PRESENT
-    // @Enumerated(EnumType.STRING)
-    // @Column(length = 100)
-    // private ApplicationType marketRentCaseType;
-
     @Column(length = 100)
     private String language;
-
-    // @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
-    // @JsonManagedReference
-    // private ApplicationFeeEntity applicationFee;
 
     @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference

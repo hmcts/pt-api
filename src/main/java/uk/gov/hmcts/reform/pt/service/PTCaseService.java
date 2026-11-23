@@ -70,8 +70,6 @@ public class PTCaseService {
         tenancyDetailsService.getTenancyDetailsOrCreateIfNotExists(ptCase.getTenancyType(), ptCaseEntity);
 
         casePartyService.createApplicantCaseParty(ptCaseEntity, ptCase, userId);
-        // app type move
-        //        casePropertyDetailsService.updateWithApplicationType(ptCaseEntity, ptCase.getApplicationType());
     }
 
     @Transactional(readOnly = true)

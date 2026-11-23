@@ -238,48 +238,11 @@ class CasePropertyDetailsServiceTest {
         assertThat(existing.getNoDecisionWithoutInspectionReason()).isEqualTo("Updated reason");
     }
 
-    // app type move
-    //    @Test
-    //    @DisplayName("Should create new CasePropertyDetailsEntity with application type when none exist")
-    //    void updateWithApplicationTypeCreatesNew() {
-    //        PTCaseEntity ptCase = PTCaseEntity.builder()
-    //            .build();
-    //        ptCase.setCaseSubType(ApplicationType.CHALLENGE_RENT_INCREASE);
-    //        casePropertyDetailsService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_RENT_INCREASE);
-    //
-    //        ArgumentCaptor<CasePropertyDetailsEntity> captor =
-    //              ArgumentCaptor.forClass(CasePropertyDetailsEntity.class);
-    //        verify(casePropertyDetailsRepository).save(captor.capture());
-    //        CasePropertyDetailsEntity saved = captor.getValue();
-    //
-    //        assertThat(saved.getPtCase()).isEqualTo(ptCase);
-    //        assertThat(saved.getPtCase().getCaseSubType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
-    //    }
-
-    // app type move
-    //    @Test
-    //    @DisplayName("Should update existing CasePropertyDetailsEntity with application type")
-    //    void updateWithApplicationTypeWhenExists() {
-    //        CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder().build();
-    //        PTCaseEntity ptCase = PTCaseEntity.builder()
-    //            .casePropertyDetails(existing)
-    //            .build();
-    //
-    //        ptCase.setCaseSubType(ApplicationType.CHALLENGE_EXCESSIVE_RENT);
-    //
-    //        casePropertyDetailsService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_EXCESSIVE_RENT);
-    //
-    //        verify(casePropertyDetailsRepository).save(existing);
-    //        assertThat(existing.getPtCase()).isEqualTo(ptCase);
-    //        assertThat(existing.getPtCase().getCaseSubType()).isEqualTo(ApplicationType.CHALLENGE_EXCESSIVE_RENT);
-    //    }
-
     @Test
     @DisplayName("Should reuse the same CasePropertyDetailsEntity across updates to a case without one")
     void updatesReuseNewlyCreatedCasePropertyDetails() {
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
 
-        //        casePropertyDetailsService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_RENT_INCREASE);
         casePropertyDetailsService.updateWithPropertyDetails(
             ptCase,
             PropertyDetails.builder().propertyType(PropertyType.FLAT).build()
@@ -291,7 +254,6 @@ class CasePropertyDetailsServiceTest {
 
         assertThat(captor.getAllValues()).containsOnly(casePropertyDetails);
         assertThat(casePropertyDetails.getPtCase()).isEqualTo(ptCase);
-        // assertThat(casePropertyDetails.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
         assertThat(casePropertyDetails.getTypeOfPropertyRenting()).isEqualTo(PropertyType.FLAT);
     }
 }

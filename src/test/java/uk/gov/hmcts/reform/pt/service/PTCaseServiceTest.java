@@ -123,7 +123,6 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
-        //verify(casePropertyDetailsService).updateWithApplicationType(savedEntity, applicationType);
     }
 
     @Test

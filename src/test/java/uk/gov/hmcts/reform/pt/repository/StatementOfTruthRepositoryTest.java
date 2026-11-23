@@ -45,7 +45,6 @@ class StatementOfTruthRepositoryTest extends AbstractRepositoryTest<StatementOfT
             .fullName("Jane Doe")
             .firmName("Legal Firm Ltd")
             .positionHeld("Solicitor")
-            // .casePropertyDetails(marketRentCase)
             .build();
 
         StatementOfTruthEntity saved = repository.save(statement);
@@ -60,7 +59,5 @@ class StatementOfTruthRepositoryTest extends AbstractRepositoryTest<StatementOfT
         assertThat(result.get().getFullName()).isEqualTo("Jane Doe");
         assertThat(result.get().getFirmName()).isEqualTo("Legal Firm Ltd");
         assertThat(result.get().getPositionHeld()).isEqualTo("Solicitor");
-        // assertThat(result.get().getCasePropertyDetails().getId()).isEqualTo(marketRentCase.getId());
-        // assertThat(result.get().getCasePropertyDetails().getPtCase().getCaseReference()).isEqualTo(caseReference);
     }
 }
