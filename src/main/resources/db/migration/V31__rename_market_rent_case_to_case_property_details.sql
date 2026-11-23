@@ -1,5 +1,6 @@
 ALTER TABLE pt_case ADD COLUMN case_sub_type VARCHAR(100);
 ALTER TABLE pt_case ADD COLUMN case_type VARCHAR(100);
+ALTER TABLE pt_case ADD COLUMN application_fee_id BIGINT;
 
 ALTER TABLE market_rent_case
   RENAME TO case_property_details;
