@@ -34,6 +34,14 @@ public class RespondentPropertyDetailsService {
             landlordResponse.getRespondToTenantAnswersAboutTenancyDetailsDescription(),
             entity::setRespondToTenantAnswersAboutTenancyDetailsDescription
         );
+        setIfNotNull(
+            landlordResponse.getRespondToTenantAnswersAboutPropertyDetails(),
+            entity::setRespondToTenantAnswersAboutPropertyDetails
+        );
+        setIfNotNull(
+            landlordResponse.getRespondToTenantAnswersAboutPropertyDetailsDescription(),
+            entity::setRespondToTenantAnswersAboutPropertyDetailsDescription
+        );
         entity.setMarketRentCase(marketRentCase);
 
         respondentPropertyDetailsRepository.save(entity);

@@ -1,0 +1,3 @@
+ALTER TABLE respondent_property_details
+  ADD COLUMN respond_to_tenant_answers_about_property_details YES_NO,
+  ADD COLUMN respond_to_tenant_answers_about_property_details_description VARCHAR (500);
