@@ -35,8 +35,7 @@ public class TestPageBuilder {
             .mandatory(PropertyDetails::getPostcode)
             .done()
             .complex(PTCase::getLandlordDetails)
-            .mandatory(LandlordDetails::getRepresentativeType)
-            .complex(LandlordDetails::getLandlordPartyDetails)
+            .complex(LandlordDetails::getLandlord)
             .mandatory(PartyDetails::getFirstName)
             .mandatory(PartyDetails::getLastName);
     }
