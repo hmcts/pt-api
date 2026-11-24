@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.entity.StatementOfTruthEntity;
-import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -14,24 +13,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StatementOfTruthRepositoryTest extends AbstractRepositoryTest<StatementOfTruthRepository> {
 
-    private final PTCaseRepository ptCaseRepository;
-
     @Autowired
     protected StatementOfTruthRepositoryTest(
-        StatementOfTruthRepository repository,
-        PTCaseRepository ptCaseRepository,
-        CasePropertyDetailsRepository casePropertyDetailsRepository
+        StatementOfTruthRepository repository
     ) {
         super(repository);
-        this.ptCaseRepository = ptCaseRepository;
+
     }
 
     @Test
     @DisplayName("Should save and retrieve application statement of truth entity")
     void saveAndFindApplicationStatementOfTruth() {
-        long caseReference = 1234567890123456L;
-        PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
-
         LocalDateTime completedDate = LocalDateTime.of(2026, 11, 5, 12, 0, 0);
         StatementOfTruthEntity statement = StatementOfTruthEntity.builder()
             .completedDate(completedDate)
