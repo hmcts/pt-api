@@ -28,8 +28,8 @@ class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePrope
     }
 
     @Test
-    @DisplayName("Should save and retrieve market rent case entity")
-    void saveAndFindMarketRentCase() {
+    @DisplayName("Should save and retrieve case property details entity")
+    void saveAndFindCasePropertyDetails() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
 

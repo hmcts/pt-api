@@ -136,7 +136,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalRentalServiceChargesVary;
 
-    @Column(name = "additional_rental_varying_service_charges_details", length = 500)
+    @Column(name = "varying_additional_rental_service_charges_details", length = 500)
     private String varyingAdditionalRentalServiceChargesDetails;
 
     @Column(length = 5000)

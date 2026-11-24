@@ -1103,8 +1103,6 @@ class ApplicationMapperTest {
 
     private static CasePropertyDetailsEntity marketRentCase() {
         return CasePropertyDetailsEntity.builder()
-            // app type move
-            //            .marketRentCaseType(APPLICATION_TYPE)
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
             .applicantSuggestedMarketRentReasons("Market rate for the area")
@@ -1161,9 +1159,8 @@ class ApplicationMapperTest {
 
     private static CasePartyEntity fullCaseParty(UUID userId) {
         PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), tenancyDetails(TENANCY_TYPE));
-
-        // Include application type
         ptCase.setCaseSubType(ApplicationType.CHALLENGE_RENT_INCREASE);
+
         return caseParty(
             ptCase,
             userId,

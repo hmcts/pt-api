@@ -46,7 +46,6 @@ class ApplicationFeeRepositoryTest extends AbstractRepositoryTest<ApplicationFee
             .amount(amount)
             .status("Success")
             .externalReference("EXT-98765")
-            // .casePropertyDetails(marketRentCase)
             .build();
 
         ApplicationFeeEntity saved = repository.save(fee);
@@ -60,8 +59,6 @@ class ApplicationFeeRepositoryTest extends AbstractRepositoryTest<ApplicationFee
         assertThat(result.get().getAmount()).isEqualByComparingTo(amount);
         assertThat(result.get().getStatus()).isEqualTo("Success");
         assertThat(result.get().getExternalReference()).isEqualTo("EXT-98765");
-        //assertThat(result.get().getCasePropertyDetails().getId()).isEqualTo(marketRentCase.getId());
-        // assertThat(result.get().getCasePropertyDetails().getPtCase().getCaseReference()).isEqualTo(caseReference);
         assertThat(result.get().getCreatedDate()).isNotNull();
         assertThat(result.get().getLastModifiedDate()).isNotNull();
     }
