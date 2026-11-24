@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.pt.document.service.exception;
+package uk.gov.hmcts.reform.pt.exception;
 
 public class DocAssemblyException extends RuntimeException {
 
