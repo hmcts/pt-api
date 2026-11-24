@@ -79,3 +79,4 @@ CREATE INDEX respondent_property_details_case_property_details_id_idx
 
 -- case_application_vetting
 ALTER TABLE case_application_vetting RENAME COLUMN market_rent_case_id TO case_property_details_id;
+
