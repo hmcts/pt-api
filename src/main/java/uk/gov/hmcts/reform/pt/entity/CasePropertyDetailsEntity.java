@@ -188,7 +188,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JsonManagedReference
     private RespondentPropertyDetailsEntity respondentPropertyDetails;
 
-    @OneToOne(mappedBy = "marketRentCase", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "casePropertyDetails", cascade = CascadeType.ALL)
     @JsonManagedReference
     private CaseApplicationVettingEntity caseApplicationVetting;
 

@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.ccd.domain.VettingInformationType;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationVettingEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.MissingInformationRequestEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationVettingRepository;
@@ -49,7 +49,7 @@ class CaseVettingServiceTest {
     void shouldThrowIllegalStateExceptionWhenMarketRentCaseIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .marketRentCase(null)
+            .casePropertyDetails(null)
             .build();
 
         when(ptCaseService.getCase(CASE_REFERENCE)).thenReturn(ptCaseEntity);
@@ -67,10 +67,10 @@ class CaseVettingServiceTest {
     @Test
     @DisplayName("Should create new CaseApplicationVettingEntity and save when none exists")
     void shouldCreateNewVettingEntityAndSaveWhenNoneExists() {
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder().build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(marketRentCase)
             .build();
 
         when(ptCaseService.getCase(CASE_REFERENCE)).thenReturn(ptCaseEntity);
@@ -84,7 +84,7 @@ class CaseVettingServiceTest {
         caseVettingService.updateCaseVetting(CASE_REFERENCE, ptCase);
 
         assertThat(marketRentCase.getCaseApplicationVetting()).isNotNull();
-        assertThat(marketRentCase.getCaseApplicationVetting().getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(marketRentCase.getCaseApplicationVetting().getCasePropertyDetails()).isEqualTo(marketRentCase);
         verify(caseApplicationVettingRepository, times(2)).save(marketRentCase.getCaseApplicationVetting());
         verify(missingInformationRequestRepository, never()).save(any());
     }
@@ -95,14 +95,14 @@ class CaseVettingServiceTest {
         CaseApplicationVettingEntity existingVetting = CaseApplicationVettingEntity.builder()
             .vettingStatus("IN_PROGRESS")
             .build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
             .caseApplicationVetting(existingVetting)
             .build();
-        existingVetting.setMarketRentCase(marketRentCase);
+        existingVetting.setCasePropertyDetails(marketRentCase);
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(marketRentCase)
             .build();
 
         when(ptCaseService.getCase(CASE_REFERENCE)).thenReturn(ptCaseEntity);
@@ -115,7 +115,7 @@ class CaseVettingServiceTest {
 
         caseVettingService.updateCaseVetting(CASE_REFERENCE, ptCase);
 
-        assertThat(existingVetting.getMarketRentCase()).isEqualTo(marketRentCase);
+        assertThat(existingVetting.getCasePropertyDetails()).isEqualTo(marketRentCase);
         verify(caseApplicationVettingRepository, times(2)).save(existingVetting);
         verify(missingInformationRequestRepository, never()).save(any());
     }
@@ -123,10 +123,10 @@ class CaseVettingServiceTest {
     @Test
     @DisplayName("Should save MissingInformationRequestEntity when vettingInfoRequested is not empty")
     void shouldSaveMissingInformationRequestWhenVettingInfoRequestedIsNotEmpty() {
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().build();
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder().build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(marketRentCase)
             .build();
 
         when(ptCaseService.getCase(CASE_REFERENCE)).thenReturn(ptCaseEntity);
@@ -171,14 +171,14 @@ class CaseVettingServiceTest {
             .build();
         existingRequest.setCaseApplicationVetting(vettingEntity);
 
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
             .caseApplicationVetting(vettingEntity)
             .build();
-        vettingEntity.setMarketRentCase(marketRentCase);
+        vettingEntity.setCasePropertyDetails(marketRentCase);
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(marketRentCase)
             .build();
 
         when(ptCaseService.getCase(CASE_REFERENCE)).thenReturn(ptCaseEntity);
