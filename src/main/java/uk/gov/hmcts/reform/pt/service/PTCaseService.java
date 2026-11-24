@@ -319,4 +319,10 @@ public class PTCaseService {
                       applicantParty::setExtraSupportRequiredDetails);
         casePartyRepository.save(applicantParty);
     }
+
+    @Transactional(readOnly = true)
+    public PTCaseEntity getCase(long caseReference) {
+        return ptCaseRepository.findByCaseReference(caseReference)
+            .orElseThrow(() -> new CaseNotFoundException(caseReference));
+    }
 }
