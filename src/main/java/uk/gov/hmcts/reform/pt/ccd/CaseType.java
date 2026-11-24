@@ -27,6 +27,10 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
     @Value("${caseApi.url}")
     private String caseApiUrl;
 
+    public static String getJurisdictionId() {
+        return JURISDICTION_ID;
+    }
+
     public static String getCaseType() {
         return withSuffix(CASE_TYPE_ID, "-");
     }
