@@ -21,3 +21,8 @@ ALTER TABLE document
 
 ALTER TABLE notice_of_rent_change
   ALTER COLUMN rent_increase_to_cause_hardship_details TYPE VARCHAR(500);
+
+ALTER TABLE pt_case
+  ADD COLUMN method VARCHAR(100),
+  ADD COLUMN channel VARCHAR(100),
+  ADD COLUMN version VARCHAR(100);

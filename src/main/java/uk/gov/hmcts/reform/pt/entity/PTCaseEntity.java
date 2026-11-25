@@ -43,6 +43,15 @@ public class PTCaseEntity extends AuditableEntity {
     private LocalDateTime applicationSubmittedDate;
     private LocalDateTime caseIssuedDate;
 
+    @Column(length = 100)
+    private String method;
+
+    @Column(length = 100)
+    private String channel;
+
+    @Column(length = 100)
+    private String version;
+
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     private CasePropertyAddressEntity propertyAddress;
