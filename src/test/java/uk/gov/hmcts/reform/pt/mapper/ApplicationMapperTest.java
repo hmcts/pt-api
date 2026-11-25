@@ -817,7 +817,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
             .documents(List.of(evidence))
             .build();
 
