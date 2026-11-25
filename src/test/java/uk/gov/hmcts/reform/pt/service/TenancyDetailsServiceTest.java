@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.pt.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -123,6 +126,7 @@ class TenancyDetailsServiceTest {
             .landlordRepairsDetails("Boiler repair")
             .tenantRepairsDetails("Fixed shelf")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Repaired a window")
             .build();
 
         tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
@@ -137,6 +141,45 @@ class TenancyDetailsServiceTest {
         assertThat(existing.getLandlordRepairsDetails()).isEqualTo("Boiler repair");
         assertThat(existing.getTenantRepairsDetails()).isEqualTo("Fixed shelf");
         assertThat(existing.getAnyTenantsMadePropertyRepairs()).isEqualTo(YesNoNotSure.YES);
+        assertThat(existing.getTenantsPropertyRepairsDetails()).isEqualTo("Repaired a window");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @EnumSource(value = YesNoNotSure.class, names = {"NO", "NOT_SURE"})
+    void updateWithPropertyDetailsClearsTenantRepairsWhenNotYes(YesNoNotSure answer) {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder()
+            .tenantsPropertyRepairsDetails("Previous repairs")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().tenancyDetails(existing).build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
+
+        PropertyDetails details = PropertyDetails.builder()
+            .anyTenantsMadePropertyRepairs(answer)
+            .tenantsPropertyRepairsDetails("New repairs")
+            .build();
+
+        tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
+
+        assertThat(existing.getTenantsPropertyRepairsDetails()).isNull();
+        verify(tenancyDetailsRepository).save(existing);
+    }
+
+    @Test
+    void updateWithPropertyDetailsPreservesTenantRepairsWhenYesAndDetailsMissing() {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder()
+            .tenantsPropertyRepairsDetails("Previous repairs")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().tenancyDetails(existing).build();
+        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
+
+        PropertyDetails details = PropertyDetails.builder().anyTenantsMadePropertyRepairs(YesNoNotSure.YES).build();
+        tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
+
+        assertThat(existing.getTenantsPropertyRepairsDetails()).isEqualTo("Previous repairs");
+        verify(tenancyDetailsRepository).save(existing);
     }
 
     @Test

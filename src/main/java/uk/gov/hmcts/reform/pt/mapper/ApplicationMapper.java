@@ -179,6 +179,7 @@ public class ApplicationMapper {
             .tenantRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantRepairsDetails))
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
+            .tenantsPropertyRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantsPropertyRepairsDetails))
             .repairsEvidenceDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity))
             .build();
