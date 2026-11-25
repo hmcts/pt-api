@@ -33,7 +33,7 @@ class CasePropertyDetailsServiceTest {
     private CasePropertyDetailsService casePropertyDetailsService;
 
     @Test
-    @DisplayName("Should update existing CasePropertyDetailsEntity with property details")
+    @DisplayName("Should update existing entity and clear details that don't match their answer")
     void updateWithPropertyDetailsWhenExists() {
         CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder().build();
         PTCaseEntity ptCase = PTCaseEntity.builder()
@@ -58,13 +58,49 @@ class CasePropertyDetailsServiceTest {
         assertThat(existing.getPtCase()).isEqualTo(ptCase);
         assertThat(existing.getTypeOfPropertyRenting()).isEqualTo(PropertyType.FLAT);
         assertThat(existing.getRentingFlatDetails()).isEqualTo("Top floor flat");
-        assertThat(existing.getRentingRoomDetails()).isEqualTo("Room 1");
-        assertThat(existing.getOtherMethodOfRentDetails()).isEqualTo("Other method");
+        assertThat(existing.getRentingRoomDetails()).isNull();
+        assertThat(existing.getOtherMethodOfRentDetails()).isNull();
         assertThat(existing.getPropertyFloorPlanAvailable()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getFloorplanManualDetails()).isEqualTo("Manual plan");
+        assertThat(existing.getFloorplanManualDetails()).isNull();
         assertThat(existing.getPropertyIndoorFeatures()).isEqualTo("Central heating");
         assertThat(existing.getSharePropertyWithLandlord()).isEqualTo(YesOrNo.NO);
-        assertThat(existing.getSharePropertyWithLandlordDetails()).isEqualTo("No sharing");
+        assertThat(existing.getSharePropertyWithLandlordDetails()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should clear details when parent answers change")
+    void updateWithPropertyDetailsClearsDetailsWhenAnswersChange() {
+        CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder()
+            .typeOfPropertyRenting(PropertyType.OTHER)
+            .rentingFlatDetails("Previous flat details")
+            .rentingRoomDetails("Previous room details")
+            .otherMethodOfRentDetails("Previous other details")
+            .propertyFloorPlanAvailable(YesOrNo.NO)
+            .floorplanManualDetails("Previous layout")
+            .sharePropertyWithLandlord(YesOrNo.YES)
+            .sharePropertyWithLandlordDetails("Previous sharing details")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .casePropertyDetails(existing)
+            .build();
+
+        PropertyDetails details = PropertyDetails.builder()
+            .propertyType(PropertyType.TERRACED_HOUSE)
+            .propertyFloorPlanAvailable(YesOrNo.YES)
+            .sharePropertyWithLandlord(YesOrNo.NO)
+            .build();
+
+        casePropertyDetailsService.updateWithPropertyDetails(ptCase, details);
+
+        verify(casePropertyDetailsRepository).save(existing);
+        assertThat(existing.getTypeOfPropertyRenting()).isEqualTo(PropertyType.TERRACED_HOUSE);
+        assertThat(existing.getRentingFlatDetails()).isNull();
+        assertThat(existing.getRentingRoomDetails()).isNull();
+        assertThat(existing.getOtherMethodOfRentDetails()).isNull();
+        assertThat(existing.getPropertyFloorPlanAvailable()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getFloorplanManualDetails()).isNull();
+        assertThat(existing.getSharePropertyWithLandlord()).isEqualTo(YesOrNo.NO);
+        assertThat(existing.getSharePropertyWithLandlordDetails()).isNull();
     }
 
     @Test
