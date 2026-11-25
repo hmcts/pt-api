@@ -52,6 +52,7 @@ public interface CasePartyRepository extends JpaRepository<CasePartyEntity, Long
             cp.party_role,
             cp.idam_id,
             cp.pcq_id,
+            cp.access_code,
             cp.contact_by_text,
             cp.contact_by_phone,
             cp.contact_by_email,
