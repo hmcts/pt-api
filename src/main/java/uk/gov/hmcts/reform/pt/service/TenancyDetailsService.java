@@ -7,11 +7,13 @@ import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
+import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfElseNull;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -61,6 +63,9 @@ public class TenancyDetailsService {
         setIfNotNull(details.getLandlordRepairsDetails(), tenancyDetails::setLandlordRepairsDetails);
         setIfNotNull(details.getTenantRepairsDetails(), tenancyDetails::setTenantRepairsDetails);
         setIfNotNull(details.getAnyTenantsMadePropertyRepairs(), tenancyDetails::setAnyTenantsMadePropertyRepairs);
+        setIfElseNull(() -> details.getAnyTenantsMadePropertyRepairs() == YesNoNotSure.YES,
+                      details::getTenantsPropertyRepairsDetails,
+                      tenancyDetails::setTenantsPropertyRepairsDetails);
 
         tenancyDetailsRepository.save(tenancyDetails);
     }
