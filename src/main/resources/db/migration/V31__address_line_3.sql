@@ -16,4 +16,5 @@ ALTER TABLE case_party
   ALTER COLUMN reference_number_for_communications TYPE VARCHAR(50);
 
 ALTER TABLE document
-  ALTER COLUMN url TYPE TEXT;
+  ALTER COLUMN url TYPE TEXT,
+  ALTER COLUMN binary_url TYPE TEXT;
