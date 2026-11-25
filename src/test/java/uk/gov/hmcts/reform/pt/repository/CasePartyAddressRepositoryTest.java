@@ -45,6 +45,7 @@ class CasePartyAddressRepositoryTest extends AbstractRepositoryTest<CasePartyAdd
             .townCity("London")
             .county("Greater London")
             .postcode("SW1A 1AA")
+            .country("England")
             .party(party)
             .build();
 
@@ -59,6 +60,7 @@ class CasePartyAddressRepositoryTest extends AbstractRepositoryTest<CasePartyAdd
         assertThat(result.get().getTownCity()).isEqualTo("London");
         assertThat(result.get().getCounty()).isEqualTo("Greater London");
         assertThat(result.get().getPostcode()).isEqualTo("SW1A 1AA");
+        assertThat(result.get().getCountry()).isEqualTo("England");
         assertThat(result.get().getParty().getId()).isEqualTo(party.getId());
     }
 }

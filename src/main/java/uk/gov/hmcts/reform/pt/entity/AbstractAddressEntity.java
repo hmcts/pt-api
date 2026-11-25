@@ -27,4 +27,7 @@ public abstract class AbstractAddressEntity extends AuditableEntity {
 
     @Column(name = "post_code", length = 10)
     private String postcode;
+
+    @Column(length = 100)
+    private String country;
 }

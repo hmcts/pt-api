@@ -35,6 +35,7 @@ class CasePropertyAddressRepositoryTest extends AbstractRepositoryTest<CasePrope
             .townCity("Manchester")
             .county("Greater Manchester")
             .postcode("M1 1AA")
+            .country("England")
             .ptCase(ptCase)
             .build();
 
@@ -49,6 +50,7 @@ class CasePropertyAddressRepositoryTest extends AbstractRepositoryTest<CasePrope
         assertThat(result.get().getTownCity()).isEqualTo("Manchester");
         assertThat(result.get().getCounty()).isEqualTo("Greater Manchester");
         assertThat(result.get().getPostcode()).isEqualTo("M1 1AA");
+        assertThat(result.get().getCountry()).isEqualTo("England");
         assertThat(result.get().getPtCase().getId()).isEqualTo(ptCase.getId());
         assertThat(result.get().getPtCase().getCaseReference()).isEqualTo(caseReference);
     }

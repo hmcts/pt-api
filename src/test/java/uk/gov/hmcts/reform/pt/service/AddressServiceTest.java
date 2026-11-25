@@ -44,6 +44,7 @@ class AddressServiceTest {
             .postTown("Post town")
             .county("County")
             .postcode("AB12 3CD")
+            .country("England")
             .build();
 
         addressService.updatePropertyAddress(addressDetails, caseParty, ptCaseEntity);
@@ -58,6 +59,7 @@ class AddressServiceTest {
         assertThat(propertyAddress.getTownCity()).isEqualTo("Post town");
         assertThat(propertyAddress.getCounty()).isEqualTo("County");
         assertThat(propertyAddress.getPostcode()).isEqualTo("AB12 3CD");
+        assertThat(propertyAddress.getCountry()).isEqualTo("England");
         assertThat(propertyAddress.getPtCase()).isEqualTo(ptCaseEntity);
         assertThat(ptCaseEntity.getPropertyAddress()).isEqualTo(propertyAddress);
 
@@ -70,6 +72,7 @@ class AddressServiceTest {
         assertThat(partyAddress.getTownCity()).isEqualTo("Post town");
         assertThat(partyAddress.getCounty()).isEqualTo("County");
         assertThat(partyAddress.getPostcode()).isEqualTo("AB12 3CD");
+        assertThat(partyAddress.getCountry()).isEqualTo("England");
         assertThat(partyAddress.getParty()).isEqualTo(caseParty);
         assertThat(caseParty.getAddress()).isEqualTo(partyAddress);
     }
@@ -80,10 +83,12 @@ class AddressServiceTest {
         CasePropertyAddressEntity existingPropertyAddress = CasePropertyAddressEntity.builder()
             .addressLine1("Old property line 1")
             .postcode("OLD 1AA")
+            .country("Wales")
             .build();
         CasePartyAddressEntity existingPartyAddress = CasePartyAddressEntity.builder()
             .addressLine1("Old party line 1")
             .postcode("OLD 1AA")
+            .country("Wales")
             .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(existingPropertyAddress)
@@ -102,11 +107,13 @@ class AddressServiceTest {
         verify(casePropertyAddressRepository).save(existingPropertyAddress);
         assertThat(existingPropertyAddress.getAddressLine1()).isEqualTo("New line 1");
         assertThat(existingPropertyAddress.getPostcode()).isEqualTo("AB12 3CD");
+        assertThat(existingPropertyAddress.getCountry()).isEqualTo("Wales");
         assertThat(existingPropertyAddress.getPtCase()).isEqualTo(ptCaseEntity);
 
         verify(casePartyAddressRepository).save(existingPartyAddress);
         assertThat(existingPartyAddress.getAddressLine1()).isEqualTo("New line 1");
         assertThat(existingPartyAddress.getPostcode()).isEqualTo("AB12 3CD");
+        assertThat(existingPartyAddress.getCountry()).isEqualTo("Wales");
         assertThat(existingPartyAddress.getParty()).isEqualTo(caseParty);
     }
 
@@ -151,6 +158,7 @@ class AddressServiceTest {
             .postTown("Post town")
             .county("County")
             .postcode("AB12 3CD")
+            .country("Scotland")
             .build();
 
         addressService.updatePartyAddress(partyDetails, caseParty);
@@ -161,6 +169,7 @@ class AddressServiceTest {
         assertThat(existingAddress.getTownCity()).isEqualTo("Post town");
         assertThat(existingAddress.getCounty()).isEqualTo("County");
         assertThat(existingAddress.getPostcode()).isEqualTo("AB12 3CD");
+        assertThat(existingAddress.getCountry()).isEqualTo("Scotland");
         assertThat(existingAddress.getParty()).isEqualTo(caseParty);
         verify(casePropertyAddressRepository, never()).save(any());
     }

@@ -22,6 +22,10 @@ ALTER TABLE case_party_representative
   ADD COLUMN country VARCHAR(100);
 
 ALTER TABLE case_party_representative
-  ALTER COLUMN address_line_1 SET NOT NULL,
-  ALTER COLUMN town_city SET NOT NULL,
   ALTER COLUMN representative_type_id SET NOT NULL;
+
+ALTER TABLE case_property_address
+  ADD COLUMN country VARCHAR(100);
+
+ALTER TABLE case_party_address
+  ADD COLUMN country VARCHAR(100);

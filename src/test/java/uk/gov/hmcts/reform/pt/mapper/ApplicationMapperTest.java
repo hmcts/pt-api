@@ -1001,6 +1001,7 @@ class ApplicationMapperTest {
             .townCity("London")
             .county("Greater London")
             .postcode("SW1 1AA")
+            .country("England")
             .build();
 
         RepresentativeTypeEntity landlordRepType = RepresentativeTypeEntity.builder()
@@ -1045,6 +1046,7 @@ class ApplicationMapperTest {
         assertThat(result.getHasRepresentative()).isEqualTo(YesNoNotSure.YES);
         assertThat(result.getLandlord().getFirstName()).isEqualTo("Lord");
         assertThat(result.getLandlord().getAddressLine1()).isEqualTo("1 Landlord Way");
+        assertThat(result.getLandlord().getCountry()).isEqualTo("England");
         assertThat(result.getRepresentative())
             .usingRecursiveComparison()
             .isEqualTo(PartyDto.builder()

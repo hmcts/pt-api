@@ -349,6 +349,7 @@ public class ApplicationMapper {
             .postTown(get(address, CasePartyAddressEntity::getTownCity))
             .county(get(address, CasePartyAddressEntity::getCounty))
             .postcode(get(address, CasePartyAddressEntity::getPostcode))
+            .country(get(address, CasePartyAddressEntity::getCountry))
             .build();
     }
 

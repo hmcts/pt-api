@@ -47,7 +47,7 @@ public class CasePartyRepresentativeEntity extends AuditableEntity {
     @Column(length = 16)
     private String phoneNumber;
 
-    @Column(name = "address_line_1", length = 100, nullable = false)
+    @Column(name = "address_line_1", length = 100)
     private String addressLine1;
 
     @Column(name = "address_line_2", length = 100)
@@ -56,7 +56,7 @@ public class CasePartyRepresentativeEntity extends AuditableEntity {
     @Column(name = "address_line_3", length = 100)
     private String addressLine3;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String townCity;
 
     @Column(length = 100)
