@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface PTCaseRepository extends JpaRepository<PTCaseEntity, Long> {
     Optional<PTCaseEntity> findByCaseReference(long caseReference);
+
+    Optional<PTCaseEntity> findByApplicationFeeId(long applicationFeeId);
 }

@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -55,7 +55,7 @@ public class ApplicationMapper {
                 ptCase.getPropertyAddress() != null
                     ? ptCase.getPropertyAddress().getPostcode()
                     : "")
-            .applicationType(get(ptCase.getMarketRentCase(), MarketRentCaseEntity::getMarketRentCaseType))
+            .applicationType(ptCase.getCaseSubType())
             .tenancyType(get(tenancyDetailsOf(ptCase), TenancyDetailsEntity::getTenancyType))
             .applicantFirstName(caseParty.getFirstName())
             .applicantLastName(caseParty.getLastName())
@@ -93,21 +93,21 @@ public class ApplicationMapper {
     }
 
     public static HearingInspectionDetailsDto mapHearingInspectionDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
+        CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
 
         return HearingInspectionDetailsDto.builder()
-            .hearingRequested(get(marketRentCase, MarketRentCaseEntity::getHearingRequested))
-            .reasonHearingRequested(get(marketRentCase, MarketRentCaseEntity::getReasonHearingRequested))
+            .hearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getHearingRequested))
+            .reasonHearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getReasonHearingRequested))
             .agreeToDecisionWithoutInspection(
-                get(marketRentCase, MarketRentCaseEntity::getAgreeToDecisionWithoutInspection))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getAgreeToDecisionWithoutInspection))
             .noDecisionWithoutInspectionReason(
-                get(marketRentCase, MarketRentCaseEntity::getNoDecisionWithoutInspectionReason))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getNoDecisionWithoutInspectionReason))
             .build();
     }
 
     public static NoticeOfRentIncreaseDto mapNoticeOfRentChangeDetails(PTCaseEntity ptCaseEntity) {
         NoticeOfRentChangeEntity entity =
-            get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getNoticeOfRentChange);
+            get(ptCaseEntity.getCasePropertyDetails(), CasePropertyDetailsEntity::getNoticeOfRentChange);
 
         return NoticeOfRentIncreaseDto.builder()
             .receivedLandlordNoticeProposingNewRent(
@@ -132,10 +132,10 @@ public class ApplicationMapper {
 
     public static PropertyDetailsDto mapPropertyDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
+        CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
         CasePropertyAddressEntity address = ptCaseEntity.getPropertyAddress();
 
-        if (tenancyDetails == null && marketRentCase == null && address == null
+        if (tenancyDetails == null && casePropertyDetails == null && address == null
             && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
@@ -146,15 +146,17 @@ public class ApplicationMapper {
             .postTown(get(address, CasePropertyAddressEntity::getTownCity))
             .county(get(address, CasePropertyAddressEntity::getCounty))
             .postcode(get(address, CasePropertyAddressEntity::getPostcode))
-            .propertyType(get(marketRentCase, MarketRentCaseEntity::getTypeOfPropertyRenting))
-            .rentingFlatDetails(get(marketRentCase, MarketRentCaseEntity::getRentingFlatDetails))
-            .rentingRoomDetails(get(marketRentCase, MarketRentCaseEntity::getRentingRoomDetails))
-            .otherMethodRentingDetails(get(marketRentCase, MarketRentCaseEntity::getOtherMethodOfRentDetails))
-            .propertyFloorPlanAvailable(get(marketRentCase, MarketRentCaseEntity::getPropertyFloorPlanAvailable))
-            .floorPlanManualDetails(get(marketRentCase, MarketRentCaseEntity::getFloorplanManualDetails))
+            .propertyType(get(casePropertyDetails, CasePropertyDetailsEntity::getTypeOfPropertyRenting))
+            .rentingFlatDetails(get(casePropertyDetails, CasePropertyDetailsEntity::getRentingFlatDetails))
+            .rentingRoomDetails(get(casePropertyDetails, CasePropertyDetailsEntity::getRentingRoomDetails))
+            .otherMethodRentingDetails(get(casePropertyDetails,
+                                           CasePropertyDetailsEntity::getOtherMethodOfRentDetails))
+            .propertyFloorPlanAvailable(get(casePropertyDetails,
+                                            CasePropertyDetailsEntity::getPropertyFloorPlanAvailable))
+            .floorPlanManualDetails(get(casePropertyDetails, CasePropertyDetailsEntity::getFloorplanManualDetails))
             .floorPlanDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.PROPERTY_FLOOR_PLAN, ptCaseEntity))
-            .indoorFeatures(get(marketRentCase, MarketRentCaseEntity::getPropertyIndoorFeatures))
+            .indoorFeatures(get(casePropertyDetails, CasePropertyDetailsEntity::getPropertyIndoorFeatures))
             .otherFacilitiesAvailable(get(tenancyDetails, TenancyDetailsEntity::getTenancyIncludeFacilities))
             .otherFacilitiesDetails(get(tenancyDetails, TenancyDetailsEntity::getOtherFacilitiesDetails))
             .outsidePropertyDocuments(
@@ -169,13 +171,15 @@ public class ApplicationMapper {
                 get(tenancyDetails, TenancyDetailsEntity::getAdditionalServicesProvidedInTenancy))
             .additionalServicesProvidedInTenancyDetails(
                 get(tenancyDetails, TenancyDetailsEntity::getAdditionalServicesProvidedInTenancyDetails))
-            .sharePropertyWithLandlord(get(marketRentCase, MarketRentCaseEntity::getSharePropertyWithLandlord))
+            .sharePropertyWithLandlord(get(casePropertyDetails,
+                                           CasePropertyDetailsEntity::getSharePropertyWithLandlord))
             .sharePropertyWithLandlordDetails(
-                get(marketRentCase, MarketRentCaseEntity::getSharePropertyWithLandlordDetails))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getSharePropertyWithLandlordDetails))
             .landlordRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getLandlordRepairsDetails))
             .tenantRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantRepairsDetails))
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
+            .tenantsPropertyRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantsPropertyRepairsDetails))
             .repairsEvidenceDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity))
             .build();
@@ -183,9 +187,9 @@ public class ApplicationMapper {
 
     public static RentDetailsDto mapRentDetails(PTCaseEntity ptCaseEntity) {
         TenancyDetailsEntity tenancyDetails = tenancyDetailsOf(ptCaseEntity);
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
+        CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
 
-        if (tenancyDetails == null && marketRentCase == null && ptCaseEntity.getDocuments().isEmpty()) {
+        if (tenancyDetails == null && casePropertyDetails == null && ptCaseEntity.getDocuments().isEmpty()) {
             return null;
         }
 
@@ -194,55 +198,58 @@ public class ApplicationMapper {
                 get(tenancyDetails, TenancyDetailsEntity::getTribunalPreviouslyDeterminedTenancyRent))
             .previousTribunalCaseReference(
                 get(tenancyDetails, TenancyDetailsEntity::getPreviousTribunalCaseReference))
-            .rentPaymentFrequency(get(marketRentCase, MarketRentCaseEntity::getRentPaymentFrequency))
-            .rentCostWeekly(get(marketRentCase, MarketRentCaseEntity::getRentCostWeekly))
-            .rentCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getRentCostFortnightly))
-            .rentCostMonthly(get(marketRentCase, MarketRentCaseEntity::getRentCostMonthly))
-            .rentCostYearly(get(marketRentCase, MarketRentCaseEntity::getRentCostYearly))
-            .rentIncludesCouncilTax(get(marketRentCase, MarketRentCaseEntity::getRentIncludesCouncilTax))
-            .councilTaxFrequency(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequency))
-            .councilTaxCostWeekly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostWeekly))
-            .councilTaxCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostFortnightly))
-            .councilTaxCostMonthly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostMonthly))
-            .councilTaxCostYearly(get(marketRentCase, MarketRentCaseEntity::getCouncilTaxCostYearly))
+            .rentPaymentFrequency(get(casePropertyDetails, CasePropertyDetailsEntity::getRentPaymentFrequency))
+            .rentCostWeekly(get(casePropertyDetails, CasePropertyDetailsEntity::getRentCostWeekly))
+            .rentCostFortnightly(get(casePropertyDetails, CasePropertyDetailsEntity::getRentCostFortnightly))
+            .rentCostMonthly(get(casePropertyDetails, CasePropertyDetailsEntity::getRentCostMonthly))
+            .rentCostYearly(get(casePropertyDetails, CasePropertyDetailsEntity::getRentCostYearly))
+            .rentIncludesCouncilTax(get(casePropertyDetails, CasePropertyDetailsEntity::getRentIncludesCouncilTax))
+            .councilTaxFrequency(get(casePropertyDetails, CasePropertyDetailsEntity::getCouncilTaxFrequency))
+            .councilTaxCostWeekly(get(casePropertyDetails, CasePropertyDetailsEntity::getCouncilTaxCostWeekly))
+            .councilTaxCostFortnightly(get(casePropertyDetails,
+                                           CasePropertyDetailsEntity::getCouncilTaxCostFortnightly))
+            .councilTaxCostMonthly(get(casePropertyDetails, CasePropertyDetailsEntity::getCouncilTaxCostMonthly))
+            .councilTaxCostYearly(get(casePropertyDetails, CasePropertyDetailsEntity::getCouncilTaxCostYearly))
             .councilTaxFrequencyAndCostDetails(
-                get(marketRentCase, MarketRentCaseEntity::getCouncilTaxFrequencyAndCostDetails))
-            .utilitiesPaidFrequency(get(marketRentCase, MarketRentCaseEntity::getUtilitiesPaidFrequency))
-            .utilitiesCostWeekly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostWeekly))
-            .utilitiesCostFortnightly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostFortnightly))
-            .utilitiesCostMonthly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostMonthly))
-            .utilitiesCostYearly(get(marketRentCase, MarketRentCaseEntity::getUtilitiesCostYearly))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getCouncilTaxFrequencyAndCostDetails))
+            .utilitiesPaidFrequency(get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesPaidFrequency))
+            .utilitiesCostWeekly(get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesCostWeekly))
+            .utilitiesCostFortnightly(get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesCostFortnightly))
+            .utilitiesCostMonthly(get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesCostMonthly))
+            .utilitiesCostYearly(get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesCostYearly))
             .utilitiesPaidFrequencyAndCostDetails(
-                get(marketRentCase, MarketRentCaseEntity::getUtilitiesFrequencyAndCostDetails))
-            .rentInclusiveOfUtilityCharges(get(marketRentCase, MarketRentCaseEntity::getRentInclusiveOfUtilityCharges))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getUtilitiesFrequencyAndCostDetails))
+            .rentInclusiveOfUtilityCharges(get(casePropertyDetails,
+                                               CasePropertyDetailsEntity::getRentInclusiveOfUtilityCharges))
             .currentTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyStartDate))
             .currentTenancyEndDate(get(tenancyDetails, TenancyDetailsEntity::getTenancyEndDate))
             .currentTenancyReplaceOriginalTenancy(
                 get(tenancyDetails, TenancyDetailsEntity::getCurrentTenancyReplaceOriginalTenancy))
             .originalTenancyStartDate(get(tenancyDetails, TenancyDetailsEntity::getOriginalTenancyStartDate))
             .additionalRentalServiceChargesVary(
-                get(marketRentCase, MarketRentCaseEntity::getAdditionalRentalServiceChargesVary))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getAdditionalRentalServiceChargesVary))
             .varyingAdditionalRentalServiceChargesDetails(
-                get(marketRentCase, MarketRentCaseEntity::getVaryingAdditionalRentalServiceChargesDetails))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getVaryingAdditionalRentalServiceChargesDetails))
             .anyOtherHouseholdManagementCharges(
-                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementCharges))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getOtherHouseholdManagementCharges))
             .otherHouseholdManagementChargesDetails(
-                get(marketRentCase, MarketRentCaseEntity::getOtherHouseholdManagementChargesDetails))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getOtherHouseholdManagementChargesDetails))
             .applicantSuggestedMarketRent(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRent))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getApplicantSuggestedMarketRent))
             .applicantSuggestedMarketRentFrequency(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequency))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getApplicantSuggestedMarketRentFrequency))
             .applicantSuggestedMarketRentFrequencyOther(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentFrequencyOther))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getApplicantSuggestedMarketRentFrequencyOther))
             .applicantSuggestedMarketRentReasons(
-                get(marketRentCase, MarketRentCaseEntity::getApplicantSuggestedMarketRentReasons))
+                get(casePropertyDetails, CasePropertyDetailsEntity::getApplicantSuggestedMarketRentReasons))
             .suggestedMarketRentEvidence(
                 findDocumentsOfTypeAndMap(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE, ptCaseEntity))
             .additionalPropertyInfoToConsiderWhenDetermining(
-                get(marketRentCase, MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
+                get(casePropertyDetails,
+                    CasePropertyDetailsEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRent))
             .additionalPropertyInfoToConsiderWhenDeterminingDetails(
-                get(marketRentCase,
-                    MarketRentCaseEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails))
+                get(casePropertyDetails,
+                    CasePropertyDetailsEntity::getAdditionalPropertyInfoToConsiderWhenDeterminingRentDetails))
             .build();
     }
 
@@ -265,7 +272,10 @@ public class ApplicationMapper {
         CasePartyEntity respondent = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
         List<DocumentDto> tenancyDetailsResponseEvidence =
             findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS, ptCaseEntity);
-        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()) {
+        List<DocumentDto> propertyDetailsResponseEvidence =
+            findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS, ptCaseEntity);
+        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()
+            && propertyDetailsResponseEvidence.isEmpty()) {
             return null;
         }
 
@@ -292,6 +302,7 @@ public class ApplicationMapper {
                 ))
             .landlordPhoneNumber(get(respondent, CasePartyEntity::getPhoneNumber))
             .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
+            .propertyDetailsResponseEvidence(propertyDetailsResponseEvidence)
             .build();
     }
 
@@ -368,11 +379,11 @@ public class ApplicationMapper {
     }
 
     private static TenancyDetailsEntity tenancyDetailsOf(PTCaseEntity ptCaseEntity) {
-        return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getTenancyDetails);
+        return get(ptCaseEntity.getCasePropertyDetails(), CasePropertyDetailsEntity::getTenancyDetails);
     }
 
     private static RespondentPropertyDetailsEntity respondentPropertyDetailsOf(PTCaseEntity ptCaseEntity) {
-        return get(ptCaseEntity.getMarketRentCase(), MarketRentCaseEntity::getRespondentPropertyDetails);
+        return get(ptCaseEntity.getCasePropertyDetails(), CasePropertyDetailsEntity::getRespondentPropertyDetails);
     }
 
     private static <T, R> R get(T source, Function<T, R> getter) {

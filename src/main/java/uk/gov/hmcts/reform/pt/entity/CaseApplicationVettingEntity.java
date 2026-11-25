@@ -27,9 +27,9 @@ public class CaseApplicationVettingEntity extends AuditableEntity {
     private String vettingStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_rent_case_id", unique = true)
+    @JoinColumn(name = "case_property_details_id", unique = true)
     @JsonBackReference
-    private MarketRentCaseEntity marketRentCase;
+    private CasePropertyDetailsEntity casePropertyDetails;
 
     @OneToOne(mappedBy = "caseApplicationVetting", cascade = CascadeType.ALL)
     @JsonManagedReference
