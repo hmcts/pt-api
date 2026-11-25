@@ -18,3 +18,6 @@ ALTER TABLE case_party
 ALTER TABLE document
   ALTER COLUMN url TYPE TEXT,
   ALTER COLUMN binary_url TYPE TEXT;
+
+ALTER TABLE notice_of_rent_change
+  ALTER COLUMN rent_increase_to_cause_hardship_details TYPE VARCHAR(500);
