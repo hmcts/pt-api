@@ -19,6 +19,9 @@ public abstract class AbstractAddressEntity extends AuditableEntity {
     @Column(name = "address_line_2", length = 100)
     private String addressLine2;
 
+    @Column(name = "address_line_3", length = 100)
+    private String addressLine3;
+
     @Column(length = 100)
     private String townCity;
 
