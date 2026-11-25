@@ -465,6 +465,7 @@ class ApplicationMapperTest {
             .landlordRepairsDetails("Roof leak")
             .tenantRepairsDetails("Painted wall")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Repaired a window")
             .build();
 
         MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
@@ -511,6 +512,7 @@ class ApplicationMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getOtherFacilitiesAvailable()).isNull();
         assertThat(result.getLandlordRepairsDetails()).isNull();
+        assertThat(result.getTenantsPropertyRepairsDetails()).isNull();
     }
 
     @Test
@@ -1336,6 +1338,7 @@ class ApplicationMapperTest {
             .landlordRepairsDetails("Roof leak")
             .tenantRepairsDetails("Painted wall")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Repaired a window")
             .repairsEvidenceDocuments(
                 List.of(
                     DocumentDto.builder()
