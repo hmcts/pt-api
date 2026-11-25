@@ -14,3 +14,6 @@ ALTER TABLE case_party
   ADD COLUMN contact_by_post YES_NO,
   ADD COLUMN access_code INTEGER,
   ALTER COLUMN reference_number_for_communications TYPE VARCHAR(50);
+
+ALTER TABLE document
+  ALTER COLUMN url TYPE TEXT;

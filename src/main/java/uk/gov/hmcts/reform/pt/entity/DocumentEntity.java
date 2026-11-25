@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 @AllArgsConstructor
 @Table(name = "document")
 public class DocumentEntity extends AuditableEntity {
-    @Column(length = 1024)
     private String url;
 
     @Column(length = 255)
