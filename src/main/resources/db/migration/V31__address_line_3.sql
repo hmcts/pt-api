@@ -10,4 +10,5 @@ ALTER TABLE case_party_address
 
 ALTER TABLE case_party
   ADD COLUMN contact_by_phone YES_NO,
-  ADD COLUMN contact_by_email YES_NO;
+  ADD COLUMN contact_by_email YES_NO,
+  ADD COLUMN contact_by_post YES_NO;
