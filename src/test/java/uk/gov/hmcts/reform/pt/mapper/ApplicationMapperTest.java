@@ -214,7 +214,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldMapHearingInspectionDetailsWhenNoMarketRentCase() {
+    public void shouldMapHearingInspectionDetailsWhenCasePropertyDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .build();
 
@@ -253,7 +253,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldDefaultApplicationTypeToNullWhenNoMarketRentCase() {
+    void shouldDefaultApplicationTypeToNullWhenNoCasePropertyDetails() {
         PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), null);
         ptCase.setCasePropertyDetails(null);
         CasePartyEntity caseParty = caseParty(
@@ -467,7 +467,7 @@ class ApplicationMapperTest {
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
             .build();
 
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .rentingFlatDetails("Flat details")
             .rentingRoomDetails("Room details")
@@ -489,7 +489,7 @@ class ApplicationMapperTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(address)
-            .casePropertyDetails(withTenancyDetails(marketRentCase, tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails, tenancyDetails))
             .documents(List.of(floorPlanDoc, outsidePropertyDoc, roomDoc1, roomDoc2, repairsDoc))
             .build();
 
@@ -514,7 +514,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
+    void shouldMapPropertyDetailsWhenCasePropertyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(CasePropertyAddressEntity.builder().build())
             .casePropertyDetails(CasePropertyDetailsEntity.builder()
@@ -591,7 +591,7 @@ class ApplicationMapperTest {
             .originalTenancyStartDate(originalStartDate)
             .build();
 
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostWeekly(new BigDecimal("100.00"))
             .rentCostFortnightly(new BigDecimal("200.00"))
@@ -622,7 +622,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .casePropertyDetails(withTenancyDetails(marketRentCase, tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails, tenancyDetails))
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
@@ -635,13 +635,13 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapRentDetailsWhenTenancyDetailsIsNull() {
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostMonthly(new BigDecimal("400.00"))
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .casePropertyDetails(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
 
         RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
@@ -679,7 +679,7 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapDetailsWithoutEvidenceDocument() {
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
             .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
@@ -688,7 +688,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .casePropertyDetails(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .documents(Collections.emptyList())
             .build();
 
@@ -715,7 +715,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapMarketRentEvidenceDocumentWhenNoMarketRentCaseExists() {
+    void shouldMapMarketRentEvidenceDocumentWhenNoCasePropertyDetailsExists() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
@@ -1094,14 +1094,14 @@ class ApplicationMapperTest {
     }
 
     private static CasePropertyDetailsEntity withTenancyDetails(
-        CasePropertyDetailsEntity marketRentCase,
+        CasePropertyDetailsEntity casePropertyDetails,
         TenancyDetailsEntity tenancyDetails
     ) {
-        marketRentCase.setTenancyDetails(tenancyDetails);
-        return marketRentCase;
+        casePropertyDetails.setTenancyDetails(tenancyDetails);
+        return casePropertyDetails;
     }
 
-    private static CasePropertyDetailsEntity marketRentCase() {
+    private static CasePropertyDetailsEntity casePropertyDetails() {
         return CasePropertyDetailsEntity.builder()
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
@@ -1120,7 +1120,7 @@ class ApplicationMapperTest {
             .caseReference(CASE_REFERENCE)
             .createdDate(CREATED_DATE)
             .propertyAddress(propertyAddress)
-            .casePropertyDetails(withTenancyDetails(marketRentCase(), tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails(), tenancyDetails))
             .documents(List.of(
                 DocumentEntity.builder()
                     .documentType(DocumentType.TENANCY_AGREEMENT)

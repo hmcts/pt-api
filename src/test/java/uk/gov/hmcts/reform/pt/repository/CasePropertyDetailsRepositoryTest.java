@@ -33,7 +33,7 @@ class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePrope
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
 
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .method("Online")
             .channel("Citizen")
             .status("In Progress")
@@ -47,7 +47,7 @@ class CasePropertyDetailsRepositoryTest extends AbstractRepositoryTest<CasePrope
             .ptCase(ptCase)
             .build();
 
-        CasePropertyDetailsEntity saved = repository.save(marketRentCase);
+        CasePropertyDetailsEntity saved = repository.save(casePropertyDetails);
 
         Optional<CasePropertyDetailsEntity> result = repository.findById(saved.getId());
 

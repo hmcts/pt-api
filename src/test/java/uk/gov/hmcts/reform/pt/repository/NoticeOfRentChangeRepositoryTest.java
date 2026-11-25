@@ -36,7 +36,7 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
             .caseReference(caseReference)
             .build();
         ptCaseRepository.save(ptCase);
-        CasePropertyDetailsEntity marketRentCase = casePropertyDetailsRepository.save(
+        CasePropertyDetailsEntity casePropertyDetails = casePropertyDetailsRepository.save(
             CasePropertyDetailsEntity.builder().ptCase(ptCase).build()
         );
 
@@ -47,7 +47,7 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
             .noticeNotLegallyValidDetails("Invalid notice date")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
             .rentIncreaseToCauseHardshipDetails("Financial hardship")
-            .casePropertyDetails(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
         NoticeOfRentChangeEntity saved = repository.save(noticeOfRentChange);
 

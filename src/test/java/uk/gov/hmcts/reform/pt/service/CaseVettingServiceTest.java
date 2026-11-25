@@ -45,8 +45,8 @@ class CaseVettingServiceTest {
     private CaseVettingService caseVettingService;
 
     @Test
-    @DisplayName("Should throw IllegalStateException when MarketRentCaseEntity is null")
-    void shouldThrowIllegalStateExceptionWhenMarketRentCaseIsNull() {
+    @DisplayName("Should throw IllegalStateException when CasePropertyDetailsEntity is null")
+    void shouldThrowIllegalStateExceptionWhenCasePropertyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .caseReference(CASE_REFERENCE)
             .casePropertyDetails(null)

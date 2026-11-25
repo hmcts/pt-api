@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
 import java.math.BigDecimal;
@@ -16,17 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApplicationFeeRepositoryTest extends AbstractRepositoryTest<ApplicationFeeRepository> {
 
     private final PTCaseRepository ptCaseRepository;
-    private final CasePropertyDetailsRepository casePropertyDetailsRepository;
 
     @Autowired
     protected ApplicationFeeRepositoryTest(
         ApplicationFeeRepository repository,
-        PTCaseRepository ptCaseRepository,
-        CasePropertyDetailsRepository casePropertyDetailsRepository
+        PTCaseRepository ptCaseRepository
     ) {
         super(repository);
         this.ptCaseRepository = ptCaseRepository;
-        this.casePropertyDetailsRepository = casePropertyDetailsRepository;
     }
 
     @Test
@@ -34,8 +30,6 @@ class ApplicationFeeRepositoryTest extends AbstractRepositoryTest<ApplicationFee
     void saveAndFindApplicationFee() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
-        CasePropertyDetailsEntity marketRentCase = casePropertyDetailsRepository.save(
-            CasePropertyDetailsEntity.builder().ptCase(ptCase).build());
 
         LocalDateTime requestDate = LocalDateTime.of(2026, 11, 5, 10, 30, 0);
         BigDecimal amount = new BigDecimal("100.00");
