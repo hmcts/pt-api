@@ -768,6 +768,7 @@ class ApplicationMapperTest {
             .isEqualTo("The property has two bedrooms, not three");
         assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
         assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+        assertThat(result.getPropertyDetailsResponseEvidence()).isEmpty();
     }
 
     @Test
@@ -799,6 +800,38 @@ class ApplicationMapperTest {
         assertThat(evidenceDto.getUrl()).isEqualTo("http://dm-store/doc/tenancy-evidence");
         assertThat(evidenceDto.getBinaryUrl()).isEqualTo("http://dm-store/doc/tenancy-evidence/binary");
         assertThat(evidenceDto.getFilename()).isEqualTo("tenancy-evidence.pdf");
+        assertThat(evidenceDto.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
+        assertThat(evidenceDto.getSize()).isEqualTo(1024L);
+        assertThat(result.getPropertyDetailsResponseEvidence()).isEmpty();
+    }
+
+    @Test
+    void shouldMapLandlordPropertyDetailsEvidenceWhenRespondentPropertyDetailsAbsent() {
+        DocumentEntity evidence = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS)
+            .url("http://dm-store/doc/property-evidence")
+            .binaryUrl("http://dm-store/doc/property-evidence/binary")
+            .fileName("property-evidence.pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .documents(List.of(evidence))
+            .build();
+
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetails()).isNull();
+        assertThat(result.getLandlordPhoneNumber()).isNull();
+        assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+        assertThat(result.getPropertyDetailsResponseEvidence()).hasSize(1);
+        DocumentDto evidenceDto = result.getPropertyDetailsResponseEvidence().getFirst();
+        assertThat(evidenceDto.getUrl()).isEqualTo("http://dm-store/doc/property-evidence");
+        assertThat(evidenceDto.getBinaryUrl()).isEqualTo("http://dm-store/doc/property-evidence/binary");
+        assertThat(evidenceDto.getFilename()).isEqualTo("property-evidence.pdf");
         assertThat(evidenceDto.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(evidenceDto.getSize()).isEqualTo(1024L);
     }
