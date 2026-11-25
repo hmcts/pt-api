@@ -12,4 +12,5 @@ ALTER TABLE case_party
   ADD COLUMN contact_by_phone YES_NO,
   ADD COLUMN contact_by_email YES_NO,
   ADD COLUMN contact_by_post YES_NO,
-  ADD COLUMN access_code INTEGER;
+  ADD COLUMN access_code INTEGER,
+  ALTER COLUMN reference_number_for_communications TYPE VARCHAR(50);
