@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 
@@ -15,17 +15,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRentChangeRepository> {
 
     private final PTCaseRepository ptCaseRepository;
-    private final MarketRentCaseRepository marketRentCaseRepository;
+    private final CasePropertyDetailsRepository casePropertyDetailsRepository;
 
     @Autowired
     protected NoticeOfRentChangeRepositoryTest(
         NoticeOfRentChangeRepository repository,
         PTCaseRepository ptCaseRepository,
-        MarketRentCaseRepository marketRentCaseRepository
+        CasePropertyDetailsRepository casePropertyDetailsRepository
     ) {
         super(repository);
         this.ptCaseRepository = ptCaseRepository;
-        this.marketRentCaseRepository = marketRentCaseRepository;
+        this.casePropertyDetailsRepository = casePropertyDetailsRepository;
     }
 
     @Test
@@ -36,8 +36,8 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
             .caseReference(caseReference)
             .build();
         ptCaseRepository.save(ptCase);
-        MarketRentCaseEntity marketRentCase = marketRentCaseRepository.save(
-            MarketRentCaseEntity.builder().ptCase(ptCase).build()
+        CasePropertyDetailsEntity casePropertyDetails = casePropertyDetailsRepository.save(
+            CasePropertyDetailsEntity.builder().ptCase(ptCase).build()
         );
 
         NoticeOfRentChangeEntity noticeOfRentChange = NoticeOfRentChangeEntity.builder()
@@ -47,7 +47,7 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
             .noticeNotLegallyValidDetails("Invalid notice date")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
             .rentIncreaseToCauseHardshipDetails("Financial hardship")
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
         NoticeOfRentChangeEntity saved = repository.save(noticeOfRentChange);
 
@@ -60,6 +60,6 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
         assertThat(result.get().getNoticeNotLegallyValidDetails()).isEqualTo("Invalid notice date");
         assertThat(result.get().getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getRentIncreaseToCauseHardshipDetails()).isEqualTo("Financial hardship");
-        assertThat(result.get().getMarketRentCase().getPtCase().getCaseReference()).isEqualTo(caseReference);
+        assertThat(result.get().getCasePropertyDetails().getPtCase().getCaseReference()).isEqualTo(caseReference);
     }
 }

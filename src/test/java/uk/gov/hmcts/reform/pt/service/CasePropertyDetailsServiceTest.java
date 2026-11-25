@@ -8,15 +8,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.repository.MarketRentCaseRepository;
+import uk.gov.hmcts.reform.pt.repository.CasePropertyDetailsRepository;
 
 import java.math.BigDecimal;
 
@@ -25,20 +24,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class MarketRentCaseServiceTest {
+class CasePropertyDetailsServiceTest {
 
     @Mock
-    private MarketRentCaseRepository marketRentCaseRepository;
+    private CasePropertyDetailsRepository casePropertyDetailsRepository;
 
     @InjectMocks
-    private MarketRentCaseService marketRentCaseService;
+    private CasePropertyDetailsService casePropertyDetailsService;
 
     @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with property details")
+    @DisplayName("Should update existing CasePropertyDetailsEntity with property details")
     void updateWithPropertyDetailsWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
+        CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder().build();
         PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCase(existing)
+            .casePropertyDetails(existing)
             .build();
 
         PropertyDetails details = PropertyDetails.builder()
@@ -53,9 +52,9 @@ class MarketRentCaseServiceTest {
             .sharePropertyWithLandlordDetails("No sharing")
             .build();
 
-        marketRentCaseService.updateWithPropertyDetails(ptCase, details);
+        casePropertyDetailsService.updateWithPropertyDetails(ptCase, details);
 
-        verify(marketRentCaseRepository).save(existing);
+        verify(casePropertyDetailsRepository).save(existing);
         assertThat(existing.getPtCase()).isEqualTo(ptCase);
         assertThat(existing.getTypeOfPropertyRenting()).isEqualTo(PropertyType.FLAT);
         assertThat(existing.getRentingFlatDetails()).isEqualTo("Top floor flat");
@@ -69,7 +68,7 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and save new MarketRentCaseEntity with property details when list is empty")
+    @DisplayName("Should create and save new CasePropertyDetailsEntity with property details when list is empty")
     void updateWithPropertyDetailsWhenEmpty() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .build();
@@ -79,11 +78,11 @@ class MarketRentCaseServiceTest {
             .propertyFloorPlanAvailable(YesOrNo.NO)
             .build();
 
-        marketRentCaseService.updateWithPropertyDetails(ptCase, details);
+        casePropertyDetailsService.updateWithPropertyDetails(ptCase, details);
 
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository).save(captor.capture());
-        MarketRentCaseEntity saved = captor.getValue();
+        ArgumentCaptor<CasePropertyDetailsEntity> captor = ArgumentCaptor.forClass(CasePropertyDetailsEntity.class);
+        verify(casePropertyDetailsRepository).save(captor.capture());
+        CasePropertyDetailsEntity saved = captor.getValue();
 
         assertThat(saved.getPtCase()).isEqualTo(ptCase);
         assertThat(saved.getTypeOfPropertyRenting()).isEqualTo(PropertyType.TERRACED_HOUSE);
@@ -91,11 +90,11 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with rent details")
+    @DisplayName("Should update existing CasePropertyDetailsEntity with rent details")
     void updateWithRentDetailsWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
+        CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder().build();
         PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCase(existing)
+            .casePropertyDetails(existing)
             .build();
 
         RentDetails details = RentDetails.builder()
@@ -128,9 +127,9 @@ class MarketRentCaseServiceTest {
             .additionalInfoToConsiderWhenDeterminingRentDetails("Renovated")
             .build();
 
-        marketRentCaseService.updateWithRentDetails(ptCase, details);
+        casePropertyDetailsService.updateWithRentDetails(ptCase, details);
 
-        verify(marketRentCaseRepository).save(existing);
+        verify(casePropertyDetailsRepository).save(existing);
         assertThat(existing.getRentPaymentFrequency()).isEqualTo(Frequency.MONTHLY);
         assertThat(existing.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(150d));
         assertThat(existing.getRentCostFortnightly()).isEqualTo(BigDecimal.valueOf(300d));
@@ -157,7 +156,7 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should create and save new MarketRentCaseEntity with rent details when empty")
+    @DisplayName("Should create and save new CasePropertyDetailsEntity with rent details when empty")
     void updateWithRentDetailsWhenEmpty() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .build();
@@ -171,11 +170,11 @@ class MarketRentCaseServiceTest {
             .additionalInfoToConsiderWhenDeterminingRent(YesOrNo.NO)
             .build();
 
-        marketRentCaseService.updateWithRentDetails(ptCase, details);
+        casePropertyDetailsService.updateWithRentDetails(ptCase, details);
 
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository).save(captor.capture());
-        MarketRentCaseEntity saved = captor.getValue();
+        ArgumentCaptor<CasePropertyDetailsEntity> captor = ArgumentCaptor.forClass(CasePropertyDetailsEntity.class);
+        verify(casePropertyDetailsRepository).save(captor.capture());
+        CasePropertyDetailsEntity saved = captor.getValue();
 
         assertThat(saved.getRentPaymentFrequency()).isEqualTo(Frequency.WEEKLY);
         assertThat(saved.getRentCostWeekly()).isEqualTo(BigDecimal.valueOf(200d));
@@ -188,7 +187,7 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should create new MarketRentCaseEntity with hearing and property inspection details when none exist")
+    @DisplayName("Should create CasePropertyDetailsEntity with hearing and property inspection details when none exist")
     void updateWithPropertyInspectionDetailsCreatesNew() {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .build();
@@ -199,11 +198,11 @@ class MarketRentCaseServiceTest {
             .noDecisionWithoutInspectionReason("No inspection required")
             .build();
 
-        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
+        casePropertyDetailsService.updateWithPropertyInspectionDetails(ptCase, details);
 
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository).save(captor.capture());
-        MarketRentCaseEntity saved = captor.getValue();
+        ArgumentCaptor<CasePropertyDetailsEntity> captor = ArgumentCaptor.forClass(CasePropertyDetailsEntity.class);
+        verify(casePropertyDetailsRepository).save(captor.capture());
+        CasePropertyDetailsEntity saved = captor.getValue();
 
         assertThat(saved.getPtCase()).isEqualTo(ptCase);
         assertThat(saved.getHearingRequested()).isEqualTo(YesOrNo.NO);
@@ -213,14 +212,14 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with hearing and property inspection details")
+    @DisplayName("Should update existing CasePropertyDetailsEntity with hearing and property inspection details")
     void updateWithPropertyInspectionDetailsWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity existing = CasePropertyDetailsEntity.builder()
             .agreeToDecisionWithoutInspection(YesOrNo.NO)
             .noDecisionWithoutInspectionReason("Old reason")
             .build();
         PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCase(existing)
+            .casePropertyDetails(existing)
             .build();
         HearingPropertyInspectionDetails details = HearingPropertyInspectionDetails.builder()
             .hearingRequested(YesOrNo.YES)
@@ -229,9 +228,9 @@ class MarketRentCaseServiceTest {
             .noDecisionWithoutInspectionReason("Updated reason")
             .build();
 
-        marketRentCaseService.updateWithPropertyInspectionDetails(ptCase, details);
+        casePropertyDetailsService.updateWithPropertyInspectionDetails(ptCase, details);
 
-        verify(marketRentCaseRepository).save(existing);
+        verify(casePropertyDetailsRepository).save(existing);
         assertThat(existing.getPtCase()).isEqualTo(ptCase);
         assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
@@ -240,54 +239,21 @@ class MarketRentCaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should create new MarketRentCaseEntity with application type when none exist")
-    void updateWithApplicationTypeCreatesNew() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .build();
-
-        marketRentCaseService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_RENT_INCREASE);
-
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository).save(captor.capture());
-        MarketRentCaseEntity saved = captor.getValue();
-
-        assertThat(saved.getPtCase()).isEqualTo(ptCase);
-        assertThat(saved.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
-    }
-
-    @Test
-    @DisplayName("Should update existing MarketRentCaseEntity with application type")
-    void updateWithApplicationTypeWhenExists() {
-        MarketRentCaseEntity existing = MarketRentCaseEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .marketRentCase(existing)
-            .build();
-
-        marketRentCaseService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_EXCESSIVE_RENT);
-
-        verify(marketRentCaseRepository).save(existing);
-        assertThat(existing.getPtCase()).isEqualTo(ptCase);
-        assertThat(existing.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_EXCESSIVE_RENT);
-    }
-
-    @Test
-    @DisplayName("Should reuse the same MarketRentCaseEntity across updates to a case without one")
-    void updatesReuseNewlyCreatedMarketRentCase() {
+    @DisplayName("Should reuse the same CasePropertyDetailsEntity across updates to a case without one")
+    void updatesReuseNewlyCreatedCasePropertyDetails() {
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
 
-        marketRentCaseService.updateWithApplicationType(ptCase, ApplicationType.CHALLENGE_RENT_INCREASE);
-        marketRentCaseService.updateWithPropertyDetails(
+        casePropertyDetailsService.updateWithPropertyDetails(
             ptCase,
             PropertyDetails.builder().propertyType(PropertyType.FLAT).build()
         );
 
-        ArgumentCaptor<MarketRentCaseEntity> captor = ArgumentCaptor.forClass(MarketRentCaseEntity.class);
-        verify(marketRentCaseRepository, times(2)).save(captor.capture());
-        MarketRentCaseEntity marketRentCase = ptCase.getMarketRentCase();
+        ArgumentCaptor<CasePropertyDetailsEntity> captor = ArgumentCaptor.forClass(CasePropertyDetailsEntity.class);
+        verify(casePropertyDetailsRepository, times(1)).save(captor.capture());
+        CasePropertyDetailsEntity casePropertyDetails = ptCase.getCasePropertyDetails();
 
-        assertThat(captor.getAllValues()).containsOnly(marketRentCase);
-        assertThat(marketRentCase.getPtCase()).isEqualTo(ptCase);
-        assertThat(marketRentCase.getMarketRentCaseType()).isEqualTo(ApplicationType.CHALLENGE_RENT_INCREASE);
-        assertThat(marketRentCase.getTypeOfPropertyRenting()).isEqualTo(PropertyType.FLAT);
+        assertThat(captor.getAllValues()).containsOnly(casePropertyDetails);
+        assertThat(casePropertyDetails.getPtCase()).isEqualTo(ptCase);
+        assertThat(casePropertyDetails.getTypeOfPropertyRenting()).isEqualTo(PropertyType.FLAT);
     }
 }

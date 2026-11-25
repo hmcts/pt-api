@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.NoticeOfRentChangeRepository;
@@ -15,15 +15,16 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 @RequiredArgsConstructor
 public class NoticeOfRentChangeService {
     private final NoticeOfRentChangeRepository noticeOfRentChangeRepository;
-    private final MarketRentCaseService marketRentCaseService;
+    private final CasePropertyDetailsService casePropertyDetailsService;
 
     @Transactional
     public void updateNoticeOfRentChangeDetails(NoticeOfRentIncreaseDetails details, PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity);
-        NoticeOfRentChangeEntity entity = marketRentCase.getNoticeOfRentChange();
+        CasePropertyDetailsEntity casePropertyDetails =
+            casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity);
+        NoticeOfRentChangeEntity entity = casePropertyDetails.getNoticeOfRentChange();
         if (entity == null) {
             entity = new NoticeOfRentChangeEntity();
-            marketRentCase.setNoticeOfRentChange(entity);
+            casePropertyDetails.setNoticeOfRentChange(entity);
         }
 
         setIfNotNull(
@@ -38,7 +39,7 @@ public class NoticeOfRentChangeService {
         setIfNotNull(details.getNoticeNotLegallyValidDetails(), entity::setNoticeNotLegallyValidDetails);
         setIfNotNull(details.getRentIncreaseToCauseHardship(), entity::setRentIncreaseToCauseHardship);
         setIfNotNull(details.getRentIncreaseToCauseHardshipDetails(), entity::setRentIncreaseToCauseHardshipDetails);
-        entity.setMarketRentCase(marketRentCase);
+        entity.setCasePropertyDetails(casePropertyDetails);
 
         noticeOfRentChangeRepository.save(entity);
     }

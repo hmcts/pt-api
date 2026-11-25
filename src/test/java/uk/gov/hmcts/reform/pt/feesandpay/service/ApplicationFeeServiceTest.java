@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.feesandpay.exception.FeeNotFoundException;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
 import uk.gov.hmcts.reform.pt.repository.ApplicationFeeRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.service.CasePartyService;
-import uk.gov.hmcts.reform.pt.service.MarketRentCaseService;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -53,14 +51,11 @@ class ApplicationFeeServiceTest {
     @Mock
     private PTCaseRepository ptCaseRepository;
     @Mock
-    private MarketRentCaseService marketRentCaseService;
-    @Mock
     private ApplicationFeeRepository applicationFeeRepository;
 
     private ApplicationFeeService applicationFeeService;
 
     private PTCaseEntity ptCase;
-    private MarketRentCaseEntity marketRentCase;
     private final FeeDetails fee = FeeDetails.builder()
         .code("FEE0569")
         .version(1)
@@ -74,12 +69,10 @@ class ApplicationFeeServiceTest {
             feeService,
             paymentService,
             ptCaseRepository,
-            marketRentCaseService,
             applicationFeeRepository,
             Clock.fixed(NOW, ZoneOffset.UTC)
         );
         ptCase = PTCaseEntity.builder().caseReference(CASE_REFERENCE).build();
-        marketRentCase = new MarketRentCaseEntity();
     }
 
     @Test
@@ -102,8 +95,6 @@ class ApplicationFeeServiceTest {
         assertThat(saved.getRequestDate()).isEqualTo(LocalDateTime.ofInstant(NOW, ZoneOffset.UTC));
         assertThat(saved.getAmount()).isEqualByComparingTo("47.00");
         assertThat(saved.getStatus()).isEqualTo("Not paid");
-        assertThat(saved.getMarketRentCase()).isSameAs(marketRentCase);
-        assertThat(marketRentCase.getApplicationFee()).isSameAs(saved);
     }
 
     @Test
@@ -111,9 +102,8 @@ class ApplicationFeeServiceTest {
         ApplicationFeeEntity existing = ApplicationFeeEntity.builder()
             .requestReference(SERVICE_REQUEST_REFERENCE)
             .build();
-        marketRentCase.setApplicationFee(existing);
+        ptCase.setApplicationFee(existing);
         when(ptCaseRepository.findByCaseReference(CASE_REFERENCE)).thenReturn(Optional.of(ptCase));
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
 
         ApplicationFeeEntity result = applicationFeeService.requestApplicationFee(CASE_REFERENCE);
 
@@ -129,13 +119,12 @@ class ApplicationFeeServiceTest {
         assertThatThrownBy(() -> applicationFeeService.requestApplicationFee(CASE_REFERENCE))
             .isInstanceOf(CaseNotFoundException.class);
 
-        verifyNoInteractions(marketRentCaseService, feeService, paymentService, applicationFeeRepository);
+        verifyNoInteractions(feeService, paymentService, applicationFeeRepository);
     }
 
     @Test
     void shouldThrowWhenCaseHasNoApplicant() {
         when(ptCaseRepository.findByCaseReference(CASE_REFERENCE)).thenReturn(Optional.of(ptCase));
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
         when(casePartyService.getPartyForCaseByRole(ptCase, APPLICANT)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> applicationFeeService.requestApplicationFee(CASE_REFERENCE))
@@ -167,7 +156,7 @@ class ApplicationFeeServiceTest {
             .hasMessage("payment-api unavailable");
 
         verifyNoInteractions(applicationFeeRepository);
-        assertThat(marketRentCase.getApplicationFee()).isNull();
+        assertThat(ptCase.getApplicationFee()).isNull();
     }
 
     private void givenCaseWithApplicant() {
@@ -177,7 +166,6 @@ class ApplicationFeeServiceTest {
             .casePartyRole(APPLICANT)
             .build();
         when(ptCaseRepository.findByCaseReference(CASE_REFERENCE)).thenReturn(Optional.of(ptCase));
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
         when(casePartyService.getPartyForCaseByRole(ptCase, APPLICANT)).thenReturn(Optional.of(applicant));
     }
 }
