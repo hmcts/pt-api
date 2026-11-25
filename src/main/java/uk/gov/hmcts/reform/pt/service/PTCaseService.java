@@ -41,7 +41,10 @@ public class PTCaseService {
 
     // A respondent can only remove the documents they uploaded, never the applicant's
     private static final Set<DocumentType> RESPONDENT_DOCUMENT_TYPES =
-        EnumSet.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+        EnumSet.of(
+            DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS,
+            DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS
+        );
 
     private final CasePartyService casePartyService;
     private final TenancyDetailsService tenancyDetailsService;

@@ -53,4 +53,11 @@ public class LandlordResponse {
     )
     @Builder.Default
     private List<ListValue<UploadedDocument>> tenancyDetailsResponseEvidence = new ArrayList<>();
+
+    @CCD(
+        label = "Evidence supporting response to property details",
+        access = {CitizenAccess.class}
+    )
+    @Builder.Default
+    private List<ListValue<UploadedDocument>> propertyDetailsResponseEvidence = new ArrayList<>();
 }

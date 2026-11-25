@@ -15,4 +15,5 @@ public class LandlordResponseDto {
     private String respondToTenantAnswersAboutPropertyDetailsDescription;
     private String landlordPhoneNumber;
     private List<DocumentDto> tenancyDetailsResponseEvidence;
+    private List<DocumentDto> propertyDetailsResponseEvidence;
 }
