@@ -152,8 +152,11 @@ class TenancyDetailsServiceTest {
             .tenantsPropertyRepairsDetails("Previous repairs")
             .build();
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().tenancyDetails(existing).build();
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity
+            .builder()
+            .tenancyDetails(existing)
+            .build();
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCase)).thenReturn(casePropertyDetails);
 
         PropertyDetails details = PropertyDetails.builder()
             .anyTenantsMadePropertyRepairs(answer)
@@ -172,8 +175,11 @@ class TenancyDetailsServiceTest {
             .tenantsPropertyRepairsDetails("Previous repairs")
             .build();
         PTCaseEntity ptCase = PTCaseEntity.builder().build();
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder().tenancyDetails(existing).build();
-        when(marketRentCaseService.getOrCreateMarketRentCase(ptCase)).thenReturn(marketRentCase);
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity
+            .builder()
+            .tenancyDetails(existing)
+            .build();
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCase)).thenReturn(casePropertyDetails);
 
         PropertyDetails details = PropertyDetails.builder().anyTenantsMadePropertyRepairs(YesNoNotSure.YES).build();
         tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
