@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
 import uk.gov.hmcts.reform.pt.entity.FeeHelpWithFeesEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -46,6 +47,7 @@ class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFe
 
         FeeHelpWithFeesEntity helpWithFees = FeeHelpWithFeesEntity.builder()
             .referenceNumber(123456)
+            .appliedForHelpWithFees(YesOrNo.YES)
             .applicationFee(fee)
             .build();
 
@@ -56,6 +58,7 @@ class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFe
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isNotNull();
         assertThat(result.get().getReferenceNumber()).isEqualTo(123456);
+        assertThat(result.get().getAppliedForHelpWithFees()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getApplicationFee().getId()).isEqualTo(fee.getId());
     }
 }
