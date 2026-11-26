@@ -34,20 +34,6 @@ ALTER TABLE respondent_property_details
   ADD COLUMN statement_of_truth_id BIGINT REFERENCES statement_of_truth (id),
   ADD COLUMN case_party_id BIGINT REFERENCES case_party (id);
 
-CREATE TABLE case_property_details_documents (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-  case_document_id BIGINT NOT NULL REFERENCES document,
-  case_property_details_id BIGINT NOT NULL REFERENCES case_property_details
-);
-
-CREATE TABLE respondent_property_details_documents (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-  case_document_id BIGINT NOT NULL REFERENCES document,
-  respondent_property_details_id BIGINT NOT NULL REFERENCES respondent_property_details
-);
-
 ALTER TYPE DOCUMENT_TYPE
   ADD VALUE 'EVIDENCE_SUPPORTING_RESPONDENT_PROPOSED_RENT_AND_REASONS';
 ALTER TYPE DOCUMENT_TYPE
@@ -56,34 +42,3 @@ ALTER TYPE DOCUMENT_TYPE
   ADD VALUE 'LANDLORD_PROPOSED_MARKET_RENT_EVIDENCE';
 ALTER TYPE DOCUMENT_TYPE
   ADD VALUE 'LANDLORD_REPAIRS_EVIDENCE';
-
--- Adds associations to case_property_details
-INSERT INTO case_property_details_documents (case_document_id, case_property_details_id)
-SELECT document.id,  case_property_details.id
-FROM document
-INNER JOIN case_property_details
-  ON case_property_details.pt_case_id = document.pt_case_id
-WHERE document.document_type IN (
-  'HARDSHIP_EVIDENCE',
-  'TENANCY_AGREEMENT',
-  'NEW_RENT_INCREASE_NOTICE',
-  'NOTICE_NOT_LEGALLY_VALID_EVIDENCE',
-  'PROPERTY_FLOOR_PLAN',
-  'OUTSIDE_PROPERTY',
-  'PROPERTY_ROOMS',
-  'TENANT_REPAIRS_EVIDENCE',
-  'TENANT_PROPOSED_MARKET_RENT_EVIDENCE'
-);
-
--- Adds associations to respondent_property_details
-INSERT INTO respondent_property_details_documents (case_document_id, respondent_property_details_id)
-SELECT document.id,  respondent_property_details.id
-FROM document
-INNER JOIN case_property_details
-  ON case_property_details.pt_case_id = document.pt_case_id
-INNER JOIN respondent_property_details
-  ON respondent_property_details.case_property_details_id = case_property_details.id
-WHERE document.document_type IN (
-  'EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS',
-  'EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS'
-);
