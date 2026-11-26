@@ -139,7 +139,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(name = "varying_additional_rental_service_charges_details", length = 500)
     private String varyingAdditionalRentalServiceChargesDetails;
 
-    @Column(length = 5000)
+    @Column(length = 200)
     private String applicantSuggestedMarketRentReasons;
 
     @Enumerated(EnumType.STRING)

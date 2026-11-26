@@ -50,4 +50,5 @@ ALTER TABLE case_property_details
   DROP COLUMN reason_hearing_requested,
   ALTER COLUMN floorplan_manual_details TYPE VARCHAR(200),
   ALTER COLUMN property_indoor_features TYPE VARCHAR(200),
-  ALTER COLUMN share_property_with_landlord_details TYPE VARCHAR(32);
+  ALTER COLUMN share_property_with_landlord_details TYPE VARCHAR(32),
+  ALTER COLUMN applicant_suggested_market_rent_reasons TYPE VARCHAR(200);
