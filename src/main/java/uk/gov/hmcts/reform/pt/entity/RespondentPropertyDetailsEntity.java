@@ -7,14 +7,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,9 +19,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Setter
@@ -96,18 +90,4 @@ public class RespondentPropertyDetailsEntity extends AuditableEntity {
     @JoinColumn(name = "case_property_details_id", nullable = false, unique = true)
     @JsonBackReference
     private CasePropertyDetailsEntity casePropertyDetails;
-
-    @ManyToMany
-    @JoinTable(
-        name = "respondent_property_details_documents",
-        joinColumns = @JoinColumn(name = "respondent_property_details_id"),
-        inverseJoinColumns = @JoinColumn(name = "case_document_id")
-    )
-    @Builder.Default
-    private Set<DocumentEntity> documents = new HashSet<>();
-
-    public void addDocument(DocumentEntity document) {
-        documents.add(document);
-        document.getRespondentPropertyDetails().add(this);
-    }
 }

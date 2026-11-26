@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.pt.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.InOrder;
@@ -19,10 +17,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
-import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
-import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
@@ -55,88 +51,6 @@ class DocumentServiceTest {
 
     @InjectMocks
     private DocumentService documentService;
-
-    @ParameterizedTest
-    @EnumSource(value = DocumentType.class, names = {
-        "HARDSHIP_EVIDENCE", "TENANCY_AGREEMENT", "NEW_RENT_INCREASE_NOTICE",
-        "NOTICE_NOT_LEGALLY_VALID_EVIDENCE", "PROPERTY_FLOOR_PLAN", "OUTSIDE_PROPERTY",
-        "PROPERTY_ROOMS", "TENANT_REPAIRS_EVIDENCE", "TENANT_PROPOSED_MARKET_RENT_EVIDENCE"
-    })
-    @DisplayName("Associates property documents with property details")
-    void associatesPropertyDocumentsWithPropertyDetails(DocumentType type) {
-        RespondentPropertyDetailsEntity respondent = RespondentPropertyDetailsEntity.builder().build();
-        CasePropertyDetailsEntity property = CasePropertyDetailsEntity.builder()
-            .respondentPropertyDetails(respondent).build();
-        PTCaseEntity ptCase = PTCaseEntity.builder().documents(List.of()).casePropertyDetails(property).build();
-
-        documentService.updateSingleDocument(type, uploadedDocument(), ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-        DocumentEntity saved = captor.getValue();
-        assertThat(property.getDocuments()).containsExactly(saved);
-        assertThat(saved.getCasePropertyDetails()).containsExactly(property);
-        assertThat(respondent.getDocuments()).isEmpty();
-        assertThat(saved.getRespondentPropertyDetails()).isEmpty();
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = DocumentType.class, names = {
-        "EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS",
-        "EVIDENCE_SUPPORTING_RESPONDENT_PROPOSED_RENT_AND_REASONS",
-        "EVIDENCE_SUPPORTING_RESPONSE_TO_TENANT_EXPERIENCING_HARDSHIP",
-        "LANDLORD_PROPOSED_MARKET_RENT_EVIDENCE", "LANDLORD_REPAIRS_EVIDENCE"
-    })
-    @DisplayName("Associates respondent documents with respondent property details")
-    void associatesRespondentDocumentsWithRespondentDetails(DocumentType type) {
-        RespondentPropertyDetailsEntity respondent = RespondentPropertyDetailsEntity.builder().build();
-        CasePropertyDetailsEntity property = CasePropertyDetailsEntity.builder()
-            .respondentPropertyDetails(respondent).build();
-        PTCaseEntity ptCase = PTCaseEntity.builder().documents(List.of()).casePropertyDetails(property).build();
-
-        documentService.updateMultipleDocuments(type, List.of(new ListValue<>("1", uploadedDocument())), ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-        DocumentEntity saved = captor.getValue();
-        assertThat(respondent.getDocuments()).containsExactly(saved);
-        assertThat(saved.getRespondentPropertyDetails()).containsExactly(respondent);
-        assertThat(property.getDocuments()).isEmpty();
-        assertThat(saved.getCasePropertyDetails()).isEmpty();
-    }
-
-    @Test
-    @DisplayName("Associates existing document without duplicates")
-    void associatesExistingDocumentWithoutDuplicates() {
-        CasePropertyDetailsEntity property = CasePropertyDetailsEntity.builder().build();
-        DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.PROPERTY_ROOMS).url("http://dm-store/documents/1").build();
-        property.addDocument(existing);
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existing)).casePropertyDetails(property).build();
-
-        documentService.updateMultipleDocuments(DocumentType.PROPERTY_ROOMS,
-            List.of(new ListValue<>("1", uploadedDocument())), ptCase);
-
-        verify(documentRepository).save(existing);
-        assertThat(property.getDocuments()).containsExactly(existing);
-        assertThat(existing.getCasePropertyDetails()).containsExactly(property);
-    }
-
-    @Test
-    @DisplayName("Saves respondent document when respondent details are missing")
-    void savesRespondentDocumentWhenRespondentDetailsAreMissing() {
-        CasePropertyDetailsEntity property = CasePropertyDetailsEntity.builder().build();
-        PTCaseEntity ptCase = PTCaseEntity.builder().documents(List.of()).casePropertyDetails(property).build();
-
-        documentService.updateSingleDocument(DocumentType.LANDLORD_REPAIRS_EVIDENCE, uploadedDocument(), ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-        assertThat(property.getDocuments()).isEmpty();
-        assertThat(captor.getValue().getRespondentPropertyDetails()).isEmpty();
-        assertThat(captor.getValue().getCasePropertyDetails()).isEmpty();
-    }
 
     @Test
     @DisplayName("Should create new DocumentEntity when single document does not already exist")
@@ -608,10 +522,5 @@ class DocumentServiceTest {
         assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANCY_AGREEMENT);
         assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy-agreement");
         assertThat(savedDoc.getFileName()).isEqualTo("agreement.pdf");
-    }
-
-    private UploadedDocument uploadedDocument() {
-        return UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/1").filename("evidence.pdf").build()).build();
     }
 }
