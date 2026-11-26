@@ -42,7 +42,7 @@ public class RespondentPropertyDetailsEntity extends AuditableEntity {
     private String respondToTenantAnswersAboutPropertyDetailsDescription;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "market_rent_case_id", nullable = false, unique = true)
+    @JoinColumn(name = "case_property_details_id", nullable = false, unique = true)
     @JsonBackReference
-    private MarketRentCaseEntity marketRentCase;
+    private CasePropertyDetailsEntity casePropertyDetails;
 }

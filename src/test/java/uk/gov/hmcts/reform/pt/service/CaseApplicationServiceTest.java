@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.pt.dto.ApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
@@ -176,7 +176,7 @@ class CaseApplicationServiceTest {
         PTCaseEntity ptCase = PTCaseEntity.builder()
             .caseReference(caseReference)
             .propertyAddress(CasePropertyAddressEntity.builder().postcode("AB12 3CD").build())
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().tenancyType(ASSURED_PERIODIC_TENANCY).build())
                 .build())
             .build();

@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
@@ -19,6 +21,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 
 import java.time.LocalDateTime;
@@ -51,6 +54,11 @@ public class PTCaseEntity extends AuditableEntity {
 
     @Column(length = 100)
     private String version;
+    private String caseType;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private ApplicationType caseSubType;
 
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -69,11 +77,14 @@ public class PTCaseEntity extends AuditableEntity {
 
     @OneToOne(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private MarketRentCaseEntity marketRentCase;
+    private CasePropertyDetailsEntity casePropertyDetails;
 
     @OneToMany(mappedBy = "ptCase", cascade = CascadeType.ALL)
     @JsonManagedReference
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "application_fee_id", unique = true)
+    private ApplicationFeeEntity applicationFee;
 }

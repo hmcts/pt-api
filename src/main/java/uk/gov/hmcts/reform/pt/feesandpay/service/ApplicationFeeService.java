@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.entity.ApplicationFeeEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.pt.feesandpay.model.FeeDetails;
 import uk.gov.hmcts.reform.pt.repository.ApplicationFeeRepository;
 import uk.gov.hmcts.reform.pt.repository.PTCaseRepository;
 import uk.gov.hmcts.reform.pt.service.CasePartyService;
-import uk.gov.hmcts.reform.pt.service.MarketRentCaseService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -28,7 +26,6 @@ public class ApplicationFeeService {
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PTCaseRepository ptCaseRepository;
-    private final MarketRentCaseService marketRentCaseService;
     private final ApplicationFeeRepository applicationFeeRepository;
     private final Clock clock;
 
@@ -37,9 +34,7 @@ public class ApplicationFeeService {
         PTCaseEntity ptCase = ptCaseRepository.findByCaseReference(caseReference)
             .orElseThrow(() -> new CaseNotFoundException(caseReference));
 
-        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCase);
-
-        ApplicationFeeEntity existing = marketRentCase.getApplicationFee();
+        ApplicationFeeEntity existing = ptCase.getApplicationFee();
         if (existing != null) {
             return existing;
         }
@@ -56,10 +51,12 @@ public class ApplicationFeeService {
             .requestDate(LocalDateTime.now(clock))
             .amount(fee.getFeeAmount())
             .status(NOT_PAID.getValue())
-            .marketRentCase(marketRentCase)
             .build();
-        marketRentCase.setApplicationFee(applicationFee);
 
-        return applicationFeeRepository.save(applicationFee);
+        ApplicationFeeEntity savedEntity = applicationFeeRepository.save(applicationFee);
+        ptCase.setApplicationFee(savedEntity);
+        ptCaseRepository.save(ptCase);
+
+        return savedEntity;
     }
 }

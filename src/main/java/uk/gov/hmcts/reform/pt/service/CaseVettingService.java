@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.pt.ccd.domain.PTCase;
 import uk.gov.hmcts.reform.pt.entity.CaseApplicationVettingEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.MissingInformationRequestEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.CaseApplicationVettingRepository;
@@ -42,20 +42,20 @@ public class CaseVettingService {
     }
 
     private CaseApplicationVettingEntity findOrBuildCaseVettingEntity(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = ptCaseEntity.getMarketRentCase();
-        if (marketRentCase == null) {
+        CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
+        if (casePropertyDetails == null) {
             throw new IllegalStateException(
-                "Market rent case not found for case reference: " + ptCaseEntity.getCaseReference()
+                "Case property details not found for case reference: " + ptCaseEntity.getCaseReference()
             );
         }
 
-        CaseApplicationVettingEntity vettingEntity = marketRentCase.getCaseApplicationVetting();
+        CaseApplicationVettingEntity vettingEntity = casePropertyDetails.getCaseApplicationVetting();
 
         if (vettingEntity == null) {
             vettingEntity = new CaseApplicationVettingEntity();
-            marketRentCase.setCaseApplicationVetting(vettingEntity);
+            casePropertyDetails.setCaseApplicationVetting(vettingEntity);
         }
-        vettingEntity.setMarketRentCase(marketRentCase);
+        vettingEntity.setCasePropertyDetails(casePropertyDetails);
         return caseApplicationVettingRepository.save(vettingEntity);
     }
 

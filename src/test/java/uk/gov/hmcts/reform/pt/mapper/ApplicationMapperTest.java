@@ -11,23 +11,23 @@ import uk.gov.hmcts.reform.pt.ccd.domain.PartyRole;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
-import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ContactPreferencesDto;
-import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.DocumentDto;
+import uk.gov.hmcts.reform.pt.dto.EnrichedApplicationDto;
 import uk.gov.hmcts.reform.pt.dto.ExtraSupportDto;
 import uk.gov.hmcts.reform.pt.dto.HearingInspectionDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.LandlordResponseDto;
 import uk.gov.hmcts.reform.pt.dto.NoticeOfRentIncreaseDto;
 import uk.gov.hmcts.reform.pt.dto.PropertyDetailsDto;
+import uk.gov.hmcts.reform.pt.dto.RentDetailsDto;
 import uk.gov.hmcts.reform.pt.dto.TenancyAgreementDto;
 import uk.gov.hmcts.reform.pt.dto.TenantDetailsDto;
 import uk.gov.hmcts.reform.pt.entity.CasePartyAddressEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePartyEntity;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyAddressEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.NoticeOfRentChangeEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
@@ -176,8 +176,8 @@ class ApplicationMapperTest {
     @Test
     void shouldMapHearingInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(
-                MarketRentCaseEntity.builder()
+            .casePropertyDetails(
+                CasePropertyDetailsEntity.builder()
                     .hearingRequested(YesOrNo.NO)
                     .reasonHearingRequested("Some reason")
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
@@ -197,8 +197,8 @@ class ApplicationMapperTest {
     @Test
     void shouldMapHearingInspectionDetailsWhenNoInspectionDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(
-                MarketRentCaseEntity.builder()
+            .casePropertyDetails(
+                CasePropertyDetailsEntity.builder()
                     .hearingRequested(YesOrNo.YES)
                     .reasonHearingRequested("Hearing reason")
                     .build()
@@ -214,7 +214,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    public void shouldMapHearingInspectionDetailsWhenNoMarketRentCase() {
+    public void shouldMapHearingInspectionDetailsWhenCasePropertyDetails() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .build();
 
@@ -253,9 +253,9 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldDefaultApplicationTypeToNullWhenNoMarketRentCase() {
+    void shouldDefaultApplicationTypeToNullWhenNoCasePropertyDetails() {
         PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), null);
-        ptCase.setMarketRentCase(null);
+        ptCase.setCasePropertyDetails(null);
         CasePartyEntity caseParty = caseParty(
             ptCase,
             null,
@@ -319,7 +319,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                 .noticeOfRentChange(noticeOfRentChange)
                 .build())
             .documents(List.of(rentNoticeDoc, invalidNoticeDoc, hardshipDoc))
@@ -391,7 +391,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                 .noticeOfRentChange(noticeOfRentChange)
                 .build())
             .documents(Collections.emptyList())
@@ -465,9 +465,10 @@ class ApplicationMapperTest {
             .landlordRepairsDetails("Roof leak")
             .tenantRepairsDetails("Painted wall")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Repaired a window")
             .build();
 
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .rentingFlatDetails("Flat details")
             .rentingRoomDetails("Room details")
@@ -489,7 +490,7 @@ class ApplicationMapperTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(address)
-            .marketRentCase(withTenancyDetails(marketRentCase, tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails, tenancyDetails))
             .documents(List.of(floorPlanDoc, outsidePropertyDoc, roomDoc1, roomDoc2, repairsDoc))
             .build();
 
@@ -504,20 +505,21 @@ class ApplicationMapperTest {
     void shouldMapPropertyDetailsWhenTenancyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(CasePropertyAddressEntity.builder().build())
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
             .build();
         PropertyDetailsDto result = ApplicationMapper.mapPropertyDetails(ptCaseEntity);
 
         assertThat(result).isNotNull();
         assertThat(result.getOtherFacilitiesAvailable()).isNull();
         assertThat(result.getLandlordRepairsDetails()).isNull();
+        assertThat(result.getTenantsPropertyRepairsDetails()).isNull();
     }
 
     @Test
-    void shouldMapPropertyDetailsWhenMarketRentCaseIsNull() {
+    void shouldMapPropertyDetailsWhenCasePropertyDetailsIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .propertyAddress(CasePropertyAddressEntity.builder().build())
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().build())
                 .build())
             .build();
@@ -531,7 +533,7 @@ class ApplicationMapperTest {
     @Test
     void shouldMapPropertyDetailsWhenAddressIsNull() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                 .tenancyDetails(TenancyDetailsEntity.builder().build())
                 .build())
             .build();
@@ -591,7 +593,7 @@ class ApplicationMapperTest {
             .originalTenancyStartDate(originalStartDate)
             .build();
 
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostWeekly(new BigDecimal("100.00"))
             .rentCostFortnightly(new BigDecimal("200.00"))
@@ -622,7 +624,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(withTenancyDetails(marketRentCase, tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails, tenancyDetails))
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
 
@@ -635,13 +637,13 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapRentDetailsWhenTenancyDetailsIsNull() {
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .rentPaymentFrequency(Frequency.MONTHLY)
             .rentCostMonthly(new BigDecimal("400.00"))
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .build();
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
 
         RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
@@ -663,7 +665,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(tenancyDetails).build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().tenancyDetails(tenancyDetails).build())
             .build();
 
         RentDetailsDto result = ApplicationMapper.mapRentDetails(ptCaseEntity);
@@ -679,7 +681,7 @@ class ApplicationMapperTest {
 
     @Test
     void shouldMapDetailsWithoutEvidenceDocument() {
-        MarketRentCaseEntity marketRentCase = MarketRentCaseEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .applicantSuggestedMarketRent(new BigDecimal("1500.00"))
             .applicantSuggestedMarketRentFrequency(Frequency.OTHER)
             .applicantSuggestedMarketRentFrequencyOther("Every 4 weeks")
@@ -688,7 +690,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .documents(Collections.emptyList())
             .build();
 
@@ -715,7 +717,7 @@ class ApplicationMapperTest {
     }
 
     @Test
-    void shouldMapMarketRentEvidenceDocumentWhenNoMarketRentCaseExists() {
+    void shouldMapMarketRentEvidenceDocumentWhenNoCasePropertyDetailsExists() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .documents(List.of(proposedMarketRentEvidenceDocument()))
             .build();
@@ -752,7 +754,7 @@ class ApplicationMapperTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(List.of(landlord))
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                                 .respondentPropertyDetails(respondentPropertyDetails)
                                 .build())
             .build();
@@ -768,6 +770,7 @@ class ApplicationMapperTest {
             .isEqualTo("The property has two bedrooms, not three");
         assertThat(result.getLandlordPhoneNumber()).isEqualTo("01234567890");
         assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+        assertThat(result.getPropertyDetailsResponseEvidence()).isEmpty();
     }
 
     @Test
@@ -782,7 +785,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
             .documents(List.of(evidence))
             .build();
 
@@ -801,6 +804,38 @@ class ApplicationMapperTest {
         assertThat(evidenceDto.getFilename()).isEqualTo("tenancy-evidence.pdf");
         assertThat(evidenceDto.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(evidenceDto.getSize()).isEqualTo(1024L);
+        assertThat(result.getPropertyDetailsResponseEvidence()).isEmpty();
+    }
+
+    @Test
+    void shouldMapLandlordPropertyDetailsEvidenceWhenRespondentPropertyDetailsAbsent() {
+        DocumentEntity evidence = DocumentEntity.builder()
+            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS)
+            .url("http://dm-store/doc/property-evidence")
+            .binaryUrl("http://dm-store/doc/property-evidence/binary")
+            .fileName("property-evidence.pdf")
+            .contentType(MediaType.APPLICATION_PDF_VALUE)
+            .size(1024L)
+            .build();
+
+        PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
+            .documents(List.of(evidence))
+            .build();
+
+        LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getRespondToTenantAnswersAboutPropertyDetails()).isNull();
+        assertThat(result.getLandlordPhoneNumber()).isNull();
+        assertThat(result.getTenancyDetailsResponseEvidence()).isEmpty();
+        assertThat(result.getPropertyDetailsResponseEvidence()).hasSize(1);
+        DocumentDto evidenceDto = result.getPropertyDetailsResponseEvidence().getFirst();
+        assertThat(evidenceDto.getUrl()).isEqualTo("http://dm-store/doc/property-evidence");
+        assertThat(evidenceDto.getBinaryUrl()).isEqualTo("http://dm-store/doc/property-evidence/binary");
+        assertThat(evidenceDto.getFilename()).isEqualTo("property-evidence.pdf");
+        assertThat(evidenceDto.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
+        assertThat(evidenceDto.getSize()).isEqualTo(1024L);
     }
 
     @Test
@@ -812,7 +847,7 @@ class ApplicationMapperTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(List.of(landlord))
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
             .build();
 
         LandlordResponseDto result = ApplicationMapper.mapLandlordResponse(ptCaseEntity);
@@ -827,7 +862,7 @@ class ApplicationMapperTest {
     void shouldReturnNullLandlordResponseWhenNothingExists() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(Collections.emptyList())
-            .marketRentCase(MarketRentCaseEntity.builder().build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().build())
             .build();
 
         assertThat(ApplicationMapper.mapLandlordResponse(ptCaseEntity)).isNull();
@@ -842,7 +877,7 @@ class ApplicationMapperTest {
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .parties(Collections.emptyList())
-            .marketRentCase(MarketRentCaseEntity.builder()
+            .casePropertyDetails(CasePropertyDetailsEntity.builder()
                                 .respondentPropertyDetails(respondentPropertyDetails)
                                 .build())
             .build();
@@ -871,7 +906,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(tenancyDetails).build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().tenancyDetails(tenancyDetails).build())
             .documents(List.of(document))
             .build();
 
@@ -919,7 +954,7 @@ class ApplicationMapperTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
-            .marketRentCase(MarketRentCaseEntity.builder().tenancyDetails(tenancyDetails).build())
+            .casePropertyDetails(CasePropertyDetailsEntity.builder().tenancyDetails(tenancyDetails).build())
             .documents(Collections.emptyList())
             .build();
 
@@ -1093,17 +1128,16 @@ class ApplicationMapperTest {
             .build();
     }
 
-    private static MarketRentCaseEntity withTenancyDetails(
-        MarketRentCaseEntity marketRentCase,
+    private static CasePropertyDetailsEntity withTenancyDetails(
+        CasePropertyDetailsEntity casePropertyDetails,
         TenancyDetailsEntity tenancyDetails
     ) {
-        marketRentCase.setTenancyDetails(tenancyDetails);
-        return marketRentCase;
+        casePropertyDetails.setTenancyDetails(tenancyDetails);
+        return casePropertyDetails;
     }
 
-    private static MarketRentCaseEntity marketRentCase() {
-        return MarketRentCaseEntity.builder()
-            .marketRentCaseType(APPLICATION_TYPE)
+    private static CasePropertyDetailsEntity casePropertyDetails() {
+        return CasePropertyDetailsEntity.builder()
             .typeOfPropertyRenting(PropertyType.TERRACED_HOUSE)
             .applicantSuggestedMarketRent(new BigDecimal("1200.00"))
             .applicantSuggestedMarketRentReasons("Market rate for the area")
@@ -1121,7 +1155,7 @@ class ApplicationMapperTest {
             .caseReference(CASE_REFERENCE)
             .createdDate(CREATED_DATE)
             .propertyAddress(propertyAddress)
-            .marketRentCase(withTenancyDetails(marketRentCase(), tenancyDetails))
+            .casePropertyDetails(withTenancyDetails(casePropertyDetails(), tenancyDetails))
             .documents(List.of(
                 DocumentEntity.builder()
                     .documentType(DocumentType.TENANCY_AGREEMENT)
@@ -1160,6 +1194,8 @@ class ApplicationMapperTest {
 
     private static CasePartyEntity fullCaseParty(UUID userId) {
         PTCaseEntity ptCase = ptCase(propertyAddress(POSTCODE), tenancyDetails(TENANCY_TYPE));
+        ptCase.setCaseSubType(ApplicationType.CHALLENGE_RENT_INCREASE);
+
         return caseParty(
             ptCase,
             userId,
@@ -1303,6 +1339,7 @@ class ApplicationMapperTest {
             .landlordRepairsDetails("Roof leak")
             .tenantRepairsDetails("Painted wall")
             .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Repaired a window")
             .repairsEvidenceDocuments(
                 List.of(
                     DocumentDto.builder()

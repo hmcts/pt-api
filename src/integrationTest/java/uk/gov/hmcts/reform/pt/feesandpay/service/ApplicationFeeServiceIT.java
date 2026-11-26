@@ -72,7 +72,7 @@ class ApplicationFeeServiceIT extends AbstractPostgresContainerIT {
     }
 
     @Test
-    void shouldSaveApplicationFeeLinkedToMarketRentCase() {
+    void shouldSaveApplicationFeeLinkedToPTCase() {
         applicationFeeService.requestApplicationFee(caseReference);
 
         ApplicationFeeEntity saved = applicationFeeRepository.findByRequestReference(serviceRequestReference)
@@ -81,13 +81,13 @@ class ApplicationFeeServiceIT extends AbstractPostgresContainerIT {
         assertThat(saved.getStatus()).isEqualTo("Not paid");
         assertThat(saved.getRequestDate()).isNotNull();
 
-        Long linkedCaseReference = transactionTemplate.execute(status -> applicationFeeRepository
-            .findByRequestReference(serviceRequestReference)
+        String requestReference = transactionTemplate.execute(status -> ptCaseRepository
+            .findByApplicationFeeId(saved.getId())
             .orElseThrow()
-            .getMarketRentCase()
-            .getPtCase()
-            .getCaseReference());
-        assertThat(linkedCaseReference).isEqualTo(caseReference);
+            .getApplicationFee()
+            .getRequestReference());
+
+        assertThat(requestReference).isEqualTo(serviceRequestReference);
     }
 
     @Test
