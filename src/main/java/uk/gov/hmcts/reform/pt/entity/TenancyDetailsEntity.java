@@ -70,7 +70,7 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo furnitureProvidedInTenancy;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String furnitureProvidedInTenancyDetails;
 
     private LocalDateTime tenancyEndDate;
