@@ -778,7 +778,7 @@ class PTCaseServiceTest {
         }
 
         @Test
-        @DisplayName("Should skip updating hearing or property inspection details when hearingInspectionDetails is null")
+        @DisplayName("Should skip updating hearing or property inspection details when hearingInspectionDetails null")
         void updateHearingOrPropertyInspectionDetailsSkippedWhenNull() {
             PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
             PTCase ptCase = PTCase.builder()
