@@ -9,10 +9,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +27,8 @@ import uk.gov.hmcts.reform.pt.ccd.domain.Frequency;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -204,4 +209,18 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JoinColumn(name = "pt_case_id", unique = true)
     @JsonBackReference
     private PTCaseEntity ptCase;
+
+    @ManyToMany
+    @JoinTable(
+        name = "case_property_details_documents",
+        joinColumns = @JoinColumn(name = "case_property_details_id"),
+        inverseJoinColumns = @JoinColumn(name = "case_document_id")
+    )
+    @Builder.Default
+    private Set<DocumentEntity> documents = new HashSet<>();
+
+    public void addDocument(DocumentEntity document) {
+        documents.add(document);
+        document.getCasePropertyDetails().add(this);
+    }
 }

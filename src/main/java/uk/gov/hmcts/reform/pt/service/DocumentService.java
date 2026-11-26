@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.RespondentPropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
@@ -188,11 +190,30 @@ public class DocumentService {
         entity.setPtCase(ptCaseEntity);
         entity.setCategoryId(CaseFileCategory.UNCATEGORISED_DOCUMENTS.getId());
         documentRepository.save(entity);
+        associateDocument(entity);
     }
 
     private List<DocumentEntity> getDocumentsOfTypeForCase(DocumentType type, PTCaseEntity ptCaseEntity) {
         return ptCaseEntity.getDocuments().stream()
             .filter(document -> document.getDocumentType() == type)
             .toList();
+    }
+
+    private void associateDocument(DocumentEntity document) {
+        CasePropertyDetailsEntity propertyDetails = document.getPtCase().getCasePropertyDetails();
+        if (propertyDetails == null) {
+            return;
+        }
+        switch (document.getDocumentType().getAssociation()) {
+            case PROPERTY_DETAILS -> propertyDetails.addDocument(document);
+            case RESPONDENT_PROPERTY_DETAILS -> {
+                RespondentPropertyDetailsEntity respondentPropertyDetails =
+                    propertyDetails.getRespondentPropertyDetails();
+                if (respondentPropertyDetails != null) {
+                    respondentPropertyDetails.addDocument(document);
+                }
+            }
+            default -> { }
+        }
     }
 }

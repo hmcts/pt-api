@@ -7,10 +7,12 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +20,9 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -56,4 +61,13 @@ public class DocumentEntity extends AuditableEntity {
     @JoinColumn(name = "pt_case_id")
     @JsonBackReference
     private PTCaseEntity ptCase;
+
+    @ManyToMany(mappedBy = "documents")
+    @Builder.Default
+    private Set<CasePropertyDetailsEntity> casePropertyDetails = new HashSet<>();
+
+    @ManyToMany(mappedBy = "documents")
+    @Builder.Default
+    private Set<RespondentPropertyDetailsEntity> respondentPropertyDetails = new HashSet<>();
+
 }
