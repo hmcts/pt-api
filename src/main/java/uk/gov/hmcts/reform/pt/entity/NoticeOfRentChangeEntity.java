@@ -46,7 +46,7 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     private YesOrNo noticeLegallyValid;
 
     @Column(length = 500)
-    private String noticeNotLegallyValidDetails;
+    private String noticeNotLegallyValidReason;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", unique = true)

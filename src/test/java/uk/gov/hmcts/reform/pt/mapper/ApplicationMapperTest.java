@@ -313,7 +313,7 @@ class ApplicationMapperTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noUploadOfNoticeProposingNewRentReason("Paper copy only")
             .noticeLegallyValid(YesOrNo.NO)
-            .noticeNotLegallyValidDetails("Incorrect notice period")
+            .noticeNotLegallyValidReason("Incorrect notice period")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
             .rentIncreaseToCauseHardshipDetails("Financial hardship")
             .build();

@@ -59,7 +59,7 @@ class NoticeOfRentChangeServiceTest {
         assertThat(saved.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Lost paper copy");
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
-        assertThat(saved.getNoticeNotLegallyValidDetails()).isEqualTo("Invalid date on notice");
+        assertThat(saved.getNoticeNotLegallyValidReason()).isEqualTo("Invalid date on notice");
         assertThat(saved.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getRentIncreaseToCauseHardshipDetails()).isEqualTo("Financial hardship");
     }
@@ -71,7 +71,7 @@ class NoticeOfRentChangeServiceTest {
             .receivedLandlordNoticeProposingNewRent(YesOrNo.NO)
             .noUploadOfNoticeProposingNewRentReason("Old reason")
             .noticeLegallyValid(YesOrNo.YES)
-            .noticeNotLegallyValidDetails(null)
+            .noticeNotLegallyValidReason(null)
             .rentIncreaseToCauseHardship(YesOrNo.NO)
             .rentIncreaseToCauseHardshipDetails("Old hardship")
             .build();
@@ -98,7 +98,7 @@ class NoticeOfRentChangeServiceTest {
         assertThat(existing.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("New reason");
         assertThat(existing.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
-        assertThat(existing.getNoticeNotLegallyValidDetails()).isEqualTo("Updated details");
+        assertThat(existing.getNoticeNotLegallyValidReason()).isEqualTo("Updated details");
         assertThat(existing.getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getRentIncreaseToCauseHardshipDetails()).isEqualTo("Updated hardship");
     }

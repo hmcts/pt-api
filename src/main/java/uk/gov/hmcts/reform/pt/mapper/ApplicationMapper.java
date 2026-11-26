@@ -118,7 +118,7 @@ public class ApplicationMapper {
                 findDocumentOfTypeAndMap(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity))
             .noticeLegallyValid(get(entity, NoticeOfRentChangeEntity::getNoticeLegallyValid))
             .noticeNotLegallyValidDetails(
-                get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidDetails))
+                get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidReason))
             .noticeNotLegallyValidDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(
