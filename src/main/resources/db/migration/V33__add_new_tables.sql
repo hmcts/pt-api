@@ -42,3 +42,12 @@ ALTER TYPE DOCUMENT_TYPE
   ADD VALUE 'LANDLORD_PROPOSED_MARKET_RENT_EVIDENCE';
 ALTER TYPE DOCUMENT_TYPE
   ADD VALUE 'LANDLORD_REPAIRS_EVIDENCE';
+
+CREATE INDEX duplicate_check_case_application_vetting_id_idx
+  ON duplicate_check (case_application_vetting_id);
+CREATE INDEX legal_officer_referral_case_application_vetting_id_idx
+  ON legal_officer_referral (case_application_vetting_id);
+CREATE INDEX respondent_property_details_statement_of_truth_id_idx
+  ON respondent_property_details (statement_of_truth_id);
+CREATE INDEX respondent_property_details_case_party_id_idx
+  ON respondent_property_details (case_party_id);
