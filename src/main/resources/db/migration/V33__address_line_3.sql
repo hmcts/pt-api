@@ -26,3 +26,6 @@ ALTER TABLE pt_case
   ADD COLUMN method VARCHAR(100),
   ADD COLUMN channel VARCHAR(100),
   ADD COLUMN version VARCHAR(100);
+
+ALTER TABLE tenancy_details
+  ADD COLUMN repairs_responsible_by_tenant_details VARCHAR(5000);

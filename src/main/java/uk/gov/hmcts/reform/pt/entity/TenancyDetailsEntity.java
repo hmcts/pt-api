@@ -96,6 +96,9 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String noTenancyAgreementReason;
 
+    @Column(length = 5000)
+    private String repairsResponsibleByTenantDetails;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", unique = true)
     @JsonBackReference
