@@ -47,4 +47,5 @@ ALTER TABLE fee_help_with_fees
 
 ALTER TABLE case_property_details
   DROP COLUMN hearing_requested,
-  DROP COLUMN reason_hearing_requested;
+  DROP COLUMN reason_hearing_requested,
+  ALTER COLUMN floorplan_manual_details TYPE VARCHAR(200);
