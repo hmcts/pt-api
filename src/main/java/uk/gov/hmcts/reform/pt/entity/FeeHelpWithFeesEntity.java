@@ -26,7 +26,8 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @AllArgsConstructor
 @Table(name = "fee_help_with_fees")
 public class FeeHelpWithFeesEntity extends AuditableEntity {
-    private Integer referenceNumber;
+    @Column(length = 32)
+    private String referenceNumber;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

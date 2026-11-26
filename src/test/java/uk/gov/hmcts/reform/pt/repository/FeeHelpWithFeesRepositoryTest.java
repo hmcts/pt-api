@@ -46,7 +46,7 @@ class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFe
         );
 
         FeeHelpWithFeesEntity helpWithFees = FeeHelpWithFeesEntity.builder()
-            .referenceNumber(123456)
+            .referenceNumber("HWF-123-456")
             .appliedForHelpWithFees(YesOrNo.YES)
             .applicationFee(fee)
             .build();
@@ -57,7 +57,7 @@ class FeeHelpWithFeesRepositoryTest extends AbstractRepositoryTest<FeeHelpWithFe
 
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isNotNull();
-        assertThat(result.get().getReferenceNumber()).isEqualTo(123456);
+        assertThat(result.get().getReferenceNumber()).isEqualTo("HWF-123-456");
         assertThat(result.get().getAppliedForHelpWithFees()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getApplicationFee().getId()).isEqualTo(fee.getId());
     }
