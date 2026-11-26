@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class AbstractAddressEntity extends AuditableEntity {
-    @Column(name = "address_line_1", length = 100)
+    @Column(name = "address_line_1", length = 100, nullable = false)
     private String addressLine1;
 
     @Column(name = "address_line_2", length = 100)
