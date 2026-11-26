@@ -56,7 +56,7 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesNoNotSure anyTenantsMadePropertyRepairs;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String tenantsPropertyRepairsDetails;
 
     @Enumerated(EnumType.STRING)
