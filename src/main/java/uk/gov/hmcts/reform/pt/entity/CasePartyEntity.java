@@ -47,7 +47,7 @@ public class CasePartyEntity extends AuditableEntity {
     @Column(length = 100)
     private String organisationName;
 
-    @Column(length = 20)
+    @Column(length = 16)
     private String phoneNumber;
 
     @Column(length = 20)
