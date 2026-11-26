@@ -36,6 +36,7 @@ public class TenancyDetailsEntity extends AuditableEntity {
     private YesOrNo documentUploaded;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32)
     private TenancyType tenancyType;
 
     @Enumerated(EnumType.STRING)
