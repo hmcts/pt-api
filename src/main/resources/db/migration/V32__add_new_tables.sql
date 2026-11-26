@@ -38,14 +38,22 @@ CREATE TABLE case_property_details_documents (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
   case_document_id BIGINT NOT NULL REFERENCES document,
-  case_property_details_id BIGINT NOT NULL REFERENCES case_property_details
+  case_property_details_id BIGINT NOT NULL REFERENCES case_property_details,
+
+  created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_by VARCHAR(100)
 );
 
 CREATE TABLE respondent_property_details_documents (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
   case_document_id BIGINT NOT NULL REFERENCES document,
-  respondent_property_details_id BIGINT NOT NULL REFERENCES respondent_property_details
+  respondent_property_details_id BIGINT NOT NULL REFERENCES respondent_property_details,
+
+  created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_modified_by VARCHAR(100)
 );
 
 ALTER TYPE DOCUMENT_TYPE
