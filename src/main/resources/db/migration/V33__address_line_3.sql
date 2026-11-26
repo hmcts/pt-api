@@ -37,8 +37,7 @@ ALTER TABLE pt_case
 
 ALTER TABLE tenancy_details
   ADD COLUMN repairs_responsible_by_tenant_details VARCHAR(5000),
-  ALTER COLUMN tenancy_type TYPE VARCHAR(32),
-  ALTER COLUMN tenancy_type SET NOT NULL;
+  ALTER COLUMN tenancy_type TYPE VARCHAR(32);
 
 ALTER TABLE notice_of_rent_change
   RENAME COLUMN notice_not_legally_valid_details TO notice_not_legally_valid_reason;
