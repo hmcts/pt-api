@@ -205,8 +205,8 @@ class CasePropertyDetailsServiceTest {
         CasePropertyDetailsEntity saved = captor.getValue();
 
         assertThat(saved.getPtCase()).isEqualTo(ptCase);
-        assertThat(saved.getHearingRequested()).isEqualTo(YesOrNo.NO);
-        assertThat(saved.getReasonHearingRequested()).isEqualTo("Written representation preferred");
+        assertThat(saved.getDecisionWithoutHearing()).isEqualTo(YesOrNo.NO);
+        assertThat(saved.getDecisionWithoutHearingReason()).isEqualTo("Written representation preferred");
         assertThat(saved.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getNoDecisionWithoutInspectionReason()).isEqualTo("No inspection required");
     }
@@ -232,8 +232,8 @@ class CasePropertyDetailsServiceTest {
 
         verify(casePropertyDetailsRepository).save(existing);
         assertThat(existing.getPtCase()).isEqualTo(ptCase);
-        assertThat(existing.getHearingRequested()).isEqualTo(YesOrNo.YES);
-        assertThat(existing.getReasonHearingRequested()).isEqualTo("Need a hearing");
+        assertThat(existing.getDecisionWithoutHearing()).isEqualTo(YesOrNo.YES);
+        assertThat(existing.getDecisionWithoutHearingReason()).isEqualTo("Need a hearing");
         assertThat(existing.getAgreeToDecisionWithoutInspection()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getNoDecisionWithoutInspectionReason()).isEqualTo("Updated reason");
     }

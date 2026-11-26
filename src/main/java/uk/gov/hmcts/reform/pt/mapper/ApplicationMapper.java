@@ -96,8 +96,9 @@ public class ApplicationMapper {
         CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
 
         return HearingInspectionDetailsDto.builder()
-            .hearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getHearingRequested))
-            .reasonHearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getReasonHearingRequested))
+            .hearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getDecisionWithoutHearing))
+            .reasonHearingRequested(
+                get(casePropertyDetails, CasePropertyDetailsEntity::getDecisionWithoutHearingReason))
             .agreeToDecisionWithoutInspection(
                 get(casePropertyDetails, CasePropertyDetailsEntity::getAgreeToDecisionWithoutInspection))
             .noDecisionWithoutInspectionReason(

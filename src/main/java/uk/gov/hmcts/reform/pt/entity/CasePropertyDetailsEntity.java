@@ -164,15 +164,6 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String decisionWithoutHearingReason;
 
-    // NOT PRESENT
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo hearingRequested;
-
-    // NOT PRESENT
-    @Column(length = 500)
-    private String reasonHearingRequested;
-
     @Column(length = 100)
     private String language;
 

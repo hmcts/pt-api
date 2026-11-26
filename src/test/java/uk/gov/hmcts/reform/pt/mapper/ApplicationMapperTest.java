@@ -178,8 +178,8 @@ class ApplicationMapperTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .casePropertyDetails(
                 CasePropertyDetailsEntity.builder()
-                    .hearingRequested(YesOrNo.NO)
-                    .reasonHearingRequested("Some reason")
+                    .decisionWithoutHearing(YesOrNo.NO)
+                    .decisionWithoutHearingReason("Some reason")
                     .agreeToDecisionWithoutInspection(YesOrNo.YES)
                     .noDecisionWithoutInspectionReason("Some reason")
                     .build()
@@ -199,8 +199,8 @@ class ApplicationMapperTest {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder()
             .casePropertyDetails(
                 CasePropertyDetailsEntity.builder()
-                    .hearingRequested(YesOrNo.YES)
-                    .reasonHearingRequested("Hearing reason")
+                    .decisionWithoutHearing(YesOrNo.YES)
+                    .decisionWithoutHearingReason("Hearing reason")
                     .build()
             )
             .build();
@@ -1143,8 +1143,8 @@ class ApplicationMapperTest {
             .applicantSuggestedMarketRentReasons("Market rate for the area")
             .additionalPropertyInfoToConsiderWhenDeterminingRent(YesOrNo.YES)
             .additionalPropertyInfoToConsiderWhenDeterminingRentDetails("Renovations")
-            .hearingRequested(YesOrNo.YES)
-            .reasonHearingRequested("Hearing reason")
+            .decisionWithoutHearing(YesOrNo.YES)
+            .decisionWithoutHearingReason("Hearing reason")
             .agreeToDecisionWithoutInspection(YesOrNo.YES)
             .noDecisionWithoutInspectionReason("Inspection reason")
             .build();
