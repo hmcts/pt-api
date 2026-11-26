@@ -65,7 +65,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(length = 200)
     private String floorplanManualDetails;
 
-    @Column(length = 5000)
+    @Column(length = 200)
     private String propertyIndoorFeatures;
 
     @Enumerated(EnumType.STRING)
