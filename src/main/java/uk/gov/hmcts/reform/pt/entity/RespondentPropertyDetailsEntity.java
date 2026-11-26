@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -40,6 +41,50 @@ public class RespondentPropertyDetailsEntity extends AuditableEntity {
 
     @Column(length = 500)
     private String respondToTenantAnswersAboutPropertyDetailsDescription;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo propertyAddressCorrect;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo servedNoticeProposingNewRentProvidedInTenantApplication;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo agreeWithRentProposedByTenant;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo agreeToDecisionWithoutInspection;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo respondToTribunalAboutTenantExperiencingHardshipAnswers;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo agreeToDecisionWithoutHearing;
+
+    @Column(length = 500)
+    private String noDecisionWithoutHearingReason;
+
+    @Column(length = 500)
+    private String noDecisionWithoutInspectionReason;
+
+    @Column(length = 500)
+    private String landlordProposedRentAmountAndReasons;
+
+    @Column(length = 500)
+    private String tenantsAnswersExperiencingHardshipResponse;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "statement_of_truth_id")
+    private StatementOfTruthEntity statementOfTruth;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_party_id")
+    private CasePartyEntity caseParty;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", nullable = false, unique = true)
