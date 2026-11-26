@@ -29,6 +29,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false)
     private YesOrNo receivedLandlordNoticeProposingNewRent;
 
     @Column(length = 500)

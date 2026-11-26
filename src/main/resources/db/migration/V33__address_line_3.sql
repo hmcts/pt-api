@@ -41,6 +41,9 @@ ALTER TABLE tenancy_details
 ALTER TABLE notice_of_rent_change
   RENAME COLUMN notice_not_legally_valid_details TO notice_not_legally_valid_reason;
 
+ALTER TABLE notice_of_rent_change
+  ALTER COLUMN received_landlord_notice_proposing_new_rent SET NOT NULL;
+
 ALTER TABLE fee_help_with_fees
   ADD COLUMN applied_for_help_with_fees YES_NO NOT NULL,
   ALTER COLUMN reference_number TYPE VARCHAR(32);
