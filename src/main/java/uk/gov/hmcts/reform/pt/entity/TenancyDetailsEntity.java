@@ -49,7 +49,7 @@ public class TenancyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String landlordRepairsDetails;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String tenantRepairsDetails;
 
     @Enumerated(EnumType.STRING)

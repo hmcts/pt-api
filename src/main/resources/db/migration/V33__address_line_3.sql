@@ -39,7 +39,8 @@ ALTER TABLE tenancy_details
   ADD COLUMN repairs_responsible_by_tenant_details VARCHAR(5000),
   ALTER COLUMN tenancy_type TYPE VARCHAR(32),
   ALTER COLUMN additional_services_provided_in_tenancy_details TYPE VARCHAR(500),
-  ALTER COLUMN landlord_repairs_details TYPE VARCHAR(500);
+  ALTER COLUMN landlord_repairs_details TYPE VARCHAR(500),
+  ALTER COLUMN tenant_repairs_details TYPE VARCHAR(500);
 
 ALTER TABLE notice_of_rent_change
   RENAME COLUMN notice_not_legally_valid_details TO notice_not_legally_valid_reason;
