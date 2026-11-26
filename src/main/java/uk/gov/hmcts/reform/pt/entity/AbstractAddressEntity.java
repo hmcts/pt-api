@@ -22,7 +22,7 @@ public abstract class AbstractAddressEntity extends AuditableEntity {
     @Column(name = "address_line_3", length = 100)
     private String addressLine3;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String townCity;
 
     @Column(length = 100)
