@@ -72,7 +72,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo sharePropertyWithLandlord;
 
-    @Column(length = 5000)
+    @Column(length = 32)
     private String sharePropertyWithLandlordDetails;
 
     @Enumerated(EnumType.STRING)
