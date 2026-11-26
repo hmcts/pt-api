@@ -554,6 +554,35 @@ class DocumentServiceTest {
     }
 
     @Test
+    @DisplayName("Should update document for landlord response when property details evidence is present")
+    void updateDocumentsForLandlordResponseUpdatesPropertyDetailsDocument() {
+        PTCaseEntity ptCase = PTCaseEntity.builder()
+            .documents(Collections.emptyList())
+            .build();
+
+        UploadedDocument evidenceDoc = UploadedDocument.builder()
+            .document(Document.builder().url("http://dm-store/documents/property").filename("property.pdf").build())
+            .contentType("application/pdf")
+            .sizeInBytes(500L)
+            .build();
+
+        LandlordResponse details = LandlordResponse.builder()
+            .propertyDetailsResponseEvidence(List.of(new ListValue<>("1", evidenceDoc)))
+            .build();
+
+        documentService.updateDocumentsForLandlordResponse(details, ptCase);
+
+        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
+        verify(documentRepository).save(captor.capture());
+
+        DocumentEntity savedDoc = captor.getValue();
+        assertThat(savedDoc.getDocumentType())
+            .isEqualTo(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS);
+        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/property");
+        assertThat(savedDoc.getFileName()).isEqualTo("property.pdf");
+    }
+
+    @Test
     @DisplayName("Should update document for tenancy agreement details when evidence document is present")
     void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
         PTCaseEntity ptCase = PTCaseEntity.builder()

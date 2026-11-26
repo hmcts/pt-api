@@ -179,6 +179,7 @@ public class ApplicationMapper {
             .tenantRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantRepairsDetails))
             .anyTenantsMadePropertyRepairs(
                 get(tenancyDetails, TenancyDetailsEntity::getAnyTenantsMadePropertyRepairs))
+            .tenantsPropertyRepairsDetails(get(tenancyDetails, TenancyDetailsEntity::getTenantsPropertyRepairsDetails))
             .repairsEvidenceDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.TENANT_REPAIRS_EVIDENCE, ptCaseEntity))
             .build();
@@ -271,7 +272,10 @@ public class ApplicationMapper {
         CasePartyEntity respondent = getPartyWithRole(ptCaseEntity, PartyRole.LANDLORD);
         List<DocumentDto> tenancyDetailsResponseEvidence =
             findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS, ptCaseEntity);
-        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()) {
+        List<DocumentDto> propertyDetailsResponseEvidence =
+            findDocumentsOfTypeAndMap(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS, ptCaseEntity);
+        if (respondentPropertyDetails == null && respondent == null && tenancyDetailsResponseEvidence.isEmpty()
+            && propertyDetailsResponseEvidence.isEmpty()) {
             return null;
         }
 
@@ -298,6 +302,7 @@ public class ApplicationMapper {
                 ))
             .landlordPhoneNumber(get(respondent, CasePartyEntity::getPhoneNumber))
             .tenancyDetailsResponseEvidence(tenancyDetailsResponseEvidence)
+            .propertyDetailsResponseEvidence(propertyDetailsResponseEvidence)
             .build();
     }
 

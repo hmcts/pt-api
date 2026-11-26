@@ -92,6 +92,11 @@ public class DocumentService {
             details.getTenancyDetailsResponseEvidence(),
             ptCaseEntity
         );
+        this.updateMultipleDocuments(
+            DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS,
+            details.getPropertyDetailsResponseEvidence(),
+            ptCaseEntity
+        );
     }
 
     @Transactional

@@ -35,8 +35,8 @@ class NoticeOfRentChangeServiceTest {
     @DisplayName("Should create new notice of rent change entity when none exists")
     void updateNoticeOfRentChangeDetailsCreatesNew() {
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder().build();
-        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(marketRentCase);
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder().build();
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(casePropertyDetails);
 
         NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
@@ -54,8 +54,8 @@ class NoticeOfRentChangeServiceTest {
         verify(noticeOfRentChangeRepository).save(captor.capture());
         NoticeOfRentChangeEntity saved = captor.getValue();
 
-        assertThat(saved.getCasePropertyDetails()).isEqualTo(marketRentCase);
-        assertThat(marketRentCase.getNoticeOfRentChange()).isEqualTo(saved);
+        assertThat(saved.getCasePropertyDetails()).isEqualTo(casePropertyDetails);
+        assertThat(casePropertyDetails.getNoticeOfRentChange()).isEqualTo(saved);
         assertThat(saved.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(saved.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Lost paper copy");
         assertThat(saved.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
@@ -77,10 +77,10 @@ class NoticeOfRentChangeServiceTest {
             .build();
 
         PTCaseEntity ptCaseEntity = PTCaseEntity.builder().build();
-        CasePropertyDetailsEntity marketRentCase = CasePropertyDetailsEntity.builder()
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity.builder()
             .noticeOfRentChange(existing)
             .build();
-        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(marketRentCase);
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity)).thenReturn(casePropertyDetails);
 
         NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
@@ -94,7 +94,7 @@ class NoticeOfRentChangeServiceTest {
         noticeOfRentChangeService.updateNoticeOfRentChangeDetails(details, ptCaseEntity);
 
         verify(noticeOfRentChangeRepository).save(existing);
-        assertThat(existing.getCasePropertyDetails()).isEqualTo(marketRentCase);
+        assertThat(existing.getCasePropertyDetails()).isEqualTo(casePropertyDetails);
         assertThat(existing.getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("New reason");
         assertThat(existing.getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);

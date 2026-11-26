@@ -1014,7 +1014,13 @@ class PTCaseServiceTest {
         ptCaseService.deleteRespondentDocument(caseReference, PTCase.builder().documentIdToDelete("42").build());
 
         verify(documentService).deleteDocument(
-            42L, caseReference, Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS));
+            42L,
+            caseReference,
+            Set.of(
+                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS,
+                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS
+            )
+        );
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
     }
 

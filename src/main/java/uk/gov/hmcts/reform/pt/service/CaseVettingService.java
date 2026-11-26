@@ -45,7 +45,7 @@ public class CaseVettingService {
         CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
         if (casePropertyDetails == null) {
             throw new IllegalStateException(
-                "Market rent case not found for case reference: " + ptCaseEntity.getCaseReference()
+                "Case property details not found for case reference: " + ptCaseEntity.getCaseReference()
             );
         }
 

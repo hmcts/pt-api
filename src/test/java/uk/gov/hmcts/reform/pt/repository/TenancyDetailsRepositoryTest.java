@@ -34,14 +34,14 @@ class TenancyDetailsRepositoryTest extends AbstractRepositoryTest<TenancyDetails
     void saveAndFindTenancyDetails() {
         long caseReference = 1234567890123456L;
         PTCaseEntity ptCase = ptCaseRepository.save(PTCaseEntity.builder().caseReference(caseReference).build());
-        CasePropertyDetailsEntity marketRentCase = casePropertyDetailsRepository.save(
+        CasePropertyDetailsEntity casePropertyDetails = casePropertyDetailsRepository.save(
             CasePropertyDetailsEntity.builder().ptCase(ptCase).build());
 
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tenancyType(TenancyType.ASSURED_PERIODIC_TENANCY)
             .documentUploaded(YesOrNo.YES)
             .additionalServicesProvidedInTenancy(YesOrNo.NO)
-            .casePropertyDetails(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
 
         TenancyDetailsEntity saved = repository.save(tenancyDetails);
@@ -53,7 +53,7 @@ class TenancyDetailsRepositoryTest extends AbstractRepositoryTest<TenancyDetails
         assertThat(result.get().getTenancyType()).isEqualTo(TenancyType.ASSURED_PERIODIC_TENANCY);
         assertThat(result.get().getDocumentUploaded()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.NO);
-        assertThat(result.get().getCasePropertyDetails().getId()).isEqualTo(marketRentCase.getId());
+        assertThat(result.get().getCasePropertyDetails().getId()).isEqualTo(casePropertyDetails.getId());
 
         Optional<TenancyDetailsEntity> byTypeAndRef = repository
             .findFirstByTenancyTypeAndCasePropertyDetails_PtCase_CaseReference(

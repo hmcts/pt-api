@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.pt.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -77,8 +76,7 @@ public class PTCaseEntity extends AuditableEntity {
     @Builder.Default
     private List<CasePartyEntity> parties = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "application_fee_id", unique = true)
-    @JsonBackReference
     private ApplicationFeeEntity applicationFee;
 }

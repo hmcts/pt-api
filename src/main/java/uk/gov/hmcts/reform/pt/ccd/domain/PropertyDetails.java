@@ -159,13 +159,13 @@ public class PropertyDetails {
     private String sharePropertyWithLandlordDetails;
 
     @CCD(
-        label = "Landlord repairs details",
+        label = "Landlord repairs responsibilities details",
         access = {CitizenAccess.class}
     )
     private String landlordRepairsDetails;
 
     @CCD(
-        label = "Tenant repairs details",
+        label = "Tenant repairs responsibilities details",
         access = {CitizenAccess.class}
     )
     private String tenantRepairsDetails;
@@ -175,6 +175,12 @@ public class PropertyDetails {
         access = {CitizenAccess.class}
     )
     private YesNoNotSure anyTenantsMadePropertyRepairs;
+
+    @CCD(
+        label = "Repairs made by tenants",
+        access = {CitizenAccess.class}
+    )
+    private String tenantsPropertyRepairsDetails;
 
     @CCD(
         label = "Repairs evidence documents",
