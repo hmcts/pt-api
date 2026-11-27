@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
@@ -47,18 +48,24 @@ public class TenancyDetailsService {
     public void updateWithPropertyDetails(PTCaseEntity ptCaseEntity, PropertyDetails details) {
         TenancyDetailsEntity tenancyDetails = getOrCreateTenancyDetails(ptCaseEntity);
         setIfNotNull(details.getOtherFacilitiesAvailable(), tenancyDetails::setTenancyIncludeFacilities);
-        setIfNotNull(details.getOtherFacilitiesDetails(), tenancyDetails::setOtherFacilitiesDetails);
+        setIfElseNull(
+            () -> details.getOtherFacilitiesAvailable() == YesOrNo.YES,
+            details::getOtherFacilitiesDetails,
+            tenancyDetails::setOtherFacilitiesDetails
+        );
         setIfNotNull(details.getFurnitureProvidedInTenancy(), tenancyDetails::setFurnitureProvidedInTenancy);
-        setIfNotNull(
-            details.getFurnitureProvidedInTenancyDetails(),
+        setIfElseNull(
+            () -> details.getFurnitureProvidedInTenancy() == YesOrNo.YES,
+            details::getFurnitureProvidedInTenancyDetails,
             tenancyDetails::setFurnitureProvidedInTenancyDetails
         );
         setIfNotNull(
             details.getAdditionalServicesProvidedInTenancy(),
             tenancyDetails::setAdditionalServicesProvidedInTenancy
         );
-        setIfNotNull(
-            details.getAdditionalServicesProvidedInTenancyDetails(),
+        setIfElseNull(
+            () -> details.getAdditionalServicesProvidedInTenancy() == YesOrNo.YES,
+            details::getAdditionalServicesProvidedInTenancyDetails,
             tenancyDetails::setAdditionalServicesProvidedInTenancyDetails
         );
         setIfNotNull(details.getLandlordRepairsDetails(), tenancyDetails::setLandlordRepairsDetails);

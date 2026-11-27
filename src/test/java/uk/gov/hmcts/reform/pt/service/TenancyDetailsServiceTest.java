@@ -137,11 +137,51 @@ class TenancyDetailsServiceTest {
         assertThat(existing.getFurnitureProvidedInTenancy()).isEqualTo(YesOrNo.YES);
         assertThat(existing.getFurnitureProvidedInTenancyDetails()).isEqualTo("Bed, Wardrobe");
         assertThat(existing.getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.NO);
-        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isEqualTo("None");
+        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isNull();
         assertThat(existing.getLandlordRepairsDetails()).isEqualTo("Boiler repair");
         assertThat(existing.getTenantRepairsDetails()).isEqualTo("Fixed shelf");
         assertThat(existing.getAnyTenantsMadePropertyRepairs()).isEqualTo(YesNoNotSure.YES);
         assertThat(existing.getTenantsPropertyRepairsDetails()).isEqualTo("Repaired a window");
+    }
+
+    @Test
+    @DisplayName("Should clear details when parent answers change to No")
+    void updateWithPropertyDetailsClearsDetailsWhenAnswersChangeToNo() {
+        TenancyDetailsEntity existing = TenancyDetailsEntity.builder()
+            .tenancyIncludeFacilities(YesOrNo.YES)
+            .otherFacilitiesDetails("Previous facilities")
+            .furnitureProvidedInTenancy(YesOrNo.YES)
+            .furnitureProvidedInTenancyDetails("Previous furniture")
+            .additionalServicesProvidedInTenancy(YesOrNo.YES)
+            .additionalServicesProvidedInTenancyDetails("Previous services")
+            .anyTenantsMadePropertyRepairs(YesNoNotSure.YES)
+            .tenantsPropertyRepairsDetails("Previous repairs")
+            .build();
+        PTCaseEntity ptCase = PTCaseEntity.builder().build();
+        CasePropertyDetailsEntity casePropertyDetails = CasePropertyDetailsEntity
+            .builder()
+            .tenancyDetails(existing)
+            .build();
+        when(casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCase)).thenReturn(casePropertyDetails);
+
+        PropertyDetails details = PropertyDetails.builder()
+            .otherFacilitiesAvailable(YesOrNo.NO)
+            .furnitureProvidedInTenancy(YesOrNo.NO)
+            .additionalServicesProvidedInTenancy(YesOrNo.NO)
+            .anyTenantsMadePropertyRepairs(YesNoNotSure.NO)
+            .build();
+
+        tenancyDetailsService.updateWithPropertyDetails(ptCase, details);
+
+        verify(tenancyDetailsRepository).save(existing);
+        assertThat(existing.getTenancyIncludeFacilities()).isEqualTo(YesOrNo.NO);
+        assertThat(existing.getOtherFacilitiesDetails()).isNull();
+        assertThat(existing.getFurnitureProvidedInTenancy()).isEqualTo(YesOrNo.NO);
+        assertThat(existing.getFurnitureProvidedInTenancyDetails()).isNull();
+        assertThat(existing.getAdditionalServicesProvidedInTenancy()).isEqualTo(YesOrNo.NO);
+        assertThat(existing.getAdditionalServicesProvidedInTenancyDetails()).isNull();
+        assertThat(existing.getAnyTenantsMadePropertyRepairs()).isEqualTo(YesNoNotSure.NO);
+        assertThat(existing.getTenantsPropertyRepairsDetails()).isNull();
     }
 
     @ParameterizedTest

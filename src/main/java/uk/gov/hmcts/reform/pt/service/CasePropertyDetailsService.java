@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.pt.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.pt.ccd.domain.HearingPropertyInspectionDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.PropertyType;
 import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.reform.pt.repository.CasePropertyDetailsRepository;
 
 import java.math.BigDecimal;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfElseNull;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -24,16 +27,33 @@ public class CasePropertyDetailsService {
     public void updateWithPropertyDetails(PTCaseEntity ptCaseEntity, PropertyDetails propertyDetails) {
         CasePropertyDetailsEntity casePropertyDetails = findOrBuildCasePropertyDetails(ptCaseEntity);
         setIfNotNull(propertyDetails.getPropertyType(), casePropertyDetails::setTypeOfPropertyRenting);
-        setIfNotNull(propertyDetails.getRentingFlatDetails(), casePropertyDetails::setRentingFlatDetails);
-        setIfNotNull(propertyDetails.getRentingRoomDetails(), casePropertyDetails::setRentingRoomDetails);
-        setIfNotNull(propertyDetails.getOtherMethodRentingDetails(), casePropertyDetails::setOtherMethodOfRentDetails);
+        setIfElseNull(
+            () -> propertyDetails.getPropertyType() == PropertyType.FLAT,
+            propertyDetails::getRentingFlatDetails,
+            casePropertyDetails::setRentingFlatDetails
+        );
+        setIfElseNull(
+            () -> propertyDetails.getPropertyType() == PropertyType.ROOM,
+            propertyDetails::getRentingRoomDetails,
+            casePropertyDetails::setRentingRoomDetails
+        );
+        setIfElseNull(
+            () -> propertyDetails.getPropertyType() == PropertyType.OTHER,
+            propertyDetails::getOtherMethodRentingDetails,
+            casePropertyDetails::setOtherMethodOfRentDetails
+        );
         setIfNotNull(propertyDetails.getPropertyFloorPlanAvailable(),
                      casePropertyDetails::setPropertyFloorPlanAvailable);
-        setIfNotNull(propertyDetails.getFloorPlanManualDetails(), casePropertyDetails::setFloorplanManualDetails);
+        setIfElseNull(
+            () -> propertyDetails.getPropertyFloorPlanAvailable() == YesOrNo.NO,
+            propertyDetails::getFloorPlanManualDetails,
+            casePropertyDetails::setFloorplanManualDetails
+        );
         setIfNotNull(propertyDetails.getIndoorFeatures(), casePropertyDetails::setPropertyIndoorFeatures);
         setIfNotNull(propertyDetails.getSharePropertyWithLandlord(), casePropertyDetails::setSharePropertyWithLandlord);
-        setIfNotNull(
-            propertyDetails.getSharePropertyWithLandlordDetails(),
+        setIfElseNull(
+            () -> propertyDetails.getSharePropertyWithLandlord() == YesOrNo.YES,
+            propertyDetails::getSharePropertyWithLandlordDetails,
             casePropertyDetails::setSharePropertyWithLandlordDetails
         );
 
