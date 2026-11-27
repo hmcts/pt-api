@@ -1,20 +1,21 @@
 package uk.gov.hmcts.reform.pt.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.pt.ccd.domain.DocumentType;
 import uk.gov.hmcts.reform.pt.ccd.domain.LandlordResponse;
-import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.NoticeOfRentIncreaseDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
+import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.UploadedDocument;
 import uk.gov.hmcts.reform.pt.entity.DocumentEntity;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.repository.DocumentRepository;
 import uk.gov.hmcts.reform.pt.service.document.CaseDocumentService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.pt.ccd.domain.CaseFileCategory.UNCATEGORISED_D
 class DocumentServiceTest {
 
     private static final long CASE_REFERENCE = 1234567890123456L;
+    private static final String CDAM_URL = "http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e";
 
     @Mock
     private DocumentRepository documentRepository;
@@ -52,475 +53,389 @@ class DocumentServiceTest {
     @InjectMocks
     private DocumentService documentService;
 
-    @Test
-    @DisplayName("Should create new DocumentEntity when single document does not already exist")
-    void updateSingleDocumentCreatesNew() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
+    @Nested
+    class DocumentServiceTestUpdateDocuments {
+        @Test
+        @DisplayName("Should create new DocumentEntity when single document does not already exist")
+        void updateSingleDocumentCreatesNew() {
+            PTCaseEntity ptCase = caseWithDocuments();
 
-        Document doc = Document.builder()
-            .url("http://dm-store/documents/123")
-            .filename("notice.pdf")
-            .binaryUrl("http://dm-store/documents/123/binary")
-            .build();
+            UploadedDocument newUploadDoc = newUploadDoc("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
 
-        UploadedDocument uploadedDocument = UploadedDocument.builder()
-            .document(doc)
-            .contentType("application/pdf")
-            .sizeInBytes(1024L)
-            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
-            .build();
+            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, newUploadDoc, ptCase);
 
-        documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, uploadedDocument, ptCase);
+            DocumentEntity saved = captureSingleSave();
 
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-        DocumentEntity saved = captor.getValue();
+            assertThat(saved.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                newUploadDoc,
+                saved
+            );
+        }
 
-        assertThat(saved.getPtCase()).isEqualTo(ptCase);
-        assertThat(saved.getUrl()).isEqualTo("http://dm-store/documents/123");
-        assertThat(saved.getFileName()).isEqualTo("notice.pdf");
-        assertThat(saved.getBinaryUrl()).isEqualTo("http://dm-store/documents/123/binary");
-        assertThat(saved.getDescription()).isEqualTo(DocumentType.NEW_RENT_INCREASE_NOTICE.getLabel());
-        assertThat(saved.getDocumentType()).isEqualTo(DocumentType.NEW_RENT_INCREASE_NOTICE);
-        assertThat(saved.getSize()).isEqualTo(1024L);
-        assertThat(saved.getContentType()).isEqualTo("application/pdf");
-        assertThat(saved.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
+        @Test
+        @DisplayName("Should update existing DocumentEntity when single document of that type already exists")
+        void updateSingleDocumentUpdatesExisting() {
+            DocumentEntity existing = existingDocument("old", DocumentType.NEW_RENT_INCREASE_NOTICE);
+
+            PTCaseEntity ptCase = caseWithDocuments(existing);
+
+            UploadedDocument newUploadDoc = newUploadDoc("new_notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
+
+            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, newUploadDoc, ptCase);
+
+            verify(documentRepository).save(existing);
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                newUploadDoc,
+                existing
+            );
+            assertThat(existing.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
+        }
+
+        @Test
+        @DisplayName("Should leave an existing document alone when the incoming field is null")
+        void updateSingleDocumentLeavesExistingWhenUploadedDocumentIsNull() {
+            DocumentEntity existing = existingDocument("hardship", DocumentType.HARDSHIP_EVIDENCE);
+            PTCaseEntity ptCase = caseWithDocuments(existing);
+
+            documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
+
+            verify(documentRepository, never()).delete(existing);
+            verify(documentRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should update nothing when single uploaded document is null and no existing document exists")
+        void updateSingleDocumentDoesNothingWhenUploadedDocumentIsNullAndNoExistingDocument() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
+
+            verify(documentRepository, never()).delete(any());
+            verify(documentRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should upsert multiple documents and leave ones absent from the list alone")
+        void updateMultipleDocuments() {
+            DocumentEntity existingRoom1 = existingDocument("room1", DocumentType.PROPERTY_ROOMS);
+            DocumentEntity existingUntouched = existingDocument("untouched_room", DocumentType.PROPERTY_ROOMS);
+
+            PTCaseEntity ptCase = caseWithDocuments(existingRoom1, existingUntouched);
+
+            UploadedDocument room1Upload = newUploadDocWithSize("room1new", DocumentType.PROPERTY_ROOMS, 500L);
+            UploadedDocument room2Upload = newUploadDocWithSize("second_room", DocumentType.PROPERTY_ROOMS, 600L);
+
+            documentService.updateMultipleDocuments(
+                DocumentType.PROPERTY_ROOMS,
+                List.of(new ListValue<>("1", room1Upload), new ListValue<>("2", room2Upload)),
+                ptCase
+            );
+
+            verify(documentRepository, never()).delete(existingUntouched);
+            verify(documentRepository, never()).delete(existingRoom1);
+
+            List<DocumentEntity> saved = captureSaves(2);
+            assertThat(saved).hasSize(2);
+
+            DocumentEntity firstSaved = saved.get(0);
+            assertRequiredDocumentEntityProperties(ptCase, room1Upload, firstSaved);
+
+            DocumentEntity secondSaved = saved.get(1);
+            assertRequiredDocumentEntityProperties(ptCase, room2Upload, secondSaved);
+        }
+
+        @Test
+        @DisplayName("Should update all documents for notice of rent increase")
+        void updateDocumentsForNoticeOfRentChangeUpdatesAllDocuments() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument noticeDoc = newUploadDoc("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
+            UploadedDocument legalDoc = newUploadDoc("invalid", DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE);
+            UploadedDocument hardshipDoc = newUploadDoc("hardship", DocumentType.HARDSHIP_EVIDENCE);
+
+            NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
+                .landlordNoticeProposingNewRentDocument(noticeDoc)
+                .noticeNotLegallyValidDocuments(singleItemList(legalDoc))
+                .rentIncreaseHardshipDocuments(singleItemList(hardshipDoc))
+                .build();
+
+            documentService.updateDocumentsForNoticeOfRentChange(details, ptCase);
+
+            List<DocumentEntity> savedDocs = captureSaves(3);
+            assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
+                .containsExactlyInAnyOrder(
+                    DocumentType.NEW_RENT_INCREASE_NOTICE,
+                    DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE,
+                    DocumentType.HARDSHIP_EVIDENCE);
+        }
+
+        @Test
+        @DisplayName("Should update all documents for property details")
+        void updateDocumentsForPropertyDetailsUpdatesAllDocuments() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument floorPlanDoc = newUploadDoc("floor", DocumentType.PROPERTY_FLOOR_PLAN);
+            UploadedDocument outsidePropertyDoc = newUploadDoc("outside", DocumentType.OUTSIDE_PROPERTY);
+            UploadedDocument repairsDoc = newUploadDoc("repairs", DocumentType.TENANT_REPAIRS_EVIDENCE);
+            UploadedDocument roomDoc = newUploadDoc("room", DocumentType.PROPERTY_ROOMS);
+
+            PropertyDetails details = PropertyDetails.builder()
+                .floorPlanDocuments(singleItemList(floorPlanDoc))
+                .outsidePropertyDocuments(singleItemList(outsidePropertyDoc))
+                .repairsEvidenceDocuments(singleItemList(repairsDoc))
+                .roomsDocuments(singleItemList(roomDoc))
+                .build();
+
+            documentService.updateDocumentsForPropertyDetails(details, ptCase);
+
+            List<DocumentEntity> savedDocs = captureSaves(4);
+            assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
+                .containsExactlyInAnyOrder(
+                    DocumentType.PROPERTY_FLOOR_PLAN,
+                    DocumentType.OUTSIDE_PROPERTY,
+                    DocumentType.TENANT_REPAIRS_EVIDENCE,
+                    DocumentType.PROPERTY_ROOMS);
+        }
+
+        @Test
+        @DisplayName("Should update document for rent details when evidence document is present")
+        void updateDocumentsForRentDetailsUpdatesDocument() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument rentDoc = newUploadDoc("market-rent", DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
+
+            RentDetails details = RentDetails.builder()
+                .suggestedMarketRentEvidence(singleItemList(rentDoc))
+                .build();
+
+            documentService.updateDocumentsForRentDetails(details, ptCase);
+
+            DocumentEntity savedDoc = captureSingleSave();
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                rentDoc,
+                savedDoc
+            );
+        }
+
+        @Test
+        @DisplayName("Should update document for landlord response when tenancy details evidence is present")
+        void updateDocumentsForLandlordResponseUpdatesDocument() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument responseDoc = newUploadDoc("tenancy",
+                                                        DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+            LandlordResponse details = LandlordResponse.builder()
+                .tenancyDetailsResponseEvidence(singleItemList(responseDoc))
+                .build();
+
+            documentService.updateDocumentsForLandlordResponse(details, ptCase);
+
+            DocumentEntity savedDoc = captureSingleSave();
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                responseDoc,
+                savedDoc
+            );
+        }
+
+        @Test
+        @DisplayName("Should update document for landlord response when property details evidence is present")
+        void updateDocumentsForLandlordResponseUpdatesPropertyDetailsDocument() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument evidenceDoc =
+                newUploadDoc("property",
+                             DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS);
+
+            LandlordResponse details = LandlordResponse.builder()
+                .propertyDetailsResponseEvidence(singleItemList(evidenceDoc))
+                .build();
+
+            documentService.updateDocumentsForLandlordResponse(details, ptCase);
+
+            DocumentEntity savedDoc = captureSingleSave();
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                evidenceDoc,
+                savedDoc
+            );
+        }
+
+        @Test
+        @DisplayName("Should update document for tenancy agreement details when evidence document is present")
+        void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
+            PTCaseEntity ptCase = caseWithDocuments();
+
+            UploadedDocument agreementDoc = newUploadDoc("tenancy-agreement", DocumentType.TENANCY_AGREEMENT);
+
+            TenancyAgreementDetails details = TenancyAgreementDetails.builder()
+                .tenancyAgreementDocument(agreementDoc)
+                .build();
+
+            documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
+
+            DocumentEntity savedDoc = captureSingleSave();
+
+            assertRequiredDocumentEntityProperties(
+                ptCase,
+                agreementDoc,
+                savedDoc
+            );
+        }
     }
 
-    @Test
-    @DisplayName("Should update existing DocumentEntity when single document of that type already exists")
-    void updateSingleDocumentUpdatesExisting() {
-        DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
-            .url("http://dm-store/documents/old")
-            .fileName("old_notice.pdf")
-            .binaryUrl("http://dm-store/documents/old/binary")
-            .build();
+    @Nested
+    class DocumentServiceTestDeleteDocuments {
+        @Test
+        @DisplayName("Should delete the row and the stored file, scoped to the case")
+        void deleteDocumentRemovesRowAndStoredFile() {
+            DocumentEntity stored = givenStoredDocument(1L, DocumentType.PROPERTY_FLOOR_PLAN);
 
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existing))
-            .build();
+            assertThat(documentService.deleteDocument(1L, CASE_REFERENCE)).isTrue();
 
-        Document doc = Document.builder()
-            .url("http://dm-store/documents/new")
-            .filename("new_notice.pdf")
-            .binaryUrl("http://dm-store/documents/new/binary")
-            .build();
+            verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+            verify(caseDocumentService).deleteDocument(stored.getUrl());
+        }
 
-        UploadedDocument uploadedDocument = UploadedDocument.builder()
-            .document(doc)
-            .contentType("application/pdf")
-            .sizeInBytes(2048L)
-            .documentType(DocumentType.NEW_RENT_INCREASE_NOTICE)
-            .build();
+        @Test
+        @DisplayName("Should read the URL before deleting the row")
+        void deleteDocumentReadsUrlBeforeDeletingRow() {
+            givenStoredDocument(1L, DocumentType.PROPERTY_FLOOR_PLAN);
 
-        documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, uploadedDocument, ptCase);
+            documentService.deleteDocument(1L, CASE_REFERENCE);
 
-        verify(documentRepository).save(existing);
-        assertThat(existing.getPtCase()).isEqualTo(ptCase);
-        assertThat(existing.getUrl()).isEqualTo("http://dm-store/documents/new");
-        assertThat(existing.getFileName()).isEqualTo("new_notice.pdf");
-        assertThat(existing.getBinaryUrl()).isEqualTo("http://dm-store/documents/new/binary");
-        assertThat(existing.getDescription()).isEqualTo(DocumentType.NEW_RENT_INCREASE_NOTICE.getLabel());
-        assertThat(existing.getDocumentType()).isEqualTo(DocumentType.NEW_RENT_INCREASE_NOTICE);
-        assertThat(existing.getSize()).isEqualTo(2048L);
-        assertThat(existing.getContentType()).isEqualTo("application/pdf");
-        assertThat(existing.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
+            InOrder inOrder = inOrder(documentRepository, caseDocumentService);
+            inOrder.verify(documentRepository).findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+            inOrder.verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
+            inOrder.verify(caseDocumentService).deleteDocument(anyString());
+        }
+
+        @Test
+        @DisplayName("Should delete a document of any type without knowing which type it is")
+        void deleteDocumentIsTypeAgnostic() {
+            givenStoredDocument(7L, DocumentType.TENANCY_AGREEMENT);
+
+            assertThat(documentService.deleteDocument(7L, CASE_REFERENCE)).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should touch nothing when the document is not on this case")
+        void deleteDocumentDoesNothingWhenNotOnCase() {
+            when(documentRepository.findByIdAndPtCaseCaseReference(999L, CASE_REFERENCE))
+                .thenReturn(Optional.empty());
+
+            assertThat(documentService.deleteDocument(999L, CASE_REFERENCE)).isFalse();
+
+            verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
+            verify(caseDocumentService, never()).deleteDocument(anyString());
+        }
+
+        @Test
+        @DisplayName("Should delete a document whose type is one of the allowed types")
+        void deleteDocumentOfAllowedTypeRemovesRowAndStoredFile() {
+            DocumentEntity stored = givenStoredDocument(3L,
+                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+            Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+            assertThat(documentService.deleteDocument(3L, CASE_REFERENCE, allowed)).isTrue();
+
+            verify(documentRepository).deleteByIdAndPtCaseCaseReference(3L, CASE_REFERENCE);
+            verify(caseDocumentService).deleteDocument(stored.getUrl());
+        }
+
+        @Test
+        @DisplayName("Should not delete when the document type is not one of the allowed types")
+        void deleteDocumentOfOtherTypeDoesNothing() {
+            givenStoredDocument(4L, DocumentType.TENANCY_AGREEMENT);
+
+            Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
+
+            assertThat(documentService.deleteDocument(4L, CASE_REFERENCE, allowed)).isFalse();
+
+            verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
+            verify(caseDocumentService, never()).deleteDocument(anyString());
+        }
     }
 
-    @Test
-    @DisplayName("Should leave an existing document alone when the incoming field is null")
-    void updateSingleDocumentLeavesExistingWhenUploadedDocumentIsNull() {
-        DocumentEntity existing = DocumentEntity.builder()
-            .documentType(DocumentType.HARDSHIP_EVIDENCE)
-            .url("http://dm-store/documents/hardship")
-            .fileName("hardship.pdf")
-            .build();
-
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existing))
-            .build();
-
-        documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
-
-        verify(documentRepository, never()).delete(existing);
-        verify(documentRepository, never()).save(any());
+    private static void assertRequiredDocumentEntityProperties(PTCaseEntity existingPtCase,
+                                                               UploadedDocument uploaded,
+                                                               DocumentEntity theDocument) {
+        assertThat(existingPtCase).isEqualTo(theDocument.getPtCase());
+        assertThat(theDocument.getDocumentType()).isEqualTo(uploaded.getDocumentType());
+        assertThat(theDocument.getDescription()).isEqualTo(uploaded.getDocumentType().getLabel());
+        assertThat(theDocument.getUrl()).isEqualTo(uploaded.getDocument().getUrl());
+        assertThat(theDocument.getFileName()).isEqualTo(uploaded.getDocument().getFilename());
+        assertThat(theDocument.getBinaryUrl()).isEqualTo(uploaded.getDocument().getBinaryUrl());
+        assertThat(theDocument.getSize()).isEqualTo(uploaded.getSizeInBytes());
+        assertThat(theDocument.getContentType()).isEqualTo(uploaded.getContentType());
     }
 
-    @Test
-    @DisplayName("Should do nothing when single uploaded document is null and no existing document exists")
-    void updateSingleDocumentDoesNothingWhenUploadedDocumentIsNullAndNoExistingDocument() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
 
-        documentService.updateSingleDocument(DocumentType.HARDSHIP_EVIDENCE, null, ptCase);
-
-        verify(documentRepository, never()).delete(any());
-        verify(documentRepository, never()).save(any());
+    private static UploadedDocument newUploadDoc(String rootname, DocumentType documentType) {
+        return newUploadDocWithSize(rootname, documentType, 1024L);
     }
 
-    @Test
-    @DisplayName("Should upsert multiple documents and leave ones absent from the list alone")
-    void updateMultipleDocuments() {
-        DocumentEntity existingDoc = DocumentEntity.builder()
-            .documentType(DocumentType.PROPERTY_ROOMS)
-            .url("http://dm-store/documents/room1")
-            .fileName("room1.pdf")
-            .build();
+    private static UploadedDocument newUploadDocWithSize(String rootname, DocumentType documentType, long size) {
+        String url = "http://dm-store/documents/" + rootname.substring(0, 1);
+        String binaryUrl = "http://dm-store/binary/binary-" + rootname;
+        String filename = rootname + ".pdf";
 
-        DocumentEntity untouchedDoc = DocumentEntity.builder()
-            .documentType(DocumentType.PROPERTY_ROOMS)
-            .url("http://dm-store/documents/room-untouched")
-            .fileName("room_untouched.pdf")
-            .build();
-
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(List.of(existingDoc, untouchedDoc))
-            .build();
-
-        UploadedDocument updatedDoc = UploadedDocument.builder()
-            .document(Document.builder()
-                .url("http://dm-store/documents/room1")
-                .filename("room1_updated.pdf")
-                .binaryUrl("http://dm-store/documents/room1/binary")
-                .build())
+        return UploadedDocument.builder()
+            .document(Document.builder().url(url).filename(filename).binaryUrl(binaryUrl).build())
             .contentType("application/pdf")
-            .sizeInBytes(1500L)
+            .documentType(documentType)
+            .sizeInBytes(size)
             .build();
-
-        UploadedDocument newDoc = UploadedDocument.builder()
-            .document(Document.builder()
-                .url("http://dm-store/documents/room2")
-                .filename("room2.pdf")
-                .binaryUrl("http://dm-store/documents/room2/binary")
-                .build())
-            .contentType("image/jpeg")
-            .sizeInBytes(2500L)
-            .build();
-
-        documentService.updateMultipleDocuments(
-            DocumentType.PROPERTY_ROOMS,
-            List.of(new ListValue<>("1", updatedDoc), new ListValue<>("2", newDoc)),
-            ptCase
-        );
-
-        verify(documentRepository, never()).delete(untouchedDoc);
-        verify(documentRepository, never()).delete(existingDoc);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository, times(2)).save(captor.capture());
-
-        List<DocumentEntity> saved = captor.getAllValues();
-        assertThat(saved).hasSize(2);
-
-        DocumentEntity firstSaved = saved.get(0);
-        assertThat(firstSaved).isEqualTo(existingDoc);
-        assertThat(firstSaved.getFileName()).isEqualTo("room1_updated.pdf");
-        assertThat(firstSaved.getDocumentType()).isEqualTo(DocumentType.PROPERTY_ROOMS);
-
-        DocumentEntity secondSaved = saved.get(1);
-        assertThat(secondSaved.getUrl()).isEqualTo("http://dm-store/documents/room2");
-        assertThat(secondSaved.getFileName()).isEqualTo("room2.pdf");
-        assertThat(secondSaved.getDocumentType()).isEqualTo(DocumentType.PROPERTY_ROOMS);
     }
 
-    @Test
-    @DisplayName("Should update all documents for notice of rent increase")
-    void updateDocumentsForNoticeOfRentChangeUpdatesAllDocuments() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
+    private static DocumentEntity existingDocument(String rootname, DocumentType documentType) {
+        String url = "http://dm-store/documents/" + rootname.substring(0, 1);
+        String binaryUrl = "http://dm-store/binary/binary-" + rootname;
+        String filename = rootname + ".pdf";
 
-        UploadedDocument noticeDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/1").filename("notice.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(100L)
+        return DocumentEntity.builder()
+            .documentType(documentType)
+            .binaryUrl(binaryUrl)
+            .url(url)
+            .fileName(filename)
             .build();
-        UploadedDocument invalidNoticeDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/2").filename("invalid.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(200L)
-            .build();
-        UploadedDocument hardshipDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/3").filename("hardship.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(300L)
-            .build();
-
-        NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
-            .landlordNoticeProposingNewRentDocument(noticeDoc)
-            .noticeNotLegallyValidDocuments(List.of(new ListValue<>("1", invalidNoticeDoc)))
-            .rentIncreaseHardshipDocuments(List.of(new ListValue<>("1", hardshipDoc)))
-            .build();
-
-        documentService.updateDocumentsForNoticeOfRentChange(details, ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository, times(3)).save(captor.capture());
-
-        List<DocumentEntity> savedDocs = captor.getAllValues();
-        assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
-            .containsExactlyInAnyOrder(
-                DocumentType.NEW_RENT_INCREASE_NOTICE,
-                DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE,
-                DocumentType.HARDSHIP_EVIDENCE);
     }
 
-    @Test
-    @DisplayName("Should update all documents for property details")
-    void updateDocumentsForPropertyDetailsUpdatesAllDocuments() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
+    private static PTCaseEntity caseWithDocuments(DocumentEntity... documents) {
+        return PTCaseEntity.builder()
+            .documents(List.of(documents))
             .build();
-
-        UploadedDocument floorPlanDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/floor").filename("floor.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(100L)
-            .build();
-        UploadedDocument outsidePropertyDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/outside").filename("outside.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(200L)
-            .build();
-        UploadedDocument repairsDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/repairs").filename("repairs.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(300L)
-            .build();
-        UploadedDocument roomDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/room").filename("room.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(400L)
-            .build();
-
-        PropertyDetails details = PropertyDetails.builder()
-            .floorPlanDocuments(List.of(new ListValue<>("1", floorPlanDoc)))
-            .outsidePropertyDocuments(List.of(new ListValue<>("1", outsidePropertyDoc)))
-            .repairsEvidenceDocuments(List.of(new ListValue<>("1", repairsDoc)))
-            .roomsDocuments(List.of(new ListValue<>("1", roomDoc)))
-            .build();
-
-        documentService.updateDocumentsForPropertyDetails(details, ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository, times(4)).save(captor.capture());
-
-        List<DocumentEntity> savedDocs = captor.getAllValues();
-        assertThat(savedDocs).extracting(DocumentEntity::getDocumentType)
-            .containsExactlyInAnyOrder(
-                DocumentType.PROPERTY_FLOOR_PLAN,
-                DocumentType.OUTSIDE_PROPERTY,
-                DocumentType.TENANT_REPAIRS_EVIDENCE,
-                DocumentType.PROPERTY_ROOMS);
     }
 
-    @Test
-    @DisplayName("Should delete the row and the stored file, scoped to the case")
-    void deleteDocumentRemovesRowAndStoredFile() {
+    private static List<ListValue<UploadedDocument>> singleItemList(UploadedDocument document) {
+        return List.of(new ListValue<>("1", document));
+    }
+
+    private DocumentEntity givenStoredDocument(long id, DocumentType type) {
         DocumentEntity stored = DocumentEntity.builder()
-            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
-            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
+            .documentType(type)
+            .url(CDAM_URL)
             .build();
-        when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
+        when(documentRepository.findByIdAndPtCaseCaseReference(id, CASE_REFERENCE))
             .thenReturn(Optional.of(stored));
-
-        assertThat(documentService.deleteDocument(1L, CASE_REFERENCE)).isTrue();
-
-        verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
-        verify(caseDocumentService).deleteDocument(stored.getUrl());
+        return stored;
     }
 
-    @Test
-    @DisplayName("Should read the URL before deleting the row, or there is nothing left to read")
-    void deleteDocumentReadsUrlBeforeDeletingRow() {
-        DocumentEntity stored = DocumentEntity.builder()
-            .documentType(DocumentType.PROPERTY_FLOOR_PLAN)
-            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
-            .build();
-        when(documentRepository.findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE))
-            .thenReturn(Optional.of(stored));
-
-        documentService.deleteDocument(1L, CASE_REFERENCE);
-
-        InOrder inOrder = inOrder(documentRepository, caseDocumentService);
-        inOrder.verify(documentRepository).findByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
-        inOrder.verify(documentRepository).deleteByIdAndPtCaseCaseReference(1L, CASE_REFERENCE);
-        inOrder.verify(caseDocumentService).deleteDocument(anyString());
-    }
-
-    @Test
-    @DisplayName("Should delete a document of any type without knowing which type it is")
-    void deleteDocumentIsTypeAgnostic() {
-        when(documentRepository.findByIdAndPtCaseCaseReference(7L, CASE_REFERENCE))
-            .thenReturn(Optional.of(DocumentEntity.builder()
-                .documentType(DocumentType.TENANCY_AGREEMENT)
-                .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
-                .build()));
-
-        assertThat(documentService.deleteDocument(7L, CASE_REFERENCE)).isTrue();
-    }
-
-    @Test
-    @DisplayName("Should touch nothing when the document is not on this case")
-    void deleteDocumentDoesNothingWhenNotOnCase() {
-        when(documentRepository.findByIdAndPtCaseCaseReference(999L, CASE_REFERENCE))
-            .thenReturn(Optional.empty());
-
-        assertThat(documentService.deleteDocument(999L, CASE_REFERENCE)).isFalse();
-
-        verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
-        verify(caseDocumentService, never()).deleteDocument(anyString());
-    }
-
-    @Test
-    @DisplayName("Should delete a document whose type is one of the allowed types")
-    void deleteDocumentOfAllowedTypeRemovesRowAndStoredFile() {
-        DocumentEntity stored = DocumentEntity.builder()
-            .documentType(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS)
-            .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
-            .build();
-        when(documentRepository.findByIdAndPtCaseCaseReference(3L, CASE_REFERENCE))
-            .thenReturn(Optional.of(stored));
-
-        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
-
-        assertThat(documentService.deleteDocument(3L, CASE_REFERENCE, allowed)).isTrue();
-
-        verify(documentRepository).deleteByIdAndPtCaseCaseReference(3L, CASE_REFERENCE);
-        verify(caseDocumentService).deleteDocument(stored.getUrl());
-    }
-
-    @Test
-    @DisplayName("Should touch nothing when the document type is not one of the allowed types")
-    void deleteDocumentOfOtherTypeDoesNothing() {
-        when(documentRepository.findByIdAndPtCaseCaseReference(4L, CASE_REFERENCE))
-            .thenReturn(Optional.of(DocumentEntity.builder()
-                .documentType(DocumentType.TENANCY_AGREEMENT)
-                .url("http://cdam/cases/documents/6f1b1c2e-3a4d-4b5c-8d9e-0f1a2b3c4d5e")
-                .build()));
-
-        Set<DocumentType> allowed = Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
-
-        assertThat(documentService.deleteDocument(4L, CASE_REFERENCE, allowed)).isFalse();
-
-        verify(documentRepository, never()).deleteByIdAndPtCaseCaseReference(anyLong(), anyLong());
-        verify(caseDocumentService, never()).deleteDocument(anyString());
-    }
-
-    @Test
-    @DisplayName("Should update document for rent details when evidence document is present")
-    void updateDocumentsForRentDetailsUpdatesDocument() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
-
-        UploadedDocument rentDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/market-rent").filename("market-rent.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(500L)
-            .build();
-
-        RentDetails details = RentDetails.builder()
-            .suggestedMarketRentEvidence(List.of(new ListValue<>("1", rentDoc)))
-            .build();
-
-        documentService.updateDocumentsForRentDetails(details, ptCase);
-
+    private DocumentEntity captureSingleSave() {
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
         verify(documentRepository).save(captor.capture());
-
-        DocumentEntity savedDoc = captor.getValue();
-        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
-        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/market-rent");
-        assertThat(savedDoc.getFileName()).isEqualTo("market-rent.pdf");
+        return captor.getValue();
     }
 
-    @Test
-    @DisplayName("Should update document for landlord response when tenancy details evidence is present")
-    void updateDocumentsForLandlordResponseUpdatesDocument() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
-
-        UploadedDocument evidenceDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/tenancy").filename("tenancy.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(500L)
-            .build();
-
-        LandlordResponse details = LandlordResponse.builder()
-            .tenancyDetailsResponseEvidence(List.of(new ListValue<>("1", evidenceDoc)))
-            .build();
-
-        documentService.updateDocumentsForLandlordResponse(details, ptCase);
-
+    private List<DocumentEntity> captureSaves(int expectedSaves) {
         ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-
-        DocumentEntity savedDoc = captor.getValue();
-        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
-        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy");
-        assertThat(savedDoc.getFileName()).isEqualTo("tenancy.pdf");
-    }
-
-    @Test
-    @DisplayName("Should update document for landlord response when property details evidence is present")
-    void updateDocumentsForLandlordResponseUpdatesPropertyDetailsDocument() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
-
-        UploadedDocument evidenceDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/property").filename("property.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(500L)
-            .build();
-
-        LandlordResponse details = LandlordResponse.builder()
-            .propertyDetailsResponseEvidence(List.of(new ListValue<>("1", evidenceDoc)))
-            .build();
-
-        documentService.updateDocumentsForLandlordResponse(details, ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-
-        DocumentEntity savedDoc = captor.getValue();
-        assertThat(savedDoc.getDocumentType())
-            .isEqualTo(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS);
-        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/property");
-        assertThat(savedDoc.getFileName()).isEqualTo("property.pdf");
-    }
-
-    @Test
-    @DisplayName("Should update document for tenancy agreement details when evidence document is present")
-    void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
-        PTCaseEntity ptCase = PTCaseEntity.builder()
-            .documents(Collections.emptyList())
-            .build();
-
-        UploadedDocument agreementDoc = UploadedDocument.builder()
-            .document(Document.builder().url("http://dm-store/documents/tenancy-agreement").filename("agreement.pdf").build())
-            .contentType("application/pdf")
-            .sizeInBytes(1024L)
-            .build();
-
-        TenancyAgreementDetails details = TenancyAgreementDetails.builder()
-            .tenancyAgreementDocument(agreementDoc)
-            .build();
-
-        documentService.updateDocumentsForTenancyAgreementDetails(details, ptCase);
-
-        ArgumentCaptor<DocumentEntity> captor = ArgumentCaptor.forClass(DocumentEntity.class);
-        verify(documentRepository).save(captor.capture());
-
-        DocumentEntity savedDoc = captor.getValue();
-        assertThat(savedDoc.getDocumentType()).isEqualTo(DocumentType.TENANCY_AGREEMENT);
-        assertThat(savedDoc.getUrl()).isEqualTo("http://dm-store/documents/tenancy-agreement");
-        assertThat(savedDoc.getFileName()).isEqualTo("agreement.pdf");
+        verify(documentRepository, times(expectedSaves)).save(captor.capture());
+        return captor.getAllValues();
     }
 }
