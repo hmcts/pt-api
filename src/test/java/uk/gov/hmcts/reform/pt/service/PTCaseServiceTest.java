@@ -82,7 +82,7 @@ class PTCaseServiceTest {
     private DocumentService documentService;
 
     @Mock
-    private MarketRentCaseService marketRentCaseService;
+    private CasePropertyDetailsService casePropertyDetailsService;
 
     @Mock
     private AddressService addressService;
@@ -123,7 +123,6 @@ class PTCaseServiceTest {
 
         assertThat(savedEntity.getCaseReference()).isEqualTo(caseReference);
         verify(casePartyService).createApplicantCaseParty(any(PTCaseEntity.class), eq(ptCase), eq(userId));
-        verify(marketRentCaseService).updateWithApplicationType(savedEntity, applicationType);
     }
 
     @Test
@@ -279,14 +278,14 @@ class PTCaseServiceTest {
         verify(addressService).updatePropertyAddress(any(PartyDetails.class), eq(caseParty), eq(ptCaseEntity));
         assertThat(caseParty.getContactByText()).isEqualTo(YesOrNo.YES);
         verify(ptCaseRepository).save(ptCaseEntity);
-        verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
+        verify(casePropertyDetailsService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
         verify(noticeOfRentChangeService).updateNoticeOfRentChangeDetails(noticeDetails, ptCaseEntity);
         verify(documentService).updateDocumentsForNoticeOfRentChange(noticeDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        verify(casePropertyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
-        verify(marketRentCaseService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(casePropertyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
         verify(documentService).updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
         verify(tenancyDetailsService).updateWithTenancyAgreementDetails(ptCaseEntity, tenancyAgreementDetails);
         verify(documentService).updateDocumentsForTenancyAgreementDetails(tenancyAgreementDetails, ptCaseEntity);
@@ -332,7 +331,7 @@ class PTCaseServiceTest {
         ptCaseService.updateRentDetails(ptCase, ptCaseEntity);
 
         verify(tenancyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
-        verify(marketRentCaseService).updateWithRentDetails(ptCaseEntity, rentDetails);
+        verify(casePropertyDetailsService).updateWithRentDetails(ptCaseEntity, rentDetails);
         verify(documentService).updateDocumentsForRentDetails(rentDetails, ptCaseEntity);
     }
 
@@ -347,7 +346,7 @@ class PTCaseServiceTest {
         ptCaseService.updateRentDetails(ptCase, ptCaseEntity);
 
         verify(tenancyDetailsService, never()).updateWithRentDetails(any(), any());
-        verify(marketRentCaseService, never()).updateWithRentDetails(any(), any());
+        verify(casePropertyDetailsService, never()).updateWithRentDetails(any(), any());
         verify(documentService, never()).updateDocumentsForRentDetails(any(), any());
     }
 
@@ -521,7 +520,7 @@ class PTCaseServiceTest {
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
         verify(ptCaseRepository).save(ptCaseEntity);
-        verify(marketRentCaseService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
+        verify(casePropertyDetailsService).updateWithPropertyInspectionDetails(ptCaseEntity, hearingInspectionDetails);
     }
 
     @Test
@@ -686,7 +685,7 @@ class PTCaseServiceTest {
         ptCaseService.updateHearingOrPropertyInspectionDetails(ptCase, ptCaseEntity);
 
         verify(ptCaseRepository, never()).save(any());
-        verify(marketRentCaseService, never()).updateWithPropertyInspectionDetails(any(), any());
+        verify(casePropertyDetailsService, never()).updateWithPropertyInspectionDetails(any(), any());
     }
 
     @Test
@@ -717,7 +716,7 @@ class PTCaseServiceTest {
         assertThat(captured.getPostcode()).isEqualTo("SW1A 1AA");
 
         verify(tenancyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
-        verify(marketRentCaseService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
+        verify(casePropertyDetailsService).updateWithPropertyDetails(ptCaseEntity, propertyDetails);
         verify(documentService).updateDocumentsForPropertyDetails(propertyDetails, ptCaseEntity);
     }
 
@@ -734,7 +733,7 @@ class PTCaseServiceTest {
 
         verify(addressService, never()).updatePropertyAddress(any(), any(), any());
         verify(tenancyDetailsService, never()).updateWithPropertyDetails(any(), any());
-        verify(marketRentCaseService, never()).updateWithPropertyDetails(any(), any());
+        verify(casePropertyDetailsService, never()).updateWithPropertyDetails(any(), any());
         verify(documentService, never()).updateDocumentsForPropertyDetails(any(), any());
     }
 
@@ -994,7 +993,13 @@ class PTCaseServiceTest {
         ptCaseService.deleteRespondentDocument(caseReference, PTCase.builder().documentIdToDelete("42").build());
 
         verify(documentService).deleteDocument(
-            42L, caseReference, Set.of(DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS));
+            42L,
+            caseReference,
+            Set.of(
+                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS,
+                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS
+            )
+        );
         verify(documentService, never()).deleteDocument(anyLong(), anyLong());
     }
 

@@ -35,6 +35,10 @@ public class CaseType implements CCDConfig<PTCase, State, UserRole> {
         return withSuffix(CASE_TYPE_NAME, " ");
     }
 
+    public static String getJurisdictionId() {
+        return JURISDICTION_ID;
+    }
+
     private static String withSuffix(String base, String separator) {
         return ofNullable(getenv().get("CASE_TYPE_SUFFIX"))
             .map(changeId -> base + separator + changeId)

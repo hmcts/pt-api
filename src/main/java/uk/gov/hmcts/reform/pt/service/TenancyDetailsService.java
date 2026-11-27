@@ -7,11 +7,13 @@ import uk.gov.hmcts.reform.pt.ccd.domain.RentDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.PropertyDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyAgreementDetails;
 import uk.gov.hmcts.reform.pt.ccd.domain.TenancyType;
-import uk.gov.hmcts.reform.pt.entity.MarketRentCaseEntity;
+import uk.gov.hmcts.reform.pt.entity.CasePropertyDetailsEntity;
+import uk.gov.hmcts.reform.pt.ccd.domain.YesNoNotSure;
 import uk.gov.hmcts.reform.pt.entity.PTCaseEntity;
 import uk.gov.hmcts.reform.pt.entity.TenancyDetailsEntity;
 import uk.gov.hmcts.reform.pt.repository.TenancyDetailsRepository;
 
+import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfElseNull;
 import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 
 @Service
@@ -19,11 +21,11 @@ import static uk.gov.hmcts.reform.pt.util.NullSafeSetter.setIfNotNull;
 public class TenancyDetailsService {
 
     private final TenancyDetailsRepository tenancyDetailsRepository;
-    private final MarketRentCaseService marketRentCaseService;
+    private final CasePropertyDetailsService casePropertyDetailsService;
 
     @Transactional
     public TenancyDetailsEntity getTenancyDetailsOrCreateIfNotExists(TenancyType tenancyType, PTCaseEntity ptCase) {
-        return tenancyDetailsRepository.findFirstByTenancyTypeAndMarketRentCase_PtCase_CaseReference(
+        return tenancyDetailsRepository.findFirstByTenancyTypeAndCasePropertyDetails_PtCase_CaseReference(
             tenancyType,
             ptCase.getCaseReference()
             ).orElseGet(() -> createTenancyDetails(tenancyType, ptCase));
@@ -31,12 +33,13 @@ public class TenancyDetailsService {
 
     @Transactional
     public TenancyDetailsEntity createTenancyDetails(TenancyType tenancyType, PTCaseEntity ptCase) {
-        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCase);
+        CasePropertyDetailsEntity casePropertyDetails =
+            casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCase);
         TenancyDetailsEntity tenancyDetails = TenancyDetailsEntity.builder()
             .tenancyType(tenancyType)
-            .marketRentCase(marketRentCase)
+            .casePropertyDetails(casePropertyDetails)
             .build();
-        marketRentCase.setTenancyDetails(tenancyDetails);
+        casePropertyDetails.setTenancyDetails(tenancyDetails);
         return tenancyDetailsRepository.save(tenancyDetails);
     }
 
@@ -61,6 +64,9 @@ public class TenancyDetailsService {
         setIfNotNull(details.getLandlordRepairsDetails(), tenancyDetails::setLandlordRepairsDetails);
         setIfNotNull(details.getTenantRepairsDetails(), tenancyDetails::setTenantRepairsDetails);
         setIfNotNull(details.getAnyTenantsMadePropertyRepairs(), tenancyDetails::setAnyTenantsMadePropertyRepairs);
+        setIfElseNull(() -> details.getAnyTenantsMadePropertyRepairs() == YesNoNotSure.YES,
+                      details::getTenantsPropertyRepairsDetails,
+                      tenancyDetails::setTenantsPropertyRepairsDetails);
 
         tenancyDetailsRepository.save(tenancyDetails);
     }
@@ -94,13 +100,14 @@ public class TenancyDetailsService {
     }
 
     private TenancyDetailsEntity getOrCreateTenancyDetails(PTCaseEntity ptCaseEntity) {
-        MarketRentCaseEntity marketRentCase = marketRentCaseService.getOrCreateMarketRentCase(ptCaseEntity);
-        TenancyDetailsEntity tenancyDetails = marketRentCase.getTenancyDetails();
+        CasePropertyDetailsEntity casePropertyDetails =
+            casePropertyDetailsService.getOrCreateCasePropertyDetails(ptCaseEntity);
+        TenancyDetailsEntity tenancyDetails = casePropertyDetails.getTenancyDetails();
         if (tenancyDetails == null) {
             tenancyDetails = TenancyDetailsEntity.builder()
-                .marketRentCase(marketRentCase)
+                .casePropertyDetails(casePropertyDetails)
                 .build();
-            marketRentCase.setTenancyDetails(tenancyDetails);
+            casePropertyDetails.setTenancyDetails(tenancyDetails);
         }
         return tenancyDetails;
     }

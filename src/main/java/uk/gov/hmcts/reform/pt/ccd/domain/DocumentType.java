@@ -36,7 +36,10 @@ public enum DocumentType implements HasLabel {
     TENANT_PROPOSED_MARKET_RENT_EVIDENCE("Tenant proposed rent evidence"),
 
     @JsonProperty("evidenceSupportingResponseToTenancyDetails")
-    EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS("Evidence supporting response to tenancy details");
+    EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS("Evidence supporting response to tenancy details"),
+
+    @JsonProperty("evidenceSupportingResponseToPropertyDetails")
+    EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS("Evidence supporting response to property details");
 
     private final String label;
 }

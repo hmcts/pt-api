@@ -5,8 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.CaseDocumentsMetadata;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentHashToken;
+import uk.gov.hmcts.reform.pt.ccd.CaseType;
+import uk.gov.hmcts.reform.pt.security.IdamTokenProvider;
 import uk.gov.hmcts.reform.pt.security.SecurityContextService;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,8 +22,30 @@ public class CaseDocumentService {
     private static final boolean PERMANENT_DELETE = true;
 
     private final CaseDocumentClientApi caseDocumentClientApi;
+    private final IdamTokenProvider systemUpdateUserTokenProvider;
     private final AuthTokenGenerator authTokenGenerator;
     private final SecurityContextService securityContextService;
+
+    public void attachToCase(String documentUrl, long caseReference) {
+        UUID documentId = extractDocumentId(documentUrl);
+        if (documentId == null) {
+            throw new IllegalArgumentException("Cannot attach document to case " + caseReference
+                                                   + ": no document id in URL " + documentUrl);
+        }
+
+        CaseDocumentsMetadata metadata = CaseDocumentsMetadata.builder()
+            .caseId(String.valueOf(caseReference))
+            .caseTypeId(CaseType.getCaseType())
+            .jurisdictionId(CaseType.getJurisdictionId())
+            .documentHashTokens(List.of(DocumentHashToken.builder().id(documentId.toString()).build()))
+            .build();
+
+        caseDocumentClientApi.patchDocument(
+            systemUpdateUserTokenProvider.getAuthToken(),
+            authTokenGenerator.generate(),
+            metadata
+        );
+    }
 
     public void deleteDocument(String documentUrl) {
         UUID documentId = extractDocumentId(documentUrl);
