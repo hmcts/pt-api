@@ -36,40 +36,41 @@ public class TenancyDetailsEntity extends AuditableEntity {
     private YesOrNo documentUploaded;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32)
     private TenancyType tenancyType;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo additionalServicesProvidedInTenancy;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String additionalServicesProvidedInTenancyDetails;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String landlordRepairsDetails;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String tenantRepairsDetails;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesNoNotSure anyTenantsMadePropertyRepairs;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String tenantsPropertyRepairsDetails;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo tenancyIncludeFacilities;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String otherFacilitiesDetails;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo furnitureProvidedInTenancy;
 
-    @Column(length = 5000)
+    @Column(length = 500)
     private String furnitureProvidedInTenancyDetails;
 
     private LocalDateTime tenancyEndDate;
@@ -95,6 +96,9 @@ public class TenancyDetailsEntity extends AuditableEntity {
 
     @Column(length = 500)
     private String noTenancyAgreementReason;
+
+    @Column(length = 5000)
+    private String repairsResponsibleByTenantDetails;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", unique = true)

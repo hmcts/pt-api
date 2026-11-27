@@ -36,7 +36,7 @@ public class NoticeOfRentChangeService {
             entity::setNoUploadOfNoticeProposingNewRentReason
         );
         setIfNotNull(details.getNoticeLegallyValid(), entity::setNoticeLegallyValid);
-        setIfNotNull(details.getNoticeNotLegallyValidDetails(), entity::setNoticeNotLegallyValidDetails);
+        setIfNotNull(details.getNoticeNotLegallyValidDetails(), entity::setNoticeNotLegallyValidReason);
         setIfNotNull(details.getRentIncreaseToCauseHardship(), entity::setRentIncreaseToCauseHardship);
         setIfNotNull(details.getRentIncreaseToCauseHardshipDetails(), entity::setRentIncreaseToCauseHardshipDetails);
         entity.setCasePropertyDetails(casePropertyDetails);

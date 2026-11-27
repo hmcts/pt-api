@@ -134,8 +134,11 @@ public class CasePropertyDetailsService {
             inspectionDetails.getNoDecisionWithoutInspectionReason(),
             casePropertyDetails::setNoDecisionWithoutInspectionReason
         );
-        setIfNotNull(inspectionDetails.getHearingRequested(), casePropertyDetails::setHearingRequested);
-        setIfNotNull(inspectionDetails.getReasonHearingRequested(), casePropertyDetails::setReasonHearingRequested);
+        setIfNotNull(inspectionDetails.getHearingRequested(), casePropertyDetails::setDecisionWithoutHearing);
+        setIfNotNull(
+            inspectionDetails.getReasonHearingRequested(),
+            casePropertyDetails::setDecisionWithoutHearingReason
+        );
 
         casePropertyDetailsRepository.save(casePropertyDetails);
     }

@@ -29,6 +29,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 public class NoticeOfRentChangeEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false)
     private YesOrNo receivedLandlordNoticeProposingNewRent;
 
     @Column(length = 500)
@@ -38,7 +39,7 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo rentIncreaseToCauseHardship;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String rentIncreaseToCauseHardshipDetails;
 
     @Enumerated(EnumType.STRING)
@@ -46,7 +47,7 @@ public class NoticeOfRentChangeEntity extends AuditableEntity {
     private YesOrNo noticeLegallyValid;
 
     @Column(length = 500)
-    private String noticeNotLegallyValidDetails;
+    private String noticeNotLegallyValidReason;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_property_details_id", unique = true)

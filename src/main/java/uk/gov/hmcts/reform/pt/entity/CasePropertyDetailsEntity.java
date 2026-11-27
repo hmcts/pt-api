@@ -62,17 +62,17 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(length = 500)
     private String otherMethodOfRentDetails;
 
-    @Column(length = 5000)
+    @Column(length = 200)
     private String floorplanManualDetails;
 
-    @Column(length = 5000)
+    @Column(length = 200)
     private String propertyIndoorFeatures;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo sharePropertyWithLandlord;
 
-    @Column(length = 5000)
+    @Column(length = 32)
     private String sharePropertyWithLandlordDetails;
 
     @Enumerated(EnumType.STRING)
@@ -139,7 +139,7 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
     @Column(name = "varying_additional_rental_service_charges_details", length = 500)
     private String varyingAdditionalRentalServiceChargesDetails;
 
-    @Column(length = 5000)
+    @Column(length = 200)
     private String applicantSuggestedMarketRentReasons;
 
     @Enumerated(EnumType.STRING)
@@ -163,15 +163,6 @@ public class CasePropertyDetailsEntity extends AuditableEntity {
 
     @Column(length = 500)
     private String decisionWithoutHearingReason;
-
-    // NOT PRESENT
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private YesOrNo hearingRequested;
-
-    // NOT PRESENT
-    @Column(length = 500)
-    private String reasonHearingRequested;
 
     @Column(length = 100)
     private String language;

@@ -47,10 +47,10 @@ public class CasePartyEntity extends AuditableEntity {
     @Column(length = 100)
     private String organisationName;
 
-    @Column(length = 20)
+    @Column(length = 16)
     private String phoneNumber;
 
-    @Column(length = 20)
+    @Column(length = 16)
     private String mobilePhoneNumber;
 
     @Column(length = 100)
@@ -59,12 +59,14 @@ public class CasePartyEntity extends AuditableEntity {
     @Column
     private LocalDateTime dateOfBirth;
 
-    @Column(length = 5)
+    @Column(length = 50)
     private String referenceNumberForCommunications;
 
     private UUID idamId;
 
     private UUID pcqId;
+
+    private Integer accessCode;
 
     @OneToOne(mappedBy = "party", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -73,6 +75,18 @@ public class CasePartyEntity extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private YesOrNo contactByText;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo contactByPhone;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo contactByEmail;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private YesOrNo contactByPost;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

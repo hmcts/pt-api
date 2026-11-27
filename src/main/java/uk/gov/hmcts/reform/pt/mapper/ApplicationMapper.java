@@ -96,8 +96,9 @@ public class ApplicationMapper {
         CasePropertyDetailsEntity casePropertyDetails = ptCaseEntity.getCasePropertyDetails();
 
         return HearingInspectionDetailsDto.builder()
-            .hearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getHearingRequested))
-            .reasonHearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getReasonHearingRequested))
+            .hearingRequested(get(casePropertyDetails, CasePropertyDetailsEntity::getDecisionWithoutHearing))
+            .reasonHearingRequested(
+                get(casePropertyDetails, CasePropertyDetailsEntity::getDecisionWithoutHearingReason))
             .agreeToDecisionWithoutInspection(
                 get(casePropertyDetails, CasePropertyDetailsEntity::getAgreeToDecisionWithoutInspection))
             .noDecisionWithoutInspectionReason(
@@ -118,7 +119,7 @@ public class ApplicationMapper {
                 findDocumentOfTypeAndMap(DocumentType.NEW_RENT_INCREASE_NOTICE, ptCaseEntity))
             .noticeLegallyValid(get(entity, NoticeOfRentChangeEntity::getNoticeLegallyValid))
             .noticeNotLegallyValidDetails(
-                get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidDetails))
+                get(entity, NoticeOfRentChangeEntity::getNoticeNotLegallyValidReason))
             .noticeNotLegallyValidDocuments(
                 findDocumentsOfTypeAndMap(DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE, ptCaseEntity))
             .rentIncreaseToCauseHardship(

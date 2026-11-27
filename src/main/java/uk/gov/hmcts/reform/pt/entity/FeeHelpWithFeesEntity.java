@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.pt.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
 @Entity
 @Setter
@@ -20,7 +26,13 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Table(name = "fee_help_with_fees")
 public class FeeHelpWithFeesEntity extends AuditableEntity {
-    private Integer referenceNumber;
+    @Column(length = 32)
+    private String referenceNumber;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false)
+    private YesOrNo appliedForHelpWithFees;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_fee_id")

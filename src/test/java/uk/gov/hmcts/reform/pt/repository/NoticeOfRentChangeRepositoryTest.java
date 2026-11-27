@@ -44,7 +44,7 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
             .receivedLandlordNoticeProposingNewRent(YesOrNo.YES)
             .noUploadOfNoticeProposingNewRentReason("Hard copy only")
             .noticeLegallyValid(YesOrNo.NO)
-            .noticeNotLegallyValidDetails("Invalid notice date")
+            .noticeNotLegallyValidReason("Invalid notice date")
             .rentIncreaseToCauseHardship(YesOrNo.YES)
             .rentIncreaseToCauseHardshipDetails("Financial hardship")
             .casePropertyDetails(casePropertyDetails)
@@ -57,7 +57,7 @@ class NoticeOfRentChangeRepositoryTest extends AbstractRepositoryTest<NoticeOfRe
         assertThat(result.get().getReceivedLandlordNoticeProposingNewRent()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getNoUploadOfNoticeProposingNewRentReason()).isEqualTo("Hard copy only");
         assertThat(result.get().getNoticeLegallyValid()).isEqualTo(YesOrNo.NO);
-        assertThat(result.get().getNoticeNotLegallyValidDetails()).isEqualTo("Invalid notice date");
+        assertThat(result.get().getNoticeNotLegallyValidReason()).isEqualTo("Invalid notice date");
         assertThat(result.get().getRentIncreaseToCauseHardship()).isEqualTo(YesOrNo.YES);
         assertThat(result.get().getRentIncreaseToCauseHardshipDetails()).isEqualTo("Financial hardship");
         assertThat(result.get().getCasePropertyDetails().getPtCase().getCaseReference()).isEqualTo(caseReference);
