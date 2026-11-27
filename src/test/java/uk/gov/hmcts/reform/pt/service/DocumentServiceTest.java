@@ -121,12 +121,12 @@ class DocumentServiceTest {
         @DisplayName("Should upsert multiple documents and leave ones absent from the list alone")
         void updateMultipleDocuments() {
             DocumentEntity existingRoom1 = existingDocument("room1", DocumentType.PROPERTY_ROOMS);
-            DocumentEntity existingUntouched = existingDocument("room_untouched", DocumentType.PROPERTY_ROOMS);
+            DocumentEntity existingUntouched = existingDocument("untouched_room", DocumentType.PROPERTY_ROOMS);
 
             PTCaseEntity ptCase = caseWithDocuments(existingRoom1, existingUntouched);
 
-            UploadedDocument room1Upload = newUploadDoc("new_room1", DocumentType.PROPERTY_ROOMS);
-            UploadedDocument room2Upload = newUploadDoc("room2", DocumentType.PROPERTY_ROOMS);
+            UploadedDocument room1Upload = newUploadDocWithSize("room1new", DocumentType.PROPERTY_ROOMS, 500L);
+            UploadedDocument room2Upload = newUploadDocWithSize("second_room", DocumentType.PROPERTY_ROOMS, 600L);
 
             documentService.updateMultipleDocuments(
                 DocumentType.PROPERTY_ROOMS,
@@ -376,26 +376,32 @@ class DocumentServiceTest {
         assertThat(theDocument.getContentType()).isEqualTo(uploaded.getContentType());
     }
 
-    private static UploadedDocument newUploadDoc(String fileName, DocumentType documentType) {
-        String url = "http://dm-store/documents/" + fileName.substring(0, 1);
-        String binaryUrl = "http://dm-store/binary/binary-" + fileName;
-        String filename = fileName + ".pdf";
+
+    private static UploadedDocument newUploadDoc(String rootname, DocumentType documentType) {
+        return newUploadDocWithSize(rootname, documentType, 1024L);
+    }
+
+    private static UploadedDocument newUploadDocWithSize(String rootname, DocumentType documentType, long size) {
+        String url = "http://dm-store/documents/" + rootname.substring(0, 1);
+        String binaryUrl = "http://dm-store/binary/binary-" + rootname;
+        String filename = rootname + ".pdf";
 
         return UploadedDocument.builder()
             .document(Document.builder().url(url).filename(filename).binaryUrl(binaryUrl).build())
             .contentType("application/pdf")
             .documentType(documentType)
-            .sizeInBytes(1024L)
+            .sizeInBytes(size)
             .build();
     }
 
-    private static DocumentEntity existingDocument(String rootName, DocumentType documentType) {
-        String url = "http://dm-store/documents/" + rootName;
-        String binaryUrl = "http://dm-store/binary/binary-" + rootName;
-        String filename = rootName + ".pdf";
+    private static DocumentEntity existingDocument(String rootname, DocumentType documentType) {
+        String url = "http://dm-store/documents/" + rootname.substring(0, 1);
+        String binaryUrl = "http://dm-store/binary/binary-" + rootname;
+        String filename = rootname + ".pdf";
 
         return DocumentEntity.builder()
             .documentType(documentType)
+            .binaryUrl(binaryUrl)
             .url(url)
             .fileName(filename)
             .build();
