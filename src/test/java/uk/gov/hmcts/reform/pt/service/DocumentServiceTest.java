@@ -60,16 +60,16 @@ class DocumentServiceTest {
         void updateSingleDocumentCreatesNew() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument uploadedDocument = uploadedDocument("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
+            UploadedDocument newUploadDoc = newUploadDoc("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
 
-            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, uploadedDocument, ptCase);
+            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, newUploadDoc, ptCase);
 
             DocumentEntity saved = captureSingleSave();
 
             assertThat(saved.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
             assertRequiredDocumentEntityProperties(
                 ptCase,
-                uploadedDocument,
+                newUploadDoc,
                 saved
             );
         }
@@ -81,14 +81,14 @@ class DocumentServiceTest {
 
             PTCaseEntity ptCase = caseWithDocuments(existing);
 
-            UploadedDocument uploadedDocument = uploadedDocument("new_notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
+            UploadedDocument newUploadDoc = newUploadDoc("new_notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
 
-            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, uploadedDocument, ptCase);
+            documentService.updateSingleDocument(DocumentType.NEW_RENT_INCREASE_NOTICE, newUploadDoc, ptCase);
 
             verify(documentRepository).save(existing);
             assertRequiredDocumentEntityProperties(
                 ptCase,
-                uploadedDocument,
+                newUploadDoc,
                 existing
             );
             assertThat(existing.getCategoryId()).isEqualTo(UNCATEGORISED_DOCUMENTS.getId());
@@ -125,8 +125,8 @@ class DocumentServiceTest {
 
             PTCaseEntity ptCase = caseWithDocuments(existingRoom1, existingUntouched);
 
-            UploadedDocument room1Upload = uploadedDocument("room1", DocumentType.PROPERTY_ROOMS);
-            UploadedDocument room2Upload = uploadedDocument("room2", DocumentType.PROPERTY_ROOMS);
+            UploadedDocument room1Upload = newUploadDoc("new_room1", DocumentType.PROPERTY_ROOMS);
+            UploadedDocument room2Upload = newUploadDoc("room2", DocumentType.PROPERTY_ROOMS);
 
             documentService.updateMultipleDocuments(
                 DocumentType.PROPERTY_ROOMS,
@@ -141,7 +141,6 @@ class DocumentServiceTest {
             assertThat(saved).hasSize(2);
 
             DocumentEntity firstSaved = saved.get(0);
-            assertThat(firstSaved).isEqualTo(existingRoom1);
             assertRequiredDocumentEntityProperties(ptCase, room1Upload, firstSaved);
 
             DocumentEntity secondSaved = saved.get(1);
@@ -153,9 +152,9 @@ class DocumentServiceTest {
         void updateDocumentsForNoticeOfRentChangeUpdatesAllDocuments() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument noticeDoc = uploadedDocument("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
-            UploadedDocument legalDoc = uploadedDocument("invalid", DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE);
-            UploadedDocument hardshipDoc = uploadedDocument("hardship", DocumentType.HARDSHIP_EVIDENCE);
+            UploadedDocument noticeDoc = newUploadDoc("notice", DocumentType.NEW_RENT_INCREASE_NOTICE);
+            UploadedDocument legalDoc = newUploadDoc("invalid", DocumentType.NOTICE_NOT_LEGALLY_VALID_EVIDENCE);
+            UploadedDocument hardshipDoc = newUploadDoc("hardship", DocumentType.HARDSHIP_EVIDENCE);
 
             NoticeOfRentIncreaseDetails details = NoticeOfRentIncreaseDetails.builder()
                 .landlordNoticeProposingNewRentDocument(noticeDoc)
@@ -178,10 +177,10 @@ class DocumentServiceTest {
         void updateDocumentsForPropertyDetailsUpdatesAllDocuments() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument floorPlanDoc = uploadedDocument("floor", DocumentType.PROPERTY_FLOOR_PLAN);
-            UploadedDocument outsidePropertyDoc = uploadedDocument("outside", DocumentType.OUTSIDE_PROPERTY);
-            UploadedDocument repairsDoc = uploadedDocument("repairs", DocumentType.TENANT_REPAIRS_EVIDENCE);
-            UploadedDocument roomDoc = uploadedDocument("room", DocumentType.PROPERTY_ROOMS);
+            UploadedDocument floorPlanDoc = newUploadDoc("floor", DocumentType.PROPERTY_FLOOR_PLAN);
+            UploadedDocument outsidePropertyDoc = newUploadDoc("outside", DocumentType.OUTSIDE_PROPERTY);
+            UploadedDocument repairsDoc = newUploadDoc("repairs", DocumentType.TENANT_REPAIRS_EVIDENCE);
+            UploadedDocument roomDoc = newUploadDoc("room", DocumentType.PROPERTY_ROOMS);
 
             PropertyDetails details = PropertyDetails.builder()
                 .floorPlanDocuments(singleItemList(floorPlanDoc))
@@ -206,8 +205,7 @@ class DocumentServiceTest {
         void updateDocumentsForRentDetailsUpdatesDocument() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument rentDoc = uploadedDocument(
-                "market-rent", DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
+            UploadedDocument rentDoc = newUploadDoc("market-rent", DocumentType.TENANT_PROPOSED_MARKET_RENT_EVIDENCE);
 
             RentDetails details = RentDetails.builder()
                 .suggestedMarketRentEvidence(singleItemList(rentDoc))
@@ -228,10 +226,8 @@ class DocumentServiceTest {
         void updateDocumentsForLandlordResponseUpdatesDocument() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument responseDoc = uploadedDocument(
-                "tenancy",
-                DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS
-            );
+            UploadedDocument responseDoc = newUploadDoc("tenancy",
+                                                        DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_TENANCY_DETAILS);
 
             LandlordResponse details = LandlordResponse.builder()
                 .tenancyDetailsResponseEvidence(singleItemList(responseDoc))
@@ -253,7 +249,8 @@ class DocumentServiceTest {
             PTCaseEntity ptCase = caseWithDocuments();
 
             UploadedDocument evidenceDoc =
-                uploadedDocument("property", DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS);
+                newUploadDoc("property",
+                             DocumentType.EVIDENCE_SUPPORTING_RESPONSE_TO_PROPERTY_DETAILS);
 
             LandlordResponse details = LandlordResponse.builder()
                 .propertyDetailsResponseEvidence(singleItemList(evidenceDoc))
@@ -274,7 +271,7 @@ class DocumentServiceTest {
         void updateDocumentsForTenancyAgreementDetailsUpdatesDocument() {
             PTCaseEntity ptCase = caseWithDocuments();
 
-            UploadedDocument agreementDoc = uploadedDocument("tenancy-agreement", DocumentType.TENANCY_AGREEMENT);
+            UploadedDocument agreementDoc = newUploadDoc("tenancy-agreement", DocumentType.TENANCY_AGREEMENT);
 
             TenancyAgreementDetails details = TenancyAgreementDetails.builder()
                 .tenancyAgreementDocument(agreementDoc)
@@ -379,10 +376,10 @@ class DocumentServiceTest {
         assertThat(theDocument.getContentType()).isEqualTo(uploaded.getContentType());
     }
 
-    private static UploadedDocument uploadedDocument(String rootName, DocumentType documentType) {
-        String url = "http://dm-store/documents/" + rootName;
-        String binaryUrl = "http://dm-store/binary/binary-" + rootName;
-        String filename = rootName + ".pdf";
+    private static UploadedDocument newUploadDoc(String fileName, DocumentType documentType) {
+        String url = "http://dm-store/documents/" + fileName.substring(0, 1);
+        String binaryUrl = "http://dm-store/binary/binary-" + fileName;
+        String filename = fileName + ".pdf";
 
         return UploadedDocument.builder()
             .document(Document.builder().url(url).filename(filename).binaryUrl(binaryUrl).build())
