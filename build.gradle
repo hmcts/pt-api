@@ -285,6 +285,8 @@ dependencies {
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging'
   }
 
+  implementation "com.github.hmcts:doc-assembly-client:2.2.0"
+
   implementation "com.github.hmcts:service-auth-provider-java-client:5.3.5"
 
   testImplementation "com.github.hmcts:fortify-client:1.4.10:all"
@@ -377,6 +379,7 @@ tasks.withType(CftlibExec).configureEach {
   environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,pt_frontend,pt_api'
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_data,ccd_gw,pt_frontend,pt_api'
   environment 'CCD_S2S-AUTHORISED_SERVICES_CASE_USER_ROLES', 'aac_manage_case_assignment,pt_api'
+  environment 'S2S_NAMES_WHITELIST', 'pt_api,pt_frontend,ccd_data,payment_app,xui_webapp,ccd,em_gw'
 }
 
 tasks.register('highLevelDataSetup', JavaExec) {

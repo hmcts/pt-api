@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.pt.idam.IdamUserInfoApi;
         "uk.gov.hmcts.reform.pt",
         "uk.gov.hmcts.ccd.sdk",
         "uk.gov.hmcts.reform.ccd.client",
+        "uk.gov.hmcts.reform.docassembly",
         "uk.gov.hmcts.reform.payments.client"
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
