@@ -20,3 +20,11 @@ jobs:
           cache: 'gradle'
       - name: Build
         run: ./gradlew check
+
+  verify-ddl:
+    name: Verify DDL pipeline output
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify generated DDL and migrations are in agreement
+        run: ./scripts/generate-migration.sh --verify

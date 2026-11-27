@@ -113,6 +113,37 @@ This spreadsheet can be found in: `/build/definitions/CCD_Definition_PT_ENVIRONM
 
 You can specify which environment to generate the spreadsheet for by passing it in when calling the script. E.g `./bin/create-xlsx.sh preview`.
 
+### Database schema and migrations
+
+Due to ways of working adopted by the data team, the schema is defined in Oracle SQL at `ddl/oracle/oracle_ddl.sql`, which is the source of truth for our data model.
+Two generated artifacts are derived from it and committed alongside it:
+
+| file | produced by                                                                |
+|---|----------------------------------------------------------------------------|
+| `ddl/postgres/postgres_ddl.sql` | [sqlglot](https://github.com/tobymao/sqlglot), transpiled from the Oracle DDL                                |
+| `src/main/resources/db/migration/V<n>__*.sql` | [Atlas](https://atlasgo.io/), as the delta against the existing migrations |
+
+In order to make a change to the data model, only the Oracle DDL should ever be manually edited,
+after which you should run the following command to generate the remainder of the files:
+
+```bash
+./gradlew generateMigration --name=<migration-name>
+```
+
+This converts the Oracle DDL to Postgres, diffs it against the current migrations and writes a new
+Flyway migration for the difference. Review the result before committing: commit the Oracle DDL, the
+regenerated Postgres DDL and the new migration together.
+
+To check the committed artifacts are in sync, you can run the following command. This command is also run
+in the CI pipeline to assert correctness.
+
+```bash
+./gradlew verifyDDL
+```
+
+Both tasks need Docker. They run sqlglot, Atlas and a throwaway Postgres in containers, so nothing
+has to be installed locally.
+
 ### Running the tests
 
 The Functional tests use [Rest Assured](https://rest-assured.io) and [Serenity](https://serenity-bdd.github.io) for reporting, and are located in the `/src/functionalTest` directory.
