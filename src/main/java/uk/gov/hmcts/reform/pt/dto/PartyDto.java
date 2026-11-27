@@ -13,7 +13,6 @@ public class PartyDto {
     private String organisationName;
     private String emailAddress;
     private String phoneNumber;
-    private String dxNumber;
     private UUID pcqId;
 
     private String addressLine1;
@@ -21,4 +20,5 @@ public class PartyDto {
     private String postTown;
     private String county;
     private String postcode;
+    private String country;
 }

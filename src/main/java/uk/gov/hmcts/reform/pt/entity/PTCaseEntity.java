@@ -22,7 +22,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.reform.pt.ccd.domain.ApplicationType;
-import uk.gov.hmcts.reform.pt.ccd.domain.LandlordRepresentativeType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,10 +37,6 @@ import java.util.List;
 public class PTCaseEntity extends AuditableEntity {
     @Column(nullable = false, unique = true)
     private Long caseReference;
-
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private LandlordRepresentativeType landlordType;
 
     private LocalDateTime applicationSubmittedDate;
     private LocalDateTime caseIssuedDate;

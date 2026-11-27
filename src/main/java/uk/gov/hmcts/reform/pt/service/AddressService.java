@@ -61,5 +61,6 @@ public class AddressService {
         setIfNotNull(addressDetails.getPostTown(), address::setTownCity);
         setIfNotNull(addressDetails.getCounty(), address::setCounty);
         setIfNotNull(addressDetails.getPostcode(), address::setPostcode);
+        setIfNotNull(addressDetails.getCountry(), address::setCountry);
     }
 }

@@ -12,28 +12,21 @@ import uk.gov.hmcts.reform.pt.ccd.accesscontrol.CitizenAccess;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LandlordDetails {
-
     @CCD(
         label = "Landlord Party Details",
         access = {CitizenAccess.class}
     )
-    private PartyDetails landlordPartyDetails;
+    private PartyDetails landlord;
 
     @CCD(
-        label = "Landlord Representative Type",
+        label = "Landlord has representative",
         access = {CitizenAccess.class}
     )
-    private LandlordRepresentativeType representativeType;
-
-    @CCD(
-        label = "Letting Agent Party Details",
-        access = {CitizenAccess.class}
-    )
-    private PartyDetails lettingAgentPartyDetails;
+    private YesNoNotSure hasRepresentative;
 
     @CCD(
         label = "Representative Party Details",
         access = {CitizenAccess.class}
     )
-    private PartyDetails representativePartyDetails;
+    private PartyDetails representative;
 }

@@ -46,16 +46,15 @@ public class PTCaseView implements CaseView<PTCase, State> {
             .applicantLastName(applicant != null ? applicant.getLastName() : null)
             .formattedPropertyAddress(getFormattedPropertyAddress(propertyDetails))
             .formattedCaseName(CaseFormatter.formatCaseName(applicant, respondent))
-            .landlordDetails(getLandlordDetails(ptCaseEntity, respondent))
+            .landlordDetails(getLandlordDetails(respondent))
             .propertyDetails(propertyDetails)
             .build();
     }
 
-    private LandlordDetails getLandlordDetails(PTCaseEntity ptCaseEntity, CasePartyEntity respondent) {
+    private LandlordDetails getLandlordDetails(CasePartyEntity respondent) {
         return respondent != null
             ? LandlordDetails.builder()
-                .representativeType(ptCaseEntity.getLandlordType())
-                .landlordPartyDetails(
+            .landlord(
                     PartyDetails.builder()
                         .firstName(respondent.getFirstName())
                         .lastName(respondent.getLastName())
